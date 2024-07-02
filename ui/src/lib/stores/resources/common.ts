@@ -51,7 +51,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
 
   // Keep an internal reference to the age timer
   private ageTimer: NodeJS.Timeout | null = null
-  private ageTimerSeconds = 30
+  private ageTimerSeconds = 60
   private ageTimerStore: Writable<number> = writable(0)
 
   // Public stores for the search text, search by type, and sorting options
@@ -181,7 +181,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
     if (this.eventSource) {
       this.eventSource.close()
       this.eventSource = null
-      clearInterval(this.ageTimer as NodeJS.Timeout)
+      clearTimeout(this.ageTimer as NodeJS.Timeout)
     }
   }
 
