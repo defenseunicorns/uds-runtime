@@ -1,6 +1,9 @@
 <script lang="ts">
-  // import 'flowbite'
+  import { afterNavigate } from '$app/navigation'
+  import 'flowbite'
+  import { initFlowbite } from 'flowbite'
   import 'flowbite/dist/flowbite.css'
+  import { onMount } from 'svelte'
 
   import Breadcrumb from '$lib/components/navigation/Breadcrumb.svelte'
   import Navbar from '$lib/components/navigation/Navbar.svelte'
@@ -8,8 +11,8 @@
   import { isSidebarExpanded } from '$lib/stores/layout'
   import '../app.postcss'
 
-  // onMount(initFlowbite);
-  // afterNavigate(initFlowbite);
+  onMount(initFlowbite)
+  afterNavigate(initFlowbite)
 </script>
 
 <Navbar />
