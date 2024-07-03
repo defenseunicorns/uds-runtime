@@ -15,6 +15,7 @@ import (
 
 	"github.com/defenseunicorns/uds-engine/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-engine/pkg/api/resources"
+	"github.com/defenseunicorns/uds-engine/pkg/api/sse"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	appsv1 "k8s.io/api/apps/v1"
@@ -33,16 +34,18 @@ func Start(assets embed.FS) error {
 		return fmt.Errorf("failed to create cache: %w", err)
 	}
 
+	cache.Namespaces.GetResources()
+
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/monitor/pepr/", monitor.Pepr)
 		r.Get("/monitor/pepr/{stream}", monitor.Pepr)
 
-		r.Get("/resources/events", resources.Bind[*v1.Event](cache.Events.GetResources, cache.Events.Changes))
-		r.Get("/resources/namespaces", resources.Bind[*v1.Namespace](cache.Namespaces.GetResources, cache.Namespaces.Changes))
-		r.Get("/resources/pods", resources.Bind[*v1.Pod](cache.Pods.GetResources, cache.Pods.Changes))
-		r.Get("/resources/deployments", resources.Bind[*appsv1.Deployment](cache.Deployments.GetResources, cache.Deployments.Changes))
-		r.Get("/resources/daemonsets", resources.Bind[*appsv1.DaemonSet](cache.Daemonsets.GetResources, cache.Daemonsets.Changes))
-		r.Get("/resources/statefulsets", resources.Bind[*appsv1.StatefulSet](cache.Statefulsets.GetResources, cache.Statefulsets.Changes))
+		r.Get("/resources/events", sse.Bind[*v1.Event](cache.Events.GetResources, cache.Events.Changes))
+		r.Get("/resources/namespaces", sse.Bind[*v1.Namespace](cache.Namespaces.GetResources, cache.Namespaces.Changes))
+		r.Get("/resources/pods", sse.Bind[*v1.Pod](cache.Pods.GetResources, cache.Pods.Changes))
+		r.Get("/resources/deployments", sse.Bind[*appsv1.Deployment](cache.Deployments.GetResources, cache.Deployments.Changes))
+		r.Get("/resources/daemonsets", sse.Bind[*appsv1.DaemonSet](cache.Daemonsets.GetResources, cache.Daemonsets.Changes))
+		r.Get("/resources/statefulsets", sse.Bind[*appsv1.StatefulSet](cache.Statefulsets.GetResources, cache.Statefulsets.Changes))
 	})
 
 	// Serve static files from embed.FS

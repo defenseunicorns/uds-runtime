@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/defenseunicorns/uds-engine/pkg/api/sse"
 	"github.com/defenseunicorns/uds-engine/pkg/pepr"
 	"github.com/defenseunicorns/uds-engine/pkg/stream"
 	"github.com/defenseunicorns/zarf/src/pkg/message"
@@ -29,9 +30,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	// Set the headers for streaming
-	w.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
+	sse.WriteHeaders(w)
 
 	// Create a new BufferWriter
 	bufferWriter := newBufferWriter(w)
