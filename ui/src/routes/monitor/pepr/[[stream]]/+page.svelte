@@ -68,7 +68,6 @@
       <div class="table-filter-section">
         <div class="grid w-full grid-cols-1 md:grid-cols-4 md:gap-4 lg:w-2/3">
           <div class="w-full">
-            <label for="stream" class="sr-only">Filter</label>
             <select
               id="stream"
               bind:value={streamFilter}

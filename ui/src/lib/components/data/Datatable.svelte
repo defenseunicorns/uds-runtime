@@ -1,24 +1,28 @@
 <script lang="ts">
-  import type { ResourceStoreInterface } from '$lib/stores/resources/common';
-  import type { KubernetesObject } from '@kubernetes/client-node';
-  import {
-    AngleDownOutline,
-    AngleUpOutline,
-    FilterSolid,
-    SearchOutline
-  } from 'flowbite-svelte-icons';
-  import { onMount } from 'svelte';
+  import type { KubernetesObject } from '@kubernetes/client-node'
+  import { AngleDownOutline, AngleUpOutline, FilterSolid, SearchOutline } from 'flowbite-svelte-icons'
+  import { onMount } from 'svelte'
+
+  import { page } from '$app/stores'
+  import type { ResourceStoreInterface } from '$lib/stores/resources/common'
+  import type { Row as NamespaceRow } from '$lib/stores/resources/namespaces'
 
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
-  export let columns: [name: string, styles?: string | undefined][];
-  export let createStore: () => ResourceStoreInterface<KubernetesObject, any>;
+  export let columns: [name: string, styles?: string | undefined][]
+  export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
-  const rows = createStore();
-  const { search, searchBy, searchTypes, sortAsc, sortBy } = rows;
+  // Load the namespaces from the page store
+  const namespaces = $page.data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
+
+  const rows = createStore()
+  const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
+
+  // If the route is a namespace route, we don't want to show the namespace dropdown
+  let isNamespace = $page.url.pathname.includes('/namespaces')
 
   onMount(() => {
-    return rows.start();
-  });
+    return rows.start()
+  })
 </script>
 
 <section class="table-section">
@@ -47,10 +51,7 @@
           {$searchBy}
           <AngleDownOutline class="ml-2 h-4 w-4 text-gray-400" />
         </button>
-        <div
-          id="filterDropdown"
-          class="z-10 hidden w-48 rounded-lg bg-white p-3 shadow dark:bg-gray-700"
-        >
+        <div id="filterDropdown" class="z-10 hidden w-48 rounded-lg bg-white p-3 shadow dark:bg-gray-700">
           <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Search By</h6>
           <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
             {#each searchTypes as searchType}
@@ -63,10 +64,7 @@
                   class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:focus:bg-blue-600 dark:focus:ring-blue-600"
                   bind:group={$searchBy}
                 />
-                <label
-                  for={searchType}
-                  class="ms-2 block text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
+                <label for={searchType} class="ms-2 block text-sm font-medium text-gray-900 dark:text-gray-300">
                   {searchType}
                 </label>
               </li>
@@ -74,6 +72,17 @@
           </ul>
         </div>
         <div class="flex-grow"></div>
+        <div>
+          {#if !isNamespace}
+            <select id="stream" bind:value={$namespace}>
+              <option value="">All Namespaces</option>
+              <hr />
+              {#each $namespaces as ns}
+                <option value={ns.table.name}>{ns.table.name}</option>
+              {/each}
+            </select>
+          {/if}
+        </div>
       </div>
       <div class="table-scroll-container">
         <table>

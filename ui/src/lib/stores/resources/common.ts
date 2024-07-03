@@ -39,11 +39,16 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
   searchTypes: SearchByType[]
   // Subscribe to the filtered and sorted resources
   subscribe: (run: (value: ResourceWithTable<T, U>[]) => void) => () => void
+  // Store for namespace
+  namespace: Writable<string>
 }
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   // Keep an internal store for the resources
   private resources: Writable<ResourceWithTable<T, U>[]>
+
+  // Keep track of whether the store has been initialized
+  private initialized = false
 
   // Keep an internal reference to the EventSource and the table
   private eventSource: EventSource | null = null
@@ -59,6 +64,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   public searchBy: Writable<SearchByType>
   public sortBy: Writable<keyof U>
   public sortAsc: Writable<boolean>
+  public namespace: Writable<string>
 
   // The list of search types
   public searchTypes = Object.values(SearchByType)
@@ -76,12 +82,18 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
     this.searchBy = writable<SearchByType>(SearchByType.ANYWHERE)
     this.sortBy = writable<keyof U>(initialSortBy)
     this.sortAsc = writable<boolean>(true)
+    this.namespace = writable<string>('')
 
     // Create a derived store that combines all the filtering and sorting logic
     const filteredAndSortedResources = derived(
-      [this.resources, this.search, this.searchBy, this.sortBy, this.sortAsc, this.ageTimerStore],
-      ([$resources, $search, $searchBy, $sortBy, $sortAsc]) => {
+      [this.resources, this.namespace, this.search, this.searchBy, this.sortBy, this.sortAsc, this.ageTimerStore],
+      ([$resources, $namespace, $search, $searchBy, $sortBy, $sortAsc]) => {
         let filtered = $resources
+
+        // If there is a namespace, filter the resources
+        if ($namespace) {
+          filtered = filtered.filter((item) => item.resource.metadata?.namespace === $namespace)
+        }
 
         // If there is a search term, filter the resources
         if ($search) {
@@ -159,6 +171,12 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
    * @returns A function to stop the EventSource
    */
   start(url: string, createTableCallback: (data: T[]) => ResourceWithTable<T, U>[]) {
+    // If the store has already been initialized, return
+    if (this.initialized) {
+      return () => {}
+    }
+
+    this.initialized = true
     this.eventSource = new EventSource(url)
 
     this.eventSource.onmessage = ({ data }) => {
