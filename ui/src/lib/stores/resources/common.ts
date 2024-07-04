@@ -71,17 +71,18 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   /**
    * Create a new ResourceStore instance
    *
-   * @param initialSortBy The initial key to sort the table by
+   * @param sortBy The initial key to sort the table by
+   * @param sortAsc The initial sort direction
    */
-  constructor(initialSortBy: keyof U) {
+  constructor(sortBy: keyof U, sortAsc = true) {
     // Initialize the internal store
     this.resources = writable<ResourceWithTable<T, U>[]>([])
 
     // Initialize the public stores
     this.search = writable<string>('')
     this.searchBy = writable<SearchByType>(SearchByType.ANYWHERE)
-    this.sortBy = writable<keyof U>(initialSortBy)
-    this.sortAsc = writable<boolean>(true)
+    this.sortBy = writable<keyof U>(sortBy)
+    this.sortAsc = writable<boolean>(sortAsc)
     this.namespace = writable<string>('')
 
     // Create a derived store that combines all the filtering and sorting logic
