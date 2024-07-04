@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import { AngleRightOutline, ChartPieSolid } from 'flowbite-svelte-icons';
-  import { routes } from './routes';
+  import { page } from '$app/stores'
+  import { AngleRightOutline } from 'flowbite-svelte-icons'
+  import { routes } from './routes'
 
   const flatRoutes = routes.flatMap((route) => {
     if (route.children) {
@@ -35,17 +35,7 @@
 
 <nav class="flex" aria-label="Breadcrumb">
   <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-    <li class="inline-flex items-center">
-      <a
-        href="/"
-        class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
-      >
-        <ChartPieSolid class="mr-2" />
-        Overview
-      </a>
-    </li>
     {#if matchParent}
-      <li><AngleRightOutline class="w-5 h-5 text-gray-400 dark:text-gray-400" /></li>
       <li>
         <div class="flex items-center">
           <a

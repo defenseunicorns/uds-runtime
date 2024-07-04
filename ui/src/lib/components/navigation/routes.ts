@@ -1,59 +1,59 @@
-import { ChartPieSolid, EyeSolid, ServerSolid } from 'flowbite-svelte-icons';
+import { ChartPieOutline, EyeOutline, LayersOutline } from 'flowbite-svelte-icons'
 
 export const routes = [
   {
     path: '/',
     name: 'Overview',
-    icon: ChartPieSolid
+    icon: ChartPieOutline,
   },
   {
     path: '/monitor',
     name: 'Monitor',
-    icon: EyeSolid,
+    icon: EyeOutline,
     children: [
       {
         path: '/monitor/pepr',
-        name: 'Pepr'
+        name: 'Pepr',
       },
       {
         path: '/monitor/events',
-        name: 'Events'
-      }
-    ]
+        name: 'Events',
+      },
+    ],
   },
   {
     path: '/resources',
     name: 'Resources',
-    icon: ServerSolid,
+    icon: LayersOutline,
     children: [
       {
         path: '/resources/namespaces',
-        name: 'Namespaces'
+        name: 'Namespaces',
       },
       {
         path: '/resources/pods',
-        name: 'Pods'
+        name: 'Pods',
       },
       {
         path: '/resources/deployments',
-        name: 'Deployments'
+        name: 'Deployments',
       },
       {
         path: '/resources/daemonsets',
-        name: 'DaemonSets'
+        name: 'DaemonSets',
       },
       {
         path: '/resources/statefulsets',
-        name: 'StatefulSets'
+        name: 'StatefulSets',
       },
       {
         path: '/resources/packages',
-        name: 'Packages'
+        name: 'Packages',
       },
       {
         path: '/resources/services',
-        name: 'Services'
-      }
-    ]
-  }
-];
+        name: 'Services',
+      },
+    ],
+  },
+]
