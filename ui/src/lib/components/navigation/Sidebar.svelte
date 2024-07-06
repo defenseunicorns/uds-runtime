@@ -49,7 +49,7 @@
                   <a
                     href={child.path}
                     class="group flex w-full items-center rounded-lg p-2 pl-11 text-base font-light text-gray-900 transition duration-300 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600"
-                    class:active={$page.url.pathname === child.path}>{child.name}</a
+                    class:active={$page.url.pathname.includes(child.path)}>{child.name}</a
                   >
                 </li>
               {/each}
