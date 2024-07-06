@@ -1,65 +1,87 @@
 <script lang="ts">
-  import { UploadSolid } from 'flowbite-svelte-icons';
-  import { writable } from 'svelte/store';
+  import { UploadSolid } from 'flowbite-svelte-icons'
+  import { writable } from 'svelte/store'
 
-  import { afterNavigate, goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import './page.postcss';
+  import { afterNavigate, goto } from '$app/navigation'
+  import { page } from '$app/stores'
+  import { onDestroy } from 'svelte'
+  import './page.postcss'
 
   interface PeprEvent {
-    _name: string;
-    count: number;
-    event: string;
-    header: string;
-    repeated?: number;
-    ts?: string;
-    epoch: number;
+    _name: string
+    count: number
+    event: string
+    header: string
+    repeated?: number
+    ts?: string
+    epoch: number
   }
 
-  let streamFilter = '';
+  let loaded = false
+  let streamFilter = ''
+  let eventSource: EventSource | null = null
 
-  const peprStream = writable<PeprEvent[]>([]);
+  const peprStream = writable<PeprEvent[]>([])
 
-  afterNavigate(() => {
-    // Flush the peprStream on navigation
-    peprStream.set([]);
-    streamFilter = $page.params.stream || '';
+  onDestroy(() => {
+    eventSource?.close()
+    eventSource = null
+  })
 
-    const eventSource = new EventSource(
-      `/api/v1/monitor/pepr/${streamFilter}`
-    );
+  page.subscribe(({ route, params }) => {
+    // Reset the page when the route changes
+    eventSource?.close()
+    loaded = false
+
+    // This will trigger when leaving the page too, so skip if not the right route
+    if (route.id !== '/monitor/pepr/[[stream]]') {
+      return
+    }
+
+    peprStream.set([])
+    streamFilter = params.stream || ''
+
+    eventSource = new EventSource(`/api/v1/monitor/pepr/${streamFilter}`)
+
+    // Set the loaded flag when the connection is established
+    eventSource.onopen = () => {
+      loaded = true
+    }
 
     eventSource.onmessage = (e) => {
       try {
-        const payload: PeprEvent = JSON.parse(e.data);
+        const payload: PeprEvent = JSON.parse(e.data)
 
         // The event type is the first word in the header
-        payload.event = payload.header.split(' ')[0];
+        payload.event = payload.header.split(' ')[0]
 
         // If this is a repeated event, update the count
         if (payload.repeated) {
           // Find the first item in the peprStream that matches the header
           peprStream.update((collection) => {
-            const idx = collection.findIndex((item) => item.header === payload.header);
+            const idx = collection.findIndex((item) => item.header === payload.header)
             if (idx !== -1) {
-              collection[idx].count = payload.repeated!;
-              collection[idx].ts = payload.ts;
+              collection[idx].count = payload.repeated!
+              collection[idx].ts = payload.ts
             }
-            return collection;
-          });
+            return collection
+          })
         } else {
           // Otherwise, add the new event to the peprStream
-          peprStream.update((collection) => [payload, ...collection]);
+          peprStream.update((collection) => [payload, ...collection])
         }
       } catch (error) {
-        console.error('Error updating peprStream:', error);
+        console.error('Error updating peprStream:', error)
       }
-    };
+    }
 
     eventSource.onerror = (error) => {
-      console.error('EventSource failed:', error);
-    };
-  });
+      console.error('EventSource failed:', error)
+    }
+  })
+
+  const widths = ['1/6', '1/3', '1/4', '2/5', '1/2', '1/5', '1/3', '1/4']
+  const skeletonRows = widths.sort(() => Math.random() - 0.5)
 </script>
 
 <section class="table-section">
@@ -72,7 +94,7 @@
               id="stream"
               bind:value={streamFilter}
               on:change={(val) => {
-                goto(`/monitor/pepr/${val.target.value}`);
+                goto(`/monitor/pepr/${val.target.value}`)
               }}
             >
               <option value="">All Data</option>
@@ -106,18 +128,45 @@
               <th>Timestamp</th>
             </tr>
           </thead>
-          <tbody>
-            {#each $peprStream as item}
-              <tr>
-                <td>
-                  <span class="pepr-event {item.event}">{item.event}</span>
-                </td>
-                <td>{item._name}</td>
-                <td>{item.count || 1}</td>
-                <td>{item.ts}</td>
-              </tr>
-            {/each}
-          </tbody>
+          {#if loaded}
+            <tbody>
+              {#if $peprStream.length === 0}
+                <tr>
+                  <td colspan="4" class="text-center">No matching entries found</td>
+                </tr>
+              {:else}
+                {#each $peprStream as item}
+                  <tr>
+                    <td>
+                      <span class="pepr-event {item.event}">{item.event}</span>
+                    </td>
+                    <td>{item._name}</td>
+                    <td>{item.count || 1}</td>
+                    <td>{item.ts}</td>
+                  </tr>
+                {/each}
+              {/if}
+            </tbody>
+          {:else}
+            <tbody class="animate-pulse">
+              {#each skeletonRows as w}
+                <tr class="border-b border-gray-700">
+                  <td class="py-2 px-4 w-36">
+                    <div class="h-6 rounded px-2 py-0.5 bg-gray-600"></div>
+                  </td>
+                  <td class="py-2 px-4">
+                    <div class="h-6 bg-gray-500 rounded w-{w}"></div>
+                  </td>
+                  <td class="py-2 px-4 w-24">
+                    <div class="h-6 bg-gray-600 rounded w-8"></div>
+                  </td>
+                  <td class="py-2 px-4 w-64">
+                    <div class="h-6 bg-gray-600 rounded w-full"></div>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          {/if}
         </table>
       </div>
     </div>

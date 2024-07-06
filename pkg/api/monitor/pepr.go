@@ -47,14 +47,37 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	// Start the stream in a goroutine
 	go peprStream.Start(ctx)
 
+	// Track if the first message has been seen
+	seen := false
+
+	// Create a timer to send keep-alive messages
+	// The first message is sent after 2 seconds to detect empty streams
+	keepAliveTimer := time.NewTimer(2 * time.Second)
+	defer keepAliveTimer.Stop()
+
+	// Create a ticker to flush the buffer
+	flushTicker := time.NewTicker(time.Second)
+	defer flushTicker.Stop()
+
 	for {
 		select {
 		// Check if the client has disconnected
 		case <-r.Context().Done():
+			message.Info("Client disconnected")
 			return
 
+		// Handle keep-alive messages
+		// See https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#examples
+		case <-keepAliveTimer.C:
+			// Set the keep-alive duration to 30 seconds after the first message
+			if !seen {
+				keepAliveTimer.Reset(30 * time.Second)
+			}
+
+			bufferWriter.KeepAlive()
+
 		// Flush every second if there is data
-		case <-time.After(1 * time.Second):
+		case <-flushTicker.C:
 			if bufferWriter.buffer.Len() > 0 {
 				if err := bufferWriter.Flush(w); err != nil {
 					message.WarnErr(err, "Failed to flush buffer")
@@ -83,6 +106,12 @@ func newBufferWriter(w http.ResponseWriter) *bufferWriter {
 		buffer:  new(bytes.Buffer),
 		flusher: flusher,
 	}
+}
+
+func (bw *bufferWriter) KeepAlive() {
+	bw.mutex.Lock()
+	defer bw.mutex.Unlock()
+	fmt.Fprintf(bw.buffer, ": \n\n")
 }
 
 // Write writes data to the buffer
