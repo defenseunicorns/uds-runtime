@@ -6,7 +6,10 @@ export interface CommonRow {
   name: string
   namespace?: string
   creationTimestamp: Date
-  age?: string
+  age?: {
+    sort: number
+    text: string
+  }
 }
 
 export type ColumnWrapper<T> = [name: keyof T, styles?: string][]
@@ -127,13 +130,17 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
 
         // Update the age of the resources
         filtered.forEach((item) => {
-          item.table.age = formatDistanceToNow(item.table.creationTimestamp)
+          item.table.age = {
+            text: formatDistanceToNow(item.table.creationTimestamp),
+            sort: item.table.creationTimestamp.getTime(),
+          }
         })
 
         // Sort the resources by the sortBy key
         return filtered.sort((a, b) => {
-          const valueA = a.table[$sortBy]
-          const valueB = b.table[$sortBy]
+          // If the value is an object with a sort key, use that
+          const valueA = (a.table[$sortBy] as { sort: number }).sort ?? a.table[$sortBy]
+          const valueB = (b.table[$sortBy] as { sort: number }).sort ?? b.table[$sortBy]
           if (valueA < valueB) return $sortAsc ? -1 : 1
           if (valueA > valueB) return $sortAsc ? 1 : -1
           return 0
