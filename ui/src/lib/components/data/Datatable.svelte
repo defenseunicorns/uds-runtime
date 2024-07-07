@@ -8,7 +8,7 @@
   import type { Row as NamespaceRow } from '$lib/stores/resources/namespaces'
 
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
-  export let columns: [name: string, styles?: string | undefined][]
+  export let columns: [name: string, styles?: string][]
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
   // Load the namespaces from the page store
@@ -107,7 +107,15 @@
             {#each $rows as row}
               <tr>
                 {#each columns as [key, style]}
-                  <td class={style || ''}>{row.table[key]}</td>
+                  {#if row.table[key].component}
+                    <td class={style || ''}>
+                      <svelte:component this={row.table[key].component} {...row.table[key].props} />
+                    </td>
+                  {:else if row.table[key].text}
+                    <td class={style || ''}>{row.table[key].text}</td>
+                  {:else}
+                    <td class={style || ''}>{row.table[key]}</td>
+                  {/if}
                 {/each}
               </tr>
             {/each}

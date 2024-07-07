@@ -1,4 +1,5 @@
-import type { V1Pod as Resource } from '@kubernetes/client-node'
+import ContainerStatus from '$lib/components/data/ContainerStatus.svelte'
+import type { V1Pod as Resource, V1ContainerStatus } from '@kubernetes/client-node'
 import {
   ResourceStore,
   type ColumnWrapper,
@@ -8,7 +9,13 @@ import {
 } from './common'
 
 interface Row extends CommonRow {
-  containers: number
+  containers: {
+    component: typeof ContainerStatus
+    props: {
+      containers: V1ContainerStatus[]
+    }
+    sort: number
+  }
   restarts: number
   controller: string
   node: string
@@ -31,7 +38,22 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       table: {
         name: r.metadata?.name ?? '',
         namespace: r.metadata?.namespace ?? '',
-        containers: r.spec?.containers.length ?? 0,
+        containers: {
+          component: ContainerStatus,
+          props: {
+            // Combine all containers
+            containers: [
+              r.status?.containerStatuses ?? [],
+              r.status?.initContainerStatuses ?? [],
+              r.status?.ephemeralContainerStatuses ?? [],
+            ].flat(),
+          },
+          sort:
+            // Sort by the total number of containers
+            (r.status?.initContainerStatuses?.length ?? 0) +
+            (r.status?.containerStatuses?.length ?? 0) +
+            (r.status?.ephemeralContainerStatuses?.length ?? 0),
+        },
         restarts: r.status?.containerStatuses?.reduce((acc, curr) => acc + curr.restartCount, 0) ?? 0,
         controller: r.metadata?.ownerReferences?.at(0)?.kind ?? '',
         node: r.spec?.nodeName ?? '',
