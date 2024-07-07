@@ -2,7 +2,7 @@
   import { UploadSolid } from 'flowbite-svelte-icons'
   import { writable } from 'svelte/store'
 
-  import { afterNavigate, goto } from '$app/navigation'
+  import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import { onDestroy } from 'svelte'
   import './page.postcss'
