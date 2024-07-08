@@ -62,12 +62,17 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   private ageTimerSeconds = 60
   private ageTimerStore: Writable<number> = writable(0)
 
+  // Additional callback to stop the EventSource
+  public stopCallback?: () => void
+  public filterCallback?: (resources: ResourceWithTable<T, U>[]) => ResourceWithTable<T, U>[]
+
   // Public stores for the search text, search by type, and sorting options
   public search: Writable<string>
   public searchBy: Writable<SearchByType>
   public sortBy: Writable<keyof U>
   public sortAsc: Writable<boolean>
   public namespace: Writable<string>
+  public additionalStores: Writable<unknown>[] = []
 
   // The list of search types
   public searchTypes = Object.values(SearchByType)
@@ -90,7 +95,16 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
 
     // Create a derived store that combines all the filtering and sorting logic
     const filteredAndSortedResources = derived(
-      [this.resources, this.namespace, this.search, this.searchBy, this.sortBy, this.sortAsc, this.ageTimerStore],
+      [
+        this.resources,
+        this.namespace,
+        this.search,
+        this.searchBy,
+        this.sortBy,
+        this.sortAsc,
+        this.ageTimerStore,
+        ...this.additionalStores,
+      ],
       ([$resources, $namespace, $search, $searchBy, $sortBy, $sortAsc]) => {
         let filtered = $resources
 
@@ -135,6 +149,11 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
             sort: item.table.creationTimestamp.getTime(),
           }
         })
+
+        // If there is a filter callback, run the data through it
+        if (this.filterCallback) {
+          filtered = this.filterCallback(filtered)
+        }
 
         // Sort the resources by the sortBy key
         return filtered.sort((a, b) => {
@@ -204,6 +223,10 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   }
 
   stop() {
+    if (this.stopCallback) {
+      this.stopCallback()
+    }
+
     if (this.eventSource) {
       this.eventSource.close()
       this.eventSource = null

@@ -20,6 +20,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	metricsv1beta1 "k8s.io/metrics/pkg/apis/metrics/v1beta1"
 )
 
 func Start(assets embed.FS) error {
@@ -46,6 +47,16 @@ func Start(assets embed.FS) error {
 		r.Get("/resources/deployments", sse.Bind[*appsv1.Deployment](cache.Deployments.GetResources, cache.Deployments.Changes))
 		r.Get("/resources/daemonsets", sse.Bind[*appsv1.DaemonSet](cache.Daemonsets.GetResources, cache.Daemonsets.Changes))
 		r.Get("/resources/statefulsets", sse.Bind[*appsv1.StatefulSet](cache.Statefulsets.GetResources, cache.Statefulsets.Changes))
+
+		// Metrics have their own cache and change channel that updates every 30 seconds
+		// They do not support informers directly, so we need to poll the API
+		r.Get("/resources/podmetrics", sse.Bind(
+			func() []*metricsv1beta1.PodMetrics {
+				return cache.PodMetrics.GetAll()
+			},
+			cache.MetricsChanges,
+		))
+
 	})
 
 	// Serve static files from embed.FS

@@ -52,11 +52,11 @@ func NewStream(writer io.Writer, reader Reader, namespace string) *Stream {
 func (s *Stream) Start(ctx context.Context) error {
 	// Create a new client if one is not provided (usually for testing)
 	if s.Client == nil {
-		c, _, err := k8s.NewClient()
+		c, err := k8s.NewClient()
 		if err != nil {
 			return fmt.Errorf("unable to connect to the cluster: %v", err)
 		}
-		s.Client = c
+		s.Client = c.Clientset
 	}
 
 	// List the pods in the specified namespace

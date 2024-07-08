@@ -9,6 +9,7 @@
     ['containers'],
     ['status'],
     ['restarts'],
+    ['metrics'],
     ['node'],
     ['age'],
   ]

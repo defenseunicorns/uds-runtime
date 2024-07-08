@@ -1,4 +1,4 @@
-package workloads
+package resources
 
 import (
 	"sync"
@@ -17,6 +17,7 @@ const (
 type ResourceList[T metav1.Object] struct {
 	mutex     sync.RWMutex
 	resources map[string]T
+	HasSynced cache.InformerSynced
 	Changes   chan struct{}
 }
 
@@ -24,6 +25,7 @@ type ResourceList[T metav1.Object] struct {
 func NewResourceList[T metav1.Object](informer cache.SharedIndexInformer) *ResourceList[T] {
 	r := &ResourceList[T]{
 		resources: make(map[string]T),
+		HasSynced: informer.HasSynced,
 		Changes:   make(chan struct{}, 1),
 	}
 
