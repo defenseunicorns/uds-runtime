@@ -15,11 +15,7 @@
       <div>Mem: {formatMemory(totalMemory)}</div>
     </div>
 
-    <div
-      class="absolute bottom-full left-0 mb-2 p-2 bg-gray-900 text-white text-xs rounded shadow-lg
-                opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10
-                pointer-events-none whitespace-nowrap"
-    >
+    <div class="tooltip">
       {#each containers as container}
         <div class="mb-1 leading-loose">
           <h3 class="font-bold">{container.name}:</h3>
