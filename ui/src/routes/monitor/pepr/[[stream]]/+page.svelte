@@ -80,7 +80,7 @@
     }
   })
 
-  const widths = ['1/6', '1/3', '1/4', '2/5', '1/2', '1/5', '1/3', '1/4']
+  const widths = ['w-1/6', 'w-1/3', 'w-1/4', 'w-2/5', 'w-1/2', 'w-1/5', 'w-1/3', 'w-1/4']
   const skeletonRows = widths.sort(() => Math.random() - 0.5)
 </script>
 
@@ -155,7 +155,7 @@
                     <div class="h-6 rounded px-2 py-0.5 bg-gray-600"></div>
                   </td>
                   <td class="py-2 px-4">
-                    <div class="h-6 bg-gray-500 rounded w-{w}"></div>
+                    <div class="h-6 bg-gray-500 rounded {w}"></div>
                   </td>
                   <td class="py-2 px-4 w-24">
                     <div class="h-6 bg-gray-600 rounded w-8"></div>
