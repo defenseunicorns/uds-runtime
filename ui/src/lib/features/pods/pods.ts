@@ -1,39 +1,12 @@
-import type { ContainerMetric, PodMetric, V1Pod as Resource, V1ContainerStatus } from '@kubernetes/client-node'
+import type { PodMetric, V1Pod as Resource } from '@kubernetes/client-node'
 import { writable } from 'svelte/store'
 
 import ContainerStatus from '$lib/components/data/ContainerStatus.svelte'
-import { parseCPU } from '$lib/components/data/PodMetrics'
-import PodMetrics from '$lib/components/data/PodMetrics.svelte'
-import {
-  ResourceStore,
-  type ColumnWrapper,
-  type CommonRow,
-  type ResourceStoreInterface,
-  type ResourceWithTable,
-} from './common'
+import { parseCPU } from '$lib/features/pods/PodMetrics'
+import PodMetrics from '$lib/features/pods/PodMetrics.svelte'
+import { ResourceStore, type ResourceStoreInterface, type ResourceWithTable } from '$lib/stores/resources/common'
 
-interface Row extends CommonRow {
-  containers: {
-    component: typeof ContainerStatus
-    sort: number
-    props: {
-      containers: V1ContainerStatus[]
-    }
-  }
-  restarts: number
-  controller: string
-  node: string
-  status: string
-  metrics: {
-    component: typeof PodMetrics
-    sort: number
-    props: {
-      containers: ContainerMetric[]
-    }
-  }
-}
-
-export type Columns = ColumnWrapper<Row>
+import { type Row } from './types'
 
 /**
  * Create a new PodStore for streaming Pod resources
