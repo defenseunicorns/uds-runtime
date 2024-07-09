@@ -2,7 +2,7 @@ import type { PodMetric, V1Pod as Resource } from '@kubernetes/client-node'
 import { writable } from 'svelte/store'
 
 import ContainerStatus from '$lib/components/data/ContainerStatus.svelte'
-import { parseCPU } from '$lib/features/pods/PodMetrics'
+import { parseCPU } from '$lib/features/pods/helpers'
 import PodMetrics from '$lib/features/pods/PodMetrics.svelte'
 import { ResourceStore, type ResourceStoreInterface, type ResourceWithTable } from '$lib/stores/resources/common'
 
