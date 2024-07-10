@@ -56,7 +56,6 @@ func Start(assets embed.FS) error {
 			},
 			cache.MetricsChanges,
 		))
-
 	})
 
 	// Serve static files from embed.FS
