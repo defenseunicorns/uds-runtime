@@ -23,6 +23,11 @@ jobs:
       - name: Install golangci-lint
         run: uds run setup:golangci --no-progress
 
+      - name: Setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 21.1.0
+
       # build ui so ui/build exists when pre-commit runs
       - name: build-ui
         run: uds run build-ui --no-progress
