@@ -4,17 +4,15 @@ includes:
 tasks:
   - name: frontend-unit
     actions:
-      - cmd: npm install
-        dir: ui
+      - task: setup:node_modules
       - cmd: npm run test:unit
         dir: ui
 
   - name: e2e
     actions:
+      - task: setup:node_modules
       - task: setup:slim-cluster
-      - cmd: npm install
-        dir: ui
-      - cmd: npm run test:e2e
+      - cmd: npm run test:integration
         dir: ui
 
   - name: stream

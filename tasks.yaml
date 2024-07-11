@@ -10,5 +10,6 @@ tasks:
     
   - name: build-ui
     actions:
-      - cmd: npm install && npm run build
+      - task: setup:node_modules
+      - cmd: npm run build
         dir: ui
