@@ -1,0 +1,8 @@
+includes:
+  - common: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.7.1/tasks/setup.yaml
+
+tasks:
+  - name: slim-cluster
+    description: "Create a k3d cluster and deploy core slim dev"
+    actions:
+      - task: common:k3d-test-cluster

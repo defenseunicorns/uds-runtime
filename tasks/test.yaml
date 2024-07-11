@@ -1,0 +1,37 @@
+includes:
+  - setup: ./setup.yaml
+
+
+tasks:
+  - name: frontend-unit
+    actions:
+      - cmd: npm install
+        dir: ui
+      - cmd: npm run test:unit
+        dir: ui
+  
+  - name: e2e
+    actions:
+      # - task: setup:slim-cluster
+      - cmd: npm install
+        dir: ui
+      - cmd: npm run dev
+        dir: ui
+      - cmd: npm run test:e2e
+        dir: ui
+
+  - name: stream
+    actions:
+      - cmd: go test -failfast -v -timeout 30m
+        dir: pkg/stream
+
+  - name: pepr
+    actions:
+      - cmd: go test -failfast -v -timeout 30m
+        dir: pkg/pepr
+
+  - name: unit
+    actions:
+      - task: stream
+      - task: pepr
+      - task: frontend-unit

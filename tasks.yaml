@@ -1,0 +1,7 @@
+includes:
+  - test: tasks/test.yaml
+
+tasks:
+  - name: build
+    actions:
+      - cmd: go build -o ./build/main main.go
