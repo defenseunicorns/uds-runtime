@@ -21,7 +21,7 @@ jobs:
         run: go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Install golangci-lint
-        run: uds run setup:golangci
+        run: uds run setup:golangci --no-progress
 
       - name: Run pre-commit
         uses: pre-commit/action@f7acafac0271bdd064cdfa1b13f17b4350e565ed #
@@ -29,4 +29,4 @@ jobs:
           extra_args: --all-files --verbose # pre-commit run --all-files --verbose
 
       - name: Run prettier and eslint
-        run: uds run lint:ui
+        run: uds run lint:ui --no-progress
