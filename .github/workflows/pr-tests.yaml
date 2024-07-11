@@ -35,6 +35,8 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 21.1.0
 
       - name: Run unit tests
         run: uds run test:unit --no-progress
@@ -57,6 +59,8 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 21.1.0
 
       - name: Setup k3d
         uses: ./.github/actions/k3d
