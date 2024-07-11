@@ -18,7 +18,12 @@ const config = {
 			assets: 'build',
 			fallback: "index.html",
 			strict: true
-		})
+		}),
+
+		alias: {
+			$components: './src/lib/components',
+			$stores: './src/lib/stores',
+		},
 	}
 };
 

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import doug from '$lib/assets/doug.svg'
-  import { isSidebarExpanded } from '$lib/stores/layout'
+  import { isSidebarExpanded } from '$stores/layout'
   import { BellSolid, SearchSolid } from 'flowbite-svelte-icons'
 </script>
 
@@ -29,7 +28,7 @@
         </button>
 
         <a href="/" class="mr-4 flex">
-          <img src={doug} class="mr-3 h-8" alt="FlowBite Logo" />
+          <img src="/doug.svg" class="mr-3 h-8" alt="FlowBite Logo" />
           <span class="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">UDS Platform</span>
         </a>
       </div>

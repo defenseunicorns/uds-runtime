@@ -20,6 +20,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	metricsv1beta1 "k8s.io/metrics/pkg/apis/metrics/v1beta1"
 )
 
@@ -41,22 +42,27 @@ func Start(assets embed.FS) error {
 		r.Get("/monitor/pepr/", monitor.Pepr)
 		r.Get("/monitor/pepr/{stream}", monitor.Pepr)
 
-		r.Get("/resources/events", sse.Bind[*v1.Event](cache.Events.GetResources, cache.Events.Changes))
-		r.Get("/resources/namespaces", sse.Bind[*v1.Namespace](cache.Namespaces.GetResources, cache.Namespaces.Changes))
-		r.Get("/resources/pods", sse.Bind[*v1.Pod](cache.Pods.GetResources, cache.Pods.Changes))
-		r.Get("/resources/deployments", sse.Bind[*appsv1.Deployment](cache.Deployments.GetResources, cache.Deployments.Changes))
-		r.Get("/resources/daemonsets", sse.Bind[*appsv1.DaemonSet](cache.Daemonsets.GetResources, cache.Daemonsets.Changes))
-		r.Get("/resources/statefulsets", sse.Bind[*appsv1.StatefulSet](cache.Statefulsets.GetResources, cache.Statefulsets.Changes))
+		r.Route("/resources", func(r chi.Router) {
+			r.Get("/events", sse.Bind[*v1.Event](cache.Events.GetResources, cache.Events.Changes))
+			r.Get("/namespaces", sse.Bind[*v1.Namespace](cache.Namespaces.GetResources, cache.Namespaces.Changes))
+			r.Get("/pods", sse.Bind[*v1.Pod](cache.Pods.GetResources, cache.Pods.Changes))
+			r.Get("/deployments", sse.Bind[*appsv1.Deployment](cache.Deployments.GetResources, cache.Deployments.Changes))
+			r.Get("/daemonsets", sse.Bind[*appsv1.DaemonSet](cache.Daemonsets.GetResources, cache.Daemonsets.Changes))
+			r.Get("/statefulsets", sse.Bind[*appsv1.StatefulSet](cache.Statefulsets.GetResources, cache.Statefulsets.Changes))
 
-		// Metrics have their own cache and change channel that updates every 30 seconds
-		// They do not support informers directly, so we need to poll the API
-		r.Get("/resources/podmetrics", sse.Bind(
-			func() []*metricsv1beta1.PodMetrics {
-				return cache.PodMetrics.GetAll()
-			},
-			cache.MetricsChanges,
-		))
+			// Metrics have their own cache and change channel that updates every 30 seconds
+			// They do not support informers directly, so we need to poll the API
+			r.Get("/podmetrics", sse.Bind(
+				func() []*metricsv1beta1.PodMetrics {
+					return cache.PodMetrics.GetAll()
+				},
+				cache.MetricsChanges,
+			))
 
+			r.Route("/uds", func(r chi.Router) {
+				r.Get("/packages", sse.Bind[*unstructured.Unstructured](cache.UDSPackages.GetResources, cache.UDSPackages.Changes))
+			})
+		})
 	})
 
 	// Serve static files from embed.FS
