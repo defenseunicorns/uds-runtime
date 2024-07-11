@@ -11,7 +11,8 @@ tasks:
   - name: e2e
     actions:
       - task: setup:node_modules
-      - task: setup:slim-cluster
+      # - task: setup:slim-cluster
+      - task: setup:simple-cluster
       - cmd: npm run test:integration
         dir: ui
 

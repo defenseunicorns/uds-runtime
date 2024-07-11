@@ -7,6 +7,11 @@ tasks:
     actions:
       - task: common:k3d-test-cluster
 
+  - name: simple-cluster
+    description: "Create a k3d cluster, no core"
+    actions:
+      - cmd: uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds-k3d:0.7.0 --confirm --no-progress
+
   - name: golangci
     description: "Install golangci-lint to GOPATH using install.sh"
     actions:

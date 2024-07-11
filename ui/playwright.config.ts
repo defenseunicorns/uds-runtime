@@ -1,15 +1,15 @@
-import type { PlaywrightTestConfig } from '@playwright/test'
+import { defineConfig } from '@playwright/test'
 
-const config: PlaywrightTestConfig = {
-  webServer: {
+export default defineConfig({
+   webServer: {
     command: 'npm run build && npm run preview',
-    port: 5173,
+    url: 'http://localhost:4173/',
   },
   testDir: 'tests',
-  testMatch: /(.+\.)?(spec)\.[jt]s/,
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  testMatch: /(.+\.)?(spec|test)\.[jt]s/,
   use: {
-    baseURL: 'http://localhost:5173/',
+    baseURL: 'http://localhost:4173/',
   },
-}
-
-export default config
+})

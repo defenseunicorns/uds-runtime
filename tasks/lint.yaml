@@ -1,14 +1,14 @@
 includes:
   - common: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.7.1/tasks/lint.yaml
+  - setup: ./setup.yaml
 
 tasks:
-  - name: lint-all
+  - name: all
     description: "Run all linters"
     actions:
       - task: yaml
       - task: golangci
       - task: ui
-
 
   - name: golangci
     description: "Run golang linters"
@@ -25,19 +25,13 @@ tasks:
   - name: ui
     description: "Run ui linters"
     actions:
-      - cmd: |
-          if [ ! -d "ui/node_modules" ]; then
-            npm install
-          fi
+      - task: setup:node_modules
       - cmd: npm run lint
         dir: ui
 
   - name: format-ui
     description: "Format ui code"
     actions:
-      - cmd: |
-          if [ ! -d "ui/node_modules" ]; then
-            npm install
-          fi
+      - task: setup:node_modules
       - cmd: npm run format
         dir: ui

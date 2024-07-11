@@ -7,7 +7,7 @@ tasks:
   - name: build-go
     actions:
       - cmd: go build -o ./build/main main.go
-    
+
   - name: build-ui
     actions:
       - task: setup:node_modules
