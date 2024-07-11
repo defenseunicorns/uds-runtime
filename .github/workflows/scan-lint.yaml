@@ -14,13 +14,19 @@ jobs:
       - name: Setup golang
         uses: ./.github/actions/golang
 
+      - name: Install UDS CLI
+        uses: ./.github/actions/install-uds-cli
+
       - name: Install goimports
         run: go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Install golangci-lint
-        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+        run: uds run setup:golangci
 
       - name: Run pre-commit
         uses: pre-commit/action@f7acafac0271bdd064cdfa1b13f17b4350e565ed #
         with:
           extra_args: --all-files --verbose # pre-commit run --all-files --verbose
+
+      - name: Run prettier and eslint
+        run: uds run lint:ui

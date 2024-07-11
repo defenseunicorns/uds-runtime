@@ -1,0 +1,43 @@
+includes:
+  - common: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.7.1/tasks/lint.yaml
+
+tasks:
+  - name: lint-all
+    description: "Run all linters"
+    actions:
+      - task: yaml
+      - task: golangci
+      - task: ui
+
+
+  - name: golangci
+    description: "Run golang linters"
+    actions:
+      - cmd: which golangci-lint || echo "install golangci-lint -- https://golangci-lint.run/welcome/install/#local-installation" exit 1
+      - cmd: golangci-lint run --timeout 5m0s
+
+  - name: yaml
+    description: "Run yaml linters"
+    actions:
+      - task: common:deps
+      - task: common:yaml
+
+  - name: ui
+    description: "Run ui linters"
+    actions:
+      - cmd: |
+          if [ ! -d "ui/node_modules" ]; then
+            npm install
+          fi
+      - cmd: npm run lint
+        dir: ui
+
+  - name: format-ui
+    description: "Format ui code"
+    actions:
+      - cmd: |
+          if [ ! -d "ui/node_modules" ]; then
+            npm install
+          fi
+      - cmd: npm run format
+        dir: ui

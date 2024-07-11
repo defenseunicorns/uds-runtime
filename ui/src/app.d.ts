@@ -3,7 +3,7 @@
 declare global {
   namespace App {
     interface Locals {
-      userid: string;
+      userid: string
     }
     // interface Error {}
     // interface Locals {}
@@ -13,4 +13,4 @@ declare global {
   }
 }
 
-export {};
+export {}

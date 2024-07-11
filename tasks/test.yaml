@@ -1,7 +1,6 @@
 includes:
   - setup: ./setup.yaml
 
-
 tasks:
   - name: frontend-unit
     actions:
@@ -9,13 +8,11 @@ tasks:
         dir: ui
       - cmd: npm run test:unit
         dir: ui
-  
+
   - name: e2e
     actions:
-      # - task: setup:slim-cluster
+      - task: setup:slim-cluster
       - cmd: npm install
-        dir: ui
-      - cmd: npm run dev
         dir: ui
       - cmd: npm run test:e2e
         dir: ui
