@@ -4,6 +4,11 @@ includes:
   - setup: tasks/setup.yaml
 
 tasks:
-  - name: build
+  - name: build-go
     actions:
       - cmd: go build -o ./build/main main.go
+    
+  - name: build-ui
+    actions:
+      - cmd: npm run build
+        dir: ui
