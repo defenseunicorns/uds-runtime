@@ -11,6 +11,7 @@ tasks:
   - name: e2e
     actions:
       - task: setup:node_modules
+      - cmd: which playwright || npx playwright install
       # - task: setup:slim-cluster
       - task: setup:simple-cluster
       - cmd: npm run test:integration

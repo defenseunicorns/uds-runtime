@@ -37,5 +37,8 @@ jobs:
         with:
           extra_args: --all-files --verbose # pre-commit run --all-files --verbose
 
-      - name: Run prettier and eslint
+      - name: Lint Yaml
+        run: uds run lint:yaml --no-progress
+
+      - name: Lint UI
         run: uds run lint:ui --no-progress

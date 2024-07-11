@@ -4,3 +4,4 @@ pnpm-lock.yaml
 yarn.lock
 .svelte-kit/**
 build/**
+test-results/*
