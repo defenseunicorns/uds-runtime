@@ -1,4 +1,4 @@
-import { createStore } from '$lib/stores/resources/namespaces'
+import { createStore } from '$stores/resources/namespaces'
 
 export const ssr = false
 
