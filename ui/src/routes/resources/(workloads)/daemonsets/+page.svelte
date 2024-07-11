@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Datatable from '$components/data/Datatable.svelte';
-  import { createStore, type Columns } from '$stores/resources/workloads/daemonsets';
+  import Datatable from '$components/data/Datatable.svelte'
+  import { createStore, type Columns } from '$stores/resources/workloads/daemonsets'
 
   const columns: Columns = [
     ['name', 'emphasize'],
