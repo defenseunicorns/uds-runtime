@@ -4,6 +4,8 @@ import (
 	"sync"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/cache"
 )
 
@@ -31,13 +33,13 @@ func NewResourceList[T metav1.Object](informer cache.SharedIndexInformer) *Resou
 
 	// Handlers to update the ResourceList
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: func(obj interface{}) {
+		AddFunc: func(obj any) {
 			r.notifyChange(obj, Added)
 		},
-		UpdateFunc: func(oldObj, newObj interface{}) {
+		UpdateFunc: func(oldObj, newObj any) {
 			r.notifyChange(newObj, Modified)
 		},
-		DeleteFunc: func(obj interface{}) {
+		DeleteFunc: func(obj any) {
 			r.notifyChange(obj, Deleted)
 		},
 	})
@@ -61,16 +63,38 @@ func (r *ResourceList[T]) notifyChange(obj interface{}, eventType string) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	resource, ok := obj.(T)
-	if !ok {
-		return // or handle the error appropriately
+	var resource T
+	var uid string
+
+	// Try to cast directly to T first, as this will be the most common case
+	if typedObj, ok := obj.(T); ok {
+		resource = typedObj
+		uid = string(resource.GetUID())
+	} else if unstructuredObj, ok := obj.(*unstructured.Unstructured); ok {
+		// Fall back to handling unstructured data
+		uidValue, found, err := unstructured.NestedString(unstructuredObj.Object, "metadata", "uid")
+		if err != nil || !found {
+			// Handle error or log it
+			return
+		}
+		uid = uidValue
+
+		// Convert unstructured to T
+		err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredObj.Object, &resource)
+		if err != nil {
+			// Handle error or log it
+			return
+		}
+	} else {
+		// Neither T nor *unstructured.Unstructured
+		return
 	}
 
 	switch eventType {
 	case Added, Modified:
-		r.resources[string(resource.GetUID())] = resource
+		r.resources[uid] = resource
 	case Deleted:
-		delete(r.resources, string(resource.GetUID()))
+		delete(r.resources, uid)
 	}
 
 	// Notify subscribers of the change
