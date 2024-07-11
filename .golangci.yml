@@ -14,7 +14,7 @@ issues:
   new-from-rev: ""
   exclude-dirs:
     - docs/command-reference
-    
+
   exclude-rules:
     - path: 'test/.*'
       linters:
