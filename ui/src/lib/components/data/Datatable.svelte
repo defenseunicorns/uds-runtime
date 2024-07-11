@@ -4,8 +4,8 @@
   import { onMount } from 'svelte'
 
   import { page } from '$app/stores'
-  import type { ResourceStoreInterface } from '$lib/stores/resources/common'
-  import type { Row as NamespaceRow } from '$lib/stores/resources/namespaces'
+  import type { ResourceStoreInterface } from '$stores/resources/common'
+  import type { Row as NamespaceRow } from '$stores/resources/namespaces'
 
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
   export let columns: [name: string, styles?: string][]

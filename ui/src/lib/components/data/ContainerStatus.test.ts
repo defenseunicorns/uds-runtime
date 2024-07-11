@@ -17,7 +17,8 @@ describe('ContainerStatus', () => {
       { state: { terminated: {} } },
     ] as V1ContainerStatus[]
     const { container } = render(ContainerStatus, { props: { containers } })
-    expect(container.querySelectorAll('.w-2')).toHaveLength(3)
+    // Double due to the tooltip
+    expect(container.querySelectorAll('.w-2')).toHaveLength(3 * 2)
   })
 
   it('applies correct classes for running containers', () => {

@@ -1,16 +1,15 @@
 <script lang="ts">
   import Datatable from '$components/data/Datatable.svelte'
-  import { createStore, type Columns } from '$stores/resources/workloads/pods'
+  import { createStore, type Columns } from '$stores/resources/uds/packages'
 
   export let columns: Columns = [
     ['name', 'emphasize'],
     ['namespace'],
-    ['controller'],
-    ['containers'],
     ['status'],
-    ['restarts'],
-    ['metrics'],
-    ['node'],
+    ['endpoints'],
+    ['monitors'],
+    ['ssoClients'],
+    ['networkPolicies'],
     ['age'],
   ]
 </script>

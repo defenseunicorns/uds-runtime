@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { isSidebarExpanded } from '$lib/stores/layout'
+  import { isSidebarExpanded } from '$stores/layout'
   import {
     AdjustmentsHorizontalOutline,
     AngleUpOutline,

@@ -5,7 +5,7 @@ import {
   type CommonRow,
   type ResourceStoreInterface,
   type ResourceWithTable,
-} from './common'
+} from '../common'
 
 interface Row extends CommonRow {
   desired: number
