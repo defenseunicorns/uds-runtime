@@ -14,7 +14,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Pepr' }).click()
 
-      await expect(page.getByRole('link', { name: 'Monitor' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Monitor' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Pepr' })).toBeVisible()
     })
 
@@ -22,7 +22,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Events' }).click()
 
-      await expect(page.getByRole('link', { name: 'Monitor' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Monitor' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Events' })).toBeVisible()
     })
   })
@@ -32,7 +32,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Resources' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
 
-      await expect(page.getByRole('link', { name: 'Resources' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Pods' })).toBeVisible()
     })
 
@@ -40,7 +40,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Resources' }).click()
       await page.getByRole('link', { name: 'Namespaces' }).click()
 
-      await expect(page.getByRole('link', { name: 'Resources' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Namespaces' })).toBeVisible()
     })
 
@@ -48,7 +48,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Resources' }).click()
       await page.getByRole('link', { name: 'Deployments' }).click()
 
-      await expect(page.getByRole('link', { name: 'Resources' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Deployments' })).toBeVisible()
     })
 
@@ -56,7 +56,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Resources' }).click()
       await page.getByRole('link', { name: 'Services' }).click()
 
-      await expect(page.getByRole('link', { name: 'Resources' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Services' })).toBeVisible()
     })
 
@@ -64,7 +64,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Resources' }).click()
       await page.getByRole('link', { name: 'Packages' }).click()
 
-      await expect(page.getByRole('link', { name: 'Resources' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Packages' })).toBeVisible()
     })
   })
