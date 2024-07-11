@@ -2,6 +2,7 @@
   import { page } from '$app/stores'
   import { AngleRightOutline } from 'flowbite-svelte-icons'
   import { routes } from './routes'
+  import type { SvelteComponent } from 'svelte'
 
   const flatRoutes = routes.flatMap((route) => {
     if (route.children) {
@@ -11,7 +12,7 @@
     return route
   })
 
-  let matchParent: { name: string; path: string; icon?: ConstructorOfATypedSvelteComponent }
+  let matchParent: { name: string; path: string; icon?: SvelteComponent }
   let matchChild: { name: string; path: string }
 
   // Subscribe to the page store to get the current URL (regular $ doesnt seem to work here)

@@ -10,6 +10,7 @@
 
   const { namespaces } = $page.data
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const createStore = (): ResourceStoreInterface<KubernetesObject, any> => {
     return namespaces
   }
