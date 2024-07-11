@@ -1,27 +1,30 @@
-import type { V1Deployment as Resource } from '@kubernetes/client-node'
+import type { V1DaemonSet as Resource } from '@kubernetes/client-node'
 import {
   ResourceStore,
   type ColumnWrapper,
   type CommonRow,
   type ResourceStoreInterface,
   type ResourceWithTable,
-} from './common'
+} from '../common'
 
 interface Row extends CommonRow {
-  ready: string
+  desired: number
+  current: number
+  ready: number
   up_to_date: number
   available: number
+  node_selector: string
 }
 
 export type Columns = ColumnWrapper<Row>
 
 /**
- * Create a new DeploymentStore for streaming deployment resources
+ * Create a new DaemonsetStore for streaming deployment resources
  *
- * @returns A new DeploymentStore instance
+ * @returns A new DaemonsetStore instance
  */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/deployments`
+  const url = `/api/v1/resources/daemonsets`
 
   const transform = (resources: Resource[]) =>
     resources.map<ResourceWithTable<Resource, Row>>((r) => ({
@@ -29,9 +32,16 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       table: {
         name: r.metadata?.name ?? '',
         namespace: r.metadata?.namespace ?? '',
-        ready: `${r.status?.readyReplicas ?? 0} / ${r.status?.replicas ?? 0}`,
-        up_to_date: r.status?.updatedReplicas ?? 0,
+        desired: r.status?.desiredNumberScheduled ?? 0,
+        current: r.status?.currentNumberScheduled ?? 0,
+        ready: r.status?.numberReady ?? 0,
+        up_to_date: r.status?.updatedNumberScheduled ?? 0,
         available: r.status?.conditions?.filter((c) => c.type === 'Available').length ?? 0,
+        node_selector: r.spec?.template.spec?.nodeSelector
+          ? Object.entries(r.spec?.template.spec?.nodeSelector ?? {})
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(', ')
+          : '-',
         creationTimestamp: new Date(r.metadata?.creationTimestamp ?? ''),
       },
     }))
