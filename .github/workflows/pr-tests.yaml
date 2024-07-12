@@ -33,7 +33,11 @@ jobs:
       - name: setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
         uses: ./.github/actions/setup
 
-      - name: Run unit tests
+      # build ui so ui/build exists when go unit tests run
+      - name: build-ui
+        run: uds run build-ui --no-progress
+
+      - name: Run tests
         run: uds run test:${{ matrix.type }} --no-progress
 
       - name: Debug Output
