@@ -25,13 +25,11 @@ tasks:
   - name: ui
     description: "Run ui linters"
     actions:
-      - task: setup:node_modules
-      - cmd: npm run lint
+      - cmd: npm ci && npm run lint
         dir: ui
 
   - name: format-ui
     description: "Format ui code"
     actions:
-      - task: setup:node_modules
-      - cmd: npm run format
+      - cmd: npm ci && npm run format
         dir: ui
