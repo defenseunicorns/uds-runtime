@@ -1,36 +1,38 @@
 <script lang="ts">
-  import { page } from '$app/stores'
   import { AngleRightOutline } from 'flowbite-svelte-icons'
+  import type { SvelteComponent } from 'svelte'
+
+  import { page } from '$app/stores'
   import { routes } from './routes'
 
   const flatRoutes = routes.flatMap((route) => {
     if (route.children) {
-      return [route, ...route.children];
+      return [route, ...route.children]
     }
 
-    return route;
-  });
+    return route
+  })
 
-  let matchParent: { name: string; path: string; icon?: ConstructorOfATypedSvelteComponent };
-  let matchChild: { name: string; path: string };
+  let matchParent: { name: string; path: string; icon?: SvelteComponent }
+  let matchChild: { name: string; path: string }
 
   // Subscribe to the page store to get the current URL (regular $ doesnt seem to work here)
   page.subscribe((value) => {
-    const { pathname } = value.url;
+    const { pathname } = value.url
 
     // Find the current route
-    [matchParent, matchChild] = flatRoutes.filter((route) => {
+    ;[matchParent, matchChild] = flatRoutes.filter((route) => {
       if (pathname === '/') {
-        return false;
+        return false
       }
 
       if (route.path === '/' && pathname !== '/') {
-        return false;
+        return false
       }
 
-      return pathname.includes(route.path);
-    });
-  });
+      return pathname.includes(route.path)
+    })
+  })
 </script>
 
 <nav class="flex" aria-label="Breadcrumb">
