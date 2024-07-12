@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { page } from '$app/stores'
   import { AngleRightOutline } from 'flowbite-svelte-icons'
+  import type { SvelteComponent } from 'svelte'
+
+  import { page } from '$app/stores'
   import { routes } from './routes'
   import type { SvelteComponent } from 'svelte'
 

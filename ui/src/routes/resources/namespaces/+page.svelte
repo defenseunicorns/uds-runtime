@@ -4,14 +4,13 @@
   import { page } from '$app/stores'
   import Datatable from '$components/data/Datatable.svelte'
   import type { ResourceStoreInterface } from '$stores/resources/common'
-  import { type Columns } from '$stores/resources/namespaces'
+  import { type Columns, type Row } from '$stores/resources/namespaces'
 
   export let columns: Columns = [['name', 'emphasize'], ['status'], ['age']]
 
   const { namespaces } = $page.data
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const createStore = (): ResourceStoreInterface<KubernetesObject, any> => {
+  const createStore = (): ResourceStoreInterface<KubernetesObject, Row> => {
     return namespaces
   }
 </script>
