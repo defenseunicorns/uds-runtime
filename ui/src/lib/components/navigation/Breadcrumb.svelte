@@ -4,7 +4,6 @@
 
   import { page } from '$app/stores'
   import { routes } from './routes'
-  import type { SvelteComponent } from 'svelte'
 
   const flatRoutes = routes.flatMap((route) => {
     if (route.children) {
