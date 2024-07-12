@@ -11,22 +11,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Setup golang
-        uses: ./.github/actions/golang
-
-      - name: Install UDS CLI
-        uses: ./.github/actions/install-uds-cli
+      - name: Setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
+        uses: ./.github/actions/setup
 
       - name: Install goimports
         run: go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Install golangci-lint
         run: uds run setup:golangci --no-progress
-
-      - name: Setup Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-        with:
-          node-version: 21.1.0
 
       # build ui so ui/build exists when pre-commit runs
       - name: build-ui

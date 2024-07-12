@@ -22,6 +22,6 @@ tasks:
     actions:
       - cmd: |
           if [ ! -d "node_modules" ]; then
-            npm install
+            npm ci
           fi
         dir: ui

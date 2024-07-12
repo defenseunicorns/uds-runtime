@@ -16,18 +16,11 @@ tasks:
       - cmd: npm run test:integration
         dir: ui
 
-  - name: stream
+  - name: go
     actions:
-      - cmd: go test -failfast -v -timeout 30m
-        dir: pkg/stream
-
-  - name: pepr
-    actions:
-      - cmd: go test -failfast -v -timeout 30m
-        dir: pkg/pepr
+      - cmd: go test -failfast -v -timeout 30m ./...
 
   - name: unit
     actions:
-      - task: stream
-      - task: pepr
+      - task: go
       - task: frontend-unit

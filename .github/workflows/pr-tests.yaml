@@ -30,19 +30,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Setup golang
-        uses: ./.github/actions/golang
-
-      - name: Install UDS CLI
-        uses: ./.github/actions/install-uds-cli
-
-      - name: Setup Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-        with:
-          node-version: 21.1.0
-
-      - name: Setup k3d
-        uses: ./.github/actions/k3d
+      - name: setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
+        uses: ./.github/actions/setup
 
       - name: Run unit tests
         run: uds run test:${{ matrix.type }} --no-progress
