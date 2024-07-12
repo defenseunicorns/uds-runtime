@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ["go", "javacsript"]
+        language: ["go", "javascript"]
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
