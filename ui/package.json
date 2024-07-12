@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@kubernetes/client-node": "1.0.0-rc5",
-    "@playwright/test": "1.45.0",
+    "@playwright/test": "1.45.1",
     "@sveltejs/adapter-static": "3.0.2",
     "@sveltejs/kit": "2.5.18",
     "@sveltejs/vite-plugin-svelte": "3.1.1",
@@ -28,10 +28,10 @@
     "date-fns": "3.6.0",
     "eslint": "9.6.0",
     "eslint-config-prettier": "9.1.0",
-    "eslint-plugin-svelte": "2.41.0",
+    "eslint-plugin-svelte": "2.42.0",
     "flowbite": "2.4.1",
     "flowbite-svelte-icons": "1.6.1",
-    "globals": "15.7.0",
+    "globals": "15.8.0",
     "jsdom": "24.1.0",
     "prettier": "3.3.2",
     "prettier-plugin-svelte": "3.2.5",
@@ -43,8 +43,8 @@
     "typescript": "5.5.3",
     "typescript-eslint": "8.0.0-alpha.20",
     "uds-core-types": "defenseunicorns/uds-core#e1cab61",
-    "vite": "5.3.2",
-    "vitest": "1.6.0"
+    "vite": "5.3.3",
+    "vitest": "2.0.2"
   },
   "type": "module"
 }
