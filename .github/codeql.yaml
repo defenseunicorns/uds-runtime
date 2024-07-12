@@ -1,5 +1,6 @@
 paths-ignore:
   - build/**
+  - ui/build/**
 
 query-filters:
   - exclude:
