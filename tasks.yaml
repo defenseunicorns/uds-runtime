@@ -1,0 +1,14 @@
+includes:
+  - test: tasks/test.yaml
+  - lint: tasks/lint.yaml
+  - setup: tasks/setup.yaml
+
+tasks:
+  - name: build-go
+    actions:
+      - cmd: go build -o ./build/main main.go
+
+  - name: build-ui
+    actions:
+      - cmd: npm ci && npm run build
+        dir: ui

@@ -1,0 +1,51 @@
+name: PR
+on:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - "**.jpg"
+      - "**.png"
+      - "**.gif"
+      - "**.svg"
+      - "adr/**"
+      - "docs/**"
+      - "CODEOWNERS"
+      - "goreleaser.yml"
+
+permissions:
+  contents: read
+
+# Abort prior jobs in the same workflow / PR
+concurrency:
+  group: unit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        type: [unit, e2e]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
+        uses: ./.github/actions/setup
+
+      # build ui so ui/build exists when go unit tests run
+      - name: build-ui
+        run: uds run build-ui --no-progress
+
+      - name: Run tests
+        run: uds run test:${{ matrix.type }} --no-progress
+
+      - name: Debug Output
+        if: ${{ matrix.type == 'e2e'}}
+        uses: defenseunicorns/uds-common/.github/actions/debug-output@772b3337950b7c8e0882c527263684306bba7ce4 # v0.7.1
+
+      - name: Save logs
+        if: always()
+        uses: defenseunicorns/uds-common/.github/actions/save-logs@772b3337950b7c8e0882c527263684306bba7ce4 # v0.7.1
+        with:
+          suffix: ${{ matrix.type }}

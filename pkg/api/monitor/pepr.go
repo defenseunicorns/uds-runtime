@@ -44,6 +44,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	peprStream.Follow = true
 	peprStream.Timestamps = true
 
+	//nolint:errcheck
 	// Start the stream in a goroutine
 	go peprStream.Start(ctx)
 

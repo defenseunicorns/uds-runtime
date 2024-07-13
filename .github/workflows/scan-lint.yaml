@@ -1,0 +1,36 @@
+name: Validate Lint
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
+        uses: ./.github/actions/setup
+
+      - name: Install goimports
+        run: go install golang.org/x/tools/cmd/goimports@latest
+
+      - name: Install golangci-lint
+        run: uds run setup:golangci --no-progress
+
+      # build ui so ui/build exists when pre-commit runs
+      - name: build-ui
+        run: uds run build-ui --no-progress
+
+      - name: Run pre-commit
+        uses: pre-commit/action@f7acafac0271bdd064cdfa1b13f17b4350e565ed #
+        with:
+          extra_args: --all-files --verbose # pre-commit run --all-files --verbose
+
+      - name: Lint Yaml
+        run: uds run lint:yaml --no-progress
+
+      - name: Lint UI
+        run: uds run lint:ui --no-progress

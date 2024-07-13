@@ -9,6 +9,7 @@
 
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
   export let columns: [name: string, styles?: string][]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
   // Load the namespaces from the page store
@@ -93,7 +94,7 @@
                   <button on:click={() => rows.sortByKey(header)}>
                     {header.replaceAll('_', ' ')}
                     <AngleUpOutline
-                      class="sort 
+                      class="sort
                                   {style || ''}
                                   {$sortAsc ? 'rotate-180' : ''}
                                   {$sortBy === header ? 'opacity-100' : 'opacity-0'}"

@@ -1,0 +1,11 @@
+name: PR Ttle
+
+on:
+  pull_request:
+    branches: [main]
+    types: [milestoned, opened, edited, synchronize]
+
+jobs:
+  validate:
+    name: Validate
+    uses: defenseunicorns/uds-common/.github/workflows/commitlint.yaml@772b3337950b7c8e0882c527263684306bba7ce4 # v0.7.1

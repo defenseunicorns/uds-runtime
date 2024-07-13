@@ -31,11 +31,13 @@ func NewResourceList[T metav1.Object](informer cache.SharedIndexInformer) *Resou
 		Changes:   make(chan struct{}, 1),
 	}
 
+	//nolint:errcheck
 	// Handlers to update the ResourceList
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj any) {
 			r.notifyChange(obj, Added)
 		},
+		//nolint:revive
 		UpdateFunc: func(oldObj, newObj any) {
 			r.notifyChange(newObj, Modified)
 		},
