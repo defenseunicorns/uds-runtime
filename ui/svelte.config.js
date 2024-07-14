@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+
 import adapter from '@sveltejs/adapter-static'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
@@ -22,7 +25,7 @@ const config = {
 
     alias: {
       $components: './src/lib/components',
-      $stores: './src/lib/stores',
+      $features: './src/lib/features',
     },
   },
 }

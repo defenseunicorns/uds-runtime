@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/svelte'
 import ContainerStatus from './ContainerStatus.svelte'

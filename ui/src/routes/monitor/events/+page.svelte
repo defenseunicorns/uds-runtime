@@ -1,16 +1,8 @@
-<script lang="ts">
-  import Datatable from '$components/data/Datatable.svelte'
-  import { createStore, type Columns } from '$stores/resources/events'
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- SPDX-FileCopyrightText: 2023-Present The UDS Authors -->
 
-  export let columns: Columns = [
-    ['namespace'],
-    ['age'],
-    ['type'],
-    ['reason'],
-    ['object_kind'],
-    ['object_name'],
-    ['count'],
-  ]
+<script>
+  import { EventTable } from '$features/k8s'
 </script>
 
-<Datatable {columns} {createStore} />
+<EventTable />

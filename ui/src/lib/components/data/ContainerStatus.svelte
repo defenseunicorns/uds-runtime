@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- SPDX-FileCopyrightText: 2023-Present The UDS Authors -->
+
 <script lang="ts">
   import { type V1ContainerStatus } from '@kubernetes/client-node/dist/gen/models/V1ContainerStatus'
 

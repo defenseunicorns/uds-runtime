@@ -1,4 +1,7 @@
-import { createStore } from '$stores/resources/namespaces'
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+
+import { createStore } from '$features/k8s/namespaces/store'
 
 export const ssr = false
 
