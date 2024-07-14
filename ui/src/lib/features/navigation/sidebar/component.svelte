@@ -2,19 +2,12 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import {
-    AdjustmentsHorizontalOutline,
-    AngleUpOutline,
-    CogOutline,
-    FileLinesOutline,
-    QuestionCircleOutline,
-  } from 'flowbite-svelte-icons'
-
   import { page } from '$app/stores'
 
+  import { ChevronUp, DocumentMultiple_01, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
   import { routes } from '../routes'
   import { isSidebarExpanded } from '../store'
-  import './component.postcss'
+  import './styles.postcss'
 
   const submenus: Record<string, boolean> = {}
 
@@ -33,7 +26,7 @@
   <div class="h-full overflow-y-auto border-r border-gray-200 bg-white px-3 py-5 dark:border-gray-700 dark:bg-gray-800">
     <ul class="space-y-2">
       {#each routes as route}
-        <li>
+        <li class={route.class}>
           {#if route.children}
             <button
               type="button"
@@ -42,7 +35,7 @@
             >
               <svelte:component this={route.icon} class="icon" />
               <span class="expanded-only ml-3 flex-1 whitespace-nowrap text-left">{route.name}</span>
-              <AngleUpOutline
+              <ChevronUp
                 class="expanded-only h-6 w-6 transition duration-300 {submenus[route.path]
                   ? 'rotate-180 transform'
                   : ''}"
@@ -78,7 +71,7 @@
           href="/docs"
           class="group flex items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-300 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600"
         >
-          <FileLinesOutline class="icon" />
+          <DocumentMultiple_01 class="icon" />
           <span class="expanded-only ml-3">Docs</span>
         </a>
       </li>
@@ -93,19 +86,19 @@
       href="/preferences"
       class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
     >
-      <AdjustmentsHorizontalOutline class="h-6 w-6" />
+      <SettingsAdjust class="h-6 w-6" />
     </a>
     <a
       href="/settings"
       class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
     >
-      <CogOutline class="h-6 w-6" />
+      <SettingsEdit class="h-6 w-6" />
     </a>
     <a
       href="/help"
       class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
     >
-      <QuestionCircleOutline class="h-6 w-6" />
+      <Help class="h-6 w-6" />
     </a>
   </div>
 </aside>

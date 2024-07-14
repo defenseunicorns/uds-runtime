@@ -3,12 +3,12 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
-  import { AngleDownOutline, AngleUpOutline, FilterSolid, SearchOutline } from 'flowbite-svelte-icons'
   import { onMount } from 'svelte'
 
   import { page } from '$app/stores'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import type { ResourceStoreInterface } from '$features/k8s/store'
+  import { ChevronDown, ChevronUp, Filter, Search } from 'carbon-icons-svelte'
 
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
   export let columns: [name: string, styles?: string][]
@@ -35,7 +35,7 @@
       <div class="table-filter-section">
         <div class="relative lg:w-96">
           <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <SearchOutline class="h-5 w-5 text-gray-400" />
+            <Search class="h-5 w-5 text-gray-400" />
           </div>
           <input
             type="text"
@@ -51,9 +51,9 @@
           class="hover:text-primary-700 flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 md:w-auto dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
           type="button"
         >
-          <FilterSolid class="mr-2 h-4 w-4 text-gray-400" />
+          <Filter class="mr-2 h-4 w-4 text-gray-400" />
           {$searchBy}
-          <AngleDownOutline class="ml-2 h-4 w-4 text-gray-400" />
+          <ChevronDown class="ml-2 h-4 w-4 text-gray-400" />
         </button>
         <div id="filterDropdown" class="z-10 hidden w-48 rounded-lg bg-white p-3 shadow dark:bg-gray-700">
           <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Search By</h6>
@@ -96,7 +96,7 @@
                 <th>
                   <button on:click={() => rows.sortByKey(header)}>
                     {header.replaceAll('_', ' ')}
-                    <AngleUpOutline
+                    <ChevronUp
                       class="sort
                                   {style || ''}
                                   {$sortAsc ? 'rotate-180' : ''}

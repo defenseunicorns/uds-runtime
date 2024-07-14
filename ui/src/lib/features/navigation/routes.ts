@@ -1,18 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { ChartPieOutline, CloudArrowUpOutline, EyeOutline, FileOutline, LayersOutline } from 'flowbite-svelte-icons'
+import { ChartCombo, KubernetesPod, Layers, Network_2, SearchLocate, TextAlignLeft } from 'carbon-icons-svelte'
 
-export const routes = [
+import type { Route } from './types'
+
+export const routes: Route[] = [
   {
     path: '/',
     name: 'Overview',
-    icon: ChartPieOutline,
+    icon: ChartCombo,
   },
   {
     path: '/monitor',
     name: 'Monitor',
-    icon: EyeOutline,
+    icon: SearchLocate,
     children: [
       {
         path: '/monitor/pepr',
@@ -27,7 +29,8 @@ export const routes = [
   {
     path: '/resources/workloads',
     name: 'Workloads',
-    icon: LayersOutline,
+    icon: KubernetesPod,
+    class: 'top-border',
     children: [
       {
         path: '/resources/workloads/pods',
@@ -50,7 +53,7 @@ export const routes = [
   {
     path: '/resources/config',
     name: 'Config',
-    icon: FileOutline,
+    icon: TextAlignLeft,
     children: [
       {
         path: '/resources/config/packages',
@@ -61,7 +64,7 @@ export const routes = [
   {
     path: '/resources/network',
     name: 'Network',
-    icon: CloudArrowUpOutline,
+    icon: Network_2,
     children: [
       {
         path: '/resources/services',
@@ -72,6 +75,6 @@ export const routes = [
   {
     path: '/resources/namespaces',
     name: 'Namespaces',
-    icon: LayersOutline,
+    icon: Layers,
   },
 ]

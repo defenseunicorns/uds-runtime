@@ -2,11 +2,11 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { AngleRightOutline } from 'flowbite-svelte-icons'
-  import type { SvelteComponent } from 'svelte'
+  import { ChevronRight } from 'carbon-icons-svelte'
 
   import { page } from '$app/stores'
   import { routes } from '../routes'
+  import { type Route, type RouteChild } from '../types'
 
   const flatRoutes = routes.flatMap((route) => {
     if (route.children) {
@@ -16,8 +16,8 @@
     return route
   })
 
-  let matchParent: { name: string; path: string; icon?: SvelteComponent }
-  let matchChild: { name: string; path: string }
+  let matchParent: Route
+  let matchChild: RouteChild
 
   // Subscribe to the page store to get the current URL (regular $ doesnt seem to work here)
   page.subscribe((value) => {
@@ -53,7 +53,7 @@
       </li>
     {/if}
     {#if matchChild}
-      <li><AngleRightOutline class="w-5 h-5 text-gray-400 dark:text-gray-400" /></li>
+      <li><ChevronRight class="w-5 h-5 text-gray-400 dark:text-gray-400" /></li>
       <li>
         <div class="flex items-center">
           <a

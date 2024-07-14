@@ -2,8 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { BellSolid, SearchSolid } from 'flowbite-svelte-icons'
-
+  import { NotificationFilled, Search } from 'carbon-icons-svelte'
   import { isSidebarExpanded } from '../store'
 </script>
 
@@ -37,22 +36,13 @@
         </a>
       </div>
       <div class="flex items-center lg:order-2">
-        <button
-          id="toggleSidebarMobileSearch"
-          type="button"
-          class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 lg:hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-        >
-          <!-- Search icon -->
-
-          <SearchSolid class="h-6 w-6" />
-        </button>
         <!-- Notifications -->
         <button
           type="button"
           data-dropdown-toggle="notification-dropdown"
           class="mr-1 rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:ring-4 focus:ring-gray-300 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-600"
         >
-          <BellSolid class="h-f6 w-6" />
+          <NotificationFilled class="h-f6 w-6" />
         </button>
         <!-- Dropdown menu -->
         <div
