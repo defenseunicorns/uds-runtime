@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import adapter from '@sveltejs/adapter-static'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -16,4 +16,5 @@ declare global {
   }
 }
 
-export {}
+export { }
+

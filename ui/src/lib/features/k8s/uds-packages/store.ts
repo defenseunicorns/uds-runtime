@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { Package as Resource } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
 import {
-  ResourceStore,
-  type ColumnWrapper,
-  type CommonRow,
-  type ResourceStoreInterface,
-  type ResourceWithTable,
+    ResourceStore,
+    type ColumnWrapper,
+    type CommonRow,
+    type ResourceStoreInterface,
+    type ResourceWithTable,
 } from '../store'
 
 interface Row extends CommonRow {

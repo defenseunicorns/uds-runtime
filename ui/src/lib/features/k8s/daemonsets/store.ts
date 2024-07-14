@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1DaemonSet as Resource } from '@kubernetes/client-node'
 
 import {
-  ResourceStore,
-  type ColumnWrapper,
-  type CommonRow,
-  type ResourceStoreInterface,
-  type ResourceWithTable,
+    ResourceStore,
+    type ColumnWrapper,
+    type CommonRow,
+    type ResourceStoreInterface,
+    type ResourceWithTable,
 } from '../store'
 
 interface Row extends CommonRow {
