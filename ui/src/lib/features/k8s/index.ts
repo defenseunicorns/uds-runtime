@@ -8,4 +8,3 @@ export { default as NamespaceTable } from './namespaces/component.svelte'
 export { default as PodTable } from './pods/component.svelte'
 export { default as StatefulsetTable } from './statefulsets/component.svelte'
 export { default as UDSPackageTable } from './uds-packages/component.svelte'
-
