@@ -27,46 +27,43 @@ test.describe('Navigation', async () => {
     })
   })
 
-  test.describe('navigates to Resources', async () => {
+  test.describe('navigates to Workloads', async () => {
     test('Pods page', async ({ page }) => {
-      await page.getByRole('button', { name: 'Resources' }).click()
+      await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
-
-      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Workloads' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Pods' })).toBeVisible()
     })
 
-    test('Namespaces page', async ({ page }) => {
-      await page.getByRole('button', { name: 'Resources' }).click()
-      await page.getByRole('link', { name: 'Namespaces' }).click()
-
-      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
-      await expect(breadcrumb.getByRole('link', { name: 'Namespaces' })).toBeVisible()
-    })
-
     test('Deployments page', async ({ page }) => {
-      await page.getByRole('button', { name: 'Resources' }).click()
+      await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Deployments' }).click()
-
-      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'Workloads' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Deployments' })).toBeVisible()
     })
+  })
 
+  test.describe('navigates to Network', async () => {
     test('Services page', async ({ page }) => {
-      await page.getByRole('button', { name: 'Resources' }).click()
-      await page.getByRole('link', { name: 'Services' }).click()
-
-      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
+      await page.getByRole('button', { name: 'Network' }).click()
+      await page.getByRole('link', { name: /^Services$/ }).click()
+      await expect(breadcrumb.getByRole('link', { name: 'Network' })).toBeVisible()
       await expect(breadcrumb.getByRole('link', { name: 'Services' })).toBeVisible()
     })
+  })
 
+  test.describe('navigates to Config', async () => {
     test('Packages page', async ({ page }) => {
-      await page.getByRole('button', { name: 'Resources' }).click()
-      await page.getByRole('link', { name: 'Packages' }).click()
-
-      await expect(breadcrumb.getByRole('link', { name: 'Resources' })).toBeVisible()
-      await expect(breadcrumb.getByRole('link', { name: 'Packages' })).toBeVisible()
+      await page.getByRole('button', { name: 'Config' }).click()
+      await page.getByRole('link', { name: 'UDS Packages' }).click()
+      await expect(breadcrumb.getByRole('link', { name: 'Config' })).toBeVisible()
+      await expect(breadcrumb.getByRole('link', { name: 'UDS Packages' })).toBeVisible()
     })
+  })
+
+  test('Namespaces page', async ({ page }) => {
+    await page.getByRole('link', { name: 'Namespaces' }).click()
+    await expect(breadcrumb.getByRole('link', { name: 'Namespaces' })).toBeVisible()
   })
 
   test('navigates to Docs page', async ({ page }) => {
@@ -75,20 +72,20 @@ test.describe('Navigation', async () => {
     await expect(page.locator('h1')).toHaveText('Docs')
   })
 
-  test('navigates to Settings page', async ({ page }) => {
-    await page.getByLabel('cog outline').click()
-
-    await expect(page.locator('h1')).toHaveText('Settings')
-  })
-
   test('navigates to Preferences page', async ({ page }) => {
-    await page.getByLabel('adjustments horizontal outline').click()
+    await page.getByTestId('global-sidenav-preferences').click()
 
     await expect(page.locator('h1')).toHaveText('Preferences')
   })
 
+  test('navigates to Settings page', async ({ page }) => {
+    await page.getByTestId('global-sidenav-settings').click()
+
+    await expect(page.locator('h1')).toHaveText('Settings')
+  })
+
   test('navigates to Help page', async ({ page }) => {
-    await page.getByLabel('question circle outline').click()
+    await page.getByTestId('global-sidenav-help').click()
 
     await expect(page.locator('h1')).toHaveText('Help')
   })
