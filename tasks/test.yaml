@@ -11,6 +11,8 @@ tasks:
     actions:
       - cmd: which playwright || npx playwright install
       - task: setup:slim-cluster
+      - cmd: go install github.com/air-verse/air@latest
+      - cmd: air -c .air.toml
       - cmd: npm ci && npm run test:integration
         dir: ui
 
