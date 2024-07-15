@@ -3,11 +3,11 @@
 
 import type { V1Namespace as Resource } from '@kubernetes/client-node'
 import {
-    ResourceStore,
-    type ColumnWrapper,
-    type CommonRow,
-    type ResourceStoreInterface,
-    type ResourceWithTable,
+  ResourceStore,
+  type ColumnWrapper,
+  type CommonRow,
+  type ResourceStoreInterface,
+  type ResourceWithTable,
 } from '../store'
 
 export interface Row extends CommonRow {
