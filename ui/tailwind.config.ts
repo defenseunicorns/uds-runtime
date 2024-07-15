@@ -1,13 +1,11 @@
-import flowbitePlugin from 'flowbite/plugin'
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+import flowbitePlugin from 'flowbite/plugin'
 import type { Config } from 'tailwindcss'
 
 export default {
-  content: [
-    './src/**/*.{html,js,svelte,ts}',
-    './node_modules/flowbite/**/*.js',
-    './node_modules/flowbite-svelte-icons/**/*.{html,js,svelte,ts}',
-  ],
+  content: ['./src/**/*.{html,js,svelte,ts}', './node_modules/flowbite/**/*.js'],
 
   theme: {
     fontFamily: {

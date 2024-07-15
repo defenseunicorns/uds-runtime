@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 package monitor
 
@@ -44,6 +44,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	peprStream.Follow = true
 	peprStream.Timestamps = true
 
+	//nolint:errcheck
 	// Start the stream in a goroutine
 	go peprStream.Start(ctx)
 

@@ -14,5 +14,6 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": "always"
     }
-  }
+  },
+  "svelte.enable-ts-plugin": true
 }

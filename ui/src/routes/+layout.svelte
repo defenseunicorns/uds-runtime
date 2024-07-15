@@ -1,14 +1,15 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
+
 <script lang="ts">
-  import { afterNavigate } from '$app/navigation'
   import 'flowbite'
   import { initFlowbite } from 'flowbite'
   import 'flowbite/dist/flowbite.css'
   import { onMount } from 'svelte'
 
-  import Breadcrumb from '$components/navigation/Breadcrumb.svelte'
-  import Navbar from '$components/navigation/Navbar.svelte'
-  import Sidebar from '$components/navigation/Sidebar.svelte'
-  import { isSidebarExpanded } from '$stores/layout'
+  import { afterNavigate } from '$app/navigation'
+
+  import { Breadcrumb, isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import '../app.postcss'
 
   onMount(initFlowbite)

@@ -1,10 +1,13 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
+
 <script lang="ts">
-  import { UploadSolid } from 'flowbite-svelte-icons'
+  import { Export } from 'carbon-icons-svelte'
+  import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { onDestroy } from 'svelte'
   import './page.postcss'
 
   interface PeprEvent {
@@ -113,7 +116,7 @@
           class="flex flex-shrink-0 flex-col space-y-3 md:flex-row md:items-center md:space-x-3 md:space-y-0 lg:justify-end"
         >
           <button type="button">
-            <UploadSolid class="mr-2" />
+            <Export class="mr-2" />
             Export
           </button>
         </div>

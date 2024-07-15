@@ -1,7 +1,10 @@
-import { describe, it, expect } from 'vitest'
-import { render } from '@testing-library/svelte'
-import ContainerStatus from './ContainerStatus.svelte'
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+
 import type { V1ContainerStatus } from '@kubernetes/client-node/dist/gen/models/V1ContainerStatus'
+import { render } from '@testing-library/svelte'
+import { describe, expect, it } from 'vitest'
+import ContainerStatus from './ContainerStatus.svelte'
 
 describe('ContainerStatus', () => {
   it('renders nothing when no containers are provided', () => {

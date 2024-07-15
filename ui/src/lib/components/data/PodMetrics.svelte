@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
+
 <script lang="ts">
   import type { ContainerMetric } from '@kubernetes/client-node'
   import { formatCPU, formatMemory, parseCPU, parseMemory } from './PodMetrics'

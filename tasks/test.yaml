@@ -1,0 +1,24 @@
+includes:
+  - setup: ./setup.yaml
+
+tasks:
+  - name: frontend-unit
+    actions:
+      - cmd: npm ci && npm run test:unit
+        dir: ui
+
+  - name: e2e
+    actions:
+      - cmd: which playwright || npx playwright install
+      - task: setup:slim-cluster
+      - cmd: npm ci && npm run test:integration
+        dir: ui
+
+  - name: go
+    actions:
+      - cmd: go test -failfast -v -timeout 30m ./...
+
+  - name: unit
+    actions:
+      - task: go
+      - task: frontend-unit

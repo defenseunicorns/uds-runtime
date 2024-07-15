@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2023-Present The UDS Authors
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 package api
 
@@ -76,6 +76,7 @@ func Start(assets embed.FS) error {
 	}
 
 	log.Println("Starting server on :8080")
+	//nolint:gosec
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		return fmt.Errorf("server failed to start: %w", err)
 	}
