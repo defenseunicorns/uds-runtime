@@ -2,23 +2,23 @@ includes:
   - setup: ./setup.yaml
 
 tasks:
-  - name: frontend-unit
-    actions:
-      - cmd: npm ci && npm run test:unit
-        dir: ui
-
   - name: e2e
     actions:
-      - cmd: which playwright || npx playwright install
       - task: setup:slim-cluster
       - cmd: go install github.com/air-verse/air@latest
-      - cmd: air -c .air.toml
+      - cmd: which playwright || npx playwright install
+      - cmd: air -c .air.toml &
       - cmd: npm ci && npm run test:integration
         dir: ui
 
   - name: go
     actions:
       - cmd: go test -failfast -v -timeout 30m ./...
+
+  - name: frontend-unit
+    actions:
+      - cmd: npm ci && npm run test:unit
+        dir: ui
 
   - name: unit
     actions:
