@@ -1,80 +1,77 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { ChartCombo, KubernetesPod, Layers, Network_2, SearchLocate, TextAlignLeft } from 'carbon-icons-svelte'
+import {
+  ChartCombo,
+  Db2Database,
+  KubernetesPod,
+  Layers,
+  Network_2,
+  SearchLocate,
+  TextAlignLeft,
+  WorkflowAutomation
+} from 'carbon-icons-svelte'
 
-import type { Route } from './types'
+import type { BaseRoute, Route } from './types'
 
-export const routes: Route[] = [
+const baseRoutes: BaseRoute[] = [
   {
-    path: '/',
     name: 'Overview',
     icon: ChartCombo,
   },
   {
-    path: '/monitor',
     name: 'Monitor',
     icon: SearchLocate,
-    children: [
-      {
-        path: '/monitor/pepr',
-        name: 'Pepr',
-      },
-      {
-        path: '/monitor/events',
-        name: 'Events',
-      },
-    ],
+    children: ['Pepr', 'Events'],
   },
   {
-    path: '/resources/workloads',
     name: 'Workloads',
     icon: KubernetesPod,
     class: 'top-border',
-    children: [
-      {
-        path: '/resources/workloads/pods',
-        name: 'Pods',
-      },
-      {
-        path: '/resources/workloads/deployments',
-        name: 'Deployments',
-      },
-      {
-        path: '/resources/workloads/daemonsets',
-        name: 'DaemonSets',
-      },
-      {
-        path: '/resources/workloads/statefulsets',
-        name: 'StatefulSets',
-      },
-    ],
+    children: ['Pods', 'Deployments', 'DaemonSets', 'StatefulSets', 'Jobs', 'CronJobs'],
   },
   {
-    path: '/resources/config',
     name: 'Config',
     icon: TextAlignLeft,
+    children: ['UDS Packages', 'UDS Exemptions', 'ConfigMaps', 'Secrets'],
+  },
+  {
+    name: 'Cluster Ops',
+    icon: WorkflowAutomation,
     children: [
-      {
-        path: '/resources/config/packages',
-        name: 'Packages',
-      },
+      'Mutating Webhooks',
+      'Validating Webhooks',
+      'HPA',
+      'Pod Disruption Budgets',
+      'Resource Quotas',
+      'Limit Ranges',
+      'Priority Classes',
+      'Runtime Classes',
     ],
   },
   {
-    path: '/resources/network',
     name: 'Network',
     icon: Network_2,
-    children: [
-      {
-        path: '/resources/services',
-        name: 'Services',
-      },
-    ],
+    children: ['Services', 'Virtual Services', 'Network Policies', 'Endpoints'],
   },
   {
-    path: '/resources/namespaces',
+    name: 'Storage',
+    icon: Db2Database,
+    children: ['Persistent Volumes', 'Persistent Volume Claims', 'Storage Classes'],
+  },
+  {
     name: 'Namespaces',
     icon: Layers,
   },
 ]
+
+// Convert the path to a URL-friendly format
+const createPath = (name: string) => `/${name.replace(/\s+/g, '-').toLowerCase()}`
+
+// Convert the base routes to routes
+export const routes: Route[] = baseRoutes.map(({ name, children, ...rest }) => ({
+  ...rest,
+  name,
+  path: createPath(name),
+  children: children?.map((name) => ({ name, path: createPath(name) })),
+}))

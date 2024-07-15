@@ -3,15 +3,22 @@
 
 import type { CarbonIcon } from 'carbon-icons-svelte'
 
-export interface Route {
-  path: string
+export interface BaseRoute {
   name: string
+  icon?: typeof CarbonIcon
+  class?: string
+  children?: string[]
+}
+
+export interface Route {
+  name: string
+  path: string
   icon?: typeof CarbonIcon
   class?: string
   children?: RouteChild[]
 }
 
 export interface RouteChild {
-  path: string
   name: string
+  path: string
 }
