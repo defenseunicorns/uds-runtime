@@ -5,7 +5,6 @@ test.describe('Navigation', async () => {
 
   test.beforeEach(async ({ page }) => {
     breadcrumb = page.getByLabel('Breadcrumb')
-
     await page.goto('/')
   })
 
@@ -14,16 +13,16 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Pepr' }).click()
 
-      await expect(breadcrumb.getByRole('link', { name: 'Monitor' })).toBeVisible()
-      await expect(breadcrumb.getByRole('link', { name: 'Pepr' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Monitor' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Pepr' })).toBeVisible()
     })
 
     test('Events page', async ({ page }) => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Events' }).click()
 
-      await expect(breadcrumb.getByRole('link', { name: 'Monitor' })).toBeVisible()
-      await expect(breadcrumb.getByRole('link', { name: 'Events' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Monitor' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Events' })).toBeVisible()
     })
   })
 
@@ -31,15 +30,15 @@ test.describe('Navigation', async () => {
     test('Pods page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
-      await expect(breadcrumb.getByRole('link', { name: 'Workloads' })).toBeVisible()
-      await expect(breadcrumb.getByRole('link', { name: 'Pods' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Workloads' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Pods' })).toBeVisible()
     })
 
     test('Deployments page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Deployments' }).click()
-      await expect(breadcrumb.getByRole('link', { name: 'Workloads' })).toBeVisible()
-      await expect(breadcrumb.getByRole('link', { name: 'Deployments' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Workloads' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Deployments' })).toBeVisible()
     })
   })
 
@@ -47,8 +46,8 @@ test.describe('Navigation', async () => {
     test('Services page', async ({ page }) => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: /^Services$/ }).click()
-      await expect(breadcrumb.getByRole('link', { name: 'Network' })).toBeVisible()
-      await expect(breadcrumb.getByRole('link', { name: 'Services' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Network' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Services' })).toBeVisible()
     })
   })
 
@@ -56,14 +55,14 @@ test.describe('Navigation', async () => {
     test('Packages page', async ({ page }) => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Packages' }).click()
-      await expect(breadcrumb.getByRole('link', { name: 'Config' })).toBeVisible()
-      await expect(breadcrumb.getByRole('link', { name: 'UDS Packages' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'Config' })).toBeVisible()
+      await expect(breadcrumb.locator('li', { hasText: 'UDS Packages' })).toBeVisible()
     })
   })
 
   test('Namespaces page', async ({ page }) => {
     await page.getByRole('link', { name: 'Namespaces' }).click()
-    await expect(breadcrumb.getByRole('link', { name: 'Namespaces' })).toBeVisible()
+    await expect(breadcrumb.locator('li', { hasText: 'Namespaces' })).toBeVisible()
   })
 
   test('navigates to Docs page', async ({ page }) => {
