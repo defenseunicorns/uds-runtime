@@ -8,11 +8,11 @@ import ContainerStatus from '$components/data/ContainerStatus.svelte'
 import { parseCPU } from '$components/data/PodMetrics'
 import PodMetrics from '$components/data/PodMetrics.svelte'
 import {
-    ResourceStore,
-    type ColumnWrapper,
-    type CommonRow,
-    type ResourceStoreInterface,
-    type ResourceWithTable,
+  ResourceStore,
+  type ColumnWrapper,
+  type CommonRow,
+  type ResourceStoreInterface,
+  type ResourceWithTable,
 } from '../store'
 
 interface Row extends CommonRow {
