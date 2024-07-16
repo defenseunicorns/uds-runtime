@@ -38,7 +38,20 @@ jobs:
         run: uds run build-ui --no-progress
 
       - name: Run tests
+        if: ${{ matrix.type == 'unit'}}
         run: uds run test:${{ matrix.type }} --no-progress
+        timeout-minutes: 30
+
+        # Run e2e backend first to start air server in the background
+      - name: Run e2e frontend tests
+        if: ${{ matrix.type == 'e2e'}}
+        run: uds run test:e2e-be --no-progress
+        timeout-minutes: 30
+
+      - name: Run e2e frontend tests
+        if: ${{ matrix.type == 'e2e'}}
+        run: uds run test:e2e-fe --no-progress
+        timeout-minutes: 30
 
       - name: Debug Output
         if: ${{ matrix.type == 'e2e'}}

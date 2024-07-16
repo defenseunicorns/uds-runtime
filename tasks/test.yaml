@@ -2,12 +2,16 @@ includes:
   - setup: ./setup.yaml
 
 tasks:
-  - name: e2e
+  - name: e2e-be
     actions:
       - task: setup:slim-cluster
       - cmd: go install github.com/air-verse/air@latest
+      - description: "run air in the background"
+        cmd: air -c .air.toml &
+
+  - name: e2e-fe
+    actions:
       - cmd: which playwright || npx playwright install
-      - cmd: air -c .air.toml &
       - cmd: npm ci && npm run test:integration
         dir: ui
 
