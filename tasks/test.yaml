@@ -2,12 +2,8 @@ includes:
   - setup: ./setup.yaml
 
 tasks:
-  - name: frontend-unit
-    actions:
-      - cmd: npm ci && npm run test:unit
-        dir: ui
-
   - name: e2e
+    description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
       - cmd: which playwright || npx playwright install
       - task: setup:slim-cluster
@@ -15,10 +11,18 @@ tasks:
         dir: ui
 
   - name: go
+    description: "run api server unit tests"
     actions:
       - cmd: go test -failfast -v -timeout 30m ./...
 
+  - name: ui-unit
+    description: "run frontend unit tests"
+    actions:
+      - cmd: npm ci && npm run test:unit
+        dir: ui
+
   - name: unit
+    description: "run all unit tests (backend and frontend)"
     actions:
       - task: go
-      - task: frontend-unit
+      - task: ui-unit

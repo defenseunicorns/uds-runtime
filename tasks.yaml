@@ -5,10 +5,24 @@ includes:
 
 tasks:
   - name: build-go
+    description: "build the go api server"
     actions:
       - cmd: go build -o ./build/main main.go
 
   - name: build-ui
+    description: "build engine ui"
     actions:
       - cmd: npm ci && npm run build
+        dir: ui
+
+  - name: dev-server
+    description: "run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation)"
+    actions:
+      - cmd: go install github.com/air-verse/air@latest
+      - cmd: air -c .air.toml
+
+  - name: dev-ui
+    description: "run the engine ui in dev mode"
+    actions:
+      - cmd: npm ci && npm run dev
         dir: ui
