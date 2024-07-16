@@ -1,16 +1,13 @@
-import { expect, test, type Locator } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Navigation', async () => {
-  let breadcrumb: Locator
-
   test.beforeEach(async ({ page }) => {
-    breadcrumb = page.getByLabel('Breadcrumb')
     await page.goto('/')
   })
 
   test('Overview page', async ({ page }) => {
     await page.getByRole('link', { name: 'Overview' }).click()
-    await expect(breadcrumb.locator('li', { hasText: 'Overview' })).toBeVisible()
+    await expect(page.getByTestId('breadcrumb-item-overview')).toBeVisible()
   })
 
   test.describe('navigates to Monitor', async () => {
@@ -18,16 +15,16 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Pepr' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Monitor' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Pepr' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-monitor')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-pepr')).toBeVisible()
     })
 
     test('Events page', async ({ page }) => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Events' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Monitor' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Events' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-monitor')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-events')).toBeVisible()
     })
   })
 
@@ -36,48 +33,48 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Workloads' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Pods' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-workloads')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-pods')).toBeVisible()
     })
 
     test('Deployments page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Deployments' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Workloads' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Deployments' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-workloads')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-deployments')).toBeVisible()
     })
 
     test('DaemonSets page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'DaemonSets' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Workloads' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'DaemonSets' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-workloads')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-daemonsets')).toBeVisible()
     })
 
     test('StatefulSets page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'StatefulSets' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Workloads' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'StatefulSets' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-workloads')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-statefulsets')).toBeVisible()
     })
 
     test('Jobs page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: /^Jobs$/ }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Workloads' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Jobs' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-workloads')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-jobs')).toBeVisible()
     })
 
     test('CronJobs page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'CronJobs' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Workloads' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'CronJobs' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-workloads')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-cronjobs')).toBeVisible()
     })
   })
 
@@ -85,32 +82,33 @@ test.describe('Navigation', async () => {
     test('Packages page', async ({ page }) => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Packages' }).click()
-      await expect(breadcrumb.locator('li', { hasText: 'Config' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'UDS Packages' })).toBeVisible()
+
+      await expect(page.getByTestId('breadcrumb-item-config')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-uds-packages')).toBeVisible()
     })
 
     test('UDS Exemptions page', async ({ page }) => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Exemptions' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Config' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'UDS Exemptions' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-config')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-uds-exemptions')).toBeVisible()
     })
 
     test('ConfigMaps page', async ({ page }) => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'ConfigMaps' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: /^Config$/ })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'ConfigMaps' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-config')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-configmaps')).toBeVisible()
     })
 
     test('Secrets page', async ({ page }) => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'Secrets' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Config' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Secrets' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-config')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-secrets')).toBeVisible()
     })
   })
 
@@ -118,64 +116,65 @@ test.describe('Navigation', async () => {
     test('Mutating Webhooks page', async ({ page }) => {
       await page.getByRole('button', { name: 'Cluster Ops' }).click()
       await page.getByRole('link', { name: 'Mutating Webhooks' }).click()
-      await expect(breadcrumb.locator('li', { hasText: 'Cluster Ops' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Mutating Webhooks' })).toBeVisible()
+
+      await expect(page.getByTestId('breadcrumb-item-cluster-ops')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-mutating-webhooks')).toBeVisible()
     })
 
     test('Validating Webhooks page', async ({ page }) => {
       await page.getByRole('button', { name: 'Cluster Ops' }).click()
       await page.getByRole('link', { name: 'Validating Webhooks' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Cluster Ops' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Validating Webhooks' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-cluster-ops')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-validating-webhooks')).toBeVisible()
     })
 
     test('HPA page', async ({ page }) => {
       await page.getByRole('button', { name: 'Cluster Ops' }).click()
       await page.getByRole('link', { name: 'HPA' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: /^Cluster Ops$/ })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'HPA' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-cluster-ops')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-hpa')).toBeVisible()
     })
 
     test('Pod Disruption Budgets page', async ({ page }) => {
       await page.getByRole('button', { name: 'Cluster Ops' }).click()
       await page.getByRole('link', { name: 'Pod Disruption Budgets' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Cluster Ops' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Pod Disruption Budgets' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-cluster-ops')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-pod-disruption-budgets')).toBeVisible()
     })
 
     test('Resource Quotas page', async ({ page }) => {
       await page.getByRole('button', { name: 'Cluster Ops' }).click()
       await page.getByRole('link', { name: 'Resource Quotas' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Cluster Ops' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Resource Quotas' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-cluster-ops')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-resource-quotas')).toBeVisible()
     })
 
     test('Limit Ranges page', async ({ page }) => {
       await page.getByRole('button', { name: 'Cluster Ops' }).click()
       await page.getByRole('link', { name: 'Limit Ranges' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Cluster Ops' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Limit Ranges' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-cluster-ops')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-limit-ranges')).toBeVisible()
     })
 
     test('Priority Classes page', async ({ page }) => {
       await page.getByRole('button', { name: 'Cluster Ops' }).click()
       await page.getByRole('link', { name: 'Priority Classes' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Cluster Ops' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Priority Classes' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-cluster-ops')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-priority-classes')).toBeVisible()
     })
 
     test('Runtime Classes page', async ({ page }) => {
       await page.getByRole('button', { name: 'Cluster Ops' }).click()
       await page.getByRole('link', { name: 'Runtime Classes' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Cluster Ops' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Runtime Classes' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-cluster-ops')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-runtime-classes')).toBeVisible()
     })
   })
 
@@ -184,32 +183,32 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: /^Services$/ }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Network' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Services' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-network')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-services')).toBeVisible()
     })
 
     test('Virtual Services page', async ({ page }) => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Virtual Services' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Network' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Virtual Services' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-network')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-virtual-services')).toBeVisible()
     })
 
     test('Network Policies page', async ({ page }) => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Network Policies' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: /^Network$/ })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Network Policies' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-network')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-network-policies')).toBeVisible()
     })
 
     test('Endpoints page', async ({ page }) => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Endpoints' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Network' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Endpoints' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-network')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-endpoints')).toBeVisible()
     })
   })
 
@@ -218,30 +217,31 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Storage' }).click()
       await page.getByRole('link', { name: 'Persistent Volumes' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Storage' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Persistent Volumes' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-storage')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-persistent-volumes')).toBeVisible()
     })
 
     test('Persistent Volume Claims page', async ({ page }) => {
       await page.getByRole('button', { name: 'Storage' }).click()
       await page.getByRole('link', { name: 'Persistent Volume Claims' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: 'Storage' })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Persistent Volume Claims' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-storage')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-persistent-volume-claims')).toBeVisible()
     })
 
     test('Storage Classes page', async ({ page }) => {
       await page.getByRole('button', { name: 'Storage' }).click()
       await page.getByRole('link', { name: 'Storage Classes' }).click()
 
-      await expect(breadcrumb.locator('li', { hasText: /^Storage$/ })).toBeVisible()
-      await expect(breadcrumb.locator('li', { hasText: 'Storage Classes' })).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-storage')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-storage-classes')).toBeVisible()
     })
   })
 
   test('Namespaces page', async ({ page }) => {
     await page.getByRole('link', { name: 'Namespaces' }).click()
-    await expect(breadcrumb.locator('li', { hasText: 'Namespaces' })).toBeVisible()
+
+    await expect(page.getByTestId('breadcrumb-item-namespaces')).toBeVisible()
   })
 
   test('navigates to Docs page', async ({ page }) => {
