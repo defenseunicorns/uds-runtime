@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { NotificationFilled, Search } from 'carbon-icons-svelte'
+  import { NotificationFilled } from 'carbon-icons-svelte'
   import { isSidebarExpanded } from '../store'
 </script>
 

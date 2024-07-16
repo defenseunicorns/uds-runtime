@@ -9,7 +9,7 @@ import {
   Network_2,
   SearchLocate,
   TextAlignLeft,
-  WorkflowAutomation
+  WorkflowAutomation,
 } from 'carbon-icons-svelte'
 
 import type { BaseRoute, Route } from './types'
