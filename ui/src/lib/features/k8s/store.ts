@@ -22,7 +22,7 @@ export interface ResourceWithTable<T extends KubernetesObject, U extends CommonR
   table: U
 }
 
-enum SearchByType {
+export enum SearchByType {
   ANYWHERE = 'Anywhere',
   METADATA = 'Metadata',
   NAME = 'Name',
