@@ -33,27 +33,8 @@ jobs:
       - name: setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
         uses: ./.github/actions/setup
 
-      # build ui so ui/build exists when go unit tests run
-      - name: build-ui
-        run: uds run build-ui --no-progress
-
       - name: Run tests
-        if: ${{ matrix.type == 'unit'}}
         run: uds run test:${{ matrix.type }} --no-progress
-        timeout-minutes: 30
-
-        # Run e2e backend first to start air server in the background
-      - name: Run e2e backend setup
-        if: ${{ matrix.type == 'e2e'}}
-        run: |
-            uds run setup:slim-cluster --no-progress
-            go install github.com/air-verse/air@latest
-            air -c .air.toml &
-        timeout-minutes: 30
-
-      - name: Run e2e frontend tests
-        if: ${{ matrix.type == 'e2e'}}
-        run: uds run test:e2e --no-progress
         timeout-minutes: 30
 
       - name: Debug Output

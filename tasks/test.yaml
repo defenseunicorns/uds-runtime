@@ -6,7 +6,10 @@ tasks:
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
       - cmd: which playwright || npx playwright install
-      - cmd: npm ci && npm run test:integration
+      - task: setup:build-ui
+      - task: setup:build-api
+      - task: setup:slim-cluster
+      - cmd: npm run test:integration
         dir: ui
 
   - name: go
@@ -23,5 +26,7 @@ tasks:
   - name: unit
     description: "run all unit tests (backend and frontend)"
     actions:
+      - task: setup:build-ui
+        description: "build ui since embedded in main.go"
       - task: go
       - task: ui-unit

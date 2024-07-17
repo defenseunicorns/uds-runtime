@@ -5,6 +5,10 @@ const { VITE_PORT_ENV } = loadEnv('dev', process.cwd())
 const port = VITE_PORT_ENV ?? '8080'
 
 export default defineConfig({
+  webServer: {
+    command: '../build/main',
+    url: `http://localhost:${port}`,
+  },
   testDir: 'tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
