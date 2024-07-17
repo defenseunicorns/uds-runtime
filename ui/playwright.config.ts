@@ -1,18 +1,15 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
-
 import { defineConfig } from '@playwright/test'
+import { loadEnv } from 'vite'
+
+const { VITE_PORT_ENV } = loadEnv('dev', process.cwd())
+const port = VITE_PORT_ENV ?? '8080'
 
 export default defineConfig({
-  webServer: {
-    command: 'npm run build && npm run preview',
-    url: 'http://localhost:4173/',
-  },
   testDir: 'tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
-  testMatch: /(.+\.)?(spec|test)\.[jt]s/,
+  testMatch: /(.+\.)?(test|spec)\.[jt]s/,
   use: {
-    baseURL: 'http://localhost:4173/',
+    baseURL: `http://localhost:${port}/`,
   },
 })

@@ -3,9 +3,11 @@ includes:
 
 tasks:
   - name: slim-cluster
-    description: "Create a k3d cluster and deploy core slim dev"
+    description: "Create a k3d cluster and deploy core slim dev with metrics server"
     actions:
       - task: common:k3d-test-cluster
+      - task: clone-core
+      - task: metrics-server
 
   - name: simple-cluster
     description: "Create a k3d cluster, no core"
@@ -16,3 +18,16 @@ tasks:
     description: "Install golangci-lint to GOPATH using install.sh"
     actions:
       - cmd: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.1
+
+  - name: clone-core
+    description: "Clone uds-core for custom slim dev setup"
+    actions:
+      - cmd: rm -r uds-core || true
+      - cmd: git clone https://github.com/defenseunicorns/uds-core.git
+        dir: .github/
+
+  - name: metrics-server
+    description: "Create and deploy metrics server from cloned core"
+    actions:
+      - cmd: uds zarf package create .github/uds-core/src/metrics-server --confirm --flavor upstream -o build/
+      - cmd: uds zarf package deploy build/zarf-package-uds-core-metrics-server*.tar.zst --confirm

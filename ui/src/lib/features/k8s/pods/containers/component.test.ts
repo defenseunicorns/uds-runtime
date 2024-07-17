@@ -3,17 +3,16 @@
 
 import type { V1ContainerStatus } from '@kubernetes/client-node/dist/gen/models/V1ContainerStatus'
 import { render } from '@testing-library/svelte'
-import { describe, expect, it } from 'vitest'
-import ContainerStatus from './ContainerStatus.svelte'
+import ContainerStatus from './component.svelte'
 
-describe('ContainerStatus', () => {
-  it('renders nothing when no containers are provided', () => {
+suite('ContainerStatus', () => {
+  test('renders nothing when no containers are provided', () => {
     const { container } = render(ContainerStatus, { props: { containers: [] } })
     expect(container.querySelector('.flex')).toBeTruthy()
     expect(container.querySelectorAll('.w-2')).toHaveLength(0)
   })
 
-  it('renders correct number of status indicators', () => {
+  test('renders correct number of status indicators', () => {
     const containers: V1ContainerStatus[] = [
       { state: { running: {} } },
       { state: { waiting: {} } },
@@ -24,35 +23,35 @@ describe('ContainerStatus', () => {
     expect(container.querySelectorAll('.w-2')).toHaveLength(3 * 2)
   })
 
-  it('applies correct classes for running containers', () => {
+  test('applies correct classes for running containers', () => {
     const containers: V1ContainerStatus[] = [{ state: { running: {} } }] as V1ContainerStatus[]
     const { container } = render(ContainerStatus, { props: { containers } })
     const indicator = container.querySelector('.w-2')
     expect(indicator).toHaveClass('bg-green-500')
   })
 
-  it('applies correct classes for waiting containers', () => {
+  test('applies correct classes for waiting containers', () => {
     const containers: V1ContainerStatus[] = [{ state: { waiting: {} } }] as V1ContainerStatus[]
     const { container } = render(ContainerStatus, { props: { containers } })
     const indicator = container.querySelector('.w-2')
     expect(indicator).toHaveClass('bg-yellow-500')
   })
 
-  it('applies correct classes for terminated containers', () => {
+  test('applies correct classes for terminated containers', () => {
     const containers: V1ContainerStatus[] = [{ state: { terminated: {} } }] as V1ContainerStatus[]
     const { container } = render(ContainerStatus, { props: { containers } })
     const indicator = container.querySelector('.w-2')
     expect(indicator).toHaveClass('bg-gray-500')
   })
 
-  it('applies pulsing class for containers that are not ready', () => {
+  test('applies pulsing class for containers that are not ready', () => {
     const containers: V1ContainerStatus[] = [{ ready: false, state: { running: {} } }] as V1ContainerStatus[]
     const { container } = render(ContainerStatus, { props: { containers } })
     const indicator = container.querySelector('.w-2')
     expect(indicator).toHaveClass('animate-pulse')
   })
 
-  it('handles mixed container states correctly', () => {
+  test('handles mixed container states correctly', () => {
     const containers: V1ContainerStatus[] = [
       { state: { running: {} }, ready: true },
       { state: { running: {} }, ready: false },

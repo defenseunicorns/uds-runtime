@@ -2,13 +2,13 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import {
+  AudioConsole,
   ChartCombo,
   Db2Database,
   KubernetesPod,
   Layers,
   Network_2,
   SearchLocate,
-  TextAlignLeft,
   WorkflowAutomation,
 } from 'carbon-icons-svelte'
 
@@ -32,7 +32,8 @@ const baseRoutes: BaseRoute[] = [
   },
   {
     name: 'Config',
-    icon: TextAlignLeft,
+    icon: AudioConsole,
+    class: 'icon-rotate-90',
     children: ['UDS Packages', 'UDS Exemptions', 'ConfigMaps', 'Secrets'],
   },
   {

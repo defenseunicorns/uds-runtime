@@ -6,7 +6,6 @@ tasks:
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
       - cmd: which playwright || npx playwright install
-      - task: setup:slim-cluster
       - cmd: npm ci && npm run test:integration
         dir: ui
 

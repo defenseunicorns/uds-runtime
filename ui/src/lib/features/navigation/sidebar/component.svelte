@@ -4,7 +4,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import { ChevronUp, DocumentMultiple_01, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
+  import { ChevronRight, DocumentMultiple_01, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
   import { routes } from '../routes'
   import { isSidebarExpanded } from '../store'
   import './styles.postcss'
@@ -86,9 +86,9 @@
             >
               <svelte:component this={route.icon} class="icon" />
               <span class="expanded-only ml-3 flex-1 whitespace-nowrap text-left">{route.name}</span>
-              <ChevronUp
+              <ChevronRight
                 class="expanded-only h-6 w-6 transition duration-300 {toggleSubmenus[route.path]
-                  ? 'rotate-180 transform'
+                  ? 'rotate-90 transform'
                   : ''}"
               />
             </button>
@@ -134,18 +134,21 @@
       : 'flex-col'}"
   >
     <a
+      data-testid="global-sidenav-preferences"
       href="/preferences"
       class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
     >
       <SettingsAdjust class="h-6 w-6" />
     </a>
     <a
+      data-testid="global-sidenav-settings"
       href="/settings"
       class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
     >
       <SettingsEdit class="h-6 w-6" />
     </a>
     <a
+      data-testid="global-sidenav-help"
       href="/help"
       class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
     >

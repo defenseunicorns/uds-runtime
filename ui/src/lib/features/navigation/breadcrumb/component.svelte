@@ -5,6 +5,8 @@
   import { ChevronRight } from 'carbon-icons-svelte'
 
   import { page } from '$app/stores'
+  import { stringToSnakeCase } from '$lib/utils'
+
   import { routes } from '../routes'
   import { type Route, type RouteChild } from '../types'
 
@@ -43,7 +45,10 @@
     {#if matchParent}
       <li>
         <div class="flex items-center">
-          <span class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-400">
+          <span
+            class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-400"
+            data-testid={`breadcrumb-item-${stringToSnakeCase(matchParent?.name)}`}
+          >
             {matchParent?.name}
           </span>
         </div>
@@ -53,7 +58,10 @@
       <li><ChevronRight class="w-5 h-5 text-gray-400 dark:text-gray-400" /></li>
       <li>
         <div class="flex items-center">
-          <span class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-400">
+          <span
+            class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-400"
+            data-testid={`breadcrumb-item-${stringToSnakeCase(matchChild.name)}`}
+          >
             {matchChild.name}
           </span>
         </div>

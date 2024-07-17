@@ -4,4 +4,4 @@
 <script lang="ts">
 </script>
 
-<h1 class="text-white text-5xl">Home</h1>
+<h1 class="text-white text-5xl">Overview</h1>
