@@ -4,7 +4,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import { ChevronUp, DocumentMultiple_01, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
+  import { ChevronRight, DocumentMultiple_01, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
   import { routes } from '../routes'
   import { isSidebarExpanded } from '../store'
   import './styles.postcss'
@@ -86,9 +86,9 @@
             >
               <svelte:component this={route.icon} class="icon" />
               <span class="expanded-only ml-3 flex-1 whitespace-nowrap text-left">{route.name}</span>
-              <ChevronUp
+              <ChevronRight
                 class="expanded-only h-6 w-6 transition duration-300 {toggleSubmenus[route.path]
-                  ? 'rotate-180 transform'
+                  ? 'rotate-90 transform'
                   : ''}"
               />
             </button>

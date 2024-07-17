@@ -9,7 +9,7 @@ import {
   Layers,
   Network_2,
   SearchLocate,
-  WorkflowAutomation
+  WorkflowAutomation,
 } from 'carbon-icons-svelte'
 
 import type { BaseRoute, Route } from './types'
