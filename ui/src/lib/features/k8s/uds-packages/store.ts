@@ -2,13 +2,8 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { Package as Resource } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
-import {
-  ResourceStore,
-  type ColumnWrapper,
-  type CommonRow,
-  type ResourceStoreInterface,
-  type ResourceWithTable,
-} from '../store'
+import { ResourceStore, type ColumnWrapper, type ResourceStoreInterface, type ResourceWithTable } from '../store'
+import { type CommonRow } from '../types'
 
 interface Row extends CommonRow {
   monitors: string

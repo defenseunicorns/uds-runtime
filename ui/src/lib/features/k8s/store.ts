@@ -5,15 +5,7 @@ import type { KubernetesObject } from '@kubernetes/client-node'
 import { formatDistanceToNow } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
 
-export interface CommonRow {
-  name: string
-  namespace?: string
-  creationTimestamp: Date
-  age?: {
-    sort: number
-    text: string
-  }
-}
+import { type CommonRow } from './types'
 
 export type ColumnWrapper<T> = [name: keyof T, styles?: string][]
 

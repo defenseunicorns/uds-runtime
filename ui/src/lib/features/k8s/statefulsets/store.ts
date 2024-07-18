@@ -3,13 +3,8 @@
 
 import type { V1StatefulSet as Resource } from '@kubernetes/client-node'
 
-import {
-  ResourceStore,
-  type ColumnWrapper,
-  type CommonRow,
-  type ResourceStoreInterface,
-  type ResourceWithTable,
-} from '../store'
+import { ResourceStore, type ColumnWrapper, type ResourceStoreInterface, type ResourceWithTable } from '../store'
+import { type CommonRow } from '../types'
 
 interface Row extends CommonRow {
   ready: string
