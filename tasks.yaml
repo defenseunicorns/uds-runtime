@@ -4,11 +4,14 @@ includes:
   - setup: tasks/setup.yaml
 
 tasks:
-  - name: build-go
+  - name: dev-server
+    description: "run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation)"
     actions:
-      - cmd: go build -o ./build/main main.go
+      - cmd: go install github.com/air-verse/air@latest
+      - cmd: air -c .air.toml
 
-  - name: build-ui
+  - name: dev-ui
+    description: "run the engine ui in dev mode"
     actions:
-      - cmd: npm ci && npm run build
+      - cmd: npm ci && npm run dev
         dir: ui

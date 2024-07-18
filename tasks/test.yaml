@@ -3,21 +3,30 @@ includes:
 
 tasks:
   - name: e2e
+    description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
       - cmd: which playwright || npx playwright install
-      - cmd: npm ci && npm run test:integration
+      - task: setup:build-ui
+      - task: setup:build-api
+      - task: setup:slim-cluster
+      - cmd: npm run test:integration
         dir: ui
 
   - name: go
+    description: "run api server unit tests"
     actions:
       - cmd: go test -failfast -v -timeout 30m ./...
 
-  - name: frontend-unit
+  - name: ui-unit
+    description: "run frontend unit tests"
     actions:
       - cmd: npm ci && npm run test:unit
         dir: ui
 
   - name: unit
+    description: "run all unit tests (backend and frontend)"
     actions:
+      - task: setup:build-ui
+        description: "build ui since embedded in main.go"
       - task: go
-      - task: frontend-unit
+      - task: ui-unit
