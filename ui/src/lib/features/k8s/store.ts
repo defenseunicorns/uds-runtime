@@ -5,7 +5,8 @@ import type { KubernetesObject } from '@kubernetes/client-node'
 import { formatDistanceToNow } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
 
-import { SearchByType, type CommonRow, type ResourceWithTable } from '$lib/types'
+import { type CommonRow } from '$lib/types'
+import { SearchByType, type ResourceWithTable } from '$lib/features/k8s/types'
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   // Keep an internal store for the resources
