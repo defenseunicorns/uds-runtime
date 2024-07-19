@@ -4,13 +4,10 @@
 import type { ContainerMetric, PodMetric, V1Pod as Resource, V1ContainerStatus } from '@kubernetes/client-node'
 import { writable } from 'svelte/store'
 
-import {
-  ResourceStore,
-  type ColumnWrapper,
-  type CommonRow,
-  type ResourceStoreInterface,
-  type ResourceWithTable,
-} from '../store'
+import { type CommonRow } from '$lib/types'
+import { type ResourceStoreInterface, type ResourceWithTable } from '$lib/features/k8s/types'
+import { ResourceStore } from '../store'
+import { type ColumnWrapper } from '../types'
 import ContainerStatus from './containers/component.svelte'
 import PodMetrics from './metrics/component.svelte'
 import { parseCPU } from './metrics/utils'

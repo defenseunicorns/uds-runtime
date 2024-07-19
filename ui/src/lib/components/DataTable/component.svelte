@@ -3,12 +3,12 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
+  import { ChevronDown, ChevronUp, Filter, Search } from 'carbon-icons-svelte'
   import { onMount } from 'svelte'
 
   import { page } from '$app/stores'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
-  import type { ResourceStoreInterface } from '$features/k8s/store'
-  import { ChevronDown, ChevronUp, Filter, Search } from 'carbon-icons-svelte'
+  import { type ResourceStoreInterface } from '$lib/types'
 
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
   export let columns: [name: string, styles?: string][]
@@ -98,9 +98,9 @@
                     {header.replaceAll('_', ' ')}
                     <ChevronUp
                       class="sort
-                                  {style || ''}
-                                  {$sortAsc ? 'rotate-180' : ''}
-                                  {$sortBy === header ? 'opacity-100' : 'opacity-0'}"
+                      {style || ''}
+                      {$sortAsc ? 'rotate-180' : ''}
+                      {$sortBy === header ? 'opacity-100' : 'opacity-0'}"
                     />
                   </button>
                 </th>
