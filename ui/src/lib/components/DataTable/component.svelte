@@ -7,8 +7,9 @@
 
   import { page } from '$app/stores'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
-  import type { ResourceStoreInterface } from '$features/k8s/store'
   import { ChevronDown, ChevronUp, Filter, Search } from 'carbon-icons-svelte'
+  import { type ResourceStoreInterface}
+
 
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
   export let columns: [name: string, styles?: string][]

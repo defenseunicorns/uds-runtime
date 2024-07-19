@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+import { type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from '$lib/types'
 import type { Package as Resource } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
-import { ResourceStore, type ResourceStoreInterface } from '../store'
-import { type ColumnWrapper, type CommonRow, type ResourceWithTable } from '../types'
+import { ResourceStore } from '../store'
+import { type ColumnWrapper } from '../types'
 
 interface Row extends CommonRow {
   monitors: string

@@ -5,34 +5,7 @@ import type { KubernetesObject } from '@kubernetes/client-node'
 import { formatDistanceToNow } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
 
-import { type CommonRow, type ResourceWithTable } from './types'
-
-export enum SearchByType {
-  ANYWHERE = 'Anywhere',
-  METADATA = 'Metadata',
-  NAME = 'Name',
-}
-
-export interface ResourceStoreInterface<T extends KubernetesObject, U extends CommonRow> {
-  // Start the EventSource and update the resources
-  start: () => () => void
-  // Sort the table by the key
-  sortByKey: (key: keyof U) => void
-  // Store for search text
-  search: Writable<string>
-  // Store for search by type
-  searchBy: Writable<SearchByType>
-  // Store for sortBy key
-  sortBy: Writable<keyof U>
-  // Store for sort direction
-  sortAsc: Writable<boolean>
-  // The list of search types
-  searchTypes: SearchByType[]
-  // Subscribe to the filtered and sorted resources
-  subscribe: (run: (value: ResourceWithTable<T, U>[]) => void) => () => void
-  // Store for namespace
-  namespace: Writable<string>
-}
+import { SearchByType, type CommonRow, type ResourceWithTable } from '$lib/types'
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   // Keep an internal store for the resources
