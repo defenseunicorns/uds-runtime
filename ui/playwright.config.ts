@@ -8,7 +8,7 @@ export default defineConfig({
   webServer: {
     command: '../build/main',
     url: `http://localhost:${port}`,
-    reuseExistingServer: !process.env.CI
+    reuseExistingServer: !process.env.CI,
   },
   timeout: 5 * 1000,
   testDir: 'tests',
