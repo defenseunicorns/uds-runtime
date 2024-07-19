@@ -3,9 +3,8 @@
 
 import type { V1DaemonSet as Resource } from '@kubernetes/client-node'
 
-import { ResourceStore, type ColumnWrapper, type ResourceStoreInterface, type ResourceWithTable } from '../store'
-
-import { type CommonRow } from '../types'
+import { ResourceStore, type ResourceStoreInterface, type ResourceWithTable } from '../store'
+import { type ColumnWrapper, type CommonRow } from '../types'
 
 interface Row extends CommonRow {
   desired: number

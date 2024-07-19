@@ -7,3 +7,5 @@ export interface CommonRow {
     text: string
   }
 }
+
+export type ColumnWrapper<T> = [name: keyof T, styles?: string][]

@@ -3,8 +3,8 @@
 
 import type { CoreV1Event as Resource } from '@kubernetes/client-node'
 
-import { ResourceStore, type ColumnWrapper, type ResourceStoreInterface, type ResourceWithTable } from '../store'
-import { type CommonRow } from '../types'
+import { ResourceStore, type ResourceStoreInterface, type ResourceWithTable } from '../store'
+import { type ColumnWrapper, type CommonRow } from '../types'
 
 export interface Row extends CommonRow {
   count: number

@@ -7,8 +7,6 @@ import { derived, writable, type Writable } from 'svelte/store'
 
 import { type CommonRow } from './types'
 
-export type ColumnWrapper<T> = [name: keyof T, styles?: string][]
-
 export interface ResourceWithTable<T extends KubernetesObject, U extends CommonRow> {
   resource: T
   table: U
