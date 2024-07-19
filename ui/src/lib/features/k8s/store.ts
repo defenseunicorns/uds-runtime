@@ -5,12 +5,7 @@ import type { KubernetesObject } from '@kubernetes/client-node'
 import { formatDistanceToNow } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
 
-import { type CommonRow } from './types'
-
-export interface ResourceWithTable<T extends KubernetesObject, U extends CommonRow> {
-  resource: T
-  table: U
-}
+import { type CommonRow, type ResourceWithTable } from './types'
 
 export enum SearchByType {
   ANYWHERE = 'Anywhere',

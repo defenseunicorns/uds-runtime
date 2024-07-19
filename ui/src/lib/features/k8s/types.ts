@@ -1,3 +1,5 @@
+import type { KubernetesObject } from '@kubernetes/client-node'
+
 export interface CommonRow {
   name: string
   namespace?: string
@@ -9,3 +11,8 @@ export interface CommonRow {
 }
 
 export type ColumnWrapper<T> = [name: keyof T, styles?: string][]
+
+export interface ResourceWithTable<T extends KubernetesObject, U extends CommonRow> {
+  resource: T
+  table: U
+}
