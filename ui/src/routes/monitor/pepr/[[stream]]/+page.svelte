@@ -8,17 +8,8 @@
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
+  import { type PeprEvent } from '$lib/types'
   import './page.postcss'
-
-  interface PeprEvent {
-    _name: string
-    count: number
-    event: string
-    header: string
-    repeated?: number
-    ts?: string
-    epoch: number
-  }
 
   let loaded = false
   let streamFilter = ''
