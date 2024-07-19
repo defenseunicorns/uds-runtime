@@ -8,6 +8,8 @@ To start the backend server, run the following command:
 air
 ```
 
+> Note: If you do not have air installed, you can find insturctions [here](https://github.com/air-verse/air)
+
 To start the frontend server, run the following command:
 
 ```bash
