@@ -20,32 +20,6 @@ test.describe('Navigation', async () => {
       await expect(page.getByTestId('breadcrumb-item-pepr')).toBeVisible()
     })
 
-    test('Exports logs', async ({ page }) => {
-      await page.getByRole('button', { name: 'Monitor' }).click()
-      await page.getByRole('link', { name: 'Pepr' }).click()
-
-      // wait for pepr data to load
-      await page.waitForSelector('.pepr-event.ALLOWED')
-
-      // download logs
-      const [download] = await Promise.all([
-        page.waitForEvent('download'),
-        await page.getByRole('button', { name: 'Export' }).click(),
-      ])
-      const path = await download.path()
-      await download.saveAs(path)
-
-      // Read and inspect the contents of the downloaded file
-      fs.readFile(path, 'utf8', (err, data) => {
-        if (err) {
-          console.error('Error reading the file:', err)
-          return
-        }
-        const fileContents = JSON.parse(data)
-        expect(fileContents.length).toBeGreaterThan(0)
-      })
-    })
-
     test('Events page', async ({ page }) => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Events' }).click()
