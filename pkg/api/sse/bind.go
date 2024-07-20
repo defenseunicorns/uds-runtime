@@ -7,18 +7,19 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // Bind is a helper function to bind a cache to an SSE handler
-func Bind[T metav1.Object](getData func() []T, changes <-chan struct{}) func(w http.ResponseWriter, r *http.Request) {
+func Bind[T metav1.Object](resource *resources.ResourceList[T]) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		once := r.URL.Query().Get("once")
 
 		// If once is true, send the data once and close the connection
 		if once == "true" {
 			// Convert the data to JSON
-			data, err := json.Marshal(getData())
+			data, err := json.Marshal(resource.GetResources())
 			if err != nil {
 				http.Error(w, "Failed to marshal data", http.StatusInternalServerError)
 				return
@@ -35,7 +36,7 @@ func Bind[T metav1.Object](getData func() []T, changes <-chan struct{}) func(w h
 				return
 			}
 		} else {
-			Handler(w, r, getData, changes)
+			Handler(w, r, resource.GetResources, resource.Changes)
 		}
 	}
 }
