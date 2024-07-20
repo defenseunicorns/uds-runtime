@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { suite, test, expect } from 'vitest'
-import { parseCPU, parseMemory, formatCPU, formatMemory } from './utils'
+import { expect, suite, test } from 'vitest'
+import { formatCPU, formatMemory, parseCPU, parseMemory } from './utils'
 
 suite('CPU and Memory Utility Functions', () => {
   suite('parseCPU', () => {
