@@ -1,5 +1,5 @@
 {
-  "name": "uds-engine",
+  "name": "uds-runtime",
   "version": "0.0.1",
   "private": true,
   "scripts": {

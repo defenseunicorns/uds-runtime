@@ -13,9 +13,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/defenseunicorns/uds-engine/pkg/api/monitor"
-	"github.com/defenseunicorns/uds-engine/pkg/api/resources"
-	"github.com/defenseunicorns/uds-engine/pkg/api/sse"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/sse"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	appsv1 "k8s.io/api/apps/v1"

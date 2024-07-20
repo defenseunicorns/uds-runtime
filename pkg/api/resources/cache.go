@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/defenseunicorns/uds-engine/pkg/k8s"
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
 
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"

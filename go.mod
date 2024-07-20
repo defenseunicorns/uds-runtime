@@ -1,4 +1,4 @@
-module github.com/defenseunicorns/uds-engine
+module github.com/defenseunicorns/uds-runtime
 
 go 1.22.4
 

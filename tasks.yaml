@@ -11,13 +11,13 @@ tasks:
       - cmd: air -c .air.toml
 
   - name: dev-ui
-    description: "run the engine ui in dev mode"
+    description: "run the ui in dev mode"
     actions:
       - cmd: npm ci && npm run dev
         dir: ui
 
   - name: build
-    description: "build the api server and engine ui"
+    description: "build the api server and ui"
     actions:
       - task: setup:build-ui
       - task: setup:build-api
