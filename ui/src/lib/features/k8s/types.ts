@@ -1,7 +1,15 @@
 import type { KubernetesObject } from '@kubernetes/client-node'
 import { type Writable } from 'svelte/store'
 
-import { type CommonRow } from '../../types'
+export interface CommonRow {
+  name: string
+  namespace?: string
+  creationTimestamp: Date
+  age?: {
+    sort: number
+    text: string
+  }
+}
 
 export type ColumnWrapper<T> = [name: keyof T, styles?: string][]
 

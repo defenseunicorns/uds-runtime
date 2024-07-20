@@ -3,10 +3,8 @@
 
 import type { V1Namespace as Resource } from '@kubernetes/client-node'
 
-import { type ResourceStoreInterface, type ResourceWithTable } from '$lib/features/k8s/types'
-import { type CommonRow } from '$lib/types'
 import { ResourceStore } from '../store'
-import { type ColumnWrapper } from '../types'
+import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from '../types'
 
 export interface Row extends CommonRow {
   status: string
