@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test'
-import * as fs from 'node:fs'
 
 test.describe('Navigation', async () => {
   test.beforeEach(async ({ page }) => {
