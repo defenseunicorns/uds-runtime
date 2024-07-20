@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
-//
+
 import type { V1DaemonSet as Resource } from '@kubernetes/client-node'
 
 import { type ResourceStoreInterface, type ResourceWithTable } from '$lib/features/k8s/types'
