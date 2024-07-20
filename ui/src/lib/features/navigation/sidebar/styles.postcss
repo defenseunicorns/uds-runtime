@@ -1,6 +1,20 @@
 #main-sidebar {
-  &.w-16 .expanded-only {
-    @apply hidden;
+  &.w-16:not(:hover) {
+    #sidebar-footer {
+      @apply flex-col;
+    }
+
+    .expanded-only {
+      @apply hidden;
+    }
+
+    #sidebar-filter {
+      @apply collapse;
+    }
+  }
+
+  .expanded-only {
+    @apply transition-all duration-300;
   }
 
   .group {

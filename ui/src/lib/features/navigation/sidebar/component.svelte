@@ -46,17 +46,17 @@
 
 <aside
   id="main-sidebar"
-  class="fixed left-0 top-14 z-40 h-screen -translate-x-full transition-all duration-300 ease-in-out sm:translate-x-0 {$isSidebarExpanded
+  class="fixed left-0 top-14 z-40 h-screen -translate-x-full transition-all duration-300 ease-in-out sm:translate-x-0 hover:w-64 {$isSidebarExpanded
     ? 'w-64'
     : 'w-16'}"
-  aria-label="Sidenav"
 >
-  <div class="h-full overflow-y-auto border-r border-gray-200 bg-white px-3 py-5 dark:border-gray-700 dark:bg-gray-800">
+  <div
+    class="h-full overflow-y-auto border-r border-gray-200 bg-white px-3 py-5 dark:border-gray-700 dark:bg-gray-800 flex flex-col"
+  >
     <div class="flex items-center mb-4">
       <div class="relative w-full">
         <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
           <svg
-            aria-hidden="true"
             class="w-5 h-5 text-gray-500 dark:text-gray-400"
             fill="currentColor"
             viewBox="0 0 20 20"
@@ -68,7 +68,7 @@
         </div>
         <input
           type="search"
-          id="simple-search"
+          id="sidebar-filter"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Filter Pages"
           on:keyup={filterRoutes}
@@ -127,32 +127,29 @@
         </a>
       </li>
     </ul>
-  </div>
-  <div
-    class="absolute bottom-16 left-0 z-20 flex hidden w-full justify-center border-r border-gray-200 bg-white p-4 lg:flex dark:border-gray-700 dark:bg-gray-800 {$isSidebarExpanded
-      ? ''
-      : 'flex-col'}"
-  >
-    <a
-      data-testid="global-sidenav-preferences"
-      href="/preferences"
-      class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-    >
-      <SettingsAdjust class="h-6 w-6" />
-    </a>
-    <a
-      data-testid="global-sidenav-settings"
-      href="/settings"
-      class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-    >
-      <SettingsEdit class="h-6 w-6" />
-    </a>
-    <a
-      data-testid="global-sidenav-help"
-      href="/help"
-      class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-    >
-      <Help class="h-6 w-6" />
-    </a>
+    <div class="grow"></div>
+    <div id="sidebar-footer" class="flex hidden justify-center bg-white mb-16 mt-8 lg:flex dark:bg-gray-800">
+      <a
+        data-testid="global-sidenav-preferences"
+        href="/preferences"
+        class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+      >
+        <SettingsAdjust class="h-6 w-6" />
+      </a>
+      <a
+        data-testid="global-sidenav-settings"
+        href="/settings"
+        class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+      >
+        <SettingsEdit class="h-6 w-6" />
+      </a>
+      <a
+        data-testid="global-sidenav-help"
+        href="/help"
+        class="icon inline-flex cursor-pointer justify-center rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+      >
+        <Help class="h-6 w-6" />
+      </a>
+    </div>
   </div>
 </aside>
