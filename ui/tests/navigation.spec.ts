@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+
 import { expect, test } from '@playwright/test'
 
 test.describe('Navigation', async () => {

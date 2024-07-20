@@ -74,6 +74,29 @@
     }
   })
 
+  const exportPeprStream = () => {
+    const data = $peprStream.map((item) => ({
+      event: item.event,
+      resource: item._name,
+      count: item.count,
+      timestamp: item.ts,
+    }))
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `pepr-stream-${new Date().toISOString()}.json`
+
+    try {
+      a.click()
+    } finally {
+      setTimeout(() => {
+        URL.revokeObjectURL(url)
+      }, 100) // debounce to ensure download has started
+    }
+  }
+
   const widths = ['w-1/6', 'w-1/3', 'w-1/4', 'w-2/5', 'w-1/2', 'w-1/5', 'w-1/3', 'w-1/4']
   const skeletonRows = widths.sort(() => Math.random() - 0.5)
 </script>
@@ -106,7 +129,7 @@
         <div
           class="flex flex-shrink-0 flex-col space-y-3 md:flex-row md:items-center md:space-x-3 md:space-y-0 lg:justify-end"
         >
-          <button type="button">
+          <button name="Export" type="button" on:click={exportPeprStream}>
             <Export class="mr-2" />
             Export
           </button>
