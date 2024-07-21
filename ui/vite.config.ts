@@ -4,7 +4,7 @@
 import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vitest/config'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [sveltekit()],
   server: {
     proxy: {
@@ -21,4 +21,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ['src/setupTests.ts'],
   },
-})
+  resolve: {
+    conditions: mode === 'test' ? ['browser'] : [],
+  },
+}))
