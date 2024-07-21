@@ -7,6 +7,7 @@ export { default as NamespaceTable } from './namespaces/component.svelte'
 export { default as CronJobTable } from './cronjobs/component.svelte'
 export { default as DaemonSetsTable } from './daemonsets/component.svelte'
 export { default as DeploymentTable } from './deployments/component.svelte'
+export { default as JobTable } from './jobs/component.svelte'
 export { default as PodTable } from './pods/component.svelte'
 export { default as StatefulsetTable } from './statefulsets/component.svelte'
 
