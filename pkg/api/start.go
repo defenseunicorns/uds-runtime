@@ -60,7 +60,7 @@ func Start(assets embed.FS) error {
 			})
 
 			// Config resources
-			r.Route("/config", func(r chi.Router) {
+			r.Route("/configs", func(r chi.Router) {
 				r.Get("/uds-packages", sse.Bind(cache.UDSPackages))
 				r.Get("/uds-exemptions", sse.Bind(cache.UDSExemptions))
 				r.Get("/configmaps", sse.Bind(cache.Configmaps))
@@ -75,7 +75,7 @@ func Start(assets embed.FS) error {
 			})
 
 			// Network resources
-			r.Route("/network", func(r chi.Router) {
+			r.Route("/networks", func(r chi.Router) {
 				r.Get("/services", sse.Bind(cache.Services))
 				r.Get("/networkpolicies", sse.Bind(cache.NetworkPolicies))
 				r.Get("/endpoints", sse.Bind(cache.Endpoints))
