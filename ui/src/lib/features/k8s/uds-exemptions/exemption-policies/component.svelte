@@ -7,7 +7,7 @@
   export let policies: Policy[]
 </script>
 
-<ul class="mt-4   text-sm">
+<ul class="mt-4 text-sm">
   {#each policies as policy}
     <li>- {policy}</li>
   {/each}
