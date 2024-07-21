@@ -5,7 +5,7 @@
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
 
-  export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['details'], ['policies'], ['age']]
+  export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['details'], ['matcher'], ['policies'], ['age']]
 </script>
 
 <DataTable {columns} {createStore} />

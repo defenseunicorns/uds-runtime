@@ -18,7 +18,7 @@
       <div>Mem: {formatMemory(totalMemory)}</div>
     </div>
 
-    <div class="tooltip">
+    <div class="tooltip tooltip-left">
       {#each containers as container}
         <div class="mb-1 leading-loose">
           <h3 class="font-bold">{container.name}:</h3>

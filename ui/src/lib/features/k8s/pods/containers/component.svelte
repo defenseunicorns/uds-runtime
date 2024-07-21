@@ -18,7 +18,7 @@
     ></div>
   {/each}
 
-  <div class="tooltip">
+  <div class="tooltip tooltip-left">
     {#each containers as c}
       <div class="font-bold">
         <div

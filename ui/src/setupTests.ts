@@ -3,17 +3,17 @@
 
 import '@testing-library/jest-dom'
 
+const mockComponent = () => ({
+  $$: {
+    on_mount: [],
+    on_destroy: [],
+    before_update: [],
+    after_update: [],
+  },
+})
+
 // Mock the entire component
 vi.mock('$components', () => {
-  const mockComponent = () => ({
-    $$: {
-      on_mount: [],
-      on_destroy: [],
-      before_update: [],
-      after_update: [],
-    },
-  })
-
   return {
     DataTable: vi.fn().mockImplementation(mockComponent),
   }

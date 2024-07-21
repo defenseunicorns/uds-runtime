@@ -3,12 +3,16 @@
 
 import type {
   ExemptionElement,
+  Matcher,
+  Policy,
   Exemption as Resource,
 } from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
 
 import { ResourceStore } from '../store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from '../types'
 import ExemptionDetails from './exemption-details/component.svelte'
+import ExemptionMatcher from './exemption-matcher/component.svelte'
+import ExemptionPolicies from './exemption-policies/component.svelte'
 
 interface Row extends CommonRow {
   title: string
@@ -19,7 +23,18 @@ interface Row extends CommonRow {
       exemption: ExemptionElement
     }
   }
-  policies: string
+  matcher: {
+    component: typeof ExemptionMatcher
+    props: {
+      matcher: Matcher
+    }
+  }
+  policies: {
+    component: typeof ExemptionPolicies
+    props: {
+      policies: Policy[]
+    }
+  }
 }
 
 export type Columns = ColumnWrapper<Row>
@@ -51,7 +66,18 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
               exemption: e,
             },
           },
-          policies: e.policies.join(', '),
+          matcher: {
+            component: ExemptionMatcher,
+            props: {
+              matcher: e.matcher,
+            },
+          },
+          policies: {
+            component: ExemptionPolicies,
+            props: {
+              policies: e.policies.sort(),
+            },
+          },
         },
       }))
 

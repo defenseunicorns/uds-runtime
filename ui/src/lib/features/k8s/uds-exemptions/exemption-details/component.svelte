@@ -2,20 +2,19 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
+  import { InformationFilled } from 'carbon-icons-svelte'
   import type { ExemptionElement } from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
 
   export let exemption: ExemptionElement
 </script>
 
-<p class="font-bold tracking-tight">{exemption.title}</p>
+<p class=" whitespace-nowrap relative group py-4 flex items-center">
+  <span>{exemption.title}</span>
 
-{#if exemption.description}
-  <p class="mt-4">{exemption.description}</p>
-{/if}
-
-<p class="mt-6">
-  Matches any <strong>{exemption.matcher.kind}</strong> in the <strong>{exemption.matcher.namespace}</strong> namespace whose
-  name matches the following regular expression:
+  {#if exemption.description}
+    <span> <InformationFilled class="ml-2" /></span>
+    <div class="tooltip tooltip-right">
+      <div class="text-balance max-w-md text-loose">{exemption.description}</div>
+    </div>
+  {/if}
 </p>
-
-<p class="mt-2"><span class="text-sm bg-gray-600 p-1 rounded text-white">{exemption.matcher.name}</span></p>

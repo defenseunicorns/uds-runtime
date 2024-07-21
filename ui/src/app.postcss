@@ -84,7 +84,28 @@
                   @apply px-4 py-2;
 
                   .tooltip {
-                    @apply absolute top-1/2 right-full mr-2 transform -translate-y-1/2 p-2 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-10 pointer-events-none whitespace-nowrap;
+                    @apply absolute top-1/2 transform -translate-y-1/2 p-2 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-10 pointer-events-none whitespace-nowrap;
+                  }
+
+                  .tooltip::before {
+                    content: '';
+                    @apply absolute top-1/2 transform -translate-y-1/2 border-solid border-8;
+                  }
+
+                  .tooltip-left {
+                    @apply right-full mr-2;
+                  }
+
+                  .tooltip-left::before {
+                    @apply left-full border-y-transparent border-r-transparent border-l-gray-900;
+                  }
+
+                  .tooltip-right {
+                    @apply left-full ml-2;
+                  }
+
+                  .tooltip-right::before {
+                    @apply right-full border-y-transparent border-l-transparent border-r-gray-900;
                   }
                 }
 
