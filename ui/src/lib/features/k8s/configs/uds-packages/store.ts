@@ -3,8 +3,8 @@
 
 import type { Package as Resource } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
 
-import { ResourceStore, transformResource } from '../store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '../types'
+import { ResourceStore, transformResource } from '$features/k8s/store'
+import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
 interface Row extends CommonRow {
   monitors: string
@@ -18,7 +18,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/config/uds-packages`
+  const url = `/api/v1/resources/configs/uds-packages`
 
   const transform = transformResource<Resource, Row>((r) => ({
     monitors: r.status?.monitors?.join(', ') ?? '',

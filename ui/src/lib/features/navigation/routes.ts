@@ -3,6 +3,7 @@
 
 import {
   AudioConsole,
+  BareMetalServer,
   ChartCombo,
   Db2Database,
   KubernetesPod,
@@ -31,7 +32,7 @@ const baseRoutes: BaseRoute[] = [
     children: ['Pods', 'Deployments', 'DaemonSets', 'StatefulSets', 'Jobs', 'CronJobs'],
   },
   {
-    name: 'Config',
+    name: 'Configs',
     icon: AudioConsole,
     class: 'icon-rotate-90',
     children: ['UDS Packages', 'UDS Exemptions', 'ConfigMaps', 'Secrets'],
@@ -51,7 +52,7 @@ const baseRoutes: BaseRoute[] = [
     ],
   },
   {
-    name: 'Network',
+    name: 'Networks',
     icon: Network_2,
     children: ['Services', 'Virtual Services', 'Network Policies', 'Endpoints'],
   },
@@ -63,6 +64,10 @@ const baseRoutes: BaseRoute[] = [
   {
     name: 'Namespaces',
     icon: Layers,
+  },
+  {
+    name: 'Nodes',
+    icon: BareMetalServer,
   },
 ]
 

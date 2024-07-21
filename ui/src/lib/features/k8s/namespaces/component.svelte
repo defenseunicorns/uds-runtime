@@ -6,7 +6,7 @@
 
   import { page } from '$app/stores'
   import { DataTable } from '$components'
-  import type { ResourceStoreInterface } from '$features/k8s/store'
+  import type { ResourceStoreInterface } from '$features/k8s/types'
   import { type Columns, type Row } from './store'
 
   export let columns: Columns = [['name', 'emphasize'], ['status'], ['age']]
@@ -19,5 +19,5 @@
 </script>
 
 {#if $namespaces}
-  <DataTable {columns} {createStore} />
+  <DataTable {columns} {createStore} isNamespaced={false} />
 {/if}

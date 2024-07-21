@@ -1,15 +1,9 @@
 import { render } from '@testing-library/svelte'
 
 import * as components from '$components'
-import type { CommonRow, ResourceStoreInterface } from '$features/k8s/types'
-import type { KubernetesObject } from '@kubernetes/client-node'
 import type { ComponentType } from 'svelte'
 
-export function testDefaultColumns<T extends CommonRow>(
-  Component: ComponentType,
-  createStore: () => ResourceStoreInterface<KubernetesObject, T>,
-  defaultColumns: string[][],
-) {
+export function testK8sTableWithDefaults(Component: ComponentType, props: Record<string, unknown>) {
   test('creates component with correct props and default columns', () => {
     // Access the mocked DataTable
     const { DataTable } = components
@@ -21,37 +15,26 @@ export function testDefaultColumns<T extends CommonRow>(
 
     expect(DataTable).toHaveBeenCalledWith({
       $$inline: true,
-      props: {
-        columns: defaultColumns,
-        createStore: createStore,
-      },
+      props,
     })
   })
 }
 
-export function testCustomColumns<T extends CommonRow>(
-  Component: ComponentType,
-  createStore: () => ResourceStoreInterface<KubernetesObject, T>,
-) {
+export function testK8sTableWithCustomColumns(Component: ComponentType, props: Record<string, unknown>) {
   test('creates component with custom columns', () => {
     // Access the mocked DataTable
     const { DataTable } = components
 
-    const customColumns = [['blah'], ['blah2']]
+    props.columns = [['blah'], ['blah2']]
 
-    render(Component, {
-      columns: customColumns,
-    })
+    render(Component, { columns: props.columns })
 
     // Check if DataTable was called
     expect(DataTable).toHaveBeenCalled()
 
     expect(DataTable).toHaveBeenCalledWith({
       $$inline: true,
-      props: {
-        columns: customColumns,
-        createStore: createStore,
-      },
+      props,
     })
   })
 }

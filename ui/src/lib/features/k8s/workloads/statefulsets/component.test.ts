@@ -3,7 +3,7 @@
 
 import { beforeEach, vi } from 'vitest'
 
-import { testCustomColumns, testDefaultColumns } from '../test-helper'
+import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -12,7 +12,10 @@ suite('StatefulsetTable Component', () => {
     vi.clearAllMocks()
   })
 
-  testDefaultColumns(Component, createStore, [['name', 'emphasize'], ['namespace'], ['ready'], ['service'], ['age']])
+  testK8sTableWithDefaults(Component, {
+    createStore,
+    columns: [['name', 'emphasize'], ['namespace'], ['ready'], ['service'], ['age']],
+  })
 
-  testCustomColumns(Component, createStore)
+  testK8sTableWithCustomColumns(Component, { createStore })
 })

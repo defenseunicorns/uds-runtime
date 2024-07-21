@@ -3,18 +3,18 @@
 
 import '@testing-library/jest-dom'
 
-import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '../test-helper'
+import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
 import Component from './component.svelte'
 import { createStore } from './store'
 
-suite('EventTable Component', () => {
+suite('CronjobTable Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['namespace'], ['age'], ['type'], ['reason'], ['object_kind'], ['object_name'], ['count']],
+    columns: [['name', 'emphasize'], ['namespace'], ['completions'], ['durations'], ['age']],
   })
 
   testK8sTableWithCustomColumns(Component, { createStore })

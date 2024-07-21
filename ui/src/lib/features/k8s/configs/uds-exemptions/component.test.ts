@@ -3,7 +3,7 @@
 
 import '@testing-library/jest-dom'
 
-import { testCustomColumns, testDefaultColumns } from '../test-helper'
+import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -47,14 +47,10 @@ suite('UDSExemptionTable Component', () => {
     vi.clearAllMocks()
   })
 
-  testDefaultColumns(Component, createStore, [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['details'],
-    ['matcher'],
-    ['policies'],
-    ['age'],
-  ])
+  testK8sTableWithDefaults(Component, {
+    createStore,
+    columns: [['name', 'emphasize'], ['namespace'], ['details'], ['matcher'], ['policies'], ['age']],
+  })
 
-  testCustomColumns(Component, createStore)
+  testK8sTableWithCustomColumns(Component, { createStore })
 })

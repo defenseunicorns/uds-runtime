@@ -3,8 +3,8 @@
 
 import type { V1DaemonSet as Resource } from '@kubernetes/client-node'
 
-import { ResourceStore, transformResource } from '../store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '../types'
+import { ResourceStore, transformResource } from '$features/k8s/store'
+import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
 interface Row extends CommonRow {
   desired: number
