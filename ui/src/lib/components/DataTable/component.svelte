@@ -10,8 +10,12 @@
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
 
+  // Determine if the data is namespaced
+  export let isNamespaced = true
+
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
   export let columns: [name: string, styles?: string][]
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
@@ -20,9 +24,6 @@
 
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
-
-  // If the route is a namespace route, we don't want to show the namespace dropdown
-  let isNamespace = $page.url.pathname.includes('/namespaces')
 
   onMount(() => {
     return rows.start()
@@ -78,7 +79,7 @@
         </div>
         <div class="flex-grow"></div>
         <div>
-          {#if !isNamespace}
+          {#if isNamespaced}
             <select id="stream" bind:value={$namespace}>
               <option value="">All Namespaces</option>
               <hr />
