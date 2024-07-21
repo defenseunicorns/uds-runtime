@@ -63,21 +63,30 @@ func Start(assets embed.FS) error {
 			r.Route("/config", func(r chi.Router) {
 				r.Get("/uds-packages", sse.Bind(cache.UDSPackages))
 				r.Get("/uds-exemptions", sse.Bind(cache.UDSExemptions))
+				r.Get("/configmaps", sse.Bind(cache.Configmaps))
+				r.Get("/secrets", sse.Bind(cache.Secrets))
 			})
 
 			// Cluster ops resources
 			r.Route("/cluster-ops", func(r chi.Router) {
-
+				r.Get("/mutatingwebhooks", sse.Bind(cache.MutatingWebhooks))
+				r.Get("/validatingwebhooks", sse.Bind(cache.ValidatingWebhooks))
+				r.Get("/hpas", sse.Bind(cache.HPAs))
 			})
 
 			// Network resources
 			r.Route("/network", func(r chi.Router) {
-
+				r.Get("/services", sse.Bind(cache.Services))
+				r.Get("/networkpolicies", sse.Bind(cache.NetworkPolicies))
+				r.Get("/endpoints", sse.Bind(cache.Endpoints))
+				r.Get("/virtualservices", sse.Bind(cache.VirtualServices))
 			})
 
 			// Storage resources
 			r.Route("/storage", func(r chi.Router) {
-
+				r.Get("/persistentvolumes", sse.Bind(cache.PersistentVolumes))
+				r.Get("/persistentvolumeclaims", sse.Bind(cache.PersistentVolumeClaims))
+				r.Get("/storageclasses", sse.Bind(cache.StorageClasses))
 			})
 		})
 	})

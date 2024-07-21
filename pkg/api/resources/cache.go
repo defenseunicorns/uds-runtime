@@ -15,6 +15,8 @@ import (
 	autoscalingV2 "k8s.io/api/autoscaling/v2"
 	batchV1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
+	networkingV1 "k8s.io/api/networking/v1"
+	storageV1 "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -57,6 +59,17 @@ type Cache struct {
 	ValidatingWebhooks *ResourceList[*admissionRegV1.ValidatingWebhookConfiguration]
 	HPAs               *ResourceList[*autoscalingV2.HorizontalPodAutoscaler]
 
+	// Network resources
+	Services        *ResourceList[*v1.Service]
+	NetworkPolicies *ResourceList[*networkingV1.NetworkPolicy]
+	Endpoints       *ResourceList[*v1.Endpoints]
+	VirtualServices *ResourceList[*unstructured.Unstructured]
+
+	// Storage resources
+	PersistentVolumes      *ResourceList[*v1.PersistentVolume]
+	PersistentVolumeClaims *ResourceList[*v1.PersistentVolumeClaim]
+	StorageClasses         *ResourceList[*storageV1.StorageClass]
+
 	// Metrics
 	PodMetrics     *PodMetrics
 	MetricsChanges chan struct{}
@@ -87,6 +100,8 @@ func NewCache(ctx context.Context) (*Cache, error) {
 	c.bindUDSResources()
 	c.bindConfigResources()
 	c.bindClusterOpsResources()
+	c.bindNetworkResources()
+	c.bindStorageResources()
 
 	// start the informer
 	go c.factory.Start(c.stopper)
@@ -132,6 +147,26 @@ func (c *Cache) bindConfigResources() {
 func (c *Cache) bindClusterOpsResources() {
 	c.MutatingWebhooks = NewResourceList[*admissionRegV1.MutatingWebhookConfiguration](c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer())
 	c.ValidatingWebhooks = NewResourceList[*admissionRegV1.ValidatingWebhookConfiguration](c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer())
+	c.HPAs = NewResourceList[*autoscalingV2.HorizontalPodAutoscaler](c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer())
+}
+
+func (c *Cache) bindNetworkResources() {
+	c.Services = NewResourceList[*v1.Service](c.factory.Core().V1().Services().Informer())
+	c.NetworkPolicies = NewResourceList[*networkingV1.NetworkPolicy](c.factory.Networking().V1().NetworkPolicies().Informer())
+	c.Endpoints = NewResourceList[*v1.Endpoints](c.factory.Core().V1().Endpoints().Informer())
+
+	// VirtualServices are not part of the core informer factory
+	c.VirtualServices = NewResourceList[*unstructured.Unstructured](c.dynamicFactory.ForResource(schema.GroupVersionResource{
+		Group:    "networking.istio.io",
+		Version:  "v1",
+		Resource: "virtualservices",
+	}).Informer())
+}
+
+func (c *Cache) bindStorageResources() {
+	c.PersistentVolumes = NewResourceList[*v1.PersistentVolume](c.factory.Core().V1().PersistentVolumes().Informer())
+	c.PersistentVolumeClaims = NewResourceList[*v1.PersistentVolumeClaim](c.factory.Core().V1().PersistentVolumeClaims().Informer())
+	c.StorageClasses = NewResourceList[*storageV1.StorageClass](c.factory.Storage().V1().StorageClasses().Informer())
 }
 
 func (c *Cache) bindUDSResources() {
