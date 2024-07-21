@@ -1,26 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import '@testing-library/jest-dom'
+import { beforeEach, vi } from 'vitest'
 
 import { testCustomColumns, testDefaultColumns } from '../test-helper'
 import Component from './component.svelte'
 import { createStore } from './store'
 
-suite('EventTable Component', () => {
+suite('StatefulsetTable Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  testDefaultColumns(Component, createStore, [
-    ['namespace'],
-    ['age'],
-    ['type'],
-    ['reason'],
-    ['object_kind'],
-    ['object_name'],
-    ['count'],
-  ])
+  testDefaultColumns(Component, createStore, [['name', 'emphasize'], ['namespace'], ['ready'], ['service'], ['age']])
 
   testCustomColumns(Component, createStore)
 })
