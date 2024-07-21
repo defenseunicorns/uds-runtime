@@ -3,8 +3,8 @@
 
 import type { V1Namespace as Resource } from '@kubernetes/client-node'
 
-import { ResourceStore } from '../store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from '../types'
+import { ResourceStore, transformResource } from '../store'
+import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '../types'
 
 export interface Row extends CommonRow {
   status: string
@@ -12,23 +12,12 @@ export interface Row extends CommonRow {
 
 export type Columns = ColumnWrapper<Row>
 
-/**
- * Create a new NamespaceStore for streaming namespaces
- *
- * @returns A new NamespaceStore instance
- */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/workloads/namespaces`
+  const url = `/api/v1/resources/namespaces`
 
-  const transform = (resources: Resource[]) =>
-    resources.map<ResourceWithTable<Resource, Row>>((r) => ({
-      resource: r,
-      table: {
-        name: r.metadata?.name ?? '',
-        status: r.status?.phase ?? '',
-        creationTimestamp: new Date(r.metadata?.creationTimestamp ?? ''),
-      },
-    }))
+  const transform = transformResource<Resource, Row>((r) => ({
+    status: r.status?.phase ?? '',
+  }))
 
   const store = new ResourceStore<Resource, Row>('name')
 

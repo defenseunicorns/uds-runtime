@@ -3,8 +3,8 @@
 
 import type { V1DaemonSet as Resource } from '@kubernetes/client-node'
 
-import { ResourceStore } from '../store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from '../types'
+import { ResourceStore, transformResource } from '../store'
+import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '../types'
 
 interface Row extends CommonRow {
   desired: number
@@ -17,33 +17,21 @@ interface Row extends CommonRow {
 
 export type Columns = ColumnWrapper<Row>
 
-/**
- * Create a new DaemonsetStore for streaming deployment resources
- *
- * @returns A new DaemonsetStore instance
- */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/workloads/daemonsets`
 
-  const transform = (resources: Resource[]) =>
-    resources.map<ResourceWithTable<Resource, Row>>((r) => ({
-      resource: r,
-      table: {
-        name: r.metadata?.name ?? '',
-        namespace: r.metadata?.namespace ?? '',
-        desired: r.status?.desiredNumberScheduled ?? 0,
-        current: r.status?.currentNumberScheduled ?? 0,
-        ready: r.status?.numberReady ?? 0,
-        up_to_date: r.status?.updatedNumberScheduled ?? 0,
-        available: r.status?.conditions?.filter((c) => c.type === 'Available').length ?? 0,
-        node_selector: r.spec?.template.spec?.nodeSelector
-          ? Object.entries(r.spec?.template.spec?.nodeSelector ?? {})
-              .map(([key, value]) => `${key}: ${value}`)
-              .join(', ')
-          : '-',
-        creationTimestamp: new Date(r.metadata?.creationTimestamp ?? ''),
-      },
-    }))
+  const transform = transformResource<Resource, Row>((r) => ({
+    desired: r.status?.desiredNumberScheduled ?? 0,
+    current: r.status?.currentNumberScheduled ?? 0,
+    ready: r.status?.numberReady ?? 0,
+    up_to_date: r.status?.updatedNumberScheduled ?? 0,
+    available: r.status?.conditions?.filter((c) => c.type === 'Available').length ?? 0,
+    node_selector: r.spec?.template.spec?.nodeSelector
+      ? Object.entries(r.spec?.template.spec?.nodeSelector ?? {})
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(', ')
+      : '-',
+  }))
 
   const store = new ResourceStore<Resource, Row>('name')
 

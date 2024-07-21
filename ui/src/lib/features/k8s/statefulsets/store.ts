@@ -3,8 +3,8 @@
 
 import type { V1StatefulSet as Resource } from '@kubernetes/client-node'
 
-import { ResourceStore } from '../store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from '../types'
+import { ResourceStore, transformResource } from '../store'
+import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '../types'
 
 interface Row extends CommonRow {
   ready: string
@@ -13,25 +13,13 @@ interface Row extends CommonRow {
 
 export type Columns = ColumnWrapper<Row>
 
-/**
- * Create a new StatefulsetStore for streaming statefulset resources
- *
- * @returns A new StatefulsetStore instance
- */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/workloads/statefulsets`
 
-  const transform = (resources: Resource[]) =>
-    resources.map<ResourceWithTable<Resource, Row>>((r) => ({
-      resource: r,
-      table: {
-        name: r.metadata?.name ?? '',
-        namespace: r.metadata?.namespace ?? '',
-        ready: `${r.status?.readyReplicas ?? 0} / ${r.status?.replicas ?? 0}`,
-        service: r.spec?.serviceName ?? '',
-        creationTimestamp: new Date(r.metadata?.creationTimestamp ?? ''),
-      },
-    }))
+  const transform = transformResource<Resource, Row>((r) => ({
+    ready: `${r.status?.readyReplicas ?? 0} / ${r.status?.replicas ?? 0}`,
+    service: r.spec?.serviceName ?? '',
+  }))
 
   const store = new ResourceStore<Resource, Row>('name')
 

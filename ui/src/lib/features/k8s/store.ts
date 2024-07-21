@@ -198,7 +198,45 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   subscribe: (run: (value: ResourceWithTable<T, U>[]) => void) => () => void
 }
 
-// Factory function to create a ResourceStore instance
+/**
+ * Create a new ResourceStore instance
+ * @param initialSortBy The initial key to sort the table by
+ * @returns A new ResourceStore instance
+ */
 export function createResourceStore<T extends KubernetesObject, U extends CommonRow>(initialSortBy: keyof U) {
   return new ResourceStore<T, U>(initialSortBy)
+}
+
+/**
+ * Transform KubernetesObject resources into a common table format
+ *
+ * @param transformer The transformer function to apply to each resource
+ * @returns A function to transform KubernetesObject resources
+ */
+export function transformResource<T extends KubernetesObject, U extends CommonRow>(
+  transformer: (r: T, c?: CommonRow) => Partial<U>,
+) {
+  // Return a function to transform KubernetesObject resources
+  return (resources: T[]) =>
+    // Map the resources to the common table format
+    resources.map<ResourceWithTable<T, U>>((r) => {
+      // Convert common KubernetesObject rows
+      const commonRows = {
+        name: r.metadata?.name ?? '',
+        namespace: r.metadata?.namespace ?? '',
+        creationTimestamp: new Date(r.metadata?.creationTimestamp ?? ''),
+      }
+
+      // Run the transformer on the resource
+      const results = transformer(r, commonRows)
+
+      // Return the resource with the combined table
+      return {
+        resource: r,
+        table: {
+          ...commonRows,
+          ...results,
+        } as U,
+      }
+    })
 }

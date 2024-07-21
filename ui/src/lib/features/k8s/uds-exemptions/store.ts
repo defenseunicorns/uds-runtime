@@ -39,11 +39,6 @@ interface Row extends CommonRow {
 
 export type Columns = ColumnWrapper<Row>
 
-/**
- * Create a new UDSExemptionStore for streaming exemption resources
- *
- * @returns A new UDSExemptionStore instance
- */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/config/uds-exemptions`
 
