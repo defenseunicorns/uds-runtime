@@ -39,12 +39,12 @@ export type Columns = ColumnWrapper<Row>
  * @returns A new PodStore instance
  */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/pods`
+  const url = `/api/v1/resources/workloads/pods`
 
   const metrics = new Map<string, PodMetric>()
   // Store to trigger updates
   const metricsStore = writable<number>()
-  const metricsEvents = new EventSource(`/api/v1/resources/podmetrics`)
+  const metricsEvents = new EventSource(`/api/v1/resources/workloads/podmetrics`)
 
   metricsEvents.onmessage = (event) => {
     const data = JSON.parse(event.data) as PodMetric[]

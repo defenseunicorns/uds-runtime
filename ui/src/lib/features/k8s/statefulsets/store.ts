@@ -19,7 +19,7 @@ export type Columns = ColumnWrapper<Row>
  * @returns A new StatefulsetStore instance
  */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/statefulsets`
+  const url = `/api/v1/resources/workloads/statefulsets`
 
   const transform = (resources: Resource[]) =>
     resources.map<ResourceWithTable<Resource, Row>>((r) => ({

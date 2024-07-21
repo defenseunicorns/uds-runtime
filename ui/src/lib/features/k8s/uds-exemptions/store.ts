@@ -45,7 +45,7 @@ export type Columns = ColumnWrapper<Row>
  * @returns A new UDSExemptionStore instance
  */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/uds/exemptions`
+  const url = `/api/v1/resources/config/uds-exemptions`
 
   const transform = (resources: Resource[]) =>
     resources

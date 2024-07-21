@@ -23,7 +23,7 @@ export type Columns = ColumnWrapper<Row>
  * @returns A new UDSPackageStore instance
  */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/uds/packages`
+  const url = `/api/v1/resources/config/uds-packages`
 
   const transform = (resources: Resource[]) =>
     resources.map<ResourceWithTable<Resource, Row>>((r) => ({

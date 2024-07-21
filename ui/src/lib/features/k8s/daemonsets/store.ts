@@ -23,7 +23,7 @@ export type Columns = ColumnWrapper<Row>
  * @returns A new DaemonsetStore instance
  */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/daemonsets`
+  const url = `/api/v1/resources/workloads/daemonsets`
 
   const transform = (resources: Resource[]) =>
     resources.map<ResourceWithTable<Resource, Row>>((r) => ({

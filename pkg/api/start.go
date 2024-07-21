@@ -42,22 +42,42 @@ func Start(assets embed.FS) error {
 			r.Get("/nodes", sse.Bind(cache.Nodes))
 			r.Get("/events", sse.Bind(cache.Events))
 			r.Get("/namespaces", sse.Bind(cache.Namespaces))
-			r.Get("/pods", sse.Bind(cache.Pods))
-			r.Get("/deployments", sse.Bind(cache.Deployments))
-			r.Get("/daemonsets", sse.Bind(cache.Daemonsets))
-			r.Get("/statefulsets", sse.Bind(cache.Statefulsets))
-			r.Get("/jobs", sse.Bind(cache.Jobs))
-			r.Get("/cronjobs", sse.Bind(cache.CronJobs))
 
-			// Metrics have their own cache and change channel that updates every 30 seconds
-			// They do not support informers directly, so we need to poll the API
-			r.Get("/podmetrics", func(w http.ResponseWriter, r *http.Request) {
-				sse.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges)
+			// Workload resources
+			r.Route("/workloads", func(r chi.Router) {
+				r.Get("/pods", sse.Bind(cache.Pods))
+				r.Get("/deployments", sse.Bind(cache.Deployments))
+				r.Get("/daemonsets", sse.Bind(cache.Daemonsets))
+				r.Get("/statefulsets", sse.Bind(cache.Statefulsets))
+				r.Get("/jobs", sse.Bind(cache.Jobs))
+				r.Get("/cronjobs", sse.Bind(cache.CronJobs))
+
+				// Metrics have their own cache and change channel that updates every 30 seconds
+				// They do not support informers directly, so we need to poll the API
+				r.Get("/podmetrics", func(w http.ResponseWriter, r *http.Request) {
+					sse.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges)
+				})
 			})
 
-			r.Route("/uds", func(r chi.Router) {
-				r.Get("/packages", sse.Bind(cache.UDSPackages))
-				r.Get("/exemptions", sse.Bind(cache.UDSExemptions))
+			// Config resources
+			r.Route("/config", func(r chi.Router) {
+				r.Get("/uds-packages", sse.Bind(cache.UDSPackages))
+				r.Get("/uds-exemptions", sse.Bind(cache.UDSExemptions))
+			})
+
+			// Cluster ops resources
+			r.Route("/cluster-ops", func(r chi.Router) {
+
+			})
+
+			// Network resources
+			r.Route("/network", func(r chi.Router) {
+
+			})
+
+			// Storage resources
+			r.Route("/storage", func(r chi.Router) {
+
 			})
 		})
 	})

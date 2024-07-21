@@ -18,7 +18,7 @@ export type Columns = ColumnWrapper<Row>
  * @returns A new NamespaceStore instance
  */
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/namespaces`
+  const url = `/api/v1/resources/workloads/namespaces`
 
   const transform = (resources: Resource[]) =>
     resources.map<ResourceWithTable<Resource, Row>>((r) => ({
