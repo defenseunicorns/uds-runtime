@@ -84,12 +84,15 @@
                   @apply px-4 py-2;
 
                   .tooltip {
-                    @apply absolute top-1/2 transform -translate-y-1/2 p-2 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-10 pointer-events-none whitespace-nowrap;
+                    /* @apply absolute top-[40px] left-1/2 transform -translate-y-0 -translate-x-1/2  text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-10 pointer-events-none whitespace-nowrap; */
+                    @apply absolute top-[40px] -left-[108px] p-2 bg-gray-900 shadow-lg group-hover:opacity-90 rounded opacity-0 z-10;
+                    width: 216px;
                   }
 
                   .tooltip::before {
                     content: '';
-                    @apply absolute top-1/2 transform -translate-y-1/2 border-solid border-8;
+                    @apply absolute -top-4 border-solid border-8 -rotate-90;
+                    left: 100px !important;
                   }
 
                   .tooltip-left {
