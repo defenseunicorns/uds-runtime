@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
+	"github.com/go-chi/chi/v5"
 )
 
 // Bind is a helper function to bind a cache to an SSE handler
@@ -18,47 +19,70 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 		once := r.URL.Query().Get("once") == "true"
 		dense := r.URL.Query().Get("dense") == "true"
 
+		// Get the UID from the URL if it exists
+		uid := chi.URLParam(r, "uid")
+
+		// If a UID is provided, send the data for that UID
+		// Streaming is not supported for single resources
+		if uid != "" {
+			data, found := resource.GetResource(uid)
+			// If the resource is not found, return a 404
+			if !found {
+				http.Error(w, "Resource not found", http.StatusNotFound)
+				return
+			}
+
+			// Otherwise, write the data to the client
+			writeData(w, r, data)
+			return
+		}
+
 		// Get the data from the cache as sparse by default
 		getData := resource.GetSparseResources
 		if dense {
 			getData = resource.GetResources
 		}
 
-		// If once is true, send the data once and close the connection
+		// If once is true, send the list data once and close the connection
 		if once {
-			// Convert the data to JSON
-			data, err := json.Marshal(getData())
-			if err != nil {
-				http.Error(w, "Failed to marshal data", http.StatusInternalServerError)
-				return
-			}
-
-			// Set the headers
-			w.Header().Set("Content-Type", "text/json; charset=utf-8")
-			w.Header().Set("Cache-Control", "no-cache")
-			w.Header().Set("Connection", "keep-alive")
-
-			// Attempt to compress the data if the client supports it
-			supportsGzip := useCompression(w, r)
-			if supportsGzip {
-				compressedData, err := compressBinaryData(data)
-				if err != nil {
-					http.Error(w, "Failed to compress data", http.StatusInternalServerError)
-					return
-				}
-
-				// Replace the data with the compressed data
-				data = compressedData
-			}
-
-			// Write the data to the response
-			if _, err := w.Write(data); err != nil {
-				http.Error(w, "Failed to write data", http.StatusInternalServerError)
-				return
-			}
-		} else {
-			// Otherwise, send the data as an SSE stream
-			Handler(w, r, getData, resource.Changes)
+			writeData(w, r, getData())
+			return
 		}
+
+		// Otherwise, send the data as an SSE stream
+		Handler(w, r, getData, resource.Changes)
+	}
+}
+
+func writeData(w http.ResponseWriter, r *http.Request, payload any) {
+	// Convert the data to JSON
+	data, err := json.Marshal(payload)
+	if err != nil {
+		http.Error(w, "Failed to marshal data", http.StatusInternalServerError)
+		return
+	}
+
+	// Set the headers
+	w.Header().Set("Content-Type", "text/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	// Attempt to compress the data if the client supports it
+	supportsGzip := useCompression(w, r)
+	if supportsGzip {
+		compressedData, err := compressBinaryData(data)
+		if err != nil {
+			http.Error(w, "Failed to compress data", http.StatusInternalServerError)
+			return
+		}
+
+		// Replace the data with the compressed data
+		data = compressedData
+	}
+
+	// Write the data to the response
+	if _, err := w.Write(data); err != nil {
+		http.Error(w, "Failed to write data", http.StatusInternalServerError)
+		return
 	}
 }

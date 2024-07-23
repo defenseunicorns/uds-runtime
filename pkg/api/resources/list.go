@@ -60,7 +60,11 @@ func (r *ResourceList) GetResource(uid string) (unstructured.Unstructured, bool)
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 	resource, found := r.resources[uid]
-	return *resource, found
+	if !found {
+		return unstructured.Unstructured{}, false
+	}
+
+	return *resource, true
 }
 
 // GetResources returns a slice of the current resources.
