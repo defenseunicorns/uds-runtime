@@ -54,7 +54,10 @@ func Handler(w http.ResponseWriter, r *http.Request, getData func() []unstructur
 			}
 
 			// Write the compressed data to the client
-			w.Write(compressedData)
+			if _, err := w.Write(compressedData); err != nil {
+				http.Error(w, "Failed to write data", http.StatusInternalServerError)
+				return
+			}
 		} else {
 			// Otherwise, write the uncompressed data to the client
 			fmt.Fprintf(w, "data: %s\n\n", data)
