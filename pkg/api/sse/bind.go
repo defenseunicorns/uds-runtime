@@ -8,18 +8,26 @@ import (
 	"net/http"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // Bind is a helper function to bind a cache to an SSE handler
-func Bind[T metav1.Object](resource *resources.ResourceList[T]) func(w http.ResponseWriter, r *http.Request) {
+func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.Request) {
+	// Return a function that sends the data to the client
 	return func(w http.ResponseWriter, r *http.Request) {
-		once := r.URL.Query().Get("once")
+		// By default, send the data as a sparse stream
+		once := r.URL.Query().Get("once") == "true"
+		dense := r.URL.Query().Get("dense") == "true"
+
+		// Get the data from the cache as sparse by default
+		getData := resource.GetSparseResources
+		if dense {
+			getData = resource.GetResources
+		}
 
 		// If once is true, send the data once and close the connection
-		if once == "true" {
+		if once {
 			// Convert the data to JSON
-			data, err := json.Marshal(resource.GetResources())
+			data, err := json.Marshal(getData())
 			if err != nil {
 				http.Error(w, "Failed to marshal data", http.StatusInternalServerError)
 				return
@@ -36,7 +44,8 @@ func Bind[T metav1.Object](resource *resources.ResourceList[T]) func(w http.Resp
 				return
 			}
 		} else {
-			Handler(w, r, resource.GetResources, resource.Changes)
+			// Otherwise, send the data as an SSE stream
+			Handler(w, r, getData, resource.Changes)
 		}
 	}
 }

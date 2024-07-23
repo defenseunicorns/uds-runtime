@@ -32,8 +32,6 @@ func Start(assets embed.FS) error {
 		return fmt.Errorf("failed to create cache: %w", err)
 	}
 
-	cache.Namespaces.GetResources()
-
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/monitor/pepr/", monitor.Pepr)
 		r.Get("/monitor/pepr/{stream}", monitor.Pepr)
