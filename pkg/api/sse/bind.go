@@ -38,6 +38,19 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 			w.Header().Set("Cache-Control", "no-cache")
 			w.Header().Set("Connection", "keep-alive")
 
+			// Attempt to compress the data if the client supports it
+			supportsGzip := useCompression(w, r)
+			if supportsGzip {
+				compressedData, err := compressBinaryData(data)
+				if err != nil {
+					http.Error(w, "Failed to compress data", http.StatusInternalServerError)
+					return
+				}
+
+				// Replace the data with the compressed data
+				data = compressedData
+			}
+
 			// Write the data to the response
 			if _, err := w.Write(data); err != nil {
 				http.Error(w, "Failed to write data", http.StatusInternalServerError)
