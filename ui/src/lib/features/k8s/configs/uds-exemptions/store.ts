@@ -9,7 +9,12 @@ import type {
 } from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
 
 import { ResourceStore } from '$features/k8s/store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from '$features/k8s/types'
+import {
+  type ColumnWrapper,
+  type CommonRow,
+  type ResourceStoreInterface,
+  type ResourceWithTable,
+} from '$features/k8s/types'
 import ExemptionDetails from './exemption-details/component.svelte'
 import ExemptionMatcher from './exemption-matcher/component.svelte'
 import ExemptionPolicies from './exemption-policies/component.svelte'
