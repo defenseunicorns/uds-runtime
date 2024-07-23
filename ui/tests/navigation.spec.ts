@@ -86,7 +86,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Packages' }).click()
 
-      await expect(page.getByTestId('breadcrumb-item-config')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-configs')).toBeVisible()
       await expect(page.getByTestId('breadcrumb-item-uds-packages')).toBeVisible()
     })
 
@@ -94,7 +94,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Exemptions' }).click()
 
-      await expect(page.getByTestId('breadcrumb-item-config')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-configs')).toBeVisible()
       await expect(page.getByTestId('breadcrumb-item-uds-exemptions')).toBeVisible()
     })
 
@@ -102,7 +102,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'ConfigMaps' }).click()
 
-      await expect(page.getByTestId('breadcrumb-item-config')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-configs')).toBeVisible()
       await expect(page.getByTestId('breadcrumb-item-configmaps')).toBeVisible()
     })
 
@@ -110,7 +110,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'Secrets' }).click()
 
-      await expect(page.getByTestId('breadcrumb-item-config')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-configs')).toBeVisible()
       await expect(page.getByTestId('breadcrumb-item-secrets')).toBeVisible()
     })
   })
@@ -186,7 +186,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: /^Services$/ }).click()
 
-      await expect(page.getByTestId('breadcrumb-item-network')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-networks')).toBeVisible()
       await expect(page.getByTestId('breadcrumb-item-services')).toBeVisible()
     })
 
@@ -194,7 +194,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Virtual Services' }).click()
 
-      await expect(page.getByTestId('breadcrumb-item-network')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-networks')).toBeVisible()
       await expect(page.getByTestId('breadcrumb-item-virtual-services')).toBeVisible()
     })
 
@@ -202,7 +202,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Network Policies' }).click()
 
-      await expect(page.getByTestId('breadcrumb-item-network')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-networks')).toBeVisible()
       await expect(page.getByTestId('breadcrumb-item-network-policies')).toBeVisible()
     })
 
@@ -210,7 +210,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Endpoints' }).click()
 
-      await expect(page.getByTestId('breadcrumb-item-network')).toBeVisible()
+      await expect(page.getByTestId('breadcrumb-item-networks')).toBeVisible()
       await expect(page.getByTestId('breadcrumb-item-endpoints')).toBeVisible()
     })
   })
