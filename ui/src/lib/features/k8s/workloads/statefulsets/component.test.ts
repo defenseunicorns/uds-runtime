@@ -14,7 +14,7 @@ suite('StatefulsetTable Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['namespace'], ['ready'], ['service'], ['age']],
+    columns: [['name', 'emphasize'], ['namespace'], ['ready'], ['age']],
   })
 
   testK8sTableWithCustomColumns(Component, { createStore })

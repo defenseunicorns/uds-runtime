@@ -8,7 +8,8 @@ import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from 
 
 interface Row extends CommonRow {
   ready: string
-  service: string
+  up_to_date: number
+  available: number
 }
 
 export type Columns = ColumnWrapper<Row>
@@ -18,7 +19,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
 
   const transform = transformResource<Resource, Row>((r) => ({
     ready: `${r.status?.readyReplicas ?? 0} / ${r.status?.replicas ?? 0}`,
-    service: r.spec?.serviceName ?? '',
+    up_to_date: r.status?.updatedReplicas ?? 0,
+    available: r.status?.availableReplicas ?? 0,
   }))
 
   const store = new ResourceStore<Resource, Row>('name')

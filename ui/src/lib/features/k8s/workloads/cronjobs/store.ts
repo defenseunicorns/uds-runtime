@@ -16,7 +16,8 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/workloads/cronjobs`
+  // Using dense=true due to schedule & suspend being defined in spec
+  const url = `/api/v1/resources/workloads/cronjobs?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
     schedule: r.spec?.schedule ?? '',

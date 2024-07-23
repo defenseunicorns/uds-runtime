@@ -81,8 +81,9 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     },
     restarts: r.status?.containerStatuses?.reduce((acc, curr) => acc + curr.restartCount, 0) ?? 0,
     controller: r.metadata?.ownerReferences?.at(0)?.kind ?? '',
-    node: r.spec?.nodeName ?? '',
     status: r.status?.phase ?? '',
+    // @todo: This will not work due to using the default sparerResource stream
+    node: r.spec?.nodeName ?? '',
   }))
 
   const store = new ResourceStore<Resource, Row>('name')

@@ -9,7 +9,12 @@ import type {
 } from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
 
 import { ResourceStore } from '$features/k8s/store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from '$features/k8s/types'
+import {
+  type ColumnWrapper,
+  type CommonRow,
+  type ResourceStoreInterface,
+  type ResourceWithTable,
+} from '$features/k8s/types'
 import ExemptionDetails from './exemption-details/component.svelte'
 import ExemptionMatcher from './exemption-matcher/component.svelte'
 import ExemptionPolicies from './exemption-policies/component.svelte'
@@ -40,7 +45,8 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/configs/uds-exemptions`
+  // Using dense=true because this CR does not use the status field
+  const url = `/api/v1/resources/configs/uds-exemptions?dense=true`
 
   const transform = (resources: Resource[]) =>
     resources
