@@ -8,4 +8,4 @@ on:
 jobs:
   validate:
     name: Validate
-    uses: defenseunicorns/uds-common/.github/workflows/commitlint.yaml@772b3337950b7c8e0882c527263684306bba7ce4 # v0.7.1
+    uses: defenseunicorns/uds-common/.github/workflows/commitlint.yaml@91515ef86914334356c35ffb4b2c2c5fb4d19174 # v0.9.0
