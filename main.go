@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"os"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api"
 	"github.com/defenseunicorns/zarf/src/pkg/message"
@@ -13,6 +14,8 @@ var assets embed.FS
 func main() {
 	message.SetLogLevel(message.DebugLevel)
 	if err := api.Start(assets); err != nil {
-		message.Fatal(err, "Failed to start server")
+		// Log the error and exit
+		message.WarnErr(err, "failed to start the API server")
+		os.Exit(1)
 	}
 }
