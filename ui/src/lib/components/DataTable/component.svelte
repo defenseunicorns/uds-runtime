@@ -113,14 +113,15 @@
             {#each $rows as row}
               <tr>
                 {#each columns as [key, style]}
-                  {#if row.table[key].component}
+                  {@const value = row.table[key] || {}}
+                  {#if value.component}
                     <td class={style || ''}>
-                      <svelte:component this={row.table[key].component} {...row.table[key].props} />
+                      <svelte:component this={value.component} {...value.props} />
                     </td>
-                  {:else if row.table[key].text}
-                    <td class={style || ''}>{row.table[key].text}</td>
+                  {:else if value.text}
+                    <td class={style || ''}>{value.text}</td>
                   {:else}
-                    <td class={style || ''}>{row.table[key]}</td>
+                    <td class={style || ''}>{value}</td>
                   {/if}
                 {/each}
               </tr>
