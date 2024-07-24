@@ -16,3 +16,4 @@ export { default as UDSExemptionTable } from './configs/uds-exemptions/component
 export { default as UDSPackageTable } from './configs/uds-packages/component.svelte'
 
 export { default as PriorityClassesTable } from './cluster-ops/priority-classes/component.svelte'
+export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'

@@ -23,3 +23,5 @@ vite.config.ts.timestamp-*
 
 # # Playwright/ Vitest
 /ui/test-results
+
+/zarf-sbom
