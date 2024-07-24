@@ -14,3 +14,5 @@ export { default as StatefulsetTable } from './workloads/statefulsets/component.
 
 export { default as UDSExemptionTable } from './configs/uds-exemptions/component.svelte'
 export { default as UDSPackageTable } from './configs/uds-packages/component.svelte'
+
+export { default as MutatingWebhooksTable } from './cluster-ops/mutatingwebhooks/component.svelte'
