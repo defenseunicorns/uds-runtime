@@ -22,7 +22,10 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     type: r.spec?.type ?? '',
     cluster_ip: r.spec?.clusterIP ?? '',
     external_ip: r.status?.loadBalancer?.ingress?.map((p) => `${p.ip}`).join(', ') ?? '',
-    ports: r.spec?.ports?.map((p) => p.nodePort ? `${p.port}:${p.nodePort}/${p.protocol}` : `${p.port}/${p.protocol}`).join(', ') ?? '',
+    ports:
+      r.spec?.ports
+        ?.map((p) => (p.nodePort ? `${p.port}:${p.nodePort}/${p.protocol}` : `${p.port}/${p.protocol}`))
+        .join(', ') ?? '',
   }))
 
   const store = new ResourceStore<Resource, Row>('name')
