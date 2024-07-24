@@ -12,6 +12,7 @@
     ['cluster_ip'],
     ['external_ip'],
     ['ports'],
+    ['status'],
     ['age'],
   ]
 </script>
