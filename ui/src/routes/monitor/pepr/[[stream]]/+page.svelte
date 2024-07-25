@@ -4,7 +4,7 @@
 <script lang="ts">
   import { Export } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
-  import { writable } from 'svelte/store'
+  import { writable, type Unsubscriber } from 'svelte/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
@@ -14,15 +14,15 @@
   let loaded = false
   let streamFilter = ''
   let eventSource: EventSource | null = null
+  let unsubscribePage: Unsubscriber
 
   const peprStream = writable<PeprEvent[]>([])
 
   onDestroy(() => {
-    eventSource?.close()
-    eventSource = null
+    unsubscribePage()
   })
 
-  page.subscribe(({ route, params }) => {
+  unsubscribePage = page.subscribe(({ route, params }) => {
     // Reset the page when the route changes
     eventSource?.close()
     loaded = false

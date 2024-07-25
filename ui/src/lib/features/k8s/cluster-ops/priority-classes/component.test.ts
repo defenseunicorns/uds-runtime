@@ -7,23 +7,14 @@ import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$featur
 import Component from './component.svelte'
 import { createStore } from './store'
 
-suite('ServiceTable Component', () => {
+suite('PriorityClassesTable Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [
-      ['name', 'emphasize'],
-      ['namespace'],
-      ['type'],
-      ['cluster_ip'],
-      ['external_ip'],
-      ['ports'],
-      ['age'],
-      ['status'],
-    ],
+    columns: [['name', 'emphasize'], ['value'], ['global_default'], ['description'], ['age']],
   })
 
   testK8sTableWithCustomColumns(Component, { createStore })

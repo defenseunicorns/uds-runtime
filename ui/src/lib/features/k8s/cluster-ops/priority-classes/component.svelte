@@ -5,16 +5,7 @@
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
 
-  export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['type'],
-    ['cluster_ip'],
-    ['external_ip'],
-    ['ports'],
-    ['age'],
-    ['status'],
-  ]
+  export let columns: Columns = [['name', 'emphasize'], ['value'], ['global_default'], ['description'], ['age']]
 </script>
 
 <DataTable {columns} {createStore} />

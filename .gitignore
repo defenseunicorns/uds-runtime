@@ -25,4 +25,5 @@ vite.config.ts.timestamp-*
 /ui/test-results
 
 # Dev
+/zarf-sbom
 tmp/
