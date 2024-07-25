@@ -16,3 +16,4 @@ export { default as UDSExemptionTable } from './configs/uds-exemptions/component
 export { default as UDSPackageTable } from './configs/uds-packages/component.svelte'
 
 export { default as ServiceTable } from './networks/services/component.svelte'
+export { default as VirtualServiceTable } from './networks/virtualservices/component.svelte'
