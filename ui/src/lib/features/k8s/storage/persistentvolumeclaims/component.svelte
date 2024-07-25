@@ -10,6 +10,7 @@
     ['namespace'],
     ['storage_class'],
     ['capacity'],
+    ['pods'],
     ['age'],
     ['status'],
   ]
