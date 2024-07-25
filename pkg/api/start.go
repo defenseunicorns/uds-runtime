@@ -73,6 +73,7 @@ func Start(assets embed.FS) error {
 				r.Get("/validatingwebhooks", sse.Bind(cache.ValidatingWebhooks))
 				r.Get("/hpas", sse.Bind(cache.HPAs))
 				r.Get("/priority-classes", sse.Bind(cache.PriorityClasses))
+				r.Get("/runtime-classes", sse.Bind(cache.RuntimeClasses))
 			})
 
 			// Network resources
