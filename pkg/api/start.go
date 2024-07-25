@@ -104,7 +104,9 @@ func Start(assets embed.FS) error {
 
 				r.Get("/runtime-classes", sse.Bind(cache.RuntimeClasses))
 				r.Get("/runtime-classes/{uid}", sse.Bind(cache.RuntimeClasses))
-			})
+
+				r.Get("/resource-quotas", sse.Bind(cache.ResourceQuotas))
+				r.Get("/resource-quotas/{uid}", sse.Bind(cache.ResourceQuotas))			})
 
 			// Network resources
 			r.Route("/networks", func(r chi.Router) {
