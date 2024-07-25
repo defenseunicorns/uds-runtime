@@ -23,4 +23,5 @@ export { default as PriorityClassesTable } from './cluster-ops/priority-classes/
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
 
 // Network resources
+export { default as NetworkPolicyTable } from './networks/network-policies/component.svelte'
 export { default as ServiceTable } from './networks/services/component.svelte'
