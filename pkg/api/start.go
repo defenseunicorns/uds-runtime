@@ -104,6 +104,9 @@ func Start(assets embed.FS) error {
 
 				r.Get("/runtime-classes", sse.Bind(cache.RuntimeClasses))
 				r.Get("/runtime-classes/{uid}", sse.Bind(cache.RuntimeClasses))
+
+				r.Get("/poddisruptionbudgets", sse.Bind(cache.PodDisruptionBudgets))
+				r.Get("/poddisruptionbudgets/{uid}", sse.Bind(cache.PodDisruptionBudgets))
 			})
 
 			// Network resources
