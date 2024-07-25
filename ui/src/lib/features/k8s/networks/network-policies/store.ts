@@ -13,7 +13,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/networks/networkpolicies`
+  const url = `/api/v1/resources/networks/networkpolicies?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
     policy_types: r.spec?.policyTypes?.map((p) => p).join(', ') ?? '',
