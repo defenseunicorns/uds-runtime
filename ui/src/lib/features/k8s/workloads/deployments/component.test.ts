@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { MockEventSource, testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
+import {
+  testK8sResourceStore,
+  testK8sTableWithCustomColumns,
+  testK8sTableWithDefaults,
+} from '$features/k8s/test-helper'
 import type { V1Deployment } from '@kubernetes/client-node'
 import '@testing-library/jest-dom'
 import Component from './component.svelte'
@@ -19,45 +23,28 @@ suite('DeploymentTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  test.only('createStore', async () => {
-    const mockData = [
-      {
-        metadata: { name: 'test', namespace: 'default', creationTimestamp: new Date().toString() },
-        status: { readyReplicas: 1, replicas: 2, updatedReplicas: 1, conditions: [{ type: 'Available' }] },
-      },
-    ]
+  const mockData = [
+    {
+      metadata: { name: 'test', namespace: 'default', creationTimestamp: '' },
+      status: { readyReplicas: 1, replicas: 2, updatedReplicas: 1, conditions: [{ type: 'Available' }] },
+    },
+  ]
 
-    const expectedTable = {
-      name: 'test',
-      namespace: 'default',
-      creationTimestamp: new Date(),
-      ready: '1 / 2',
-      up_to_date: 1,
-      available: 1,
-      age: { text: 'less than a minute', sort: 1721923822000 },
-    }
+  const expectedTable = {
+    name: 'test',
+    namespace: 'default',
+    creationTimestamp: '',
+    ready: '1 / 2',
+    up_to_date: 1,
+    available: 1,
+    age: { text: 'less than a minute', sort: 1721923822000 },
+  }
 
-    vi.useFakeTimers()
-    vi.stubGlobal(
-      'EventSource',
-      vi
-        .fn()
-        .mockImplementation((url) => new MockEventSource(url, mockData as unknown as V1Deployment[], urlAssertionMock)),
-    )
-    vi.setSystemTime(new Date('2024-07-25T16:10:22.000Z'))
-
-    const urlAssertionMock = vi.fn().mockImplementation((url) => {
-      console.log(url)
-    })
-
-    const store = createStore()
-    store.start()
-
-    vi.advanceTimersByTime(500)
-    expect(urlAssertionMock).toHaveBeenCalledWith('/api/v1/resources/workloads/deployments')
-    store.subscribe((data) => {
-      expect(data[0].resource).toEqual(mockData[0])
-      expect(data[0].table).toEqual(expectedTable)
-    })
-  })
+  testK8sResourceStore(
+    'deployments',
+    mockData as unknown as V1Deployment[],
+    expectedTable,
+    '/api/v1/resources/workloads/deployments',
+    createStore,
+  )
 })
