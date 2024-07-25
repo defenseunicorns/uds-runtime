@@ -35,8 +35,6 @@ type Cache struct {
 	factory        informers.SharedInformerFactory
 	dynamicFactory dynamicInformer.DynamicSharedInformerFactory
 
-	RuntimeClasses *ResourceList[*nodeV1.RuntimeClass]
-
 	// Core resources
 	Events     *ResourceList[*v1.Event]
 	Namespaces *ResourceList[*v1.Namespace]
@@ -63,6 +61,8 @@ type Cache struct {
 	ValidatingWebhooks *ResourceList[*admissionRegV1.ValidatingWebhookConfiguration]
 	HPAs               *ResourceList[*autoscalingV2.HorizontalPodAutoscaler]
 	PriorityClasses    *ResourceList[*schedulingV1.PriorityClass]
+	RuntimeClasses     *ResourceList[*nodeV1.RuntimeClass]
+	LimitRangesClasses *ResourceList[*v1.LimitRange]
 
 	// Network resources
 	Services        *ResourceList[*v1.Service]
@@ -155,6 +155,7 @@ func (c *Cache) bindClusterOpsResources() {
 	c.HPAs = NewResourceList[*autoscalingV2.HorizontalPodAutoscaler](c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer())
 	c.RuntimeClasses = NewResourceList[*nodeV1.RuntimeClass](c.factory.Node().V1().RuntimeClasses().Informer())
 	c.PriorityClasses = NewResourceList[*schedulingV1.PriorityClass](c.factory.Scheduling().V1().PriorityClasses().Informer())
+	c.LimitRangesClasses = NewResourceList[*v1.LimitRange](c.factory.Core().V1().LimitRanges().Informer())
 }
 
 func (c *Cache) bindNetworkResources() {
