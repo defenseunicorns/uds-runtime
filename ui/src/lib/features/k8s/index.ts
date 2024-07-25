@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-// Resources
+// Core Resources
 export { default as EventTable } from './events/component.svelte'
 export { default as NamespaceTable } from './namespaces/component.svelte'
 export { default as NodeTable } from './nodes/component.svelte'
@@ -20,3 +20,7 @@ export { default as UDSPackageTable } from './configs/uds-packages/component.sve
 
 // Cluster ops resources
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
+export { default as PriorityClassesTable } from './cluster-ops/priority-classes/component.svelte'
+
+// Network resources
+export { default as ServiceTable } from './networks/services/component.svelte'

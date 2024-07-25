@@ -113,7 +113,8 @@
             {#each $rows as row}
               <tr>
                 {#each columns as [key, style]}
-                  {@const value = row.table[key] || {}}
+                  <!-- Check object to avoid issues with `false` values -->
+                  {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
                   {#if value.component}
                     <td class={style || ''}>
                       <svelte:component this={value.component} {...value.props} />

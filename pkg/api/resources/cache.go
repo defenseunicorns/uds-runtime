@@ -17,6 +17,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	networkingV1 "k8s.io/api/networking/v1"
 	nodeV1 "k8s.io/api/node/v1"
+	schedulingV1 "k8s.io/api/scheduling/v1"
 	storageV1 "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -61,6 +62,7 @@ type Cache struct {
 	MutatingWebhooks   *ResourceList[*admissionRegV1.MutatingWebhookConfiguration]
 	ValidatingWebhooks *ResourceList[*admissionRegV1.ValidatingWebhookConfiguration]
 	HPAs               *ResourceList[*autoscalingV2.HorizontalPodAutoscaler]
+	PriorityClasses    *ResourceList[*schedulingV1.PriorityClass]
 
 	// Network resources
 	Services        *ResourceList[*v1.Service]
@@ -152,6 +154,7 @@ func (c *Cache) bindClusterOpsResources() {
 	c.ValidatingWebhooks = NewResourceList[*admissionRegV1.ValidatingWebhookConfiguration](c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer())
 	c.HPAs = NewResourceList[*autoscalingV2.HorizontalPodAutoscaler](c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer())
 	c.RuntimeClasses = NewResourceList[*nodeV1.RuntimeClass](c.factory.Node().V1().RuntimeClasses().Informer())
+	c.PriorityClasses = NewResourceList[*schedulingV1.PriorityClass](c.factory.Scheduling().V1().PriorityClasses().Informer())
 }
 
 func (c *Cache) bindNetworkResources() {
