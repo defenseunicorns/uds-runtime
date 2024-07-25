@@ -13,10 +13,17 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/networks/endpoints`
+  const url = `/api/v1/resources/networks/endpoints?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
-    endpoints: r.subsets?.map((e) => e).join(', ') ?? '',
+    endpoints:
+      r.subsets
+        ?.map((subset) =>
+          subset.addresses
+            ?.map((address) => subset.ports?.map((port) => `${address.ip}:${port.port}`).join(', '))
+            .join(', '),
+        )
+        .join(', ') ?? '',
   }))
 
   const store = new ResourceStore<Resource, Row>('name')
