@@ -14,11 +14,11 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/networks/virtualservices`
+  const url = `/api/v1/resources/networks/virtualservices?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
     gateways: r.spec?.gateways?.map((g) => `${g}`).join(', ') ?? '',
-    hosts: r.spec?.gateways?.map((h) => `${h}`).join(', ') ?? '',
+    hosts: r.spec?.hosts?.map((h) => `${h}`).join(', ') ?? '',
   }))
 
   const store = new ResourceStore<Resource, Row>('name')
