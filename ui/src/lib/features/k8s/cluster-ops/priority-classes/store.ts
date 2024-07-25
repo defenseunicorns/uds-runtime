@@ -7,6 +7,8 @@ import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
 interface Row extends CommonRow {
+  description: string
+  global_default: boolean
   value: number
 }
 
@@ -16,6 +18,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/cluster-ops/priority-classes`
 
   const transform = transformResource<Resource, Row>((r) => ({
+    description: r.description ?? '',
+    global_default: r.globalDefault ?? false,
     value: r.value ?? 0,
   }))
 
