@@ -15,6 +15,8 @@ export { default as PodTable } from './workloads/pods/component.svelte'
 export { default as StatefulsetTable } from './workloads/statefulsets/component.svelte'
 
 // Config resources
+export { default as ConfigMapTable } from './configs/configmaps/component.svelte'
+export { default as SecretTable } from './configs/secrets/component.svelte'
 export { default as UDSExemptionTable } from './configs/uds-exemptions/component.svelte'
 export { default as UDSPackageTable } from './configs/uds-packages/component.svelte'
 

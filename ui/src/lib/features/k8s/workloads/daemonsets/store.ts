@@ -18,14 +18,15 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/workloads/daemonsets`
+  // Using dense=true due to node_selector being defined in the spec vs status
+  const url = `/api/v1/resources/workloads/daemonsets?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
     desired: r.status?.desiredNumberScheduled ?? 0,
     current: r.status?.currentNumberScheduled ?? 0,
     ready: r.status?.numberReady ?? 0,
     up_to_date: r.status?.updatedNumberScheduled ?? 0,
-    available: r.status?.conditions?.filter((c) => c.type === 'Available').length ?? 0,
+    available: r.status?.numberAvailable ?? 0,
     node_selector: r.spec?.template.spec?.nodeSelector
       ? Object.entries(r.spec?.template.spec?.nodeSelector ?? {})
           .map(([key, value]) => `${key}: ${value}`)
