@@ -17,3 +17,5 @@ export { default as UDSPackageTable } from './configs/uds-packages/component.sve
 
 export { default as PriorityClassesTable } from './cluster-ops/priority-classes/component.svelte'
 export { default as ServiceTable } from './networks/services/component.svelte'
+
+export { default as PersistentVolumeTable } from './storage/persistentvolumes/component.svelte'
