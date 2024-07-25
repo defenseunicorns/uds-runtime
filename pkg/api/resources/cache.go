@@ -35,7 +35,7 @@ type Cache struct {
 	factory        informers.SharedInformerFactory
 	dynamicFactory dynamicInformer.DynamicSharedInformerFactory
 
-	RuntimeClasses         *ResourceList[*nodeV1.RuntimeClass]
+	RuntimeClasses *ResourceList[*nodeV1.RuntimeClass]
 
 	// Core resources
 	Events     *ResourceList[*v1.Event]
