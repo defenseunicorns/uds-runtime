@@ -16,6 +16,7 @@ import (
 	batchV1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
 	networkingV1 "k8s.io/api/networking/v1"
+	nodeV1 "k8s.io/api/node/v1"
 	schedulingV1 "k8s.io/api/scheduling/v1"
 	storageV1 "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -33,6 +34,8 @@ type Cache struct {
 	stopper        chan struct{}
 	factory        informers.SharedInformerFactory
 	dynamicFactory dynamicInformer.DynamicSharedInformerFactory
+
+	RuntimeClasses *ResourceList[*nodeV1.RuntimeClass]
 
 	// Core resources
 	Events     *ResourceList[*v1.Event]
@@ -150,6 +153,7 @@ func (c *Cache) bindClusterOpsResources() {
 	c.MutatingWebhooks = NewResourceList[*admissionRegV1.MutatingWebhookConfiguration](c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer())
 	c.ValidatingWebhooks = NewResourceList[*admissionRegV1.ValidatingWebhookConfiguration](c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer())
 	c.HPAs = NewResourceList[*autoscalingV2.HorizontalPodAutoscaler](c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer())
+	c.RuntimeClasses = NewResourceList[*nodeV1.RuntimeClass](c.factory.Node().V1().RuntimeClasses().Informer())
 	c.PriorityClasses = NewResourceList[*schedulingV1.PriorityClass](c.factory.Scheduling().V1().PriorityClasses().Informer())
 }
 
