@@ -15,6 +15,8 @@ import (
 	autoScalingV2 "k8s.io/api/autoscaling/v2"
 	batchV1 "k8s.io/api/batch/v1"
 	coreV1 "k8s.io/api/core/v1"
+	nodeV1 "k8s.io/api/node/v1"
+	schedulingV1 "k8s.io/api/scheduling/v1"
 	storageV1 "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -56,6 +58,8 @@ type Cache struct {
 	MutatingWebhooks   *ResourceList
 	ValidatingWebhooks *ResourceList
 	HPAs               *ResourceList
+	PriorityClasses    *ResourceList
+	RuntimeClasses     *ResourceList
 
 	// Network resources
 	Services        *ResourceList
@@ -160,10 +164,14 @@ func (c *Cache) bindClusterOpsResources() {
 	mutatingWebhookGVK := admissionRegV1.SchemeGroupVersion.WithKind("MutatingWebhookConfiguration")
 	validatingWebhookGVK := admissionRegV1.SchemeGroupVersion.WithKind("ValidatingWebhookConfiguration")
 	hpaGVK := autoScalingV2.SchemeGroupVersion.WithKind("HorizontalPodAutoscaler")
+	runtimeClassGVK := nodeV1.SchemeGroupVersion.WithKind("RuntimeClass")
+	priorityClassGVK := schedulingV1.SchemeGroupVersion.WithKind("PriorityClass")
 
 	c.MutatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer(), mutatingWebhookGVK)
 	c.ValidatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer(), validatingWebhookGVK)
 	c.HPAs = NewResourceList(c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer(), hpaGVK)
+	c.RuntimeClasses = NewResourceList(c.factory.Node().V1().RuntimeClasses().Informer(), runtimeClassGVK)
+	c.PriorityClasses = NewResourceList(c.factory.Scheduling().V1().PriorityClasses().Informer(), priorityClassGVK)
 }
 
 func (c *Cache) bindNetworkResources() {

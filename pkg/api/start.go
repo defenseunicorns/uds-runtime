@@ -98,6 +98,12 @@ func Start(assets embed.FS) error {
 
 				r.Get("/hpas", sse.Bind(cache.HPAs))
 				r.Get("/hpas/{uid}", sse.Bind(cache.HPAs))
+
+				r.Get("/priority-classes", sse.Bind(cache.PriorityClasses))
+				r.Get("/priority-classes/{uid}", sse.Bind(cache.PriorityClasses))
+
+				r.Get("/runtime-classes", sse.Bind(cache.RuntimeClasses))
+				r.Get("/runtime-classes/{uid}", sse.Bind(cache.RuntimeClasses))
 			})
 
 			// Network resources
