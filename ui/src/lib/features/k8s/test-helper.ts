@@ -38,3 +38,23 @@ export function testK8sTableWithCustomColumns(Component: ComponentType, props: R
     })
   })
 }
+
+// Mocking EventSource globally
+export class MockEventSource {
+  onmessage: (event: MessageEvent) => void | null = () => {}
+  constructor(url: string, data: any[], urlAssertionMock: any) {
+    urlAssertionMock(url)
+
+    setTimeout(() => {
+      const messageEvent = {
+        data: JSON.stringify(data),
+        origin: url,
+        lastEventId: '',
+      }
+
+      if (typeof this.onmessage === 'function') {
+        this.onmessage(messageEvent as MessageEvent)
+      }
+    }, 500)
+  }
+}
