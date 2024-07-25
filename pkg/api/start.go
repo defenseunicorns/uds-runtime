@@ -106,7 +106,7 @@ func Start(assets embed.FS) error {
 				r.Get("/runtime-classes/{uid}", sse.Bind(cache.RuntimeClasses))
 
 				r.Get("/limit-range-classes", sse.Bind(cache.LimitRangesClasses))
-				r.Get("/runtime-classes/{uid}", sse.Bind(cache.RuntimeClasses))
+				r.Get("/limit-range-classes/{uid}", sse.Bind(cache.LimitRangesClasses))
 			})
 
 			// Network resources
