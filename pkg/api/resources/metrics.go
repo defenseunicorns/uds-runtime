@@ -11,39 +11,39 @@ import (
 	"sync"
 	"time"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	metricsv1beta1 "k8s.io/metrics/pkg/apis/metrics/v1beta1"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
 type PodMetrics struct {
 	sync.RWMutex
-	metrics map[string]*metricsv1beta1.PodMetrics
+	metrics map[string]*unstructured.Unstructured
 }
 
 func NewPodMetrics() *PodMetrics {
 	return &PodMetrics{
-		metrics: make(map[string]*metricsv1beta1.PodMetrics),
+		metrics: make(map[string]*unstructured.Unstructured),
 	}
 }
 
-func (pm *PodMetrics) GetAll() []*metricsv1beta1.PodMetrics {
+func (pm *PodMetrics) GetAll() []unstructured.Unstructured {
 	pm.RLock()
 	defer pm.RUnlock()
-	result := make([]*metricsv1beta1.PodMetrics, 0, len(pm.metrics))
+	result := make([]unstructured.Unstructured, 0, len(pm.metrics))
 	for _, metric := range pm.metrics {
-		result = append(result, metric)
+		result = append(result, *metric)
 	}
 	return result
 }
 
-func (pm *PodMetrics) Update(podUID string, metrics *metricsv1beta1.PodMetrics) {
+func (pm *PodMetrics) Update(podUID string, metrics *unstructured.Unstructured) {
 	pm.Lock()
 	defer pm.Unlock()
 	pm.metrics[podUID] = metrics
 }
 
-func (pm *PodMetrics) Get(podUID string) *metricsv1beta1.PodMetrics {
+func (pm *PodMetrics) Get(podUID string) *unstructured.Unstructured {
 	pm.RLock()
 	defer pm.RUnlock()
 	return pm.metrics[podUID]
@@ -75,24 +75,32 @@ func (c *Cache) StartMetricsCollection(ctx context.Context, metricsClient *versi
 
 func (c *Cache) collectMetrics(ctx context.Context, metricsClient *versioned.Clientset) {
 	// Fetch all pods
-	pods := c.Pods.GetResources()
+	pods := c.Pods.GetSparseResources()
 
 	// Fetch metrics for each pod
 	for _, pod := range pods {
 		// Only collect metrics for running pods
-		if pod.Status.Phase != "Running" {
+		phase, _, _ := unstructured.NestedString(pod.Object, "status", "phase")
+		if phase != "Running" {
 			continue
 		}
 
 		// Fetch metrics for the pod
-		metrics, err := metricsClient.MetricsV1beta1().PodMetricses(pod.Namespace).Get(ctx, pod.Name, metav1.GetOptions{})
+		metrics, err := metricsClient.MetricsV1beta1().PodMetricses(pod.GetNamespace()).Get(ctx, pod.GetName(), metaV1.GetOptions{})
 		if err != nil {
-			fmt.Printf("Error fetching metrics for pod %s/%s: %v\n", pod.Namespace, pod.Name, err)
+			fmt.Printf("Error fetching metrics for pod %s/%s: %v\n", pod.GetNamespace(), pod.GetName(), err)
+			continue
+		}
+
+		// Convert the metrics to unstructured
+		converted, err := toUnstructured(metrics)
+		if err != nil {
+			fmt.Printf("Error converting metrics for pod %s/%s: %v\n", pod.GetNamespace(), pod.GetName(), err)
 			continue
 		}
 
 		// Update the cache with the new metrics
-		c.PodMetrics.Update(string(pod.UID), metrics)
+		c.PodMetrics.Update(string(pod.GetUID()), converted)
 	}
 
 	// Notify subscribers of the change
