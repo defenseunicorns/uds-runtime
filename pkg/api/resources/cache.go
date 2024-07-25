@@ -12,15 +12,13 @@ import (
 
 	admissionRegV1 "k8s.io/api/admissionregistration/v1"
 	appsV1 "k8s.io/api/apps/v1"
-	autoscalingV2 "k8s.io/api/autoscaling/v2"
+	autoScalingV2 "k8s.io/api/autoscaling/v2"
 	batchV1 "k8s.io/api/batch/v1"
-	v1 "k8s.io/api/core/v1"
-	networkingV1 "k8s.io/api/networking/v1"
+	coreV1 "k8s.io/api/core/v1"
 	nodeV1 "k8s.io/api/node/v1"
 	schedulingV1 "k8s.io/api/scheduling/v1"
 	storageV1 "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	dynamicInformer "k8s.io/client-go/dynamic/dynamicinformer"
@@ -36,44 +34,44 @@ type Cache struct {
 	dynamicFactory dynamicInformer.DynamicSharedInformerFactory
 
 	// Core resources
-	Events     *ResourceList[*v1.Event]
-	Namespaces *ResourceList[*v1.Namespace]
-	Nodes      *ResourceList[*v1.Node]
+	Events     *ResourceList
+	Namespaces *ResourceList
+	Nodes      *ResourceList
 
 	// Workload resources
-	Pods         *ResourceList[*v1.Pod]
-	Deployments  *ResourceList[*appsV1.Deployment]
-	Daemonsets   *ResourceList[*appsV1.DaemonSet]
-	Statefulsets *ResourceList[*appsV1.StatefulSet]
-	Jobs         *ResourceList[*batchV1.Job]
-	CronJobs     *ResourceList[*batchV1.CronJob]
+	Pods         *ResourceList
+	Deployments  *ResourceList
+	Daemonsets   *ResourceList
+	Statefulsets *ResourceList
+	Jobs         *ResourceList
+	CronJobs     *ResourceList
 
 	// UDS resources
-	UDSPackages   *ResourceList[*unstructured.Unstructured]
-	UDSExemptions *ResourceList[*unstructured.Unstructured]
+	UDSPackages   *ResourceList
+	UDSExemptions *ResourceList
 
 	// Config resources
-	Configmaps *ResourceList[*v1.ConfigMap]
-	Secrets    *ResourceList[*v1.Secret]
+	Configmaps *ResourceList
+	Secrets    *ResourceList
 
 	// Cluster ops resources
-	MutatingWebhooks   *ResourceList[*admissionRegV1.MutatingWebhookConfiguration]
-	ValidatingWebhooks *ResourceList[*admissionRegV1.ValidatingWebhookConfiguration]
-	HPAs               *ResourceList[*autoscalingV2.HorizontalPodAutoscaler]
-	PriorityClasses    *ResourceList[*schedulingV1.PriorityClass]
-	RuntimeClasses     *ResourceList[*nodeV1.RuntimeClass]
-	LimitRangesClasses *ResourceList[*v1.LimitRange]
+	MutatingWebhooks   *ResourceList
+	ValidatingWebhooks *ResourceList
+	HPAs               *ResourceList
+	PriorityClasses    *ResourceList
+	RuntimeClasses     *ResourceList
+	LimitRangesClasses *ResourceList
 
 	// Network resources
-	Services        *ResourceList[*v1.Service]
-	NetworkPolicies *ResourceList[*networkingV1.NetworkPolicy]
-	Endpoints       *ResourceList[*v1.Endpoints]
-	VirtualServices *ResourceList[*unstructured.Unstructured]
+	Services        *ResourceList
+	NetworkPolicies *ResourceList
+	Endpoints       *ResourceList
+	VirtualServices *ResourceList
 
 	// Storage resources
-	PersistentVolumes      *ResourceList[*v1.PersistentVolume]
-	PersistentVolumeClaims *ResourceList[*v1.PersistentVolumeClaim]
-	StorageClasses         *ResourceList[*storageV1.StorageClass]
+	PersistentVolumes      *ResourceList
+	PersistentVolumeClaims *ResourceList
+	StorageClasses         *ResourceList
 
 	// Metrics
 	PodMetrics     *PodMetrics
@@ -130,54 +128,89 @@ func NewCache(ctx context.Context) (*Cache, error) {
 }
 
 func (c *Cache) bindCoreResources() {
-	c.Nodes = NewResourceList[*v1.Node](c.factory.Core().V1().Nodes().Informer())
-	c.Events = NewResourceList[*v1.Event](c.factory.Core().V1().Events().Informer())
-	c.Namespaces = NewResourceList[*v1.Namespace](c.factory.Core().V1().Namespaces().Informer())
+	nodeGVK := coreV1.SchemeGroupVersion.WithKind("Node")
+	eventGVK := coreV1.SchemeGroupVersion.WithKind("Event")
+	namespaceGVK := coreV1.SchemeGroupVersion.WithKind("Namespace")
+
+	c.Nodes = NewResourceList(c.factory.Core().V1().Nodes().Informer(), nodeGVK)
+	c.Events = NewResourceList(c.factory.Core().V1().Events().Informer(), eventGVK)
+	c.Namespaces = NewResourceList(c.factory.Core().V1().Namespaces().Informer(), namespaceGVK)
 }
 
 func (c *Cache) bindWorkloadResources() {
-	c.Pods = NewResourceList[*v1.Pod](c.factory.Core().V1().Pods().Informer())
-	c.Deployments = NewResourceList[*appsV1.Deployment](c.factory.Apps().V1().Deployments().Informer())
-	c.Daemonsets = NewResourceList[*appsV1.DaemonSet](c.factory.Apps().V1().DaemonSets().Informer())
-	c.Statefulsets = NewResourceList[*appsV1.StatefulSet](c.factory.Apps().V1().StatefulSets().Informer())
-	c.Jobs = NewResourceList[*batchV1.Job](c.factory.Batch().V1().Jobs().Informer())
-	c.CronJobs = NewResourceList[*batchV1.CronJob](c.factory.Batch().V1().CronJobs().Informer())
+	podGVK := coreV1.SchemeGroupVersion.WithKind("Pod")
+	deploymentGVK := appsV1.SchemeGroupVersion.WithKind("Deployment")
+	daemonsetGVK := appsV1.SchemeGroupVersion.WithKind("DaemonSet")
+	statefulsetGVK := appsV1.SchemeGroupVersion.WithKind("StatefulSet")
+	jobGVK := batchV1.SchemeGroupVersion.WithKind("Job")
+	cronJobGVK := batchV1.SchemeGroupVersion.WithKind("CronJob")
+
+	c.Pods = NewResourceList(c.factory.Core().V1().Pods().Informer(), podGVK)
+	c.Deployments = NewResourceList(c.factory.Apps().V1().Deployments().Informer(), deploymentGVK)
+	c.Daemonsets = NewResourceList(c.factory.Apps().V1().DaemonSets().Informer(), daemonsetGVK)
+	c.Statefulsets = NewResourceList(c.factory.Apps().V1().StatefulSets().Informer(), statefulsetGVK)
+	c.Jobs = NewResourceList(c.factory.Batch().V1().Jobs().Informer(), jobGVK)
+	c.CronJobs = NewResourceList(c.factory.Batch().V1().CronJobs().Informer(), cronJobGVK)
 }
 
 func (c *Cache) bindConfigResources() {
-	c.Configmaps = NewResourceList[*v1.ConfigMap](c.factory.Core().V1().ConfigMaps().Informer())
-	c.Secrets = NewResourceList[*v1.Secret](c.factory.Core().V1().Secrets().Informer())
+	configMapGVK := coreV1.SchemeGroupVersion.WithKind("ConfigMap")
+	secretGVK := coreV1.SchemeGroupVersion.WithKind("Secret")
+
+	c.Configmaps = NewResourceList(c.factory.Core().V1().ConfigMaps().Informer(), configMapGVK)
+	c.Secrets = NewResourceList(c.factory.Core().V1().Secrets().Informer(), secretGVK)
 }
 
 func (c *Cache) bindClusterOpsResources() {
-	c.MutatingWebhooks = NewResourceList[*admissionRegV1.MutatingWebhookConfiguration](c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer())
-	c.ValidatingWebhooks = NewResourceList[*admissionRegV1.ValidatingWebhookConfiguration](c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer())
-	c.HPAs = NewResourceList[*autoscalingV2.HorizontalPodAutoscaler](c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer())
-	c.RuntimeClasses = NewResourceList[*nodeV1.RuntimeClass](c.factory.Node().V1().RuntimeClasses().Informer())
-	c.PriorityClasses = NewResourceList[*schedulingV1.PriorityClass](c.factory.Scheduling().V1().PriorityClasses().Informer())
-	c.LimitRangesClasses = NewResourceList[*v1.LimitRange](c.factory.Core().V1().LimitRanges().Informer())
+	mutatingWebhookGVK := admissionRegV1.SchemeGroupVersion.WithKind("MutatingWebhookConfiguration")
+	validatingWebhookGVK := admissionRegV1.SchemeGroupVersion.WithKind("ValidatingWebhookConfiguration")
+	hpaGVK := autoScalingV2.SchemeGroupVersion.WithKind("HorizontalPodAutoscaler")
+	runtimeClassGVK := nodeV1.SchemeGroupVersion.WithKind("RuntimeClass")
+	priorityClassGVK := schedulingV1.SchemeGroupVersion.WithKind("PriorityClass")
+	LimitRangesClassGVK := coreV1.SchemeGroupVersion.WithKind("LimitRange")
+
+	c.MutatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer(), mutatingWebhookGVK)
+	c.ValidatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer(), validatingWebhookGVK)
+	c.HPAs = NewResourceList(c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer(), hpaGVK)
+	c.RuntimeClasses = NewResourceList(c.factory.Node().V1().RuntimeClasses().Informer(), runtimeClassGVK)
+	c.PriorityClasses = NewResourceList(c.factory.Scheduling().V1().PriorityClasses().Informer(), priorityClassGVK)
+	c.LimitRangesClasses = NewResourceList(c.factory.Core().V1().LimitRanges().Informer(), LimitRangesClassGVK)
 }
 
 func (c *Cache) bindNetworkResources() {
-	c.Services = NewResourceList[*v1.Service](c.factory.Core().V1().Services().Informer())
-	c.NetworkPolicies = NewResourceList[*networkingV1.NetworkPolicy](c.factory.Networking().V1().NetworkPolicies().Informer())
-	c.Endpoints = NewResourceList[*v1.Endpoints](c.factory.Core().V1().Endpoints().Informer())
+	serviceGVK := coreV1.SchemeGroupVersion.WithKind("Service")
+	networkPolicyGVK := coreV1.SchemeGroupVersion.WithKind("NetworkPolicy")
+	endpointGVK := coreV1.SchemeGroupVersion.WithKind("Endpoints")
+	isitoVSGVK := schema.FromAPIVersionAndKind("networking.istio.io/v1", "VirtualService")
+
+	c.Services = NewResourceList(c.factory.Core().V1().Services().Informer(), serviceGVK)
+	c.NetworkPolicies = NewResourceList(c.factory.Networking().V1().NetworkPolicies().Informer(), networkPolicyGVK)
+	c.Endpoints = NewResourceList(c.factory.Core().V1().Endpoints().Informer(), endpointGVK)
 
 	// VirtualServices are not part of the core informer factory
-	c.VirtualServices = NewResourceList[*unstructured.Unstructured](c.dynamicFactory.ForResource(schema.GroupVersionResource{
+	istioVSGVR := schema.GroupVersionResource{
 		Group:    "networking.istio.io",
 		Version:  "v1",
 		Resource: "virtualservices",
-	}).Informer())
+	}
+
+	c.VirtualServices = NewResourceList(c.dynamicFactory.ForResource(istioVSGVR).Informer(), isitoVSGVK)
 }
 
 func (c *Cache) bindStorageResources() {
-	c.PersistentVolumes = NewResourceList[*v1.PersistentVolume](c.factory.Core().V1().PersistentVolumes().Informer())
-	c.PersistentVolumeClaims = NewResourceList[*v1.PersistentVolumeClaim](c.factory.Core().V1().PersistentVolumeClaims().Informer())
-	c.StorageClasses = NewResourceList[*storageV1.StorageClass](c.factory.Storage().V1().StorageClasses().Informer())
+	persistentVolumeGVK := coreV1.SchemeGroupVersion.WithKind("PersistentVolume")
+	persistentVolumeClaimGVK := coreV1.SchemeGroupVersion.WithKind("PersistentVolumeClaim")
+	storageClassGVK := storageV1.SchemeGroupVersion.WithKind("StorageClass")
+
+	c.PersistentVolumes = NewResourceList(c.factory.Core().V1().PersistentVolumes().Informer(), persistentVolumeGVK)
+	c.PersistentVolumeClaims = NewResourceList(c.factory.Core().V1().PersistentVolumeClaims().Informer(), persistentVolumeClaimGVK)
+	c.StorageClasses = NewResourceList(c.factory.Storage().V1().StorageClasses().Informer(), storageClassGVK)
 }
 
 func (c *Cache) bindUDSResources() {
+	udsPackageGVK := schema.FromAPIVersionAndKind("uds.dev/v1alpha1", "Package")
+	udsExemptionGVK := schema.FromAPIVersionAndKind("uds.dev/v1alpha1", "Exemption")
+
 	udsPackageGVR := schema.GroupVersionResource{
 		Group:    "uds.dev",
 		Version:  "v1alpha1",
@@ -190,6 +223,6 @@ func (c *Cache) bindUDSResources() {
 		Resource: "exemptions",
 	}
 
-	c.UDSPackages = NewResourceList[*unstructured.Unstructured](c.dynamicFactory.ForResource(udsPackageGVR).Informer())
-	c.UDSExemptions = NewResourceList[*unstructured.Unstructured](c.dynamicFactory.ForResource(udsExemptionsGVR).Informer())
+	c.UDSPackages = NewResourceList(c.dynamicFactory.ForResource(udsPackageGVR).Informer(), udsPackageGVK)
+	c.UDSExemptions = NewResourceList(c.dynamicFactory.ForResource(udsExemptionsGVR).Informer(), udsExemptionGVK)
 }
