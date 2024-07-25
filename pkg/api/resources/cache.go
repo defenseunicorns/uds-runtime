@@ -12,7 +12,7 @@ import (
 
 	admissionRegV1 "k8s.io/api/admissionregistration/v1"
 	appsV1 "k8s.io/api/apps/v1"
-	autoScalineV2 "k8s.io/api/autoscaling/v2"
+	autoScalingV2 "k8s.io/api/autoscaling/v2"
 	batchV1 "k8s.io/api/batch/v1"
 	coreV1 "k8s.io/api/core/v1"
 	storageV1 "k8s.io/api/storage/v1"
@@ -159,7 +159,7 @@ func (c *Cache) bindConfigResources() {
 func (c *Cache) bindClusterOpsResources() {
 	mutatingWebhookGVK := admissionRegV1.SchemeGroupVersion.WithKind("MutatingWebhookConfiguration")
 	validatingWebhookGVK := admissionRegV1.SchemeGroupVersion.WithKind("ValidatingWebhookConfiguration")
-	hpaGVK := autoScalineV2.SchemeGroupVersion.WithKind("HorizontalPodAutoscaler")
+	hpaGVK := autoScalingV2.SchemeGroupVersion.WithKind("HorizontalPodAutoscaler")
 
 	c.MutatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer(), mutatingWebhookGVK)
 	c.ValidatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer(), validatingWebhookGVK)
