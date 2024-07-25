@@ -1,8 +1,4 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
-<script>
-  import { PriorityClassesTable } from '$features/k8s'
-</script>
-
-<PriorityClassesTable />
+<h1 class="text-white text-5xl">Priority Classes</h1>
