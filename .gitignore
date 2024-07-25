@@ -23,3 +23,6 @@ vite.config.ts.timestamp-*
 
 # # Playwright/ Vitest
 /ui/test-results
+
+# Dev
+tmp/
