@@ -8,9 +8,8 @@
   export let columns: Columns = [
     ['name', 'emphasize'],
     ['namespace'],
-    ['ready'],
-    ['up_to_date'],
-    ['available'],
+    ['type'],
+    ['keys', 'line-clamp-5 max-w-screen-md'],
     ['age'],
   ]
 </script>

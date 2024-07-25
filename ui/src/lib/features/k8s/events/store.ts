@@ -18,7 +18,8 @@ export interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/events`
+  // Using dense=true because most of the fields are stripped out in the default spareResource stream
+  const url = `/api/v1/resources/events?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
     count: r.count ?? 0,
