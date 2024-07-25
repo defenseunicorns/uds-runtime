@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import { MockEventSource, testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
+import type { V1Deployment } from '@kubernetes/client-node'
 import '@testing-library/jest-dom'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -19,13 +20,6 @@ suite('DeploymentTable Component', () => {
   testK8sTableWithCustomColumns(Component, { createStore })
 
   test.only('createStore', async () => {
-    vi.useFakeTimers()
-    vi.stubGlobal(
-      'EventSource',
-      vi.fn().mockImplementation((url) => new MockEventSource(url, mockData, urlAssertionMock)),
-    )
-    vi.setSystemTime(new Date('2024-07-25T16:10:22.000Z'))
-
     const mockData = [
       {
         metadata: { name: 'test', namespace: 'default', creationTimestamp: new Date().toString() },
@@ -43,6 +37,15 @@ suite('DeploymentTable Component', () => {
       age: { text: 'less than a minute', sort: 1721923822000 },
     }
 
+    vi.useFakeTimers()
+    vi.stubGlobal(
+      'EventSource',
+      vi
+        .fn()
+        .mockImplementation((url) => new MockEventSource(url, mockData as unknown as V1Deployment[], urlAssertionMock)),
+    )
+    vi.setSystemTime(new Date('2024-07-25T16:10:22.000Z'))
+
     const urlAssertionMock = vi.fn().mockImplementation((url) => {
       console.log(url)
     })
@@ -52,7 +55,7 @@ suite('DeploymentTable Component', () => {
 
     vi.advanceTimersByTime(500)
     expect(urlAssertionMock).toHaveBeenCalledWith('/api/v1/resources/workloads/deployments')
-    store.subscribe((data: any) => {
+    store.subscribe((data) => {
       expect(data[0].resource).toEqual(mockData[0])
       expect(data[0].table).toEqual(expectedTable)
     })

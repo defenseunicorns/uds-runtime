@@ -1,7 +1,12 @@
 import { render } from '@testing-library/svelte'
 
 import * as components from '$components'
+import type { V1Deployment as Resource } from '@kubernetes/client-node'
 import type { ComponentType } from 'svelte'
+import type { Mock } from 'vitest'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Procedure = (...args: any[]) => any
 
 export function testK8sTableWithDefaults(Component: ComponentType, props: Record<string, unknown>) {
   test('creates component with correct props and default columns', () => {
@@ -42,7 +47,7 @@ export function testK8sTableWithCustomColumns(Component: ComponentType, props: R
 // Mocking EventSource globally
 export class MockEventSource {
   onmessage: (event: MessageEvent) => void | null = () => {}
-  constructor(url: string, data: any[], urlAssertionMock: any) {
+  constructor(url: string, data: Resource[], urlAssertionMock: Mock<Procedure>) {
     urlAssertionMock(url)
 
     setTimeout(() => {
