@@ -21,9 +21,16 @@ export { default as UDSExemptionTable } from './configs/uds-exemptions/component
 export { default as UDSPackageTable } from './configs/uds-packages/component.svelte'
 
 // Cluster ops resources
+export { default as LimitRangesTable } from './cluster-ops/limit-ranges/component.svelte'
+export { default as MutatingWebhooksTable } from './cluster-ops/mutatingwebhooks/component.svelte'
 export { default as PriorityClassesTable } from './cluster-ops/priority-classes/component.svelte'
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
 
 // Network resources
 export { default as EndpointTable } from './networks/endpoints/component.svelte'
 export { default as ServiceTable } from './networks/services/component.svelte'
+
+// Storage resources
+export { default as PersistentVolumeClaimTable } from './storage/persistentvolumeclaims/component.svelte'
+export { default as PersistentVolumeTable } from './storage/persistentvolumes/component.svelte'
+export { default as StorageClassesTable } from './storage/storageclasses/component.svelte'
