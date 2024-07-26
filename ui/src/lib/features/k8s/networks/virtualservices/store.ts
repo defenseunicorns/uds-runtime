@@ -17,8 +17,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/networks/virtualservices?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
-    gateways: r.spec?.gateways?.map((g) => `${g}`).join(', ') ?? '',
-    hosts: r.spec?.hosts?.map((h) => `${h}`).join(', ') ?? '',
+    gateways: r.spec?.gateways?.join(', ') ?? '',
+    hosts: r.spec?.hosts?.join(', ') ?? '',
   }))
 
   const store = new ResourceStore<Resource, Row>('name')
