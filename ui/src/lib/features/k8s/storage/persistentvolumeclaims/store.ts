@@ -23,10 +23,11 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
 
   const pods = new Map<string, string[]>() // map of pvc name -> pod names
   const podStore = writable<number>()
-  const podEvents = new EventSource(`/api/v1/resources/workloads/pods`)
+  const podEvents = new EventSource(`/api/v1/resources/workloads/pods?dense=true`)
 
   podEvents.onmessage = (event) => {
     const data = JSON.parse(event.data) as V1Pod[]
+    console.log('Pod msg recvd:', data)
     data.forEach((p) => {
       p.spec?.volumes?.forEach((v) => {
         if (v.persistentVolumeClaim) {
@@ -52,6 +53,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const store = new ResourceStore<Resource, Row>('name', true, [podStore])
   store.stopCallback = podEvents.close.bind(podEvents)
   store.filterCallback = (data) => {
+    console.log('filter callback')
     return data.map((d) => {
       const pvcName = d.table.name
       if (pods.has(pvcName)) {
