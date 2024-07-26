@@ -35,4 +35,22 @@ test.describe('SSE and reactivity', async () => {
     expect(newPodName).not.toBeNull()
     expect(newPodName).not.toEqual(originalPodName)
   })
+
+  test('PVCs with pod are updated', async ({ page }) => {
+    await page.goto('/storage/persistent-volume-claims')
+    const originalPVCPodName = await page.getByText('minio-').first().textContent()
+
+    // get pod attached to pvc's name
+    expect(originalPVCPodName).not.toBeNull()
+
+    // delete pod attached to PVC and wait for it to disappear
+    await deletePod('uds-dev-stack', originalPVCPodName ?? '')
+    await expect(page.getByRole('cell', { name: originalPVCPodName ?? '' })).toBeHidden()
+
+    // get new pod attached to PVC
+    const newPVCPodName = await page.getByRole('cell', { name: 'minio-' }).first().textContent()
+
+    expect(newPVCPodName).not.toBeNull()
+    expect(newPVCPodName).not.toEqual(originalPVCPodName)
+  })
 })
