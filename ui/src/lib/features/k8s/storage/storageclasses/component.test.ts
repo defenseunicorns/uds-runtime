@@ -7,14 +7,14 @@ import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$featur
 import Component from './component.svelte'
 import { createStore } from './store'
 
-suite('PersistentVolumeClaim Component', () => {
+suite('StorageClass Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['namespace'], ['storage_class'], ['capacity'], ['age'], ['status']],
+    columns: [['name', 'emphasize'], ['provisioner'], ['reclaim_policy'], ['default'], ['age']],
   })
 
   testK8sTableWithCustomColumns(Component, { createStore })
