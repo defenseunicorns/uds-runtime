@@ -8,10 +8,12 @@
   export let columns: Columns = [
     ['name', 'emphasize'],
     ['namespace'],
-    ['ready'],
-    ['up_to_date'],
-    ['available'],
+    ['type'],
+    ['cluster_ip'],
+    ['external_ip'],
+    ['ports'],
     ['age'],
+    ['status'],
   ]
 </script>
 

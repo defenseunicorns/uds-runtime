@@ -1,26 +1,22 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { V1StatefulSet as Resource } from '@kubernetes/client-node'
+import type { V1RuntimeClass as Resource } from '@kubernetes/client-node'
 
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
 interface Row extends CommonRow {
-  ready: string
-  up_to_date: number
-  available: number
+  handler: string
 }
 
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/workloads/statefulsets`
+  const url = `/api/v1/resources/cluster-ops/runtime-classes`
 
   const transform = transformResource<Resource, Row>((r) => ({
-    ready: `${r.status?.readyReplicas ?? 0} / ${r.status?.replicas ?? 0}`,
-    up_to_date: r.status?.updatedReplicas ?? 0,
-    available: r.status?.availableReplicas ?? 0,
+    handler: r.handler ?? '',
   }))
 
   const store = new ResourceStore<Resource, Row>('name')

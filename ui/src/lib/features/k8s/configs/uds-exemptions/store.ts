@@ -45,7 +45,8 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/configs/uds-exemptions`
+  // Using dense=true because this CR does not use the status field
+  const url = `/api/v1/resources/configs/uds-exemptions?dense=true`
 
   const transform = (resources: Resource[]) =>
     resources

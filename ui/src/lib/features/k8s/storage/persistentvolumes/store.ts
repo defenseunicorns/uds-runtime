@@ -1,26 +1,28 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { V1StatefulSet as Resource } from '@kubernetes/client-node'
+import type { V1PersistentVolume as Resource } from '@kubernetes/client-node'
 
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
 interface Row extends CommonRow {
-  ready: string
-  up_to_date: number
-  available: number
+  storage_class: string
+  capacity: string
+  claim: string
+  status: string
 }
 
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/workloads/statefulsets`
+  const url = `/api/v1/resources/storage/persistentvolumes?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
-    ready: `${r.status?.readyReplicas ?? 0} / ${r.status?.replicas ?? 0}`,
-    up_to_date: r.status?.updatedReplicas ?? 0,
-    available: r.status?.availableReplicas ?? 0,
+    storage_class: r.spec?.storageClassName ?? '',
+    capacity: r.spec?.capacity?.storage ?? '',
+    claim: r.spec?.claimRef?.name ?? '',
+    status: r.status?.phase ?? '',
   }))
 
   const store = new ResourceStore<Resource, Row>('name')
