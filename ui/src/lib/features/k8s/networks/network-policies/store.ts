@@ -20,7 +20,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
 
   const transform = transformResource<Resource, Row>((r) => ({
     ingress_ports:
-      r.spec?.ingress?.map((i) => i.ports?.map((p) => `${p.protocol}:${p.port}`).join(', ')).join(', ') ?? '-',
+      r.spec?.ingress?.flatMap((i) => i.ports?.map((p) => `${p.protocol}:${p.port}`) ?? []).join(', ') ?? '-',
     ingress_block:
       r.spec?.ingress
         ?.map((i) =>
@@ -34,7 +34,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
         )
         .join(', ') ?? '-',
     egress_ports:
-      r.spec?.egress?.map((e) => e.ports?.map((p) => `${p.protocol}:${p.port}`).join(', ')).join(', ') ?? '-',
+      r.spec?.egress?.flatMap((e) => e.ports?.map((p) => `${p.protocol}:${p.port}`) ?? []).join(', ') ?? '-',
     egress_block:
       r.spec?.egress
         ?.map((e) =>
