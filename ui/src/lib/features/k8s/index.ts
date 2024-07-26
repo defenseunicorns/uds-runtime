@@ -21,6 +21,7 @@ export { default as UDSExemptionTable } from './configs/uds-exemptions/component
 export { default as UDSPackageTable } from './configs/uds-packages/component.svelte'
 
 // Cluster ops resources
+export { default as MutatingWebhooksTable } from './cluster-ops/mutatingwebhooks/component.svelte'
 export { default as PriorityClassesTable } from './cluster-ops/priority-classes/component.svelte'
 export { default as ResourceQuotasTable } from './cluster-ops/resource-quotas/component.svelte'
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
@@ -28,4 +29,6 @@ export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/co
 // Network resources
 export { default as ServiceTable } from './networks/services/component.svelte'
 
+// Storage resources
 export { default as PersistentVolumeTable } from './storage/persistentvolumes/component.svelte'
+export { default as StorageClassesTable } from './storage/storageclasses/component.svelte'

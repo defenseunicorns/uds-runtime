@@ -1,4 +1,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
-<h1 class="text-white text-5xl">Mutating Webhooks</h1>
+<script lang="ts">
+  import { MutatingWebhooksTable } from '$features/k8s'
+</script>
+
+<MutatingWebhooksTable />
