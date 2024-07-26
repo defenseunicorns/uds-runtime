@@ -16,7 +16,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/storage/persistentvolumeclaims`
+  const url = `/api/v1/resources/storage/persistentvolumeclaims?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
     storage_class: r.spec?.storageClassName ?? '',
