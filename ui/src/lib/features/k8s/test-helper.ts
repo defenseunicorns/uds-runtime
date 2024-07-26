@@ -1,10 +1,10 @@
 import { render } from '@testing-library/svelte'
 
 import * as components from '$components'
-import type { V1Deployment as Resource } from '@kubernetes/client-node'
+import type { KubernetesObject } from '@kubernetes/client-node'
 import type { ComponentType } from 'svelte'
 import type { Mock } from 'vitest'
-import type { ResourceStoreInterface } from './types'
+import type { CommonRow, ResourceStoreInterface } from './types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Procedure = (...args: any[]) => any
@@ -45,13 +45,17 @@ export function testK8sTableWithCustomColumns(Component: ComponentType, props: R
   })
 }
 
-export function testK8sResourceStore(
+type Resource = KubernetesObject & {
+  status?: Record<string, unknown>
+  spec?: Record<string, unknown>
+}
+
+export function testK8sResourceStore<R extends Resource, U extends CommonRow>(
   resource: string,
-  mockData: Resource[],
+  mockData: R[],
   expectedTable: Record<string, unknown>,
   expectedUrl: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createStore: () => ResourceStoreInterface<Resource, any>,
+  createStore: () => ResourceStoreInterface<R, U>,
 ) {
   test(`createStore for ${resource}`, async () => {
     vi.useFakeTimers()
@@ -65,39 +69,45 @@ export function testK8sResourceStore(
       console.log(url)
     })
 
+    const closeMock = vi.fn()
+
     vi.stubGlobal(
       'EventSource',
-      vi
-        .fn()
-        .mockImplementation(
-          (url: string) => new MockEventSource(url, mockData as unknown as Resource[], urlAssertionMock),
-        ),
+      vi.fn().mockImplementation((url: string) => new MockEventSource(url, mockData, urlAssertionMock, closeMock)),
     )
 
     // initialize store
     const store = createStore()
-    store.start()
+    const cleanup = store.start()
 
+    expect(urlAssertionMock).toHaveBeenCalledTimes(1)
     expect(urlAssertionMock).toHaveBeenCalledWith(expectedUrl)
 
     vi.advanceTimersByTime(500)
     store.subscribe((data) => {
+      const { resource, table } = data[0]
       // todo: fix can't compare metadata as a whole because mockData[0].metadata.creationTimestamp is not wrapped in ""
-      expect(data[0].resource.metadata?.name).toEqual(mockData[0].metadata?.name)
-      expect(data[0].resource['status']).toEqual(mockData[0]['status'])
-      expect(data[0].table).toEqual(expectedTable)
+      expect(resource.metadata?.name).toEqual(mockData[0].metadata?.name)
+      expect(resource.status).toEqual(mockData[0].status)
+      expect(table).toEqual(expectedTable)
     })
-  })
 
-  vi.unstubAllGlobals()
-  vi.useRealTimers()
+    // call the cleanup function
+    cleanup()
+    expect(closeMock).toHaveBeenCalledTimes(1)
+
+    vi.unstubAllGlobals()
+    vi.useRealTimers()
+  })
 }
 
 // Mocking EventSource globally
-class MockEventSource {
+export class MockEventSource {
   onmessage: (event: MessageEvent) => void | null = () => {}
-  constructor(url: string, data: Resource[], urlAssertionMock: Mock<Procedure>) {
+  close: Mock<Procedure>
+  constructor(url: string, data: Resource[], urlAssertionMock: Mock<Procedure>, closeMock: Mock<Procedure>) {
     urlAssertionMock(url)
+    this.close = closeMock
 
     setTimeout(() => {
       const messageEvent = {
