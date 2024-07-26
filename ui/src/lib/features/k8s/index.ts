@@ -29,5 +29,6 @@ export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/co
 export { default as ServiceTable } from './networks/services/component.svelte'
 
 // Storage resources
+export { default as PersistentVolumeClaimTable } from './storage/persistentvolumeclaims/component.svelte'
 export { default as PersistentVolumeTable } from './storage/persistentvolumes/component.svelte'
 export { default as StorageClassesTable } from './storage/storageclasses/component.svelte'
