@@ -27,6 +27,7 @@ export { default as PriorityClassesTable } from './cluster-ops/priority-classes/
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
 
 // Network resources
+export { default as EndpointTable } from './networks/endpoints/component.svelte'
 export { default as ServiceTable } from './networks/services/component.svelte'
 
 // Storage resources
