@@ -1,4 +1,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
-<h1 class="text-white text-5xl">Storage Classes</h1>
+<script lang="ts">
+  import { StorageClassesTable } from '$features/k8s/index.js'
+</script>
+
+<StorageClassesTable />
