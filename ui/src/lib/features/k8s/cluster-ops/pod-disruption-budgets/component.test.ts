@@ -16,6 +16,7 @@ suite('PriorityClassesTable Component', () => {
     createStore,
     columns: [
       ['name', 'emphasize'],
+      ['namespace'],
       ['min_available'],
       ['max_unavailable'],
       ['current_healthy'],

@@ -7,6 +7,7 @@
 
   export let columns: Columns = [
     ['name', 'emphasize'],
+    ['namespace'],
     ['min_available'],
     ['max_unavailable'],
     ['current_healthy'],
