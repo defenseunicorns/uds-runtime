@@ -33,7 +33,7 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 			}
 
 			// Otherwise, write the data to the client
-			writeData(w, r, data)
+			writeData(w, data)
 			return
 		}
 
@@ -45,7 +45,7 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 
 		// If once is true, send the list data once and close the connection
 		if once {
-			writeData(w, r, getData())
+			writeData(w, getData())
 			return
 		}
 
@@ -54,7 +54,7 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 	}
 }
 
-func writeData(w http.ResponseWriter, r *http.Request, payload any) {
+func writeData(w http.ResponseWriter, payload any) {
 	// Convert the data to JSON
 	data, err := json.Marshal(payload)
 	if err != nil {
@@ -66,19 +66,6 @@ func writeData(w http.ResponseWriter, r *http.Request, payload any) {
 	w.Header().Set("Content-Type", "text/json; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
-
-	// Attempt to compress the data if the client supports it
-	supportsGzip := useCompression(w, r)
-	if supportsGzip {
-		compressedData, err := compressBinaryData(data)
-		if err != nil {
-			http.Error(w, "Failed to compress data", http.StatusInternalServerError)
-			return
-		}
-
-		// Replace the data with the compressed data
-		data = compressedData
-	}
 
 	// Write the data to the response
 	if _, err := w.Write(data); err != nil {
