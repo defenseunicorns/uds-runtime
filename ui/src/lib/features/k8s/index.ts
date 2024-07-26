@@ -26,3 +26,5 @@ export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/co
 
 // Network resources
 export { default as ServiceTable } from './networks/services/component.svelte'
+
+export { default as StorageClassesTable } from './storage/storageclasses/component.svelte'
