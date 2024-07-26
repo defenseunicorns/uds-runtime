@@ -20,25 +20,27 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/storage/persistentvolumeclaims?dense=true`
 
   // Store to hold pods for each PVC
-
   const pods = new Map<string, string[]>() // map of pvc name -> pod names
   const podStore = writable<number>()
   const podEvents = new EventSource(`/api/v1/resources/workloads/pods?dense=true`)
 
   podEvents.onmessage = (event) => {
     const data = JSON.parse(event.data) as V1Pod[]
-    console.log('Pod msg recvd:', data)
     data.forEach((p) => {
       p.spec?.volumes?.forEach((v) => {
-        if (v.persistentVolumeClaim) {
-          const claimName = `${v.persistentVolumeClaim.claimName}`
-          let podNames = pods.get(claimName) ?? []
+        const claimName = `${v.persistentVolumeClaim?.claimName}` || ''
+        let podNames = pods.get(claimName) ?? []
+        if (claimName && p.status?.phase === 'Running') {
           podNames.push(p.metadata?.name ?? '')
-          podNames = Array.from(new Set(podNames))
+          podNames = Array.from(new Set(podNames)) // de-dup
+          pods.set(claimName, podNames)
+        } else if (claimName && p.status?.phase !== 'Running') {
+          podNames = podNames.filter((n) => n !== p.metadata?.name)
           pods.set(claimName, podNames)
         }
       })
     })
+
     // trigger an update
     podStore.set(event.timeStamp)
   }
@@ -53,7 +55,6 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const store = new ResourceStore<Resource, Row>('name', true, [podStore])
   store.stopCallback = podEvents.close.bind(podEvents)
   store.filterCallback = (data) => {
-    console.log('filter callback')
     return data.map((d) => {
       const pvcName = d.table.name
       if (pods.has(pvcName)) {

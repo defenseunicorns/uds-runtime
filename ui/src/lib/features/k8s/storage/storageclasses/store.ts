@@ -15,7 +15,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/storage/storageclasses`
+  const url = `/api/v1/resources/storage/storageclasses?dense=true`
 
   const isDefault = (r: Resource) =>
     r.metadata?.annotations && r.metadata.annotations['storageclass.kubernetes.io/is-default-class']
