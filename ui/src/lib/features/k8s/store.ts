@@ -42,8 +42,9 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
    *
    * @param sortBy The initial key to sort the table by
    * @param sortAsc The initial sort direction
+   * @param additionalStores Additional stores to subscribe to for updates
    */
-  constructor(sortBy: keyof U, sortAsc = true) {
+  constructor(sortBy: keyof U, sortAsc = true, additionalStores: Writable<unknown>[] = []) {
     // Initialize the internal store
     this.resources = writable<ResourceWithTable<T, U>[]>([])
 
@@ -64,7 +65,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
         this.sortBy,
         this.sortAsc,
         this.ageTimerStore,
-        ...this.additionalStores,
+        ...additionalStores,
       ],
       ([$resources, $namespace, $search, $searchBy, $sortBy, $sortAsc]) => {
         let filtered = $resources

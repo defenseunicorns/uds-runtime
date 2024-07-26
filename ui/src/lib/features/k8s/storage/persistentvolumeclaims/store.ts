@@ -21,10 +21,9 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
 
   // Store to hold pods for each PVC
 
-  // todo: type pods as a V1Pod or whatever
   const pods = new Map<string, string[]>() // map of pvc name -> pod names
   const podStore = writable<number>()
-  const podEvents = new EventSource(`/api/v1/resources/workloads/pods`) // todo: sparse?
+  const podEvents = new EventSource(`/api/v1/resources/workloads/pods`)
 
   podEvents.onmessage = (event) => {
     const data = JSON.parse(event.data) as V1Pod[]
@@ -40,8 +39,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       })
     })
     // trigger an update
-    console.log('pod event stream', pods)
     podStore.set(event.timeStamp)
+    console.log(event.timeStamp, 'pod event stream', pods)
   }
 
   const transform = transformResource<Resource, Row>((r) => ({
@@ -51,10 +50,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     pods: [],
   }))
 
-  const store = new ResourceStore<Resource, Row>('name')
-  store.additionalStores = [podStore]
+  const store = new ResourceStore<Resource, Row>('name', true, [podStore])
   store.stopCallback = podEvents.close.bind(podEvents)
-
   store.filterCallback = (data) => {
     console.log('filter callback')
     return data.map((d) => {
