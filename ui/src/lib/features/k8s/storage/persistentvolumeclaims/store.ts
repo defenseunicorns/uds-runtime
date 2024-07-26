@@ -27,14 +27,17 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   podEvents.onmessage = (event) => {
     const data = JSON.parse(event.data) as V1Pod[]
     data.forEach((p) => {
+      // find the pvcs for each pod
       p.spec?.volumes?.forEach((v) => {
         const claimName = `${v.persistentVolumeClaim?.claimName}` || ''
         let podNames = pods.get(claimName) ?? []
         if (claimName && p.status?.phase === 'Running') {
+          // add pod to state
           podNames.push(p.metadata?.name ?? '')
           podNames = Array.from(new Set(podNames)) // de-dup
           pods.set(claimName, podNames)
         } else if (claimName && p.status?.phase !== 'Running') {
+          // remove terminated pods from  state
           podNames = podNames.filter((n) => n !== p.metadata?.name)
           pods.set(claimName, podNames)
         }
