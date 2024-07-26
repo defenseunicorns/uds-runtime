@@ -60,7 +60,7 @@ type Cache struct {
 	HPAs               *ResourceList
 	PriorityClasses    *ResourceList
 	RuntimeClasses     *ResourceList
-	LimitRangesClasses *ResourceList
+	LimitRanges        *ResourceList
 
 	// Network resources
 	Services        *ResourceList
@@ -167,14 +167,14 @@ func (c *Cache) bindClusterOpsResources() {
 	hpaGVK := autoScalingV2.SchemeGroupVersion.WithKind("HorizontalPodAutoscaler")
 	runtimeClassGVK := nodeV1.SchemeGroupVersion.WithKind("RuntimeClass")
 	priorityClassGVK := schedulingV1.SchemeGroupVersion.WithKind("PriorityClass")
-	limitRangesClassGVK := coreV1.SchemeGroupVersion.WithKind("LimitRange")
+	limitRangesGVK := coreV1.SchemeGroupVersion.WithKind("LimitRange")
 
 	c.MutatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer(), mutatingWebhookGVK)
 	c.ValidatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer(), validatingWebhookGVK)
 	c.HPAs = NewResourceList(c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer(), hpaGVK)
 	c.RuntimeClasses = NewResourceList(c.factory.Node().V1().RuntimeClasses().Informer(), runtimeClassGVK)
 	c.PriorityClasses = NewResourceList(c.factory.Scheduling().V1().PriorityClasses().Informer(), priorityClassGVK)
-	c.LimitRangesClasses = NewResourceList(c.factory.Core().V1().LimitRanges().Informer(), limitRangesClassGVK)
+	c.LimitRanges = NewResourceList(c.factory.Core().V1().LimitRanges().Informer(), limitRangesGVK)
 }
 
 func (c *Cache) bindNetworkResources() {

@@ -7,7 +7,7 @@ import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
 export function createStore(): ResourceStoreInterface<Resource, CommonRow> {
-  const url = `/api/v1/resources/cluster-ops/limit-range-classes`
+  const url = `/api/v1/resources/cluster-ops/limit-ranges`
 
   const transform = transformResource<Resource, CommonRow>(() => ({}))
 

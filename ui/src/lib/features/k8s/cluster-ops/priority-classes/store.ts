@@ -15,7 +15,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/cluster-ops/limit-range-classes`
+  const url = `/api/v1/resources/cluster-ops/priority-classes`
 
   const transform = transformResource<Resource, Row>((r) => ({
     description: r.description ?? '',
