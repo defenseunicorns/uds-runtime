@@ -40,7 +40,6 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     })
     // trigger an update
     podStore.set(event.timeStamp)
-    console.log(event.timeStamp, 'pod event stream', pods)
   }
 
   const transform = transformResource<Resource, Row>((r) => ({
@@ -53,7 +52,6 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const store = new ResourceStore<Resource, Row>('name', true, [podStore])
   store.stopCallback = podEvents.close.bind(podEvents)
   store.filterCallback = (data) => {
-    console.log('filter callback')
     return data.map((d) => {
       const pvcName = d.table.name
       if (pods.has(pvcName)) {
