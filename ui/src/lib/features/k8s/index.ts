@@ -26,6 +26,5 @@ export { default as PriorityClassesTable } from './cluster-ops/priority-classes/
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
 
 // Network resources
-export { default as PersistentVolumeTable } from './storage/persistentvolumes/component.svelte'
 export { default as ServiceTable } from './networks/services/component.svelte'
-
+export { default as PersistentVolumeTable } from './storage/persistentvolumes/component.svelte'
