@@ -21,6 +21,7 @@ export { default as UDSExemptionTable } from './configs/uds-exemptions/component
 export { default as UDSPackageTable } from './configs/uds-packages/component.svelte'
 
 // Cluster ops resources
+export { default as HPATable } from './cluster-ops/hpa/component.svelte'
 export { default as MutatingWebhooksTable } from './cluster-ops/mutatingwebhooks/component.svelte'
 export { default as PriorityClassesTable } from './cluster-ops/priority-classes/component.svelte'
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
