@@ -3,7 +3,14 @@
 
 import { beforeEach, vi } from 'vitest'
 
-import { MockEventSource, testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
+import {
+  expectEqualIgnoringFields,
+  MockEventSource,
+  testK8sTableWithCustomColumns,
+  testK8sTableWithDefaults,
+  type TestResource,
+} from '$features/k8s/test-helper'
+import { SvelteComponent } from 'svelte'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -30,6 +37,49 @@ suite('PodTable Component', () => {
   testK8sTableWithCustomColumns(Component, { createStore })
 
   test(`createStore for pods`, async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date())
+
+    const mockContainers = [
+      {
+        containerID: 'containerd://1cd2b918e208d181dd3be8a6d0b651b962b1ae24946bfc8c27476f33b9e5b80b',
+        image: 'quay.io/frrouting/frr:9.0.2',
+        imageID: 'quay.io/frrouting/frr@sha256:086acb1278fe86118345f456a1fbfafb80c34d03f7bca9137da0729a1aee5e9c',
+        lastState: {
+          terminated: {
+            containerID: 'containerd://cc2e1f4154a9fcd1c28e55e36635c0255338f64bb2f1d6defb9bf12dd725170f',
+            exitCode: 255,
+            finishedAt: '2024-07-25T13:03:14Z',
+            reason: 'Unknown',
+            startedAt: '2024-07-23T14:16:27Z',
+          },
+        },
+        name: 'frr',
+        ready: true,
+        restartCount: 1,
+        started: true,
+        state: { running: { startedAt: '2024-07-25T13:03:26Z' } },
+      },
+      {
+        containerID: 'containerd://7b0e9ea8d2c615883f4e808d9dec53294ca2f5a2e0590a2c7586c681ddb207d9',
+        image: 'quay.io/frrouting/frr:9.0.2',
+        imageID: 'quay.io/frrouting/frr@sha256:086acb1278fe86118345f456a1fbfafb80c34d03f7bca9137da0729a1aee5e9c',
+        name: 'cp-frr-files',
+        ready: true,
+        restartCount: 1,
+        started: false,
+        state: {
+          terminated: {
+            containerID: 'containerd://7b0e9ea8d2c615883f4e808d9dec53294ca2f5a2e0590a2c7586c681ddb207d9',
+            exitCode: 0,
+            finishedAt: '2024-07-25T13:03:21Z',
+            reason: 'Completed',
+            startedAt: '2024-07-25T13:03:21Z',
+          },
+        },
+      },
+    ]
+
     const mockPods = [
       {
         apiVersion: 'v1',
@@ -53,47 +103,8 @@ suite('PodTable Component', () => {
           conditions: [
             { lastProbeTime: null, lastTransitionTime: '2024-07-23T14:16:27Z', status: 'True', type: 'Initialized' },
           ],
-          containerStatuses: [
-            {
-              containerID: 'containerd://1cd2b918e208d181dd3be8a6d0b651b962b1ae24946bfc8c27476f33b9e5b80b',
-              image: 'quay.io/frrouting/frr:9.0.2',
-              imageID: 'quay.io/frrouting/frr@sha256:086acb1278fe86118345f456a1fbfafb80c34d03f7bca9137da0729a1aee5e9c',
-              lastState: {
-                terminated: {
-                  containerID: 'containerd://cc2e1f4154a9fcd1c28e55e36635c0255338f64bb2f1d6defb9bf12dd725170f',
-                  exitCode: 255,
-                  finishedAt: '2024-07-25T13:03:14Z',
-                  reason: 'Unknown',
-                  startedAt: '2024-07-23T14:16:27Z',
-                },
-              },
-              name: 'frr',
-              ready: true,
-              restartCount: 1,
-              started: true,
-              state: { running: { startedAt: '2024-07-25T13:03:26Z' } },
-            },
-          ],
-          initContainerStatuses: [
-            {
-              containerID: 'containerd://7b0e9ea8d2c615883f4e808d9dec53294ca2f5a2e0590a2c7586c681ddb207d9',
-              image: 'quay.io/frrouting/frr:9.0.2',
-              imageID: 'quay.io/frrouting/frr@sha256:086acb1278fe86118345f456a1fbfafb80c34d03f7bca9137da0729a1aee5e9c',
-              name: 'cp-frr-files',
-              ready: true,
-              restartCount: 1,
-              started: false,
-              state: {
-                terminated: {
-                  containerID: 'containerd://7b0e9ea8d2c615883f4e808d9dec53294ca2f5a2e0590a2c7586c681ddb207d9',
-                  exitCode: 0,
-                  finishedAt: '2024-07-25T13:03:21Z',
-                  reason: 'Completed',
-                  startedAt: '2024-07-25T13:03:21Z',
-                },
-              },
-            },
-          ],
+          containerStatuses: [mockContainers[0]],
+          initContainerStatuses: [mockContainers[1]],
           phase: 'Running',
         },
       },
@@ -107,7 +118,7 @@ suite('PodTable Component', () => {
           { name: 'reloader', usage: { cpu: '0', memory: '792Ki' } },
         ],
         metadata: {
-          creationTimestamp: '2024-07-25T19:33:42Z',
+          creationTimestamp: new Date(),
           name: 'metallb-speaker-6nl62',
           namespace: 'uds-dev-stack',
         },
@@ -127,8 +138,30 @@ suite('PodTable Component', () => {
       'age',
     ]
 
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date())
+    const expectedTable = {
+      name: 'metallb-speaker-6nl62',
+      namespace: 'uds-dev-stack',
+      creationTimestamp: new Date().toString(),
+      containers: {
+        component: SvelteComponent,
+        props: {
+          // Combine all containers (init, regular, ephemeral)
+          containers: mockContainers,
+        },
+        sort: 2,
+      },
+      metrics: {
+        component: SvelteComponent,
+        sort: 12.490151,
+        // metrics added by store.filterCallback
+        props: { containers: podMetrics[0].containers },
+      },
+      restarts: 1,
+      controller: 'DaemonSet',
+      status: 'Running',
+      node: '',
+      age: { text: 'less than a minute', sort: 1721994792000 },
+    }
 
     const urlAssertionMock = vi.fn().mockImplementation((url: string) => {
       console.log(url)
@@ -143,7 +176,9 @@ suite('PodTable Component', () => {
         // metrics EventSource is created first in createStore()
         .mockImplementationOnce((url: string) => new MockEventSource(url, podMetrics, urlAssertionMock, closeMock))
         // next is the pods EventSource in store.start()
-        .mockImplementation((url: string) => new MockEventSource(url, mockPods, urlAssertionMock, closeMock)),
+        .mockImplementation(
+          (url: string) => new MockEventSource(url, mockPods as unknown as TestResource[], urlAssertionMock, closeMock),
+        ),
     )
 
     // initialize store
@@ -154,33 +189,30 @@ suite('PodTable Component', () => {
     expect(urlAssertionMock).toHaveBeenCalledWith(`/api/v1/resources/workloads/pods`)
     expect(urlAssertionMock).toHaveBeenCalledWith(`/api/v1/resources/workloads/podmetrics`)
 
+    // advance timers triggers the EventSource.onmessage callback in MockEventSource
     vi.advanceTimersByTime(500)
     store.subscribe((data) => {
       const { resource, table } = data[0]
+      console.log(table.containers.props.containers)
+
       // Assert the data was passed from eventSource to transformer
       expect(resource).toEqual(mockPods[0])
 
       // Assert the data was transformed correctly
       expect(Object.keys(table)).toEqual(tableCols)
-      expect(table.name).toEqual(mockPods[0].metadata.name)
-      expect(table.containers.props.containers).toEqual([
-        ...mockPods[0].status.containerStatuses,
-        ...mockPods[0].status.initContainerStatuses,
+      expectEqualIgnoringFields(table, expectedTable, [
+        'containers.component',
+        'metrics.component',
+        'creationTimestamp',
+        'age.sort',
       ])
-      expect(table.restarts).toEqual(1)
-      expect(table.namespace).toEqual(mockPods[0].metadata.namespace)
-      // expect(table.creationTimestamp).toEqual(mockPods[0].metadata.creationTimestamp)
-      expect(table.controller).toEqual(mockPods[0].metadata.ownerReferences[0].kind)
-      expect(table.status).toEqual(mockPods[0].status.phase)
-      expect(table.node).toEqual('')
+
       expect(table.age?.text).toEqual('less than a minute')
-      // Assert filterCallback was called and metrics were added to the table
-      expect(table.metrics.props.containers).toEqual(podMetrics[0].containers)
     })
 
     // call store.stop()
     cleanup()
-    // expect 2 because this.stopCallback is set to metricsEvents.close
+    // expect 2 because this.stopCallback was set to metricsEvents.close
     expect(closeMock).toHaveBeenCalledTimes(2)
   })
 
