@@ -33,7 +33,6 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   public sortBy: Writable<keyof U>
   public sortAsc: Writable<boolean>
   public namespace: Writable<string>
-  public additionalStores: Writable<unknown>[] = []
 
   // The list of search types
   public searchTypes = Object.values(SearchByType)
