@@ -7,7 +7,7 @@ import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$featur
 import Component from './component.svelte'
 import { createStore } from './store'
 
-suite('LimitRangesClassesTable Component', () => {
+suite('LimitRangesTable Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
