@@ -62,6 +62,7 @@ type Cache struct {
 	PriorityClasses      *ResourceList
 	RuntimeClasses       *ResourceList
 	PodDisruptionBudgets *ResourceList
+	LimitRanges          *ResourceList
 
 	// Network resources
 	Services        *ResourceList
@@ -169,6 +170,7 @@ func (c *Cache) bindClusterOpsResources() {
 	runtimeClassGVK := nodeV1.SchemeGroupVersion.WithKind("RuntimeClass")
 	priorityClassGVK := schedulingV1.SchemeGroupVersion.WithKind("PriorityClass")
 	podDisruptionBudgetGVK := policyV1.SchemeGroupVersion.WithKind("PodDisruptionBudget")
+	limitRangesGVK := coreV1.SchemeGroupVersion.WithKind("LimitRange")
 
 	c.MutatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer(), mutatingWebhookGVK)
 	c.ValidatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().ValidatingWebhookConfigurations().Informer(), validatingWebhookGVK)
@@ -176,6 +178,7 @@ func (c *Cache) bindClusterOpsResources() {
 	c.RuntimeClasses = NewResourceList(c.factory.Node().V1().RuntimeClasses().Informer(), runtimeClassGVK)
 	c.PriorityClasses = NewResourceList(c.factory.Scheduling().V1().PriorityClasses().Informer(), priorityClassGVK)
 	c.PodDisruptionBudgets = NewResourceList(c.factory.Policy().V1().PodDisruptionBudgets().Informer(), podDisruptionBudgetGVK)
+	c.LimitRanges = NewResourceList(c.factory.Core().V1().LimitRanges().Informer(), limitRangesGVK)
 }
 
 func (c *Cache) bindNetworkResources() {
