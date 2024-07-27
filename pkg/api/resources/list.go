@@ -5,6 +5,7 @@ package resources
 
 import (
 	"sync"
+	"time"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -12,9 +13,10 @@ import (
 )
 
 const (
-	Added    = "ADDED"
-	Modified = "MODIFIED"
-	Deleted  = "DELETED"
+	Added            = "ADDED"
+	Modified         = "MODIFIED"
+	Deleted          = "DELETED"
+	ThrottleInterval = 1 * time.Second
 )
 
 // ResourceList is a thread-safe struct to store the list of resources and notify subscribers of changes.
@@ -25,6 +27,7 @@ type ResourceList struct {
 	HasSynced       cache.InformerSynced
 	Changes         chan struct{}
 	gvk             schema.GroupVersionKind
+	lastChange      time.Time // tracks time of last change to a resource
 }
 
 // NewResourceList initializes a ResourceList and sets up event handlers for resource changes.
@@ -35,6 +38,7 @@ func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersion
 		Changes:         make(chan struct{}, 1),
 		HasSynced:       informer.HasSynced,
 		gvk:             gvk,
+		lastChange:      time.Now(),
 	}
 
 	//nolint:errcheck
@@ -127,10 +131,15 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 		delete(r.sparseResources, uid)
 	}
 
-	// Notify subscribers of the change
-	select {
-	case r.Changes <- struct{}{}:
-	default:
+	// Throttle change notifications by ThrottleInterval
+	now := time.Now()
+	if now.Sub(r.lastChange) >= ThrottleInterval {
+		r.lastChange = now
+		// Notify subscribers of the change
+		select {
+		case r.Changes <- struct{}{}:
+		default:
+		}
 	}
 }
 

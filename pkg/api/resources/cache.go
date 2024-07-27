@@ -85,7 +85,7 @@ func NewCache(ctx context.Context) (*Cache, error) {
 	}
 
 	c := &Cache{
-		factory:        informers.NewSharedInformerFactory(k8s.Clientset, time.Minute*10),
+		factory:        informers.NewSharedInformerFactory(k8s.Clientset, time.Second*10),
 		stopper:        make(chan struct{}),
 		PodMetrics:     NewPodMetrics(),
 		MetricsChanges: make(chan struct{}, 1),
