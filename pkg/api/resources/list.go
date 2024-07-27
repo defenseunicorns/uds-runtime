@@ -16,7 +16,7 @@ const (
 	Added            = "ADDED"
 	Modified         = "MODIFIED"
 	Deleted          = "DELETED"
-	DebounceDuration = 500 * time.Millisecond
+	DebounceDuration = 1 * time.Second
 )
 
 // ResourceList is a thread-safe struct to store the list of resources and notify subscribers of changes.
