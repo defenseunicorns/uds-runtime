@@ -23,6 +23,7 @@ export { default as UDSPackageTable } from './configs/uds-packages/component.sve
 // Cluster ops resources
 export { default as LimitRangesTable } from './cluster-ops/limit-ranges/component.svelte'
 export { default as MutatingWebhooksTable } from './cluster-ops/mutatingwebhooks/component.svelte'
+export { default as PodDisruptionBudgetsTable } from './cluster-ops/pod-disruption-budgets/component.svelte'
 export { default as PriorityClassesTable } from './cluster-ops/priority-classes/component.svelte'
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
 
