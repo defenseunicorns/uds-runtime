@@ -16,7 +16,7 @@ const (
 	Added            = "ADDED"
 	Modified         = "MODIFIED"
 	Deleted          = "DELETED"
-	DebounceDuration = 5 * time.Second
+	DebounceDuration = 500 * time.Millisecond
 )
 
 // ResourceList is a thread-safe struct to store the list of resources and notify subscribers of changes.
@@ -136,8 +136,6 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 		r.debounceTimer.Stop()
 	}
 	r.debounceTimer = time.AfterFunc(DebounceDuration, func() {
-		r.mutex.Lock()
-		defer r.mutex.Unlock()
 		select {
 		case r.Changes <- struct{}{}:
 		default:
