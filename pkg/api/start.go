@@ -16,6 +16,7 @@ import (
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/sse"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/udsmiddleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -23,6 +24,7 @@ import (
 func Start(assets embed.FS) error {
 	r := chi.NewRouter()
 
+	r.Use(udsmiddleware.ConditionalCompress)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
@@ -104,6 +106,9 @@ func Start(assets embed.FS) error {
 
 				r.Get("/runtime-classes", sse.Bind(cache.RuntimeClasses))
 				r.Get("/runtime-classes/{uid}", sse.Bind(cache.RuntimeClasses))
+
+				r.Get("/limit-ranges", sse.Bind(cache.LimitRanges))
+				r.Get("/limit-ranges/{uid}", sse.Bind(cache.LimitRanges))
 			})
 
 			// Network resources
