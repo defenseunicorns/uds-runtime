@@ -16,7 +16,7 @@ const (
 	Added            = "ADDED"
 	Modified         = "MODIFIED"
 	Deleted          = "DELETED"
-	ThrottleInterval = 1 * time.Second
+	DebounceDuration = 5 * time.Second
 )
 
 // ResourceList is a thread-safe struct to store the list of resources and notify subscribers of changes.
@@ -27,7 +27,7 @@ type ResourceList struct {
 	HasSynced       cache.InformerSynced
 	Changes         chan struct{}
 	gvk             schema.GroupVersionKind
-	lastChange      time.Time // tracks time of last change to a resource
+	debounceTimer   *time.Timer
 }
 
 // NewResourceList initializes a ResourceList and sets up event handlers for resource changes.
@@ -38,7 +38,7 @@ func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersion
 		Changes:         make(chan struct{}, 1),
 		HasSynced:       informer.HasSynced,
 		gvk:             gvk,
-		lastChange:      time.Now(),
+		debounceTimer:   time.NewTimer(DebounceDuration),
 	}
 
 	//nolint:errcheck
@@ -131,16 +131,18 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 		delete(r.sparseResources, uid)
 	}
 
-	// Throttle change notifications by ThrottleInterval
-	now := time.Now()
-	if now.Sub(r.lastChange) >= ThrottleInterval {
-		r.lastChange = now
-		// Notify subscribers of the change
+	// Reset the debounce timer
+	if r.debounceTimer != nil {
+		r.debounceTimer.Stop()
+	}
+	r.debounceTimer = time.AfterFunc(DebounceDuration, func() {
+		r.mutex.Lock()
+		defer r.mutex.Unlock()
 		select {
 		case r.Changes <- struct{}{}:
 		default:
 		}
-	}
+	})
 }
 
 // extractSparseObject creates a sparse representation of the given unstructured object
