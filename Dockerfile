@@ -38,26 +38,3 @@ COPY --from=backend-builder-arm64 /app/main-arm64 ./main
 ENV PORT=8080
 EXPOSE 8080
 CMD ["./main"]
-#
-## Stage 2: Build Go backend
-#FROM golang:1.22.4-alpine AS backend-builder
-#WORKDIR /app
-#COPY go.mod go.sum ./
-#RUN go mod tidy
-#
-## Copy Go source code
-#COPY . .
-#
-## Copy built frontend files into the appropriate directory for embedding
-#COPY --from=frontend-builder /app/ui/build ./ui/build
-#
-## Build the Go binary
-#RUN CGO_ENABLED=0 go build -o /app/main .
-#
-## Stage 3: Create the final image
-#FROM alpine:latest
-#WORKDIR /app
-#COPY --from=backend-builder /app/main ./
-#ENV PORT=8080
-#EXPOSE 8080
-#CMD ["./main"]
