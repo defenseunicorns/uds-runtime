@@ -131,10 +131,7 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 		delete(r.sparseResources, uid)
 	}
 
-	// Reset the debounce timer
-	if r.debounceTimer != nil {
-		r.debounceTimer.Stop()
-	}
+	// debounce cache updates and notify subscribers
 	r.debounceTimer = time.AfterFunc(DebounceDuration, func() {
 		select {
 		case r.Changes <- struct{}{}:
