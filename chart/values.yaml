@@ -1,0 +1,5 @@
+replicaCount: 1
+image:
+  repository: ghcr.io/unclegedd/uds-runtime-dev
+  tag: dev
+  pullPolicy: IfNotPresent
