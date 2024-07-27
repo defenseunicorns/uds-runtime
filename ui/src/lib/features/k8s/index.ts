@@ -28,6 +28,7 @@ export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/co
 
 // Network resources
 export { default as EndpointTable } from './networks/endpoints/component.svelte'
+export { default as NetworkPolicyTable } from './networks/network-policies/component.svelte'
 export { default as ServiceTable } from './networks/services/component.svelte'
 export { default as VirtualServiceTable } from './networks/virtualservices/component.svelte'
 
