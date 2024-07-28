@@ -1,26 +1,25 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-package sse
+package rest
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-// WriteHeaders sets the headers for an SSE connection
-func WriteHeaders(w http.ResponseWriter) {
+// WriteSSEHeaders sets the headers for an SSE connection
+func WriteSSEHeaders(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 }
 
-// Handler is a generic SSE handler that sends data to the client
-func Handler(w http.ResponseWriter, r *http.Request, getData func() []unstructured.Unstructured, changes <-chan struct{}) {
-	WriteHeaders(w)
+// SSEHandler is a generic SSE handler that sends data to the client
+func SSEHandler(w http.ResponseWriter, r *http.Request, getData func() []unstructured.Unstructured, changes <-chan struct{}, fieldsList []string) {
+	WriteSSEHeaders(w)
 
 	// Ensure the ResponseWriter supports flushing
 	flusher, ok := w.(http.Flusher)
@@ -33,7 +32,7 @@ func Handler(w http.ResponseWriter, r *http.Request, getData func() []unstructur
 		defer flusher.Flush()
 
 		// Convert the data to JSON
-		data, err := json.Marshal(getData())
+		data, err := jsonMarshal(getData(), fieldsList)
 		if err != nil {
 			fmt.Fprintf(w, "data: Error: %v\n\n", err)
 			return

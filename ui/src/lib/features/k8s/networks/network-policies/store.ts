@@ -16,6 +16,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
+  // Using dense=true due to use of .spec
   const url = `/api/v1/resources/networks/networkpolicies?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
