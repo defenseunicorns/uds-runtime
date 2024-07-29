@@ -4,7 +4,7 @@ import * as components from '$components'
 import type { KubernetesObject } from '@kubernetes/client-node'
 import type { ComponentType } from 'svelte'
 import type { Mock } from 'vitest'
-import type { CommonRow, ResourceStoreInterface } from './types'
+import type { CommonRow, ResourceStoreInterface, ResourceWithTable } from './types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Procedure = (...args: any[]) => any
@@ -45,6 +45,7 @@ export function testK8sTableWithCustomColumns(Component: ComponentType, props: R
   })
 }
 
+// TODO: look into deep copies since nested objects are still references and are getting mutated
 // Helper function to compare two objects while ignoring certain fields; can ignore nested fields (eg 'metadata.creationTimestamp')
 export function expectEqualIgnoringFields<T>(actual: T, expected: T, fieldsToIgnore: string[]) {
   const expectedWithoutFields = { ...expected }
@@ -83,6 +84,7 @@ export function testK8sResourceStore<R extends KubernetesObject, U extends Commo
   expectedTable: Record<string, unknown>,
   expectedUrl: string,
   createStore: () => ResourceStoreInterface<R, U>,
+  subscribeCallback?: (data: ResourceWithTable<R, U>[]) => void,
 ) {
   test(`createStore for ${resource}`, async () => {
     vi.useFakeTimers()
@@ -113,13 +115,18 @@ export function testK8sResourceStore<R extends KubernetesObject, U extends Commo
 
     // advance timers triggers the EventSource.onmessage callback in MockEventSource
     vi.advanceTimersByTime(500)
-    store.subscribe((data) => {
-      const { resource, table } = data[0]
-      // Assert the data was passed from eventSource to transformer (avoid date time inconsistencies by ignoring creationTimestamp)
-      expectEqualIgnoringFields(resource, mockData[0], ['metadata.creationTimestamp'])
-      // Assert the data was transformed correctly to create the desired table rows
-      expect(table).toEqual(expectedTable)
-    })
+
+    if (subscribeCallback) {
+      store.subscribe(subscribeCallback)
+    } else {
+      store.subscribe((data) => {
+        const { resource, table } = data[0]
+        // Assert the data was passed from eventSource to transformer (avoid date time inconsistencies by ignoring creationTimestamp)
+        expectEqualIgnoringFields(resource, mockData[0], ['metadata.creationTimestamp'])
+        // Assert the data was transformed correctly to create the desired table rows
+        expectEqualIgnoringFields(table, expectedTable as unknown, [])
+      })
+    }
 
     // call store.stop()
     storeStop()

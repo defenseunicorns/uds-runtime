@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { ContainerMetric, PodMetric, V1Pod as Resource, V1ContainerStatus } from '@kubernetes/client-node'
+import {
+  type ContainerMetric,
+  type PodMetric,
+  type V1Pod as Resource,
+  type V1ContainerStatus,
+} from '@kubernetes/client-node'
 import { writable } from 'svelte/store'
 
 import { ResourceStore, transformResource } from '$features/k8s/store'
