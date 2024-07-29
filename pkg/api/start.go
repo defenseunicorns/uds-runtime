@@ -112,6 +112,9 @@ func Start(assets embed.FS) error {
 
 				r.Get("/limit-ranges", sse.Bind(cache.LimitRanges))
 				r.Get("/limit-ranges/{uid}", sse.Bind(cache.LimitRanges))
+
+				r.Get("/resource-quotas", sse.Bind(cache.ResourceQuotas))
+				r.Get("/resource-quotas/{uid}", sse.Bind(cache.ResourceQuotas))
 			})
 
 			// Network resources
