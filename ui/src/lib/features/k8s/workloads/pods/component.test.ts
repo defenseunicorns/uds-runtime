@@ -8,8 +8,8 @@ import {
   MockEventSource,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
-  type TestResource,
 } from '$features/k8s/test-helper'
+import type { PodMetric, V1Pod } from '@kubernetes/client-node'
 import { SvelteComponent } from 'svelte'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -108,7 +108,8 @@ suite('PodTable Component', () => {
           phase: 'Running',
         },
       },
-    ]
+    ] as unknown as V1Pod[]
+
     const podMetrics = [
       {
         containers: [
@@ -123,7 +124,7 @@ suite('PodTable Component', () => {
           namespace: 'uds-dev-stack',
         },
       },
-    ]
+    ] as unknown as PodMetric[]
 
     const tableCols = [
       'name',
@@ -139,9 +140,9 @@ suite('PodTable Component', () => {
     ]
 
     const expectedTable = {
-      name: 'metallb-speaker-6nl62',
-      namespace: 'uds-dev-stack',
-      creationTimestamp: new Date().toString(),
+      name: mockPods[0].metadata!.name,
+      namespace: mockPods[0].metadata!.namespace,
+      creationTimestamp: new Date(),
       containers: {
         component: SvelteComponent,
         props: {
@@ -161,7 +162,7 @@ suite('PodTable Component', () => {
       status: 'Running',
       node: '',
       age: { text: 'less than a minute', sort: 1721994792000 },
-    }
+    } as unknown
 
     const urlAssertionMock = vi.fn().mockImplementation((url: string) => {
       console.log(url)
@@ -176,9 +177,7 @@ suite('PodTable Component', () => {
         // metrics EventSource is created first in createStore()
         .mockImplementationOnce((url: string) => new MockEventSource(url, podMetrics, urlAssertionMock, closeMock))
         // next is the pods EventSource in store.start()
-        .mockImplementation(
-          (url: string) => new MockEventSource(url, mockPods as unknown as TestResource[], urlAssertionMock, closeMock),
-        ),
+        .mockImplementation((url: string) => new MockEventSource(url, mockPods, urlAssertionMock, closeMock)),
     )
 
     // initialize store
@@ -186,14 +185,13 @@ suite('PodTable Component', () => {
     const cleanup = store.start()
 
     // Assert the correct URLs were called by EventSources
-    expect(urlAssertionMock).toHaveBeenCalledWith(`/api/v1/resources/workloads/pods`)
     expect(urlAssertionMock).toHaveBeenCalledWith(`/api/v1/resources/workloads/podmetrics`)
+    expect(urlAssertionMock).toHaveBeenCalledWith(`/api/v1/resources/workloads/pods`)
 
     // advance timers triggers the EventSource.onmessage callback in MockEventSource
     vi.advanceTimersByTime(500)
     store.subscribe((data) => {
       const { resource, table } = data[0]
-      console.log(table.containers.props.containers)
 
       // Assert the data was passed from eventSource to transformer
       expect(resource).toEqual(mockPods[0])
