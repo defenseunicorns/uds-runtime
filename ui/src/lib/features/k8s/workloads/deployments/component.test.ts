@@ -6,6 +6,7 @@ import {
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { V1Deployment } from '@kubernetes/client-node'
 import '@testing-library/jest-dom'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -27,11 +28,11 @@ suite('DeploymentTable Component', () => {
       metadata: { name: 'test', namespace: 'default', creationTimestamp: new Date() },
       status: { readyReplicas: 1, replicas: 2, updatedReplicas: 1, conditions: [{ type: 'Available' }] },
     },
-  ]
+  ] as V1Deployment[]
 
   const expectedTable = {
-    name: 'test',
-    namespace: 'default',
+    name: mockData[0].metadata!.name,
+    namespace: mockData[0].metadata!.namespace,
     creationTimestamp: '',
     ready: '1 / 2',
     up_to_date: 1,

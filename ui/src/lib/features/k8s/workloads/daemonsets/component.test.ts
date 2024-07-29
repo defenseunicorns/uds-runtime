@@ -8,6 +8,7 @@ import {
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { V1DaemonSet } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -38,7 +39,7 @@ suite('DaemonsetTable Component', () => {
       apiVersion: 'apps/v1',
       kind: 'DaemonSet',
       metadata: {
-        creationTimestamp: new Date(),
+        creationTimestamp: '',
         name: 'ensure-machine-id',
         namespace: 'uds-dev-stack',
       },
@@ -50,6 +51,7 @@ suite('DaemonsetTable Component', () => {
           },
         },
         updateStrategy: { rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }, type: 'RollingUpdate' },
+        selector: { matchLabels: { name: 'ensure-machine-id' } },
       },
       status: {
         currentNumberScheduled: 1,
@@ -61,11 +63,11 @@ suite('DaemonsetTable Component', () => {
         updatedNumberScheduled: 1,
       },
     },
-  ]
+  ] as unknown as V1DaemonSet[]
 
   const expectedTable = {
-    name: 'ensure-machine-id',
-    namespace: 'uds-dev-stack',
+    name: mockData[0].metadata!.name,
+    namespace: mockData[0].metadata!.namespace,
     current: 1,
     desired: 1,
     node_selector: 'kubernetes.io/os: linux',

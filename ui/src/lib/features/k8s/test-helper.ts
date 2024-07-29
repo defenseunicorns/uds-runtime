@@ -9,10 +9,7 @@ import type { CommonRow, ResourceStoreInterface } from './types'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Procedure = (...args: any[]) => any
 
-export type TestResource = KubernetesObject & {
-  status?: Record<string, unknown>
-  spec?: Record<string, unknown>
-}
+export interface MockData extends KubernetesObject {}
 
 export function testK8sTableWithDefaults(Component: ComponentType, props: Record<string, unknown>) {
   test('creates component with correct props and default columns', () => {
@@ -82,7 +79,7 @@ export function expectEqualIgnoringFields<T>(actual: T, expected: T, fieldsToIgn
   expect(actualWithoutFields).toEqual(expectedWithoutFields)
 }
 
-export function testK8sResourceStore<R extends TestResource, U extends CommonRow>(
+export function testK8sResourceStore<R extends KubernetesObject, U extends CommonRow>(
   resource: string,
   mockData: R[],
   expectedTable: Record<string, unknown>,
@@ -139,7 +136,7 @@ export class MockEventSource {
   onmessage: (event: MessageEvent) => void | null = () => {}
   close: Mock<Procedure>
 
-  constructor(url: string, data: TestResource[], urlAssertionMock: Mock<Procedure>, closeMock: Mock<Procedure>) {
+  constructor(url: string, data: MockData[], urlAssertionMock: Mock<Procedure>, closeMock: Mock<Procedure>) {
     // Used for testing the correct URL was passed to the EventSource
     urlAssertionMock(url)
     // Used for testing the EventSource was closed
