@@ -34,5 +34,5 @@ tasks:
   - name: publish-zarf-packages
     description: "publish uds runtime zarf packages (multi-arch)"
     actions:
-      - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-amd64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime
-      - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-arm64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime
+      - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-amd64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds
+      - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-arm64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds

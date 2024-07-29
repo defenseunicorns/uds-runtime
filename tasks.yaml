@@ -17,8 +17,8 @@ tasks:
       - cmd: npm ci && npm run dev
         dir: ui
 
-  - name: build
-    description: "build the api server and ui"
+  - name: compile
+    description: "compile the api server and ui outputting to build/"
     actions:
       - task: setup:build-ui
       - task: setup:build-api
