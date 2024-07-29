@@ -16,6 +16,7 @@ import (
 	batchV1 "k8s.io/api/batch/v1"
 	coreV1 "k8s.io/api/core/v1"
 	nodeV1 "k8s.io/api/node/v1"
+	policyV1 "k8s.io/api/policy/v1"
 	schedulingV1 "k8s.io/api/scheduling/v1"
 	storageV1 "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -55,12 +56,14 @@ type Cache struct {
 	Secrets    *ResourceList
 
 	// Cluster ops resources
-	MutatingWebhooks   *ResourceList
-	ValidatingWebhooks *ResourceList
-	HPAs               *ResourceList
-	PriorityClasses    *ResourceList
-	RuntimeClasses     *ResourceList
-	ResourceQuotas     *ResourceList
+	MutatingWebhooks     *ResourceList
+	ValidatingWebhooks   *ResourceList
+	HPAs                 *ResourceList
+	PriorityClasses      *ResourceList
+	RuntimeClasses       *ResourceList
+	PodDisruptionBudgets *ResourceList
+	LimitRanges          *ResourceList
+	ResourceQuotas       *ResourceList
 
 	// Network resources
 	Services        *ResourceList
@@ -167,6 +170,8 @@ func (c *Cache) bindClusterOpsResources() {
 	hpaGVK := autoScalingV2.SchemeGroupVersion.WithKind("HorizontalPodAutoscaler")
 	runtimeClassGVK := nodeV1.SchemeGroupVersion.WithKind("RuntimeClass")
 	priorityClassGVK := schedulingV1.SchemeGroupVersion.WithKind("PriorityClass")
+	podDisruptionBudgetGVK := policyV1.SchemeGroupVersion.WithKind("PodDisruptionBudget")
+	limitRangesGVK := coreV1.SchemeGroupVersion.WithKind("LimitRange")
 	resourceQuotaGVK := coreV1.SchemeGroupVersion.WithKind("ResourceQuotas")
 
 	c.MutatingWebhooks = NewResourceList(c.factory.Admissionregistration().V1().MutatingWebhookConfigurations().Informer(), mutatingWebhookGVK)
@@ -174,6 +179,8 @@ func (c *Cache) bindClusterOpsResources() {
 	c.HPAs = NewResourceList(c.factory.Autoscaling().V2().HorizontalPodAutoscalers().Informer(), hpaGVK)
 	c.RuntimeClasses = NewResourceList(c.factory.Node().V1().RuntimeClasses().Informer(), runtimeClassGVK)
 	c.PriorityClasses = NewResourceList(c.factory.Scheduling().V1().PriorityClasses().Informer(), priorityClassGVK)
+	c.PodDisruptionBudgets = NewResourceList(c.factory.Policy().V1().PodDisruptionBudgets().Informer(), podDisruptionBudgetGVK)
+	c.LimitRanges = NewResourceList(c.factory.Core().V1().LimitRanges().Informer(), limitRangesGVK)
 	c.ResourceQuotas = NewResourceList(c.factory.Core().V1().ResourceQuotas().Informer(), resourceQuotaGVK)
 }
 
