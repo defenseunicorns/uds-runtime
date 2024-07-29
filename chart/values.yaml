@@ -1,5 +1,5 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/unclegedd/uds-runtime-dev
-  tag: dev
+  repository: ghcr.io/defenseunicorns/uds-runtime
+  tag: ###ZARF_PKG_TMPL_IMAGE_TAG###
   pullPolicy: IfNotPresent

@@ -2,13 +2,13 @@ kind: ZarfPackageConfig
 metadata:
   name: uds-runtime
   description: tbd
-  version: 0.1.0
+  version: '###ZARF_PKG_TMPL_PKG_VERSION###'
 
 components:
   - name: uds-runtime
     required: true
     images:
-      - ghcr.io/unclegedd/uds-runtime-dev:dev
+      - ghcr.io/defenseunicorns/uds-runtime:###ZARF_PKG_TMPL_IMAGE_TAG###
     charts:
       - name: uds-runtime
         localPath: ./chart

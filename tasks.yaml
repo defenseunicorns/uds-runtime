@@ -3,6 +3,12 @@ includes:
   - lint: tasks/lint.yaml
   - setup: tasks/setup.yaml
 
+variables:
+  - name: ZARF_PKG_VERSION
+    default: alpha
+  - name: IMAGE_TAG
+    default: alpha
+
 tasks:
   - name: dev-server
     description: "run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation)"
@@ -22,7 +28,7 @@ tasks:
       - task: setup:build-ui
       - task: setup:build-api
 
-  - name: build-container
+  - name: push-container
     description: "build multi-arch container and push to GHCR"
     actions:
       - cmd: rm -fr build ui/build
@@ -31,4 +37,16 @@ tasks:
       - task: setup:build-api-linux-amd64
       - task: setup:build-api-linux-arm64
       - cmd: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/unclegedd/uds-runtime-dev:dev --push .
+          docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/defenseunicorns/uds-runtime:${IMAGE_TAG} --push .
+
+  - name: build-zarf-packages
+    description: "build the zarf package"
+    actions:
+      - cmd: ./uds zarf package create --confirm --set IMAGE_TAG=${ZARF_PKG_TAG} --set PKG_VERSION=${ZARF_PKG_VERSION} -a amd64
+      - cmd: ./uds zarf package create --confirm --set IMAGE_TAG=${ZARF_PKG_TAG} --set PKG_VERSION=${ZARF_PKG_VERSION} -a arm64
+
+  - name: publish-zarf-packages
+    description: "publish the zarf package"
+    actions:
+      - cmd: ./uds zarf package publish zarf-package-uds-runtime-amd64-${ZARF_PKG_VERSION} --confirm
+      - cmd: ./uds zarf package publish zarf-package-uds-runtime-arm64-${ZARF_PKG_VERSION} --confirm
