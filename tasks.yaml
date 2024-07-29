@@ -4,6 +4,13 @@ includes:
   - setup: tasks/setup.yaml
   - build: tasks/build.yaml
 
+variables:
+  - name: REF
+    description: "reference for the runtime image and zarf package"
+    # x-release-please-start-version
+    default: 0.1.0-alpha.1
+    # x-release-please-end
+
 tasks:
   - name: dev-server
     description: "run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation)"
