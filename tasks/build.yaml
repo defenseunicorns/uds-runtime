@@ -4,7 +4,9 @@ includes:
 variables:
   - name: REF
     description: "reference for the runtime image and zarf package"
-    default: alpha
+    # x-release-please-start-version
+    default: 0.1.0-alpha.1
+    # x-release-please-end
 
 tasks:
   - name: publish-uds-runtime

@@ -18,8 +18,3 @@ spec:
         selector:
           app: uds-runtime
         remoteGenerated: KubeAPI
-
-      - direction: Ingress
-        selector:
-          app: uds-runtime
-        remoteGenerated: KubeAPI

@@ -1,5 +1,7 @@
 replicaCount: 1
 image:
   repository: ghcr.io/defenseunicorns/uds-runtime
-  tag: "###ZARF_CONST_REF###"
+  # x-release-please-start-version
+  tag: 0.1.0-alpha.1
+  # x-release-please-end
   pullPolicy: Always
