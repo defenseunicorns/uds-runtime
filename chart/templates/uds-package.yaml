@@ -5,6 +5,14 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   network:
+    expose:
+      - service: uds-runtime
+        selector:
+          app: uds-runtime
+        host: runtime
+        gateway: tenant
+        port: 8080
+        targetPort: 8080
     allow:
       - direction: Egress
         selector:

@@ -2,11 +2,7 @@ includes:
   - test: tasks/test.yaml
   - lint: tasks/lint.yaml
   - setup: tasks/setup.yaml
-
-variables:
-  - name: REF
-    description: "reference for the runtime image and zarf package"
-    default: alpha
+  - build: tasks/build.yaml
 
 tasks:
   - name: dev-server
@@ -26,26 +22,3 @@ tasks:
     actions:
       - task: setup:build-ui
       - task: setup:build-api
-
-  - name: push-container
-    description: "build multi-arch container and push to GHCR"
-    actions:
-      - cmd: rm -fr build ui/build
-      - cmd: go mod tidy
-      - task: setup:build-ui
-      - task: setup:build-api-linux-amd64
-      - task: setup:build-api-linux-arm64
-      - cmd: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/defenseunicorns/uds-runtime:${IMAGE_TAG} --push .
-
-  - name: build-zarf-packages
-    description: "build the zarf package"
-    actions:
-      - cmd: ./uds zarf package create --confirm --set REF=${REF} -a amd64
-      - cmd: ./uds zarf package create --confirm --set REF=${REF} -a arm64
-
-  - name: publish-zarf-packages
-    description: "publish the zarf package"
-    actions:
-      - cmd: ./uds zarf package publish zarf-package-uds-runtime-amd64-${REF} --confirm
-      - cmd: ./uds zarf package publish zarf-package-uds-runtime-arm64-${REF} --confirm
