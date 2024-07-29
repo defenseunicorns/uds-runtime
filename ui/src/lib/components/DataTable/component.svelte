@@ -4,11 +4,15 @@
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { ChevronDown, ChevronUp, Filter, Search } from 'carbon-icons-svelte'
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
+  import { type Unsubscriber } from 'svelte/store'
 
+  import { goto } from '$app/navigation'
   import { page } from '$app/stores'
+  import { SidePanel } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
+  import { loadResourceDetail } from './component'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -19,16 +23,44 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
-  // Load the namespaces from the page store
-  const namespaces = $page.data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
-
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
+
+  let resource: KubernetesObject | null = null
+  let baseURL = location.pathname
+  let unsubscribePage: Unsubscriber
+  let uid = ''
+  let namespaces: ResourceStoreInterface<KubernetesObject, NamespaceRow>
+
+  onDestroy(() => {
+    unsubscribePage()
+  })
+
+  unsubscribePage = page.subscribe(({ params, data }) => {
+    namespaces = data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
+    uid = params.uid || ''
+
+    // If UID is present, load the data
+    if (uid) {
+      // Strip the UID from the URL
+      baseURL = baseURL.replace(`/${uid}`, '')
+
+      loadResourceDetail(rows.url, uid).then((data) => {
+        resource = data
+      })
+    } else {
+      resource = null
+    }
+  })
 
   onMount(() => {
     return rows.start()
   })
 </script>
+
+{#if resource}
+  <SidePanel {resource} {baseURL} />
+{/if}
 
 <section class="table-section">
   <div class="table-container">
@@ -111,7 +143,8 @@
           </thead>
           <tbody>
             {#each $rows as row}
-              <tr>
+              <!-- on click, navigate to the uid -->
+              <tr on:click={() => goto(`${baseURL}/${row.resource.metadata?.uid}`)}>
                 {#each columns as [key, style]}
                   <!-- Check object to avoid issues with `false` values -->
                   {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
