@@ -20,7 +20,11 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/cluster-ops/hpas?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => {
-    const status = r.status?.conditions?.filter((c) => c.status === 'True')[0]?.type
+    const status = r.status?.conditions
+      ?.filter((c) => c.status === 'True')
+      .map((c) => c.type)
+      .join(' ')
+
     const HPAUtilization = `${r.status?.currentMetrics?.at(0)?.resource?.current.averageUtilization}%`
 
     return {
