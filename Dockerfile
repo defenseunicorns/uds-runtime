@@ -1,40 +1,16 @@
-# Stage 1: Build Svelte frontend
-FROM node:21-alpine AS frontend-builder
-WORKDIR /app/ui
-COPY ui/ ./
-RUN npm ci && npm run build
+FROM cgr.dev/chainguard/static:latest
 
+# grab auto platform arg
+ARG TARGETARCH
 
-# Stage 2: Build Go backend for amd64
-FROM golang:1.22.4-alpine AS backend-builder-amd64
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-COPY --from=frontend-builder /app/ui/build ./ui/build
-RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o /app/main-amd64 .
+# 65532 is the UID of the `nonroot` user in chainguard/static.
+# See: https://edu.chainguard.dev/chainguard/chainguard-images/reference/static/overview/#users
+USER 65532:65532
 
-# Stage 2: Build Go backend for arm64
-FROM golang:1.22.4-alpine AS backend-builder-arm64
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-COPY --from=frontend-builder /app/ui/build ./ui/build
-RUN CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -o /app/main-arm64 .
-
-# Stage 3: Create the final image for amd64
-FROM alpine:latest AS final-amd64
-WORKDIR /app
-COPY --from=backend-builder-amd64 /app/main-amd64 ./main
+# copy binary from local and expose port
+COPY --chown=65532:65532 build/uds-runtime-${TARGETARCH} /app/uds-runtime
 ENV PORT=8080
 EXPOSE 8080
-CMD ["./main"]
 
-# Stage 3: Create the final image for arm64
-FROM alpine:latest AS final-arm64
-WORKDIR /app
-COPY --from=backend-builder-arm64 /app/main-arm64 ./main
-ENV PORT=8080
-EXPOSE 8080
-CMD ["./main"]
+# run binary
+CMD ["./uds-runtime"]

@@ -21,3 +21,14 @@ tasks:
     actions:
       - task: setup:build-ui
       - task: setup:build-api
+
+  - name: build-container
+    description: "build multi-arch container and push to GHCR"
+    actions:
+      - cmd: rm -fr build ui/build
+      - cmd: go mod tidy
+      - task: setup:build-ui
+      - task: setup:build-api-linux-amd64
+      - task: setup:build-api-linux-arm64
+      - cmd: |
+          docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/unclegedd/uds-runtime-dev:dev --push .
