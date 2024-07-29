@@ -1,0 +1,40 @@
+includes:
+  - setup: setup.yaml
+
+variables:
+  - name: REF
+    description: "reference for the runtime image and zarf package"
+    # x-release-please-start-version
+    default: 0.1.0-alpha.1
+    # x-release-please-end
+
+tasks:
+  - name: publish-uds-runtime
+    description: "publish the uds runtime including its image and Zarf pkg (multi-arch)"
+    actions:
+      - task: push-container
+      - task: build-zarf-packages
+      - task: publish-zarf-packages
+
+  - name: push-container
+    description: "build container and push to GHCR (multi-arch)"
+    actions:
+      - cmd: rm -fr build ui/build
+      - cmd: go mod tidy
+      - task: setup:build-ui
+      - task: setup:build-api-linux-amd64
+      - task: setup:build-api-linux-arm64
+      - cmd: |
+          docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/defenseunicorns/uds-runtime:${REF} --push .
+
+  - name: build-zarf-packages
+    description: "build the uds runtime zarf packages (multi-arch)"
+    actions:
+      - cmd: ./uds zarf p create --set REF=${REF} -a amd64 -o build --confirm
+      - cmd: ./uds zarf p create --set REF=${REF} -a arm64 -o build --confirm
+
+  - name: publish-zarf-packages
+    description: "publish uds runtime zarf packages (multi-arch)"
+    actions:
+      - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-amd64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds
+      - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-arm64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds

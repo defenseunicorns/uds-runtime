@@ -3,9 +3,20 @@ includes:
 
 tasks:
   - name: build-api
-    description: "build the go api server"
+    description: "build the go api server for the local platform"
     actions:
-      - cmd: go build -o ./build/main main.go
+      - cmd: go mod tidy
+      - cmd: CGO_ENABLED=0 go build -o ./build/uds-runtime .
+
+  - name: build-api-linux-amd64
+    description: "build the go api server for linux amd64 (used for multi-arch container)"
+    actions:
+      - cmd: CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o build/uds-runtime-amd64 .
+
+  - name: build-api-linux-arm64
+    description: "build the go api server for linux arm64 (used for multi-arch container)"
+    actions:
+      - cmd: CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -o build/uds-runtime-arm64 .
 
   - name: build-ui
     description: "build ui"
