@@ -8,6 +8,7 @@
   export let columns: Columns = [
     ['name', 'emphasize'],
     ['namespace'],
+    ['metrics'],
     ['min_pods'],
     ['max_pods'],
     ['replicas'],

@@ -7,6 +7,7 @@ import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
 interface Row extends CommonRow {
+  metrics?: string
   min_pods?: number
   max_pods?: number
   replicas?: number
@@ -19,12 +20,11 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/cluster-ops/hpas?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => {
-    console.log('r')
-    console.log(r)
-
     const status = r.status?.conditions?.filter((c) => c.status === 'True')[0]?.type
-    // console.log(r.status?.conditions?.filter((c) => c.status === 'True'))
+    const HPAUtilization = `${r.status?.currentMetrics?.at(0)?.resource?.current.averageUtilization}%`
+
     return {
+      metrics: `${HPAUtilization || 'unknown'} / ${r.spec?.metrics?.at(0)?.resource?.target?.averageUtilization}%`,
       min_pods: r.spec?.minReplicas,
       max_pods: r.spec?.maxReplicas,
       replicas: r.status?.currentReplicas,
