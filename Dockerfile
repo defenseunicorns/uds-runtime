@@ -13,4 +13,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # run binary
-CMD ["./uds-runtime"]
+CMD ["./app/uds-runtime"]

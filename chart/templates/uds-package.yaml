@@ -1,0 +1,17 @@
+apiVersion: uds.dev/v1alpha1
+kind: Package
+metadata:
+  name: uds-runtime
+  namespace: {{ .Release.Namespace }}
+spec:
+  network:
+    allow:
+      - direction: Egress
+        selector:
+          app: uds-runtime
+        remoteGenerated: KubeAPI
+
+      - direction: Ingress
+        selector:
+          app: uds-runtime
+        remoteGenerated: KubeAPI

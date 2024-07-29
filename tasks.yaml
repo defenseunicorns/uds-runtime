@@ -4,9 +4,8 @@ includes:
   - setup: tasks/setup.yaml
 
 variables:
-  - name: ZARF_PKG_VERSION
-    default: alpha
-  - name: IMAGE_TAG
+  - name: REF
+    description: "reference for the runtime image and zarf package"
     default: alpha
 
 tasks:
@@ -42,11 +41,11 @@ tasks:
   - name: build-zarf-packages
     description: "build the zarf package"
     actions:
-      - cmd: ./uds zarf package create --confirm --set IMAGE_TAG=${ZARF_PKG_TAG} --set PKG_VERSION=${ZARF_PKG_VERSION} -a amd64
-      - cmd: ./uds zarf package create --confirm --set IMAGE_TAG=${ZARF_PKG_TAG} --set PKG_VERSION=${ZARF_PKG_VERSION} -a arm64
+      - cmd: ./uds zarf package create --confirm --set REF=${REF} -a amd64
+      - cmd: ./uds zarf package create --confirm --set REF=${REF} -a arm64
 
   - name: publish-zarf-packages
     description: "publish the zarf package"
     actions:
-      - cmd: ./uds zarf package publish zarf-package-uds-runtime-amd64-${ZARF_PKG_VERSION} --confirm
-      - cmd: ./uds zarf package publish zarf-package-uds-runtime-arm64-${ZARF_PKG_VERSION} --confirm
+      - cmd: ./uds zarf package publish zarf-package-uds-runtime-amd64-${REF} --confirm
+      - cmd: ./uds zarf package publish zarf-package-uds-runtime-arm64-${REF} --confirm

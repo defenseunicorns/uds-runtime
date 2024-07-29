@@ -1,5 +1,5 @@
 replicaCount: 1
 image:
   repository: ghcr.io/defenseunicorns/uds-runtime
-  tag: ###ZARF_PKG_TMPL_IMAGE_TAG###
-  pullPolicy: IfNotPresent
+  tag: "###ZARF_CONST_REF###"
+  pullPolicy: Always
