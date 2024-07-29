@@ -17,7 +17,8 @@ export function createStore(): ResourceStoreInterface<Resource, CommonRow> {
 
   return {
     ...store,
-    start: () => store.start.bind(store),
+    start: store.start.bind(store),
+
     sortByKey: store.sortByKey.bind(store),
   }
 }

@@ -27,7 +27,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
 
   return {
     ...store,
-    start: () => store.start.bind(store),
+    start: store.start.bind(store),
+
     sortByKey: store.sortByKey.bind(store),
   }
 }
