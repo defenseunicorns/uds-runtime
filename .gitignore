@@ -28,3 +28,4 @@ screenshot.png
 # Dev
 /zarf-sbom
 tmp/
+*.tar.zst
