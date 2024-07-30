@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -25,20 +26,22 @@ suite('DeploymentTable Component', () => {
 
   const mockData = [
     {
-      metadata: { name: 'test', namespace: 'default', creationTimestamp: new Date() },
+      metadata: { name: 'test', namespace: 'default', creationTimestamp: TestCreationTimestamp },
       status: { readyReplicas: 1, replicas: 2, updatedReplicas: 1, conditions: [{ type: 'Available' }] },
     },
-  ] as V1Deployment[]
+  ] as unknown as V1Deployment[]
 
-  const expectedTables = {
-    name: mockData[0].metadata!.name,
-    namespace: mockData[0].metadata!.namespace,
-    creationTimestamp: '',
-    ready: '1 / 2',
-    up_to_date: 1,
-    available: 1,
-    age: { text: 'less than a minute', sort: 1721923822000 },
-  }
+  const expectedTables = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: mockData[0].metadata!.namespace,
+      creationTimestamp: '',
+      ready: '1 / 2',
+      up_to_date: 1,
+      available: 1,
+      age: { text: '1 minute', sort: 1721923882000 },
+    },
+  ]
 
   testK8sResourceStore('deployments', mockData, expectedTables, '/api/v1/resources/workloads/deployments', createStore)
 })

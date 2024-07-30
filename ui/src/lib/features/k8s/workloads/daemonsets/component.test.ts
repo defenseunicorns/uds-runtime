@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -39,7 +40,7 @@ suite('DaemonsetTable Component', () => {
       apiVersion: 'apps/v1',
       kind: 'DaemonSet',
       metadata: {
-        creationTimestamp: '',
+        creationTimestamp: TestCreationTimestamp,
         name: 'ensure-machine-id',
         namespace: 'uds-dev-stack',
       },
@@ -65,20 +66,22 @@ suite('DaemonsetTable Component', () => {
     },
   ] as unknown as V1DaemonSet[]
 
-  const expectedTables = {
-    name: mockData[0].metadata!.name,
-    namespace: mockData[0].metadata!.namespace,
-    current: 1,
-    desired: 1,
-    node_selector: 'kubernetes.io/os: linux',
-    ready: 1,
-    up_to_date: 1,
-    available: 1,
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTables = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: mockData[0].metadata!.namespace,
+      current: 1,
+      desired: 1,
+      node_selector: 'kubernetes.io/os: linux',
+      ready: 1,
+      up_to_date: 1,
+      available: 1,
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
     },
-  }
+  ]
 
   testK8sResourceStore(
     'daemonset',

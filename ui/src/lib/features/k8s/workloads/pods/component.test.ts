@@ -139,7 +139,7 @@ suite('PodTable Component', () => {
       'age',
     ]
 
-    const expectedTables = {
+    const expectedTable = {
       name: mockPods[0].metadata!.name,
       namespace: mockPods[0].metadata!.namespace,
       creationTimestamp: new Date(),
@@ -198,7 +198,7 @@ suite('PodTable Component', () => {
 
       // Assert the data was transformed correctly
       expect(Object.keys(table)).toEqual(tableCols)
-      expectEqualIgnoringFields(table, expectedTables, [
+      expectEqualIgnoringFields(table, expectedTable, [
         'containers.component',
         'metrics.component',
         'creationTimestamp',

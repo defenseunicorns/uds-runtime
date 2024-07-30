@@ -122,7 +122,7 @@ suite('UDSExemptionTable Component', () => {
     // Assert the data was passed from eventSource to transformer (avoid date time inconsistencies by ignoring creationTimestamp)
     expectEqualIgnoringFields({ ...resource }, { ...mockData[0] }, ['metadata.creationTimestamp'])
     // Assert the data was transformed correctly to create the desired table rows
-    expectEqualIgnoringFields(table, expectedTable[0], [
+    expectEqualIgnoringFields(table, expectedTables[0], [
       'details.component',
       'matcher.component',
       'policies.component',
