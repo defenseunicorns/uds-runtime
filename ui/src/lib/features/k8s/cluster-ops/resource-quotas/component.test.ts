@@ -3,7 +3,12 @@
 
 import '@testing-library/jest-dom'
 
-import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
+import {
+  testK8sResourceStore,
+  testK8sTableWithCustomColumns,
+  testK8sTableWithDefaults,
+} from '$features/k8s/test-helper'
+import type { V1ResourceQuota } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -18,4 +23,45 @@ suite('ResourceQuotasTable Component', () => {
   })
 
   testK8sTableWithCustomColumns(Component, { createStore })
+
+  const mockData = [
+    {
+      apiVersion: 'v1',
+      kind: 'ResourceQuota',
+      metadata: {
+        creationTimestamp: '2024-07-30T01:38:47Z',
+        name: 'quota',
+        namespace: 'default',
+      },
+      spec: {
+        hard: {
+          limits: {
+            cpu: '1',
+            memory: '1Gi',
+          },
+          requests: {
+            cpu: '1',
+            memory: '1Gi',
+          },
+        },
+      },
+    },
+  ] as unknown as V1ResourceQuota[]
+
+  const expectedTable = {
+    name: mockData[0].metadata?.name,
+    namespace: mockData[0].metadata?.namespace,
+    age: {
+      sort: 1721923822000,
+      text: 'less than a minute',
+    },
+  }
+
+  testK8sResourceStore(
+    'resource-quotas',
+    mockData,
+    expectedTable,
+    `/api/v1/resources/cluster-ops/resource-quotas`,
+    createStore,
+  )
 })
