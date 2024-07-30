@@ -3,7 +3,7 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
-  import { ChevronDown, ChevronUp, Filter, Search } from 'carbon-icons-svelte'
+  import { ChevronDown, ChevronUp, Filter, Search, InformationFilled } from 'carbon-icons-svelte'
   import { onMount } from 'svelte'
 
   import { page } from '$app/stores'
@@ -11,6 +11,7 @@
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { routeToTitle } from '$lib/utils/helpers'
   import { routes } from '$features/navigation/routes'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -43,6 +44,7 @@
     (route) => route.name.toLocaleLowerCase() === formattedRoute.toLocaleLowerCase(),
   )
   const title = matchingRoute?.name ?? ''
+  const tooltipDesc = resourceDescriptions[title.replace(/\s+/g, '')] || 'No description available'
 
   onMount(() => {
     return rows.start()
@@ -53,10 +55,25 @@
   <div class="table-container">
     <div class="table-content">
       <div class="table-header">
-        <h5>
-          <span class="dark:text-white">{title}&nbsp</span>
-          &nbsp;
-          <span class="text-gray-500">{$rows.length || ''} {$rows.length > 1 ? 'results' : 'result'} </span>
+        <h5 class="flex items-center">
+          <span class="dark:text-white">{title}&nbsp;</span>
+          <span class="text-gray-500">{$rows.length} {$rows.length === 1 ? 'result' : 'results'}</span>
+          <div class="">
+            <InformationFilled
+              data-tooltip-target="resource-tooltip"
+              data-tooltip-placement="right"
+              data-tooltip-style="light"
+              class="ml-2 w-4 h-4 text-gray-400"
+            />
+            <div
+              id="resource-tooltip"
+              role="tooltip"
+              class="absolute z-50 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-900 max-w-xs"
+            >
+              {tooltipDesc}
+              <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+          </div>
         </h5>
       </div>
       <div class="table-filter-section">
