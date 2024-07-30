@@ -10,6 +10,7 @@
   import { page } from '$app/stores'
   import { type PeprEvent } from '$lib/types'
   import './page.postcss'
+  import { formatPatch } from './helpers'
 
   let loaded = false
   let streamFilter = ''
@@ -48,6 +49,9 @@
 
         // The event type is the first word in the header
         payload.event = payload.header.split(' ')[0]
+        if (payload.event === 'MUTATED') {
+          payload.details = formatPatch(e.data)
+        }
 
         // If this is a repeated event, update the count
         if (payload.repeated) {

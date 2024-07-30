@@ -6,4 +6,5 @@ export type PeprEvent = {
   repeated?: number
   ts?: string
   epoch: number
+  details?: string
 }
