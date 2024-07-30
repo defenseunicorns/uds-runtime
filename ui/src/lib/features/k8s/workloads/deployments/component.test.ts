@@ -30,7 +30,7 @@ suite('DeploymentTable Component', () => {
     },
   ] as V1Deployment[]
 
-  const expectedTable = {
+  const expectedTables = {
     name: mockData[0].metadata!.name,
     namespace: mockData[0].metadata!.namespace,
     creationTimestamp: '',
@@ -40,5 +40,5 @@ suite('DeploymentTable Component', () => {
     age: { text: 'less than a minute', sort: 1721923822000 },
   }
 
-  testK8sResourceStore('deployments', mockData, expectedTable, '/api/v1/resources/workloads/deployments', createStore)
+  testK8sResourceStore('deployments', mockData, expectedTables, '/api/v1/resources/workloads/deployments', createStore)
 })

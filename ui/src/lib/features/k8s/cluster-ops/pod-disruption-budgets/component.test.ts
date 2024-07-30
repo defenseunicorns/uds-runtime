@@ -57,7 +57,7 @@ suite('PriorityClassesTable Component', () => {
     },
   ] as unknown as V1PodDisruptionBudget[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata!.name,
       namespace: mockData[0].metadata!.namespace,
@@ -75,7 +75,7 @@ suite('PriorityClassesTable Component', () => {
   testK8sResourceStore(
     'poddisruptionbudgets',
     mockData,
-    expectedTable,
+    expectedTables,
     `/api/v1/resources/cluster-ops/poddisruptionbudgets?dense=true`,
     createStore,
   )

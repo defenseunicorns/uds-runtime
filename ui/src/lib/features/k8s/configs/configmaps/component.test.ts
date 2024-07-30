@@ -45,7 +45,7 @@ suite('EventTable Component', () => {
     },
   ] as unknown as V1ConfigMap[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata!.name,
       namespace: mockData[0].metadata!.namespace,
@@ -57,5 +57,5 @@ suite('EventTable Component', () => {
     },
   ]
 
-  testK8sResourceStore('ConfigMaps', mockData, expectedTable, `/api/v1/resources/configs/configmaps`, createStore)
+  testK8sResourceStore('ConfigMaps', mockData, expectedTables, `/api/v1/resources/configs/configmaps`, createStore)
 })

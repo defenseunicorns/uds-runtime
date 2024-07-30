@@ -39,7 +39,7 @@ suite('EventTable Component', () => {
     },
   ] as unknown as V1Secret[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata!.name,
       namespace: mockData[0].metadata!.namespace,
@@ -52,5 +52,5 @@ suite('EventTable Component', () => {
     },
   ]
 
-  testK8sResourceStore('Secrets', mockData, expectedTable, `/api/v1/resources/configs/secrets`, createStore)
+  testK8sResourceStore('Secrets', mockData, expectedTables, `/api/v1/resources/configs/secrets`, createStore)
 })

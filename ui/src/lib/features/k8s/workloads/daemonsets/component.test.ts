@@ -65,7 +65,7 @@ suite('DaemonsetTable Component', () => {
     },
   ] as unknown as V1DaemonSet[]
 
-  const expectedTable = {
+  const expectedTables = {
     name: mockData[0].metadata!.name,
     namespace: mockData[0].metadata!.namespace,
     current: 1,
@@ -83,7 +83,7 @@ suite('DaemonsetTable Component', () => {
   testK8sResourceStore(
     'daemonset',
     mockData,
-    expectedTable,
+    expectedTables,
     `/api/v1/resources/workloads/daemonsets?dense=true`,
     createStore,
   )

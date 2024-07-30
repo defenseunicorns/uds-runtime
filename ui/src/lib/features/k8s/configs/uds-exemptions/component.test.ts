@@ -91,7 +91,7 @@ suite('UDSExemptionTable Component', () => {
     },
   ] as unknown as Exemption[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata!.name,
       namespace: mockData[0].metadata?.namespace,
@@ -133,7 +133,7 @@ suite('UDSExemptionTable Component', () => {
   testK8sResourceStore(
     'UDSExemptions',
     mockData,
-    expectedTable,
+    expectedTables,
     `/api/v1/resources/configs/uds-exemptions?dense=true`,
     createStore,
     subscribeCallback,

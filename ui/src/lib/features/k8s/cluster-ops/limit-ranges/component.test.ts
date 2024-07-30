@@ -37,7 +37,7 @@ suite('LimitRangesTable Component', () => {
     },
   ] as unknown as V1LimitRange[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata!.name,
       namespace: mockData[0].metadata!.namespace,
@@ -51,7 +51,7 @@ suite('LimitRangesTable Component', () => {
   testK8sResourceStore(
     'limitranges',
     mockData,
-    expectedTable,
+    expectedTables,
     `/api/v1/resources/cluster-ops/limit-ranges`,
     createStore,
   )

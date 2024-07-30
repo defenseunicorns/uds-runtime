@@ -56,7 +56,7 @@ suite('NamespaceTable Component', () => {
     },
   ] as unknown as V1Namespace[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata?.name,
       status: mockData[0].status?.phase,
@@ -68,5 +68,5 @@ suite('NamespaceTable Component', () => {
     },
   ]
 
-  testK8sResourceStore('namespaces', mockData, expectedTable, `/api/v1/resources/namespaces`, createStore)
+  testK8sResourceStore('namespaces', mockData, expectedTables, `/api/v1/resources/namespaces`, createStore)
 })

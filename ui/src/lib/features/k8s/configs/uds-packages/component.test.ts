@@ -64,7 +64,7 @@ suite('StatefulsetTable Component', () => {
     },
   ] as unknown as Package[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       age: {
         sort: 1721923882000,
@@ -82,5 +82,5 @@ suite('StatefulsetTable Component', () => {
     },
   ]
 
-  testK8sResourceStore('uds-packages', mockData, expectedTable, `/api/v1/resources/configs/uds-packages`, createStore)
+  testK8sResourceStore('uds-packages', mockData, expectedTables, `/api/v1/resources/configs/uds-packages`, createStore)
 })

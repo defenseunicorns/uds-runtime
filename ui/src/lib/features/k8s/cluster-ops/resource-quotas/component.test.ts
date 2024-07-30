@@ -49,7 +49,7 @@ suite('ResourceQuotasTable Component', () => {
     },
   ] as unknown as V1ResourceQuota[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata?.name,
       namespace: mockData[0].metadata?.namespace,
@@ -63,7 +63,7 @@ suite('ResourceQuotasTable Component', () => {
   testK8sResourceStore(
     'resource-quotas',
     mockData,
-    expectedTable,
+    expectedTables,
     `/api/v1/resources/cluster-ops/resource-quotas`,
     createStore,
   )

@@ -37,7 +37,7 @@ suite('RuntimeClassesTable Component', () => {
     },
   ] as unknown as V1RuntimeClass[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata!.name,
       namespace: '',
@@ -52,7 +52,7 @@ suite('RuntimeClassesTable Component', () => {
   testK8sResourceStore(
     'RuntimeClasses',
     mockData,
-    expectedTable,
+    expectedTables,
     `/api/v1/resources/cluster-ops/runtime-classes`,
     createStore,
   )

@@ -50,7 +50,7 @@ suite('EventTable Component', () => {
     },
   ] as unknown as V1MutatingWebhookConfiguration[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata!.name,
       namespace: '',
@@ -66,7 +66,7 @@ suite('EventTable Component', () => {
   testK8sResourceStore(
     'mutatingwebhooks',
     mockData,
-    expectedTable,
+    expectedTables,
     `/api/v1/resources/cluster-ops/mutatingwebhooks?dense=true`,
     createStore,
   )

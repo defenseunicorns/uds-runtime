@@ -39,7 +39,7 @@ suite('PriorityClassesTable Component', () => {
     },
   ] as unknown as V1PriorityClass[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       name: mockData[0].metadata!.name,
       namespace: '',
@@ -56,7 +56,7 @@ suite('PriorityClassesTable Component', () => {
   testK8sResourceStore(
     'PriorityClasses',
     mockData,
-    expectedTable,
+    expectedTables,
     `/api/v1/resources/cluster-ops/priority-classes`,
     createStore,
   )

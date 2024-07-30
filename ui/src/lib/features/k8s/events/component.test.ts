@@ -56,7 +56,7 @@ suite('EventTable Component', () => {
     },
   ] as unknown as CoreV1Event[]
 
-  const expectedTable = [
+  const expectedTables = [
     {
       namespace: mockData[0].metadata?.namespace,
       age: {
@@ -73,5 +73,5 @@ suite('EventTable Component', () => {
     },
   ]
 
-  testK8sResourceStore('events', mockData, expectedTable, `/api/v1/resources/events?dense=true`, createStore)
+  testK8sResourceStore('events', mockData, expectedTables, `/api/v1/resources/events?dense=true`, createStore)
 })
