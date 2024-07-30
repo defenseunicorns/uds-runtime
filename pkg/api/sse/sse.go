@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
+	"time"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
@@ -29,7 +31,29 @@ func Handler(w http.ResponseWriter, r *http.Request, getData func() []unstructur
 		return
 	}
 
-	sendData := func() {
+	// Track the last sent time
+	var lastSent time.Time
+	// Use a mutex to prevent concurrent access to the last sent time and pending flag
+	var mu sync.Mutex
+	// Track if there is a pending update
+	var pendingUpdate bool
+	// Set the debounce interval
+	debounceInterval := time.Second
+
+	// Function to send the data
+	sendData := func(immediate bool) {
+		// Lock the mutex to prevent concurrent access
+		mu.Lock()
+		defer mu.Unlock()
+
+		// Check if within the debounce interval and set the pending flag if so
+		now := time.Now()
+		if !immediate && now.Sub(lastSent) < debounceInterval {
+			pendingUpdate = true
+			return
+		}
+
+		// Flush the headers at the end
 		defer flusher.Flush()
 
 		// Convert the data to JSON
@@ -38,21 +62,41 @@ func Handler(w http.ResponseWriter, r *http.Request, getData func() []unstructur
 			fmt.Fprintf(w, "data: Error: %v\n\n", err)
 			return
 		}
+
+		// Write the data to the response
 		fmt.Fprintf(w, "data: %s\n\n", data)
+
+		// Update the last sent time and reset the pending flag
+		lastSent = now
+		pendingUpdate = false
 	}
 
 	// Send the initial data
-	sendData()
+	sendData(true)
+
+	// Setup a ticker to check for pending updates
+	ticker := time.NewTicker(debounceInterval)
+	defer ticker.Stop()
 
 	for {
 		select {
-		// Check if the client has disconnected
+		// If the context is done, return
 		case <-r.Context().Done():
 			return
 
-		// Send data to the client when there are changes
+		// If there is a change, send the data
 		case <-changes:
-			sendData()
+			sendData(false)
+
+		// If there is a pending update, send the data immediately
+		case <-ticker.C:
+			mu.Lock()
+			if pendingUpdate {
+				mu.Unlock()
+				sendData(true)
+			} else {
+				mu.Unlock()
+			}
 		}
 	}
 }
