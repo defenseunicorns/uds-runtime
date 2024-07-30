@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -30,7 +31,7 @@ suite('EventTable Component', () => {
       data: { '.dockerconfigjson': null },
       kind: 'Secret',
       metadata: {
-        creationTimestamp: '2024-07-27T02:40:10Z',
+        creationTimestamp: TestCreationTimestamp,
         name: 'private-registry',
         namespace: 'loki',
       },
@@ -38,16 +39,18 @@ suite('EventTable Component', () => {
     },
   ] as unknown as V1Secret[]
 
-  const expectedTable = {
-    name: mockData[0].metadata!.name,
-    namespace: mockData[0].metadata!.namespace,
-    type: mockData[0].type,
-    keys: '.dockerconfigjson',
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: mockData[0].metadata!.namespace,
+      type: mockData[0].type,
+      keys: '.dockerconfigjson',
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
     },
-  }
+  ]
 
   testK8sResourceStore('Secrets', mockData, expectedTable, `/api/v1/resources/configs/secrets`, createStore)
 })

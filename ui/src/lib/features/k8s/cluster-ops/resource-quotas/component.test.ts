@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -29,7 +30,7 @@ suite('ResourceQuotasTable Component', () => {
       apiVersion: 'v1',
       kind: 'ResourceQuota',
       metadata: {
-        creationTimestamp: '2024-07-30T01:38:47Z',
+        creationTimestamp: TestCreationTimestamp,
         name: 'quota',
         namespace: 'default',
       },
@@ -48,14 +49,16 @@ suite('ResourceQuotasTable Component', () => {
     },
   ] as unknown as V1ResourceQuota[]
 
-  const expectedTable = {
-    name: mockData[0].metadata?.name,
-    namespace: mockData[0].metadata?.namespace,
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      name: mockData[0].metadata?.name,
+      namespace: mockData[0].metadata?.namespace,
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
     },
-  }
+  ]
 
   testK8sResourceStore(
     'resource-quotas',

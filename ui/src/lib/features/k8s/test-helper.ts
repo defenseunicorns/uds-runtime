@@ -78,10 +78,12 @@ export function expectEqualIgnoringFields<T>(actual: T, expected: T, fieldsToIgn
   expect(actualWithoutFields).toEqual(expectedWithoutFields)
 }
 
+export const TestCreationTimestamp = '2024-07-25T16:11:22.000Z'
+
 export function testK8sResourceStore<R extends KubernetesObject, U extends CommonRow>(
   resource: string,
   mockData: R[],
-  expectedTable: Record<string, unknown>,
+  expectedTables: Record<string, unknown>[],
   expectedUrl: string,
   createStore: () => ResourceStoreInterface<R, U>,
   subscribeCallback?: (data: ResourceWithTable<R, U>[]) => void,
@@ -89,10 +91,6 @@ export function testK8sResourceStore<R extends KubernetesObject, U extends Commo
   test(`createStore for ${resource}`, async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2024-07-25T16:10:22.000Z'))
-
-    // set creationTimestamps after mocking the date
-    mockData[0].metadata!.creationTimestamp = new Date()
-    expectedTable.creationTimestamp = new Date()
 
     const urlAssertionMock = vi.fn().mockImplementation((url: string) => {
       console.log(url)
@@ -120,11 +118,13 @@ export function testK8sResourceStore<R extends KubernetesObject, U extends Commo
       store.subscribe(subscribeCallback)
     } else {
       store.subscribe((data) => {
-        const { resource, table } = data[0]
-        // Assert the data was passed from eventSource to transformer (avoid date time inconsistencies by ignoring creationTimestamp)
-        expectEqualIgnoringFields(resource, mockData[0], ['metadata.creationTimestamp'])
-        // Assert the data was transformed correctly to create the desired table rows
-        expectEqualIgnoringFields(table, expectedTable as unknown, [])
+        data.forEach((d, idx) => {
+          const { resource, table } = d
+          // Assert the data was passed from eventSource to transformer (avoid date time inconsistencies by ignoring creationTimestamp)
+          expectEqualIgnoringFields(resource, mockData[idx], ['metadata.creationTimestamp'])
+          // Assert the data was transformed correctly to create the desired table rows
+          expectEqualIgnoringFields(table, expectedTables[idx] as unknown, ['creationTimestamp'])
+        })
       })
     }
 

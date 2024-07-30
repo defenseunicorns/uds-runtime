@@ -5,6 +5,7 @@ import '@testing-library/jest-dom'
 
 import {
   expectEqualIgnoringFields,
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -65,7 +66,7 @@ suite('UDSExemptionTable Component', () => {
       apiVersion: 'uds.dev/v1alpha1',
       kind: 'Exemption',
       metadata: {
-        creationTimestamp: '2024-07-27T02:39:33Z',
+        creationTimestamp: TestCreationTimestamp,
         name: 'neuvector',
         namespace: 'uds-policy-exemptions',
       },
@@ -90,37 +91,43 @@ suite('UDSExemptionTable Component', () => {
     },
   ] as unknown as Exemption[]
 
-  const expectedTable = {
-    name: mockData[0].metadata!.name,
-    namespace: mockData[0].metadata?.namespace,
-    creationTimestamp: '2024-07-25T16:10:22.000Z',
-    title: mockData[0].spec?.exemptions[0].title,
-    details: {
-      component: vi.fn(),
-      sort: 'neuvector-enforcer-pod',
-      props: {
-        exemption: { ...mockData[0].spec?.exemptions[0], resource: mockData[0] },
+  const expectedTable = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: mockData[0].metadata?.namespace,
+      title: mockData[0].spec?.exemptions[0].title,
+      details: {
+        component: vi.fn(),
+        sort: 'neuvector-enforcer-pod',
+        props: {
+          exemption: { ...mockData[0].spec?.exemptions[0], resource: mockData[0] },
+        },
       },
+      matcher: {
+        component: vi.fn(),
+        props: { matcher: mockData[0].spec?.exemptions[0].matcher },
+      },
+      policies: {
+        component: vi.fn(),
+        props: { policies: mockData[0].spec?.exemptions[0].policies },
+      },
+      age: { text: '1 minute', sort: 1721923882000 },
     },
-    matcher: {
-      component: vi.fn(),
-      props: { matcher: mockData[0].spec?.exemptions[0].matcher },
-    },
-    policies: {
-      component: vi.fn(),
-      props: { policies: mockData[0].spec?.exemptions[0].policies },
-    },
-    age: { text: 'less than a minute', sort: 1721923822000 },
-  }
+  ]
 
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const subscribeCallback = (data: any) => {
+  const subscribeCallback = (data: any[]) => {
     const { resource, table } = data[0]
 
     // Assert the data was passed from eventSource to transformer (avoid date time inconsistencies by ignoring creationTimestamp)
     expectEqualIgnoringFields({ ...resource }, { ...mockData[0] }, ['metadata.creationTimestamp'])
     // Assert the data was transformed correctly to create the desired table rows
-    expectEqualIgnoringFields(table, expectedTable, ['details.component', 'matcher.component', 'policies.component'])
+    expectEqualIgnoringFields(table, expectedTable[0], [
+      'details.component',
+      'matcher.component',
+      'policies.component',
+      'creationTimestamp',
+    ])
   }
 
   testK8sResourceStore(

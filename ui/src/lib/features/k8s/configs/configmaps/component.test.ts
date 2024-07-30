@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -37,22 +38,24 @@ suite('EventTable Component', () => {
       },
       kind: 'ConfigMap',
       metadata: {
-        creationTimestamp: '2024-07-27T02:18:13Z',
+        creationTimestamp: TestCreationTimestamp,
         name: 'minio',
         namespace: 'uds-dev-stack',
       },
     },
   ] as unknown as V1ConfigMap[]
 
-  const expectedTable = {
-    name: mockData[0].metadata!.name,
-    namespace: mockData[0].metadata!.namespace,
-    keys: 'add-policy, add-svcacct, add-user, custom-command, initialize, policy_0.json',
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: mockData[0].metadata!.namespace,
+      keys: 'add-policy, add-svcacct, add-user, custom-command, initialize, policy_0.json',
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
     },
-  }
+  ]
 
   testK8sResourceStore('ConfigMaps', mockData, expectedTable, `/api/v1/resources/configs/configmaps`, createStore)
 })

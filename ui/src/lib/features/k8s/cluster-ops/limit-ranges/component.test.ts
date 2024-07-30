@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -29,21 +30,23 @@ suite('LimitRangesTable Component', () => {
       apiVersion: 'v1',
       kind: 'LimitRange',
       metadata: {
-        creationTimestamp: new Date(),
+        creationTimestamp: TestCreationTimestamp,
         name: 'cpu-resource-constraint',
         namespace: 'default',
       },
     },
-  ] as V1LimitRange[]
+  ] as unknown as V1LimitRange[]
 
-  const expectedTable = {
-    name: mockData[0].metadata!.name,
-    namespace: mockData[0].metadata!.namespace,
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: mockData[0].metadata!.namespace,
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
     },
-  }
+  ]
 
   testK8sResourceStore(
     'limitranges',

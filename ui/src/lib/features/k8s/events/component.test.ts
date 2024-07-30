@@ -4,7 +4,12 @@
 import '@testing-library/jest-dom'
 
 import type { CoreV1Event } from '@kubernetes/client-node'
-import { testK8sResourceStore, testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '../test-helper'
+import {
+  TestCreationTimestamp,
+  testK8sResourceStore,
+  testK8sTableWithCustomColumns,
+  testK8sTableWithDefaults,
+} from '../test-helper'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -39,11 +44,9 @@ suite('EventTable Component', () => {
       lastTimestamp: '2024-07-30T01:35:20Z',
       message: 'Pulling image "127.0.0.1:31999/defenseunicorns/pepr/controller:v0.32.7-zarf-804409620"',
       metadata: {
-        creationTimestamp: '2024-07-30T01:35:20Z',
+        creationTimestamp: TestCreationTimestamp,
         name: 'pepr-uds-core-watcher-8495d97876-xvbml.17e6d9becb8b1d47',
         namespace: 'pepr-system',
-        resourceVersion: '1499',
-        uid: 'eacea403-6806-4074-afa6-f7362c9542dc',
       },
       reason: 'Pulling',
       reportingComponent: 'kubelet',
@@ -53,20 +56,22 @@ suite('EventTable Component', () => {
     },
   ] as unknown as CoreV1Event[]
 
-  const expectedTable = {
-    namespace: mockData[0].metadata?.namespace,
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      namespace: mockData[0].metadata?.namespace,
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
+      type: mockData[0].type,
+      reason: mockData[0].reason,
+      object_kind: mockData[0].involvedObject?.kind,
+      object_name: mockData[0].involvedObject?.name,
+      count: mockData[0].count,
+      message: 'Pulling image "127.0.0.1:31999/defenseunicorns/pepr/controller:v0.32.7-zarf-804409620"',
+      name: 'pepr-uds-core-watcher-8495d97876-xvbml.17e6d9becb8b1d47',
     },
-    type: mockData[0].type,
-    reason: mockData[0].reason,
-    object_kind: mockData[0].involvedObject?.kind,
-    object_name: mockData[0].involvedObject?.name,
-    count: mockData[0].count,
-    message: 'Pulling image "127.0.0.1:31999/defenseunicorns/pepr/controller:v0.32.7-zarf-804409620"',
-    name: 'pepr-uds-core-watcher-8495d97876-xvbml.17e6d9becb8b1d47',
-  }
+  ]
 
   testK8sResourceStore('events', mockData, expectedTable, `/api/v1/resources/events?dense=true`, createStore)
 })

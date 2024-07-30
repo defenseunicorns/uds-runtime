@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -29,7 +30,7 @@ suite('EventTable Component', () => {
       apiVersion: 'admissionregistration.k8s.io/v1',
       kind: 'MutatingWebhookConfiguration',
       metadata: {
-        creationTimestamp: '2024-07-27T02:34:57Z',
+        creationTimestamp: TestCreationTimestamp,
         name: 'istio-sidecar-injector',
       },
       webhooks: [
@@ -49,16 +50,18 @@ suite('EventTable Component', () => {
     },
   ] as unknown as V1MutatingWebhookConfiguration[]
 
-  const expectedTable = {
-    name: mockData[0].metadata!.name,
-    namespace: '',
-    webhooks:
-      'namespace.sidecar-injector.istio.io, object.sidecar-injector.istio.io, rev.namespace.sidecar-injector.istio.io, rev.object.sidecar-injector.istio.io',
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: '',
+      webhooks:
+        'namespace.sidecar-injector.istio.io, object.sidecar-injector.istio.io, rev.namespace.sidecar-injector.istio.io, rev.object.sidecar-injector.istio.io',
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
     },
-  }
+  ]
 
   testK8sResourceStore(
     'mutatingwebhooks',

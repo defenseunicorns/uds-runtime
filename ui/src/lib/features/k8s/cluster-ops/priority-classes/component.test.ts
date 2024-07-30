@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -29,7 +30,7 @@ suite('PriorityClassesTable Component', () => {
       apiVersion: 'scheduling.k8s.io/v1',
       kind: 'PriorityClass',
       metadata: {
-        creationTimestamp: '2024-07-27T02:17:14Z',
+        creationTimestamp: TestCreationTimestamp,
         name: 'system-cluster-critical',
       },
       description: 'testdescription',
@@ -38,17 +39,19 @@ suite('PriorityClassesTable Component', () => {
     },
   ] as unknown as V1PriorityClass[]
 
-  const expectedTable = {
-    name: mockData[0].metadata!.name,
-    namespace: '',
-    value: mockData[0].value,
-    description: mockData[0].description,
-    global_default: true,
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: '',
+      value: mockData[0].value,
+      description: mockData[0].description,
+      global_default: true,
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
     },
-  }
+  ]
 
   testK8sResourceStore(
     'PriorityClasses',

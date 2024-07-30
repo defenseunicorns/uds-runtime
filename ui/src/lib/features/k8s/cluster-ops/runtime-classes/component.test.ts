@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -29,22 +30,24 @@ suite('RuntimeClassesTable Component', () => {
       apiVersion: 'node.k8s.io/v1',
       kind: 'RuntimeClass',
       metadata: {
-        creationTimestamp: '2024-07-27T02:17:18Z',
+        creationTimestamp: TestCreationTimestamp,
         name: 'slight',
       },
       handler: 'testHandler',
     },
   ] as unknown as V1RuntimeClass[]
 
-  const expectedTable = {
-    name: mockData[0].metadata!.name,
-    namespace: '',
-    handler: 'testHandler',
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      name: mockData[0].metadata!.name,
+      namespace: '',
+      handler: 'testHandler',
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
     },
-  }
+  ]
 
   testK8sResourceStore(
     'RuntimeClasses',

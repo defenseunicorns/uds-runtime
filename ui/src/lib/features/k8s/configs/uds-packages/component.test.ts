@@ -4,6 +4,7 @@
 import { beforeEach, vi } from 'vitest'
 
 import {
+  TestCreationTimestamp,
   testK8sResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -42,7 +43,7 @@ suite('StatefulsetTable Component', () => {
           'meta.helm.sh/release-name': 'uds-neuvector-config',
           'meta.helm.sh/release-namespace': 'neuvector',
         },
-        creationTimestamp: '2024-07-30T01:38:47Z',
+        creationTimestamp: TestCreationTimestamp,
         generation: 1,
         labels: { 'app.kubernetes.io/managed-by': 'Helm' },
         name: 'neuvector',
@@ -63,21 +64,23 @@ suite('StatefulsetTable Component', () => {
     },
   ] as unknown as Package[]
 
-  const expectedTable = {
-    age: {
-      sort: 1721923822000,
-      text: 'less than a minute',
+  const expectedTable = [
+    {
+      age: {
+        sort: 1721923882000,
+        text: '1 minute',
+      },
+      creationTimestamp: '2024-07-25T16:10:22.000Z',
+      endpoints: 'neuvector.admin.uds.dev, 2.admin.uds.dev',
+      monitors: 'testMonitor, testMonitor2',
+      name: mockData[0].metadata!.name,
+      namespace: mockData[0].metadata?.namespace,
+      networkPolicies: mockData[0].status?.networkPolicyCount,
+      retryAttempts: mockData[0].status?.retryAttempt,
+      ssoClients: 'uds-core-admin-neuvector',
+      status: 'Ready',
     },
-    creationTimestamp: '2024-07-25T16:10:22.000Z',
-    endpoints: 'neuvector.admin.uds.dev, 2.admin.uds.dev',
-    monitors: 'testMonitor, testMonitor2',
-    name: mockData[0].metadata!.name,
-    namespace: mockData[0].metadata?.namespace,
-    networkPolicies: mockData[0].status?.networkPolicyCount,
-    retryAttempts: mockData[0].status?.retryAttempt,
-    ssoClients: 'uds-core-admin-neuvector',
-    status: 'Ready',
-  }
+  ]
 
   testK8sResourceStore('uds-packages', mockData, expectedTable, `/api/v1/resources/configs/uds-packages`, createStore)
 })
