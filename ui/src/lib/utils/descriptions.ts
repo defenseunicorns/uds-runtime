@@ -45,8 +45,11 @@ export const resourceDescriptions: { [key: string]: string } = {
   ServiceAccountTokens: 'A ServiceAccountToken is a JWT that identifies a service account.',
   ServiceAccounts: 'A ServiceAccount provides an identity for processes that run in a Pod.',
   Services: 'A Service is an abstraction which defines a logical set of Pods and a policy by which to access them.',
-  StatefulSets: 'StatefulSet is the workload API object used to manage stateful applications.',
+  StatefulSets: 'A StatefulSet is the workload API object used to manage stateful applications.',
   StorageClasses: "A StorageClass provides a way for administrators to describe the 'classes' of storage they offer.",
+  UDSExemptions: 'A UDSExemption allows you to exempt a resource from UDS Core policies.',
+  UDSPackages:
+    'A UDSPackage allows you to define a set of netpols, ingress, and SSO and configurations for a workload.',
   VerticalPodAutoscalers:
     'A VerticalPodAutoscaler automatically sets resource requests and limits of a pod based on historical data.',
   VolumeAttachments:
