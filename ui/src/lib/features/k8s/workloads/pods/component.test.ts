@@ -6,6 +6,7 @@ import { beforeEach, vi } from 'vitest'
 import {
   expectEqualIgnoringFields,
   MockEventSource,
+  TestCreationTimestamp,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
@@ -38,7 +39,7 @@ suite('PodTable Component', () => {
 
   test(`createStore for pods`, async () => {
     vi.useFakeTimers()
-    vi.setSystemTime(new Date())
+    vi.setSystemTime(new Date('2024-07-25T16:10:22.000Z'))
 
     const mockContainers = [
       {
@@ -85,7 +86,7 @@ suite('PodTable Component', () => {
         apiVersion: 'v1',
         kind: 'Pod',
         metadata: {
-          creationTimestamp: new Date().toString(),
+          creationTimestamp: TestCreationTimestamp,
           name: 'metallb-speaker-6nl62',
           namespace: 'uds-dev-stack',
           ownerReferences: [
@@ -161,7 +162,7 @@ suite('PodTable Component', () => {
       controller: 'DaemonSet',
       status: 'Running',
       node: '',
-      age: { text: 'less than a minute', sort: 1721994792000 },
+      age: { text: '1 minute', sort: 1721994792000 },
     } as unknown
 
     const urlAssertionMock = vi.fn().mockImplementation((url: string) => {
@@ -204,8 +205,6 @@ suite('PodTable Component', () => {
         'creationTimestamp',
         'age.sort',
       ])
-
-      expect(table.age?.text).toEqual('less than a minute')
     })
 
     // call store.stop()
