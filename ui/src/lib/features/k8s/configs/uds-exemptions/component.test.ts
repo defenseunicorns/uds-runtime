@@ -113,6 +113,7 @@ suite('UDSExemptionTable Component', () => {
     age: { text: 'less than a minute', sort: 1721923822000 },
   }
 
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const subscribeCallback = (data: any) => {
     const { resource, table } = data[0]
 
