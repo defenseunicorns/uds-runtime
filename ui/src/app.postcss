@@ -36,6 +36,10 @@
       .table-content {
         @apply relative flex h-full w-full flex-col overflow-hidden dark:bg-gray-800 sm:rounded-lg;
 
+        .table-header {
+          @apply flex py-3 space-y-3 border-b dark:border-gray-700 mx-4;
+        }
+
         .table-filter-section {
           @apply sticky top-0 z-20 flex flex-col space-y-3 px-4 py-3 dark:bg-gray-800 lg:flex-row lg:items-center lg:justify-between lg:space-x-4 lg:space-y-0;
 

@@ -9,6 +9,8 @@
   import { page } from '$app/stores'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
+  import { routeToTitle } from '$lib/utils/helpers'
+  import { routes } from '$features/navigation/routes'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -25,6 +27,23 @@
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
 
+  // get the title from the route
+  const flatRoutes = routes.flatMap((route) => {
+    if (route.children) {
+      return [route, ...route.children]
+    }
+    return route
+  })
+
+  const currentRoute = $page.route.id ?? ''
+  const formattedRoute = routeToTitle(currentRoute)
+
+  // look through flatRoutes to find the current route
+  const matchingRoute = flatRoutes.find(
+    (route) => route.name.toLocaleLowerCase() === formattedRoute.toLocaleLowerCase(),
+  )
+  const title = matchingRoute?.name ?? ''
+
   onMount(() => {
     return rows.start()
   })
@@ -33,6 +52,13 @@
 <section class="table-section">
   <div class="table-container">
     <div class="table-content">
+      <div class="table-header">
+        <h5>
+          <span class="dark:text-white">{title}&nbsp</span>
+          &nbsp;
+          <span class="text-gray-500">{$rows.length || ''} {$rows.length > 1 ? 'results' : 'result'} </span>
+        </h5>
+      </div>
       <div class="table-filter-section">
         <div class="relative lg:w-96">
           <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
