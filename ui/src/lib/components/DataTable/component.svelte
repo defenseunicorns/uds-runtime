@@ -27,7 +27,8 @@
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
 
   let resource: KubernetesObject | null = null
-  let baseURL = location.pathname
+  let baseURL: string
+  let pathName: string
   let unsubscribePage: Unsubscriber
   let uid = ''
   let namespaces: ResourceStoreInterface<KubernetesObject, NamespaceRow>
@@ -36,25 +37,59 @@
     unsubscribePage()
   })
 
-  unsubscribePage = page.subscribe(({ params, data }) => {
+  unsubscribePage = page.subscribe(({ params, data, url }) => {
     namespaces = data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
     uid = params.uid || ''
+
+    pathName = url.pathname
 
     // If UID is present, load the data
     if (uid) {
       // Strip the UID from the URL
-      baseURL = baseURL.replace(`/${uid}`, '')
+      baseURL = pathName.replace(`/${uid}`, '')
 
       loadResourceDetail(rows.url, uid).then((data) => {
         resource = data
       })
     } else {
+      baseURL = pathName
       resource = null
     }
   })
 
   onMount(() => {
-    return rows.start()
+    // Function to navigate using the keyboard
+    const keyboardNavigate = (e: KeyboardEvent) => {
+      if (uid) {
+        let nextID: string | undefined
+
+        switch (e.key) {
+          case 'ArrowDown': {
+            nextID = document.getElementById(uid)?.nextElementSibling?.id
+            break
+          }
+          case 'ArrowUp': {
+            nextID = document.getElementById(uid)?.previousElementSibling?.id
+            break
+          }
+        }
+
+        if (nextID) {
+          // Navigate to the next row
+          goto(`${baseURL}/${nextID}`)
+        }
+      }
+    }
+
+    // Bind the keyboard navigation event
+    window.addEventListener('keydown', keyboardNavigate)
+    const stop = rows.start()
+
+    // Clean up the event listener when the component is destroyed
+    return () => {
+      window.removeEventListener('keydown', keyboardNavigate)
+      stop()
+    }
   })
 </script>
 
@@ -143,8 +178,11 @@
           </thead>
           <tbody>
             {#each $rows as row}
-              <!-- on click, navigate to the uid -->
-              <tr on:click={() => goto(`${baseURL}/${row.resource.metadata?.uid}`)}>
+              <tr
+                id={row.resource.metadata?.uid}
+                on:click={() => goto(`${baseURL}/${row.resource.metadata?.uid}`)}
+                class:active={pathName.includes(row.resource.metadata?.uid ?? '')}
+              >
                 {#each columns as [key, style]}
                   <!-- Check object to avoid issues with `false` values -->
                   {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}

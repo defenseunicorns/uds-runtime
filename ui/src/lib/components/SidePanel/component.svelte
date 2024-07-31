@@ -2,15 +2,42 @@
   import { goto } from '$app/navigation'
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { Close } from 'carbon-icons-svelte'
+  import { onMount } from 'svelte'
 
   export let resource: KubernetesObject
   export let baseURL: string
 
-  console.log(resource)
+  // If the Escape key is pressed, close the panel by navigating to the base URL
+  onMount(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        goto(baseURL)
+      }
+    }
+
+    // Add the event listener when the component is mounted
+    window.addEventListener('keydown', handleKeydown)
+
+    // Clean up the event listener when the component is destroyed
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+    }
+  })
+
+  function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleString()
+  }
+
+  const details = [
+    { label: 'Created', value: formatDate(resource.metadata?.creationTimestamp as unknown as string) },
+    { label: 'Name', value: resource.metadata?.name },
+    { label: 'Namespace', value: resource.metadata?.namespace },
+    { label: 'Controller', value: resource.metadata?.ownerReferences?.[0]?.name },
+  ]
 </script>
 
 <div
-  class="fixed top-14 right-0 z-40 h-screen overflow-y-auto transition-transform w-2/5 dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out"
+  class="fixed top-16 right-0 z-40 h-screen overflow-y-auto transition-transform w-2/5 dark:bg-gray-800 shadow-2xl shadow-black/80 transform transition-transform duration-300 ease-in-out"
 >
   <div class="flex flex-col h-full">
     <!-- Dark header -->
@@ -54,9 +81,53 @@
       </ul>
     </div>
 
-    <!-- Content area -->
-    <div class="flex-grow overflow-y-auto p-4 dark:text-gray-300">
-      <pre><code>{JSON.stringify(resource, null, 2)}</code></pre>
+    <div class="flex-grow overflow-y-auto dark:text-gray-300">
+      <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
+        <dl class="space-y-4">
+          {#each details as { label, value }}
+            <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
+              <dt class="font-bold text-sm sm:w-1/3">{label}</dt>
+              <dd class="text-gray-400 sm:w-2/3">{value || 'N/A'}</dd>
+            </div>
+          {/each}
+
+          <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
+            <dt class="font-bold text-sm sm:w-1/3">Labels</dt>
+            <dd class="sm:w-2/3">
+              <div class="flex flex-wrap gap-2">
+                {#each Object.entries(resource.metadata?.labels || {}) as [key, value]}
+                  <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
+                {/each}
+              </div>
+            </dd>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:justify-between">
+            <dt class="font-bold text-sm sm:w-1/3">Annotations</dt>
+            <dd class="sm:w-2/3">
+              <div class="flex flex-wrap gap-2">
+                {#each Object.entries(resource.metadata?.annotations || {}) as [key, value]}
+                  <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
+                {/each}
+              </div>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      {#if resource.spec}
+        <div class="bg-gray-800 text-gray-200 p-6">
+          <h3 class="text-lg font-semibold">Spec</h3>
+          <pre class="text-sm overflow-x-auto">{JSON.stringify(resource.spec, null, 2)}</pre>
+        </div>
+      {/if}
+
+      {#if resource.status}
+        <div class="bg-gray-800 text-gray-200 p-6">
+          <h3 class="text-lg font-semibold">Status</h3>
+          <pre class="text-sm overflow-x-auto">{JSON.stringify(resource.status, null, 2)}</pre>
+        </div>
+      {/if}
     </div>
   </div>
 </div>
