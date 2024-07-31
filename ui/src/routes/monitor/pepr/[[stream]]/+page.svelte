@@ -147,7 +147,7 @@
             <tr>
               <th>Event</th>
               <th>Resource</th>
-              <th>Policy or Message</th>
+              <th>Details</th>
               <th>Count</th>
               <th>Timestamp</th>
             </tr>
@@ -166,9 +166,10 @@
                     </td>
                     <td>{item._name}</td>
                     <td class="flex flex-row items-center">
-                      {item.msg}
                       {#if item.details}
                         <Detail details={item.details} />
+                      {:else}
+                        -
                       {/if}
                     </td>
                     <td>{item.count || 1}</td>

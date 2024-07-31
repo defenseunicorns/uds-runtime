@@ -15,7 +15,6 @@ function decodeBase64(base64String: string) {
 }
 
 export function extractOps(res: Record<string, unknown> | undefined): Record<string, PatchOperation[]> {
-  //   const parsed = JSON.parse(res)
   if (!res) {
     return {}
   }

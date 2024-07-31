@@ -8,13 +8,14 @@
 </script>
 
 <span class="whitespace-nowrap relative group py-4 flex items-center">
-  <span class="text-blue-400">&nbsp;Details</span>
+  <span class="text-blue-400">Details</span>
   <div class="tooltip tooltip-right">
     {#each Object.entries(details) as [key, operations]}
       <h3 class="font-bold">{key}:</h3>
       {#each operations as op}
-        <div class="text-pretty tooltip-w">{op.path}=<span class="text-blue-400">{op.value}</span></div>
+        <div class="text-pretty tooltip-w">{op.path}=<span class="text-blue-400">{JSON.stringify(op.value)}</span></div>
       {/each}
+      <br />
     {/each}
   </div>
 </span>
