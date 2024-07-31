@@ -1,3 +1,5 @@
+import type { PatchOperation } from '../routes/monitor/pepr/[[stream]]/helpers'
+
 export type PeprEvent = {
   _name: string
   count: number
@@ -6,5 +8,7 @@ export type PeprEvent = {
   repeated?: number
   ts?: string
   epoch: number
-  details?: string
+  msg: string
+  res?: Record<string, unknown>
+  details?: Record<string, PatchOperation[]>
 }

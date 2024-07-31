@@ -5,12 +5,13 @@
   import { Export } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
+  import Detail from './Detail.svelte'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import { type PeprEvent } from '$lib/types'
   import './page.postcss'
-  import { formatPatch } from './helpers'
+  import { extractOps } from './helpers'
 
   let loaded = false
   let streamFilter = ''
@@ -49,8 +50,9 @@
 
         // The event type is the first word in the header
         payload.event = payload.header.split(' ')[0]
+
         if (payload.event === 'MUTATED') {
-          payload.details = formatPatch(e.data)
+          payload.details = extractOps(payload.res)
         }
 
         // If this is a repeated event, update the count
@@ -145,6 +147,7 @@
             <tr>
               <th>Event</th>
               <th>Resource</th>
+              <th>Policy or Message</th>
               <th>Count</th>
               <th>Timestamp</th>
             </tr>
@@ -162,6 +165,12 @@
                       <span class="pepr-event {item.event}">{item.event}</span>
                     </td>
                     <td>{item._name}</td>
+                    <td class="flex flex-row items-center">
+                      {item.msg}
+                      {#if item.details}
+                        <Detail details={item.details} />
+                      {/if}
+                    </td>
                     <td>{item.count || 1}</td>
                     <td>{item.ts}</td>
                   </tr>
