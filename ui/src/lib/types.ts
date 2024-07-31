@@ -1,3 +1,17 @@
+import type { SvelteComponent } from 'svelte'
+
+export type PatchOperation = {
+  op: string
+  path: string
+  value: string
+}
+
+export type PeprDetails = {
+  component: SvelteComponent
+  messages?: string[]
+  operations?: { [key: string]: PatchOperation[] }
+}
+
 export type PeprEvent = {
   _name: string
   count: number
@@ -8,5 +22,5 @@ export type PeprEvent = {
   epoch: number
   msg: string
   res?: Record<string, unknown>
-  details?: Record<string, any[]> | undefined
+  details?: PeprDetails | undefined
 }

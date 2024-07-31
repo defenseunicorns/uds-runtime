@@ -5,14 +5,12 @@
   import { Export } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
-  import Detail from './MutatedDetails..svelte'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import { type PeprEvent } from '$lib/types'
   import './page.postcss'
   import { getDetails } from './helpers'
-  import DeniedDetails from './DeniedDetails.svelte'
 
   let loaded = false
   let streamFilter = ''
@@ -163,10 +161,8 @@
                     </td>
                     <td>{item._name}</td>
                     <td class="flex flex-row items-center">
-                      {#if item.event === 'MUTATED' && item.details}
-                        <Detail details={item.details} />
-                      {:else if item.event === 'DENIED' && item.details}
-                        <DeniedDetails details={item.details} />
+                      {#if item.details}
+                        <svelte:component this={item.details.component} details={item.details} />
                       {:else}
                         -
                       {/if}

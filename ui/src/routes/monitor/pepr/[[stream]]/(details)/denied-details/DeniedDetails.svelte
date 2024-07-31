@@ -2,22 +2,16 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { type PatchOperation } from './helpers'
+  import type { PeprDetails } from '$lib/types'
 
-  export let details: Record<string, PatchOperation[]>
+  export let details: PeprDetails
 </script>
 
 <span class="whitespace-nowrap relative group py-4 flex items-center">
   <span class="text-blue-400">Details</span>
   <div class="tooltip tooltip-right">
-    {#each details['messages'] as msg}
-      <div class="text-pretty tooltip-w text-red-400">{msg}</div>
+    {#each details.messages || [] as msg}
+      <div class="text-red-400">{msg}</div>
     {/each}
   </div>
 </span>
-
-<style>
-  .tooltip-w {
-    width: 496px;
-  }
-</style>
