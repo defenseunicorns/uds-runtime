@@ -3,7 +3,7 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
-  import { ChevronDown, ChevronUp, Filter, Search, InformationFilled } from 'carbon-icons-svelte'
+  import { ChevronDown, ChevronUp, Filter, Search, Information } from 'carbon-icons-svelte'
   import { onMount } from 'svelte'
 
   import { page } from '$app/stores'
@@ -45,10 +45,10 @@
       <div class="table-header">
         <span class="dark:text-white">{name}</span>
         {#if isFiltering}
-          <span class="dark:text-gray-500">&nbsp;{$rows.length} / {$numResources} results</span>
+          <span class="dark:text-gray-500">&nbsp;&nbsp;showing {$rows.length} of {$numResources} results</span>
         {/if}
         <div class="relative group">
-          <InformationFilled class="ml-2 w-4 h-4 text-gray-400" />
+          <Information class="ml-2 w-4 h-4 text-gray-400" />
           <div class="tooltip tooltip-right min-w-72">
             <div class="whitespace-normal">{desc}</div>
           </div>
