@@ -390,6 +390,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/resources/cluster-ops/resource-quotas": {
+            "get": {
+                "description": "Get ResourceQuotas",
+                "consumes": [
+                    "text/html"
+                ],
+                "produces": [
+                    "text/event-stream",
+                    "application/json"
+                ],
+                "tags": [
+                    "cluster ops"
+                ],
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Send the data once and close the connection. By default this is set to` + "`" + `false` + "`" + ` and will return a text/event-stream. If set to ` + "`" + `true` + "`" + ` the response content type is application/json.",
+                        "name": "once",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Send the data in dense format",
+                        "name": "dense",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/resources/cluster-ops/resource-quotas/{uid}": {
+            "get": {
+                "description": "Get ResourceQuota by UID",
+                "consumes": [
+                    "text/html"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cluster ops"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Get resource-quota by uid",
+                        "name": "uid",
+                        "in": "path"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Send the data in dense format",
+                        "name": "dense",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/resources/cluster-ops/runtime-classes": {
             "get": {
                 "description": "Get RuntimeClasses",

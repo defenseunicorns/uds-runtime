@@ -257,6 +257,51 @@ paths:
           description: OK
       tags:
       - cluster ops
+  /resources/cluster-ops/resource-quotas:
+    get:
+      consumes:
+      - text/html
+      description: Get ResourceQuotas
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/resource-quotas/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get ResourceQuota by UID
+      parameters:
+      - description: Get resource-quota by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
   /resources/cluster-ops/runtime-classes:
     get:
       consumes:
