@@ -3,3 +3,5 @@
 
 export { default as AnsiDisplay } from './AnsiDisplay/component.svelte'
 export { default as DataTable } from './DataTable/component.svelte'
+export { default as Row } from './Drawer/Row.svelte'
+export { default as RowItem } from './Drawer/RowItem.svelte'
