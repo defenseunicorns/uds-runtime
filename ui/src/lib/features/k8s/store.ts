@@ -175,7 +175,6 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
 
     // update age every 1 second
     const ageTimerInterval = setInterval(() => {
-      console.log('updating age')
       this.ageTimerStore.update((tick) => {
         return tick + 1
       })
