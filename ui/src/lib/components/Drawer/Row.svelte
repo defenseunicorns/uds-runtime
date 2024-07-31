@@ -1,12 +1,5 @@
 <script context="module" lang="ts">
-  export const enum Variants {
-    TEXT = 'text',
-    ICON_TEXT = 'icon-text',
-    EXTERNAL_LINK = 'external-link',
-    INTERNAL_LINK = 'internal-link',
-    INPUT_COPY = 'input-copy',
-    BADGES = 'badges',
-  }
+  export type VariantType = 'text' | 'icon-text' | 'external-link' | 'internal-link' | 'input-copy' | 'badges'
 </script>
 
 <script lang="ts">
@@ -17,34 +10,34 @@
   export let label: string = 'text'
 
   type Props = {} & (
-    | { variant: Variants.TEXT; value: string }
-    | { variant: Variants.ICON_TEXT; value: string }
-    | { variant: Variants.EXTERNAL_LINK; value: string }
-    | { variant: Variants.INTERNAL_LINK; value: string }
-    | { variant: Variants.INPUT_COPY; value: string[] }
-    | { variant: Variants.BADGES; value: string[] }
+    | { variant: 'text'; value: string }
+    | { variant: 'icon-text'; value: string }
+    | { variant: 'external-link'; value: string }
+    | { variant: 'internal-link'; value: string }
+    | { variant: 'input-copy'; value: string[] }
+    | { variant: 'badges'; value: string[] }
   )
 
   export let data: Props
 </script>
 
-{#if data.variant === Variants.TEXT || data.variant === Variants.ICON_TEXT}
+{#if data.variant === 'text' || data.variant === 'icon-text'}
   <RowItem {label} variant={data.variant}>
     <div class="text-gray-300 text-base font-extralight leading-normal">Value string</div>
   </RowItem>
-{:else if data.variant === Variants.EXTERNAL_LINK}
+{:else if data.variant === 'external-link'}
   <RowItem {label} variant={data.variant}>
     <div class="text-base font-extralight text-blue-600 leading-normal underline">
       <a href={data.value}> Value string </a>
     </div>
   </RowItem>
-{:else if data.variant === Variants.INTERNAL_LINK}
+{:else if data.variant === 'internal-link'}
   <RowItem {label} variant={data.variant}>
     <div class="text-base font-extralight text-blue-600 leading-normal">
       <button on:click={() => console.log('clicked')}> Value string </button>
     </div>
   </RowItem>
-{:else if data.variant === Variants.INPUT_COPY}
+{:else if data.variant === 'input-copy'}
   <RowItem {label} variant={data.variant}>
     <div class="text-base leading-normal text-white flex flex-col">
       {#each data.value as path}
@@ -68,7 +61,7 @@
       {/each}
     </div>
   </RowItem>
-{:else if data.variant === Variants.BADGES}
+{:else if data.variant === 'badges'}
   <RowItem {label} variant={data.variant}>
     <div class="text-base leading-normal text-white flex">
       {#each data.value as badge}
