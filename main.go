@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api"
-	"github.com/defenseunicorns/zarf/src/pkg/message"
+	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
 //go:embed ui/build/*

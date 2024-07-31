@@ -498,6 +498,30 @@ func getLimitRange(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 	return sse.Bind(cache.LimitRanges)
 }
 
+// @Description Get ResourceQuotas
+// @Tags cluster ops
+// @Accept  html
+// @Produce text/event-stream,json
+// @Success 200
+// @Router /resources/cluster-ops/resource-quotas [get]
+// @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
+// @Param dense query bool false "Send the data in dense format"
+func getResourceQuotas(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
+	return sse.Bind(cache.ResourceQuotas)
+}
+
+// @Description Get ResourceQuota by UID
+// @Tags cluster ops
+// @Accept  html
+// @Produce  json
+// @Success 200
+// @Router /resources/cluster-ops/resource-quotas/{uid} [get]
+// @Param uid path string false "Get resource-quota by uid"
+// @Param dense query bool false "Send the data in dense format"
+func getResourceQuota(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
+	return sse.Bind(cache.ResourceQuotas)
+}
+
 // @Description Get Services
 // @Tags networks
 // @Accept  html
