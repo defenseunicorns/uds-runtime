@@ -3,7 +3,6 @@
 
 <script lang="ts">
   import Row from '$components/Drawer/Row.svelte'
-  import { type VariantType } from '$components/Drawer/Row.svelte'
 </script>
 
 <h1 class="text-white text-5xl mb-7">Home</h1>
