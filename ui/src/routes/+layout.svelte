@@ -11,6 +11,7 @@
 
   import { Breadcrumb, isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import '../app.postcss'
+  import { ToastPanel } from '$features/toast'
 
   onMount(initFlowbite)
   afterNavigate(initFlowbite)
@@ -29,6 +30,7 @@
     <Breadcrumb />
   </div>
   <div class="flex-grow overflow-hidden p-4 pt-0">
+    <ToastPanel />
     <slot />
   </div>
 </main>
