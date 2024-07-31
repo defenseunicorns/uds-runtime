@@ -12,9 +12,11 @@
   <span>{exemption.title}</span>
 
   {#if exemption.description}
-    <span> <InformationFilled class="ml-2" /></span>
-    <div class="tooltip tooltip-right">
-      <div class="text-balance max-w-md text-loose">{exemption.description}</div>
+    <div class="flex relative items-center">
+      <InformationFilled class="ml-2" />
+      <div class="tooltip tooltip-right -translate-y-4">
+        <div class="text-balance max-w-md text-loose">{exemption.description}</div>
+      </div>
     </div>
   {/if}
 </p>
