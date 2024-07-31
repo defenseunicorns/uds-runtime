@@ -28,6 +28,12 @@
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
 
+  // check for filtering
+  let isFiltering = false
+  $: {
+    isFiltering = !!($search || $searchBy != 'Anywhere' || $namespace)
+  }
+
   onMount(() => {
     return rows.start()
   })
@@ -37,8 +43,10 @@
   <div class="table-container">
     <div class="table-content">
       <div class="table-header">
-        <span class="dark:text-white">{name}&nbsp;&nbsp;</span>
-        <span class="dark:text-gray-500">{$rows.length} / {$numResources} results</span>
+        <span class="dark:text-white">{name}</span>
+        {#if isFiltering}
+          <span class="dark:text-gray-500">&nbsp;{$rows.length} / {$numResources} results</span>
+        {/if}
         <div class="relative group">
           <InformationFilled class="ml-2 w-4 h-4 text-gray-400" />
           <div class="tooltip tooltip-right min-w-72">
