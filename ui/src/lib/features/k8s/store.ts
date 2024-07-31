@@ -2,10 +2,10 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { KubernetesObject } from '@kubernetes/client-node'
-import { formatDistanceToNow } from 'date-fns'
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
 
-import { SearchByType, type CommonRow, type ResourceWithTable } from './types'
+import { type CommonRow, type ResourceWithTable, SearchByType } from './types'
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   // Keep an internal store for the resources
@@ -20,7 +20,6 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
 
   // Keep an internal reference to the age timer
   private ageTimer: NodeJS.Timeout | null = null
-  private ageTimerSeconds = 60
   private ageTimerStore: Writable<number> = writable(0)
 
   // Additional callback to stop the EventSource
@@ -101,16 +100,10 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
           })
         }
 
-        // Clear the age timer if it exists and start a new one
-        clearTimeout(this.ageTimer as NodeJS.Timeout)
-        setTimeout(() => {
-          this.ageTimerStore.update((tick) => tick + 1)
-        }, 1000 * this.ageTimerSeconds)
-
         // Update the age of the resources
         filtered.forEach((item) => {
           item.table.age = {
-            text: formatDistanceToNow(item.table.creationTimestamp),
+            text: formatDetailedAge(item.table.creationTimestamp),
             sort: item.table.creationTimestamp.getTime(),
           }
         })
@@ -184,7 +177,17 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
       console.error('EventSource failed:', err)
     }
 
-    return () => this.stop()
+    // update age every 1 second
+    const ageTimerInterval = setInterval(() => {
+      this.ageTimerStore.update((tick) => {
+        return tick + 1
+      })
+    }, 1000)
+
+    return () => {
+      clearInterval(ageTimerInterval)
+      this.stop()
+    }
   }
 
   stop() {
@@ -243,4 +246,27 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
         } as U,
       }
     })
+}
+
+function formatDetailedAge(timestamp: Date) {
+  const now = new Date()
+  const seconds = differenceInSeconds(now, timestamp)
+
+  if (seconds < 60) {
+    return `${seconds}s`
+  }
+
+  const minutes = differenceInMinutes(now, timestamp)
+  if (minutes < 60) {
+    return `${minutes}m`
+  }
+
+  const hours = differenceInHours(now, timestamp)
+  if (hours < 24) {
+    const remainingMinutes = minutes % 60
+    return remainingMinutes > 0 ? `${hours}h${remainingMinutes}m` : `${hours}h`
+  }
+
+  const days = differenceInDays(now, timestamp)
+  return `${days}d`
 }
