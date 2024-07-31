@@ -28,6 +28,7 @@ export { default as PodDisruptionBudgetsTable } from './cluster-ops/pod-disrupti
 export { default as PriorityClassesTable } from './cluster-ops/priority-classes/component.svelte'
 export { default as ResourceQuotasTable } from './cluster-ops/resource-quotas/component.svelte'
 export { default as RuntimeClassesTable } from './cluster-ops/runtime-classes/component.svelte'
+export { default as ValidatingWebhooksTable } from './cluster-ops/validatingwebhooks/component.svelte'
 
 // Network resources
 export { default as EndpointTable } from './networks/endpoints/component.svelte'
