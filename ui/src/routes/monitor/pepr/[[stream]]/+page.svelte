@@ -5,13 +5,14 @@
   import { Export } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
-  import Detail from './Detail.svelte'
+  import Detail from './MutatedDetails..svelte'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import { type PeprEvent } from '$lib/types'
   import './page.postcss'
-  import { extractOps } from './helpers'
+  import { getDetails } from './helpers'
+  import DeniedDetails from './DeniedDetails.svelte'
 
   let loaded = false
   let streamFilter = ''
@@ -47,13 +48,9 @@
     eventSource.onmessage = (e) => {
       try {
         const payload: PeprEvent = JSON.parse(e.data)
-
         // The event type is the first word in the header
         payload.event = payload.header.split(' ')[0]
-
-        if (payload.event === 'MUTATED') {
-          payload.details = extractOps(payload.res)
-        }
+        payload.details = getDetails(payload)
 
         // If this is a repeated event, update the count
         if (payload.repeated) {
@@ -166,8 +163,10 @@
                     </td>
                     <td>{item._name}</td>
                     <td class="flex flex-row items-center">
-                      {#if item.details}
+                      {#if item.event === 'MUTATED' && item.details}
                         <Detail details={item.details} />
+                      {:else if item.event === 'DENIED' && item.details}
+                        <DeniedDetails details={item.details} />
                       {:else}
                         -
                       {/if}
