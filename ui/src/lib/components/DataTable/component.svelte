@@ -8,7 +8,7 @@
 
   import { page } from '$app/stores'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
-  import { type Resource, type ResourceStoreInterface } from '$features/k8s/types'
+  import { type NameAndDesc, type ResourceStoreInterface } from '$features/k8s/types'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -19,8 +19,8 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
-  export let resource: Resource = { name: '', description: 'No description available' }
-  let { name, description } = resource
+  export let resource: NameAndDesc = { name: '', desc: 'No description available' }
+  let { name, desc } = resource
 
   // Load the namespaces from the page store
   const namespaces = $page.data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
@@ -37,26 +37,14 @@
   <div class="table-container">
     <div class="table-content">
       <div class="table-header">
-        <h5 class="flex items-center">
-          <span class="dark:text-white">{name}&nbsp;&nbsp;</span>
-          <span class="text-gray-500">
-            {$rows.length} / {$numResources} results
-          </span>
-          <InformationFilled
-            data-tooltip-target="resource-tooltip"
-            data-tooltip-placement="right"
-            data-tooltip-style="light"
-            class="ml-2 w-4 h-4 text-gray-400"
-          />
-          <div
-            id="resource-tooltip"
-            role="tooltip"
-            class="absolute z-50 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-900 max-w-xs"
-          >
-            {description}
-            <div class="tooltip-arrow" data-popper-arrow></div>
+        <span class="dark:text-white">{name}&nbsp;&nbsp;</span>
+        <span class="dark:text-gray-500">{$rows.length} / {$numResources} results</span>
+        <div class="relative group">
+          <InformationFilled class="ml-2 w-4 h-4 text-gray-400" />
+          <div class="tooltip tooltip-right min-w-72">
+            <div class="whitespace-normal">{desc}</div>
           </div>
-        </h5>
+        </div>
       </div>
       <div class="table-filter-section">
         <div class="relative lg:w-96">

@@ -47,7 +47,7 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
   numResources: Writable<number>
 }
 
-export interface Resource {
+export interface NameAndDesc {
   name: string
-  description: string
+  desc: string
 }

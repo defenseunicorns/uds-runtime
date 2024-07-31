@@ -4,7 +4,7 @@
 import { beforeEach, vi } from 'vitest'
 
 import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
-import type { Resource } from '$features/k8s/types'
+import type { NameAndDesc } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -15,9 +15,9 @@ suite('PodTable Component', () => {
   })
 
   const name = 'Pods'
-  const resource: Resource = {
+  const resource: NameAndDesc = {
     name: name,
-    description: resourceDescriptions[name],
+    desc: resourceDescriptions[name],
   }
 
   testK8sTableWithDefaults(Component, {

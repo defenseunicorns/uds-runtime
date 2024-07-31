@@ -3,7 +3,7 @@
 
 import '@testing-library/jest-dom'
 
-import type { Resource } from '$features/k8s/types'
+import type { NameAndDesc } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '../test-helper'
 import Component from './component.svelte'
@@ -15,9 +15,9 @@ suite('NodeTable Component', () => {
   })
 
   const resourceName = 'Nodes'
-  const resource: Resource = {
+  const resource: NameAndDesc = {
     name: resourceName,
-    description: resourceDescriptions[resourceName],
+    desc: resourceDescriptions[resourceName],
   }
 
   testK8sTableWithDefaults(Component, {

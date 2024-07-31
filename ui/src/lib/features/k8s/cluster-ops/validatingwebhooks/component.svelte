@@ -4,8 +4,15 @@
 <script lang="ts">
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
+  import type { NameAndDesc } from '$features/k8s/types'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
 
   export let columns: Columns = [['name', 'emphasize'], ['webhooks'], ['age']]
+  const resourceName = 'ValidatingWebhookConfigurations'
+  const resource: NameAndDesc = {
+    name: resourceName,
+    desc: resourceDescriptions[resourceName],
+  }
 </script>
 
-<DataTable {columns} {createStore} />
+<DataTable {columns} {createStore} {resource} />

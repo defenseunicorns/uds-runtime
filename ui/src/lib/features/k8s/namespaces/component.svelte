@@ -6,7 +6,7 @@
 
   import { page } from '$app/stores'
   import { DataTable } from '$components'
-  import type { Resource, ResourceStoreInterface } from '$features/k8s/types'
+  import type { NameAndDesc, ResourceStoreInterface } from '$features/k8s/types'
   import { type Columns, type Row } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
@@ -19,9 +19,9 @@
   }
 
   const resourceName = 'Namespaces'
-  const resource: Resource = {
+  const resource: NameAndDesc = {
     name: resourceName,
-    description: resourceDescriptions[resourceName],
+    desc: resourceDescriptions[resourceName],
   }
 </script>
 

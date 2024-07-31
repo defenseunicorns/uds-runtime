@@ -24,7 +24,7 @@ export const resourceDescriptions: { [key: string]: string } = {
   Ingresses: 'An Ingress is an API object that manages external access to the services in a cluster, typically HTTP.',
   Jobs: 'A Job creates one or more Pods and ensures that a specified number of them successfully terminate.',
   LimitRanges: 'A LimitRange is a policy to constrain resource allocations (to Pods or Containers) in a Namespace.',
-  MutatingWebhookConfigurations: 'A MutatingWebhookConfiguration configures when and how to call a Mutating Webhook.',
+  MutatingWebhookConfigurations: 'Configures when and how to call a Mutating Webhook.',
   Namespaces: 'A Namespace is a way to divide cluster resources between multiple users.',
   NetworkPolicies:
     'A NetworkPolicy is an API object that allows you to control the traffic flow at the IP address or port level.',
@@ -52,6 +52,7 @@ export const resourceDescriptions: { [key: string]: string } = {
   Services: 'A Service is an abstraction which defines a logical set of Pods and a policy by which to access them.',
   StatefulSets: 'A StatefulSet is the workload API object used to manage stateful applications.',
   StorageClasses: "A StorageClass provides a way for administrators to describe the 'classes' of storage they offer.",
+  ValidatingWebhookConfigurations: 'Configures when and how to call a Validating Webhook.',
   VerticalPodAutoscalers:
     'A VerticalPodAutoscaler automatically sets resource requests and limits of a pod based on historical data.',
   VirtualServices: 'A VirtualService defines a set of traffic routing rules to apply when a host is addressed.',

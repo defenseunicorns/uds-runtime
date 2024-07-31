@@ -4,7 +4,7 @@
 import '@testing-library/jest-dom'
 import { writable } from 'svelte/store'
 
-import type { Resource } from '$features/k8s/types'
+import type { NameAndDesc } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '../test-helper'
 import Component from './component.svelte'
@@ -23,9 +23,9 @@ suite('NamespaceTable Component', () => {
   })
 
   const resourceName = 'Namespaces'
-  const resource: Resource = {
+  const resource: NameAndDesc = {
     name: resourceName,
-    description: resourceDescriptions[resourceName],
+    desc: resourceDescriptions[resourceName],
   }
 
   // Use expect.any(Function), because createStore is wrapped

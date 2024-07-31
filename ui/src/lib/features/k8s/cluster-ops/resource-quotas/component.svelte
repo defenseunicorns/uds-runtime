@@ -5,13 +5,13 @@
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
-  import type { Resource } from '$features/k8s/types'
+  import type { NameAndDesc } from '$features/k8s/types'
 
   export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['age']]
   const resourceName = 'ResourceQuotas'
-  const resource: Resource = {
+  const resource: NameAndDesc = {
     name: resourceName,
-    description: resourceDescriptions[resourceName],
+    desc: resourceDescriptions[resourceName],
   }
 </script>
 
