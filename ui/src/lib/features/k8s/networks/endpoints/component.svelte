@@ -4,8 +4,15 @@
 <script lang="ts">
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
+  import type { Resource } from '$features/k8s/types'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
 
   export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['endpoints'], ['age']]
+  const resourceName = 'Endpoints'
+  const resource: Resource = {
+    name: resourceName,
+    description: resourceDescriptions[resourceName],
+  }
 </script>
 
-<DataTable {columns} {createStore} />
+<DataTable {columns} {createStore} {resource} />

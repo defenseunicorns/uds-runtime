@@ -6,8 +6,9 @@
 
   import { page } from '$app/stores'
   import { DataTable } from '$components'
-  import type { ResourceStoreInterface } from '$features/k8s/types'
+  import type { Resource, ResourceStoreInterface } from '$features/k8s/types'
   import { type Columns, type Row } from './store'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
 
   export let columns: Columns = [['name', 'emphasize'], ['status'], ['age']]
 
@@ -16,8 +17,14 @@
   const createStore = (): ResourceStoreInterface<KubernetesObject, Row> => {
     return namespaces
   }
+
+  const resourceName = 'Namespaces'
+  const resource: Resource = {
+    name: resourceName,
+    description: resourceDescriptions[resourceName],
+  }
 </script>
 
 {#if $namespaces}
-  <DataTable {columns} {createStore} isNamespaced={false} />
+  <DataTable {columns} {createStore} isNamespaced={false} {resource} />
 {/if}

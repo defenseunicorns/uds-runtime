@@ -18,21 +18,26 @@ export const resourceDescriptions: { [key: string]: string } = {
   Endpoints:
     'An Endpoint is a collection of endpoints that implement the actual service. An endpoint is typically a set of IP addresses and ports.',
   Events: 'An Event is a report of an event that has occurred in the cluster.',
+  Exemptions: 'A UDS Exemption allows you to exempt a resource from UDS Core policies.',
   HorizontalPodAutoscalers:
     'A HorizontalPodAutoscaler automatically scales the number of pods in a replication controller, deployment, replica set or stateful set based on observed CPU utilization or other select metrics.',
   Ingresses: 'An Ingress is an API object that manages external access to the services in a cluster, typically HTTP.',
   Jobs: 'A Job creates one or more Pods and ensures that a specified number of them successfully terminate.',
   LimitRanges: 'A LimitRange is a policy to constrain resource allocations (to Pods or Containers) in a Namespace.',
+  MutatingWebhookConfigurations: 'A MutatingWebhookConfiguration configures when and how to call a Mutating Webhook.',
   Namespaces: 'A Namespace is a way to divide cluster resources between multiple users.',
   NetworkPolicies:
     'A NetworkPolicy is an API object that allows you to control the traffic flow at the IP address or port level.',
   Nodes: 'A Node is a worker machine in Kubernetes, previously known as a minion.',
+  Packages: 'A UDS Package allows you to define a set of netpols, ingress, and SSO and configurations for a workload.',
   PersistentVolumeClaims: 'A PersistentVolumeClaim (PVC) is a request for storage by a user. It is similar to a Pod.',
   PersistentVolumes:
     'A PersistentVolume (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.',
   PodDisruptionBudgets:
     'A PodDisruptionBudget is an API object that specifies the minimum number or percentage of replicas that must be up at a time for the application to continue to function.',
   Pods: 'A Pod is the smallest and simplest Kubernetes object. A Pod represents a set of running containers on your cluster.',
+  PriorityClasses:
+    'A PriorityClass defines the scheduling priority for Pods. PriorityClass names are unique within a cluster.',
   ReplicaSets: 'A ReplicaSet ensures that a specified number of pod replicas are running at any given time.',
   ReplicationControllers:
     'A ReplicationController ensures that a specified number of pod replicas are running at any given time.',
@@ -47,11 +52,9 @@ export const resourceDescriptions: { [key: string]: string } = {
   Services: 'A Service is an abstraction which defines a logical set of Pods and a policy by which to access them.',
   StatefulSets: 'A StatefulSet is the workload API object used to manage stateful applications.',
   StorageClasses: "A StorageClass provides a way for administrators to describe the 'classes' of storage they offer.",
-  UDSExemptions: 'A UDSExemption allows you to exempt a resource from UDS Core policies.',
-  UDSPackages:
-    'A UDSPackage allows you to define a set of netpols, ingress, and SSO and configurations for a workload.',
   VerticalPodAutoscalers:
     'A VerticalPodAutoscaler automatically sets resource requests and limits of a pod based on historical data.',
+  VirtualServices: 'A VirtualService defines a set of traffic routing rules to apply when a host is addressed.',
   VolumeAttachments:
     'A VolumeAttachment captures the intent to attach or detach the specified volume to/from the specified node.',
 }

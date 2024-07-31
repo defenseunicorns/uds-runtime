@@ -1,6 +1,7 @@
 import { render } from '@testing-library/svelte'
 
 import * as components from '$components'
+import type { Resource } from '$features/k8s/types'
 import type { ComponentType } from 'svelte'
 
 export function testK8sTableWithDefaults(Component: ComponentType, props: Record<string, unknown>) {
@@ -9,6 +10,10 @@ export function testK8sTableWithDefaults(Component: ComponentType, props: Record
     const { DataTable } = components
 
     render(Component)
+
+    // Ensure tooltip desc isn't empty
+    const resource: Resource = props.resource as Resource
+    expect(resource.description).toBeTruthy()
 
     // Check if DataTable was called
     expect(DataTable).toHaveBeenCalled()

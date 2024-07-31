@@ -9,6 +9,7 @@
   import { page } from '$app/stores'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type Resource, type ResourceStoreInterface } from '$features/k8s/types'
+  import {} from '$lib/utils/helpers'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -20,7 +21,7 @@
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
   export let resource: Resource = { name: '', description: 'No description available' }
-  const { name, description } = resource
+  let { name, description } = resource
 
   // Load the namespaces from the page store
   const namespaces = $page.data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
@@ -38,7 +39,7 @@
     <div class="table-content">
       <div class="table-header">
         <h5 class="flex items-center">
-          <span class="dark:text-white">{name}&nbsp;</span>
+          <span class="dark:text-white">{name}&nbsp;&nbsp;</span>
           <span class="text-gray-500">{$rows.length} {$rows.length === 1 ? 'result' : 'results'}</span>
           <div class="">
             <InformationFilled
