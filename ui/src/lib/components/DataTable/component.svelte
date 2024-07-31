@@ -9,7 +9,6 @@
   import { page } from '$app/stores'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type Resource, type ResourceStoreInterface } from '$features/k8s/types'
-  import {} from '$lib/utils/helpers'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -27,7 +26,7 @@
   const namespaces = $page.data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
 
   const rows = createStore()
-  const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
+  const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
 
   onMount(() => {
     return rows.start()
@@ -40,22 +39,22 @@
       <div class="table-header">
         <h5 class="flex items-center">
           <span class="dark:text-white">{name}&nbsp;&nbsp;</span>
-          <span class="text-gray-500">{$rows.length} {$rows.length === 1 ? 'result' : 'results'}</span>
-          <div class="">
-            <InformationFilled
-              data-tooltip-target="resource-tooltip"
-              data-tooltip-placement="right"
-              data-tooltip-style="light"
-              class="ml-2 w-4 h-4 text-gray-400"
-            />
-            <div
-              id="resource-tooltip"
-              role="tooltip"
-              class="absolute z-50 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-900 max-w-xs"
-            >
-              {description}
-              <div class="tooltip-arrow" data-popper-arrow></div>
-            </div>
+          <span class="text-gray-500">
+            {$rows.length} / {$numResources} results
+          </span>
+          <InformationFilled
+            data-tooltip-target="resource-tooltip"
+            data-tooltip-placement="right"
+            data-tooltip-style="light"
+            class="ml-2 w-4 h-4 text-gray-400"
+          />
+          <div
+            id="resource-tooltip"
+            role="tooltip"
+            class="absolute z-50 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-900 max-w-xs"
+          >
+            {description}
+            <div class="tooltip-arrow" data-popper-arrow></div>
           </div>
         </h5>
       </div>
