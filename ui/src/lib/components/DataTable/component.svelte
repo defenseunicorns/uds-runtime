@@ -8,10 +8,7 @@
 
   import { page } from '$app/stores'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
-  import { type ResourceStoreInterface } from '$features/k8s/types'
-  import { routeToTitle } from '$lib/utils/helpers'
-  import { routes } from '$features/navigation/routes'
-  import { resourceDescriptions } from '$lib/utils/descriptions'
+  import { type Resource, type ResourceStoreInterface } from '$features/k8s/types'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -22,29 +19,14 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
+  export let resource: Resource = { name: '', description: 'No description available' }
+  const { name, description } = resource
+
   // Load the namespaces from the page store
   const namespaces = $page.data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
 
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
-
-  // get the title from the route
-  const flatRoutes = routes.flatMap((route) => {
-    if (route.children) {
-      return [route, ...route.children]
-    }
-    return route
-  })
-
-  const currentRoute = $page.route.id ?? ''
-  const formattedRoute = routeToTitle(currentRoute)
-
-  // look through flatRoutes to find the current route
-  const matchingRoute = flatRoutes.find(
-    (route) => route.name.toLocaleLowerCase() === formattedRoute.toLocaleLowerCase(),
-  )
-  const title = matchingRoute?.name ?? ''
-  const tooltipDesc = resourceDescriptions[title.replace(/\s+/g, '')] || 'No description available'
 
   onMount(() => {
     return rows.start()
@@ -56,7 +38,7 @@
     <div class="table-content">
       <div class="table-header">
         <h5 class="flex items-center">
-          <span class="dark:text-white">{title}&nbsp;</span>
+          <span class="dark:text-white">{name}&nbsp;</span>
           <span class="text-gray-500">{$rows.length} {$rows.length === 1 ? 'result' : 'results'}</span>
           <div class="">
             <InformationFilled
@@ -70,7 +52,7 @@
               role="tooltip"
               class="absolute z-50 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-900 max-w-xs"
             >
-              {tooltipDesc}
+              {description}
               <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
           </div>

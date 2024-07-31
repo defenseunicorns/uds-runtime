@@ -44,3 +44,8 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
   // Store for namespace
   namespace: Writable<string>
 }
+
+export interface Resource {
+  name: string
+  description: string
+}
