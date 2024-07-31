@@ -7,7 +7,7 @@
   export let variant: VariantType
 </script>
 
-<div class="py-1 border-b border-gray-700 gap-9 flex">
+<div class="py-1 border-b border-gray-700 gap-9 flex mt-3">
   <div class="h-6 justify-start items-center gap-1.5 flex my-1 w-[180px]">
     {#if variant === 'icon-text'}
       <Db2Database color="white" />
