@@ -115,19 +115,9 @@
         </dl>
       </div>
 
-      {#if resource.spec}
-        <div class="bg-gray-800 text-gray-200 p-6">
-          <h3 class="text-lg font-semibold">Spec</h3>
-          <pre class="text-sm overflow-x-auto">{JSON.stringify(resource.spec, null, 2)}</pre>
-        </div>
-      {/if}
-
-      {#if resource.status}
-        <div class="bg-gray-800 text-gray-200 p-6">
-          <h3 class="text-lg font-semibold">Status</h3>
-          <pre class="text-sm overflow-x-auto">{JSON.stringify(resource.status, null, 2)}</pre>
-        </div>
-      {/if}
+      <div class="bg-gray-800 text-gray-200 p-6">
+        <pre class="text-sm overflow-x-auto">{JSON.stringify(resource, null, 2)}</pre>
+      </div>
     </div>
   </div>
 </div>
