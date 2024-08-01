@@ -7,17 +7,18 @@
   export let containers: V1ContainerStatus[] = []
 </script>
 
-<div class="flex items-center space-x-1 relative group h-12">
-  {#each containers as c}
-    <div
-      class="w-2 h-2 rounded-sm"
-      class:bg-green-500={c.state?.running}
-      class:bg-yellow-500={c.state?.waiting}
-      class:bg-gray-500={c.state?.terminated}
-      class:animate-pulse={c.state?.running && !c.ready}
-    ></div>
-  {/each}
-
+<div class="flex relative group h-12">
+  <div class="flex items-center space-x-1">
+    {#each containers as c}
+      <div
+        class="w-2 h-2 rounded-sm"
+        class:bg-green-500={c.state?.running}
+        class:bg-yellow-500={c.state?.waiting}
+        class:bg-gray-500={c.state?.terminated}
+        class:animate-pulse={c.state?.running && !c.ready}
+      ></div>
+    {/each}
+  </div>
   <div class="tooltip tooltip-left">
     {#each containers as c}
       <div class="font-bold">

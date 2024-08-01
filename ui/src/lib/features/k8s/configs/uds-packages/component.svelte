@@ -4,6 +4,7 @@
 <script lang="ts">
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
 
   export let columns: Columns = [
     ['name', 'emphasize'],
@@ -15,6 +16,9 @@
     ['networkPolicies'],
     ['age'],
   ]
+
+  const name = 'Packages'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} />
+<DataTable {columns} {createStore} {name} {description} />
