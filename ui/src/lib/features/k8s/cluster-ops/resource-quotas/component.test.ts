@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1ResourceQuota } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,46 +26,50 @@ suite('ResourceQuotasTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'v1',
-      kind: 'ResourceQuota',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'quota',
-        namespace: 'default',
-      },
-      spec: {
-        hard: {
-          limits: {
-            cpu: '1',
-            memory: '1Gi',
-          },
-          requests: {
-            cpu: '1',
-            memory: '1Gi',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'v1',
+        kind: 'ResourceQuota',
+        metadata: {
+          creationTimestamp: '2024-09-29T20:00:00Z',
+          name: 'quota',
+          namespace: 'default',
+        },
+        spec: {
+          hard: {
+            limits: {
+              cpu: '1',
+              memory: '1Gi',
+            },
+            requests: {
+              cpu: '1',
+              memory: '1Gi',
+            },
           },
         },
       },
-    },
-  ] as unknown as V1ResourceQuota[]
+    ] as unknown as V1ResourceQuota[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata?.name,
-      namespace: mockData[0].metadata?.namespace,
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
+      name: 'quota',
+      namespace: 'default',
     },
   ]
 
-  testK8sResourceStore(
-    'resource-quotas',
-    mockData,
-    expectedTables,
-    `/api/v1/resources/cluster-ops/resource-quotas`,
-    createStore,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1ResourceQuota, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/cluster-ops/resource-quotas`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

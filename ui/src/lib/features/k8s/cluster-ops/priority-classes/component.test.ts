@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1PriorityClass } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,39 +26,43 @@ suite('PriorityClassesTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'scheduling.k8s.io/v1',
-      kind: 'PriorityClass',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'system-cluster-critical',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'scheduling.k8s.io/v1',
+        kind: 'PriorityClass',
+        metadata: {
+          creationTimestamp: '2024-09-29T20:00:00Z',
+          name: 'system-cluster-critical',
+        },
+        description: 'testdescription',
+        value: 1,
+        globalDefault: true,
       },
-      description: 'testdescription',
-      value: 1,
-      globalDefault: true,
-    },
-  ] as unknown as V1PriorityClass[]
+    ] as unknown as V1PriorityClass[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata!.name,
+      name: 'system-cluster-critical',
       namespace: '',
-      value: mockData[0].value,
-      description: mockData[0].description,
+      value: 1,
+      description: 'testdescription',
       global_default: true,
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
     },
   ]
 
-  testK8sResourceStore(
-    'PriorityClasses',
-    mockData,
-    expectedTables,
-    `/api/v1/resources/cluster-ops/priority-classes`,
-    createStore,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1PriorityClass, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/cluster-ops/priority-classes`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

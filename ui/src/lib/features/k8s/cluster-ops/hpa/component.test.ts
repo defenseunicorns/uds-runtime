@@ -98,9 +98,9 @@ suite('PriorityClassesTable Component', () => {
     },
   ]
 
-  const expectedUrl = '/api/v1/resources/cluster-ops/hpas?dense=true'
   const store = createStore()
   const start = store.start as unknown as () => ResourceWithTable<V2HorizontalPodAutoscaler, any>[]
-  expect(store.url).toEqual(expectedUrl)
+  expect(store.url).toEqual('/api/v1/resources/cluster-ops/hpas?dense=true')
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
   expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1LimitRange } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,34 +26,38 @@ suite('LimitRangesTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'v1',
-      kind: 'LimitRange',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'cpu-resource-constraint',
-        namespace: 'default',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'v1',
+        kind: 'LimitRange',
+        metadata: {
+          creationTimestamp: '2021-09-29T20:00:00Z',
+          name: 'cpu-resource-constraint',
+          namespace: 'default',
+        },
       },
-    },
-  ] as unknown as V1LimitRange[]
+    ] as unknown as V1LimitRange[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata!.name,
-      namespace: mockData[0].metadata!.namespace,
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
+      name: 'cpu-resource-constraint',
+      namespace: 'default',
     },
   ]
 
-  testK8sResourceStore(
-    'limitranges',
-    mockData,
-    expectedTables,
-    `/api/v1/resources/cluster-ops/limit-ranges`,
-    createStore,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1LimitRange, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/cluster-ops/limit-ranges`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

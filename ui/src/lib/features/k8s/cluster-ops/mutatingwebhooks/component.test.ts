@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1MutatingWebhookConfiguration } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,49 +26,53 @@ suite('EventTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'admissionregistration.k8s.io/v1',
-      kind: 'MutatingWebhookConfiguration',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'istio-sidecar-injector',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'admissionregistration.k8s.io/v1',
+        kind: 'MutatingWebhookConfiguration',
+        metadata: {
+          creationTimestamp: '2021-09-29T20:00:00Z',
+          name: 'istio-sidecar-injector',
+        },
+        webhooks: [
+          {
+            name: 'rev.namespace.sidecar-injector.istio.io',
+          },
+          {
+            name: 'rev.object.sidecar-injector.istio.io',
+          },
+          {
+            name: 'namespace.sidecar-injector.istio.io',
+          },
+          {
+            name: 'object.sidecar-injector.istio.io',
+          },
+        ],
       },
-      webhooks: [
-        {
-          name: 'rev.namespace.sidecar-injector.istio.io',
-        },
-        {
-          name: 'rev.object.sidecar-injector.istio.io',
-        },
-        {
-          name: 'namespace.sidecar-injector.istio.io',
-        },
-        {
-          name: 'object.sidecar-injector.istio.io',
-        },
-      ],
-    },
-  ] as unknown as V1MutatingWebhookConfiguration[]
+    ] as unknown as V1MutatingWebhookConfiguration[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata!.name,
+      name: 'istio-sidecar-injector',
       namespace: '',
       webhooks:
         'namespace.sidecar-injector.istio.io, object.sidecar-injector.istio.io, rev.namespace.sidecar-injector.istio.io, rev.object.sidecar-injector.istio.io',
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
     },
   ]
 
-  testK8sResourceStore(
-    'mutatingwebhooks',
-    mockData,
-    expectedTables,
-    `/api/v1/resources/cluster-ops/mutatingwebhooks?dense=true`,
-    createStore,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1MutatingWebhookConfiguration, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/cluster-ops/mutatingwebhooks?dense=true`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

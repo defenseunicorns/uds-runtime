@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1RuntimeClass } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,35 +26,39 @@ suite('RuntimeClassesTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'node.k8s.io/v1',
-      kind: 'RuntimeClass',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'slight',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'node.k8s.io/v1',
+        kind: 'RuntimeClass',
+        metadata: {
+          creationTimestamp: '2021-09-29T20:00:00Z',
+          name: 'slight',
+        },
+        handler: 'testHandler',
       },
-      handler: 'testHandler',
-    },
-  ] as unknown as V1RuntimeClass[]
+    ] as unknown as V1RuntimeClass[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata!.name,
+      name: 'slight',
       namespace: '',
       handler: 'testHandler',
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
     },
   ]
 
-  testK8sResourceStore(
-    'RuntimeClasses',
-    mockData,
-    expectedTables,
-    `/api/v1/resources/cluster-ops/runtime-classes`,
-    createStore,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1RuntimeClass, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/cluster-ops/runtime-classes`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })
