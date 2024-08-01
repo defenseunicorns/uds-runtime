@@ -8,6 +8,7 @@
   import * as YAML from 'yaml'
   import hljs from 'highlight.js/lib/core'
   import yaml from 'highlight.js/lib/languages/yaml'
+  import DOMPurify from 'dompurify'
 
   import { goto } from '$app/navigation'
   import './styles.postcss'
@@ -61,11 +62,13 @@
     return new Date(dateString).toLocaleString()
   }
 
+  const { metadata, ...rest } = resource
+
   const details = [
-    { label: 'Created', value: formatDate(resource.metadata?.creationTimestamp as unknown as string) },
-    { label: 'Name', value: resource.metadata?.name },
-    { label: 'Namespace', value: resource.metadata?.namespace },
-    { label: 'Controller', value: resource.metadata?.ownerReferences?.[0]?.name },
+    { label: 'Created', value: formatDate(metadata?.creationTimestamp as unknown as string) },
+    { label: 'Name', value: metadata?.name },
+    { label: 'Namespace', value: metadata?.namespace },
+    { label: 'Controller', value: metadata?.ownerReferences?.[0]?.name },
   ]
 
   let activeTab: Tab = 'metadata'
@@ -74,8 +77,6 @@
     const target = evt.target as HTMLButtonElement
     activeTab = target.id as Tab
   }
-
-  const { metadata, ...rest } = resource
 </script>
 
 <div
@@ -85,7 +86,7 @@
     <!-- Dark header -->
     <div class="bg-gray-900 text-white p-4">
       <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold">{resource.metadata?.name}</h2>
+        <h2 class="text-xl font-semibold">{metadata?.name}</h2>
         <button
           type="button"
           class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -129,7 +130,7 @@
               <dt class="font-bold text-sm sm:w-1/3">Labels</dt>
               <dd class="sm:w-2/3">
                 <div class="flex flex-wrap gap-2">
-                  {#each Object.entries(resource.metadata?.labels || {}) as [key, value]}
+                  {#each Object.entries(metadata?.labels || {}) as [key, value]}
                     <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
                   {/each}
                 </div>
@@ -140,7 +141,7 @@
               <dt class="font-bold text-sm sm:w-1/3">Annotations</dt>
               <dd class="sm:w-2/3">
                 <div class="flex flex-wrap gap-2">
-                  {#each Object.entries(resource.metadata?.annotations || {}) as [key, value]}
+                  {#each Object.entries(metadata?.annotations || {}) as [key, value]}
                     <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
                   {/each}
                 </div>
@@ -152,7 +153,8 @@
         <!-- YAML tab -->
         <div class="bg-black text-gray-200 p-4 pb-20">
           <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre">
-            {@html hljs.highlight(YAML.stringify(rest), { language: 'yaml' }).value}
+            <!-- We turned off svelte/no-at-html-tags eslint rule because we are isomg DOMPurify to sanitize -->
+            {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(rest), { language: 'yaml' }).value)}
           </code>
         </div>
       {:else if activeTab === 'events'}
