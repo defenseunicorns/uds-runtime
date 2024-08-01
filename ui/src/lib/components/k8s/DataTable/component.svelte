@@ -4,11 +4,15 @@
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { ChevronDown, ChevronUp, Filter, Search } from 'carbon-icons-svelte'
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
+  import { type Unsubscriber } from 'svelte/store'
 
+  import { goto } from '$app/navigation'
   import { page } from '$app/stores'
+  import { Drawer } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
+  import { addToast } from '$features/toast'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -19,16 +23,104 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
-  // Load the namespaces from the page store
-  const namespaces = $page.data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
-
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
 
+  let resource: KubernetesObject | null = null
+  let baseURL: string
+  let pathName: string
+  let unsubscribePage: Unsubscriber
+  let uid = ''
+  let namespaces: ResourceStoreInterface<KubernetesObject, NamespaceRow>
+
+  onDestroy(() => {
+    unsubscribePage()
+  })
+
+  unsubscribePage = page.subscribe(async ({ params, data, url }) => {
+    namespaces = data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
+    uid = params.uid || ''
+
+    pathName = url.pathname
+
+    // If UID is present, load the data
+    if (uid) {
+      try {
+        // Strip the UID from the URL
+        baseURL = pathName.replace(`/${uid}`, '')
+
+        // Split because new URL() doesn't work without a complete URL
+        const [apiPath] = rows.url.split('?')
+
+        // Fetch the resource data
+        const results = await fetch(`${apiPath}/${uid}`)
+
+        // If the fetch is successful, set the resource data
+        if (results.ok) {
+          const data = await results.json()
+          resource = data.Object as KubernetesObject
+          return
+        } else {
+          // Otherwise, throw an error
+          throw new Error(`Failed to fetch resource: ${results.statusText}`)
+        }
+      } catch (e) {
+        // If an error occurs, set the resource to null
+        resource = null
+
+        // Display an error toast if the fetch fails
+        addToast({
+          timeoutSecs: 5,
+          message: e.message,
+          type: 'error',
+        })
+      }
+    } else {
+      // If no UID is present, the path is the base URL and the resource is null
+      baseURL = pathName
+      resource = null
+    }
+  })
+
   onMount(() => {
-    return rows.start()
+    // Function to navigate using the keyboard
+    const keyboardNavigate = (e: KeyboardEvent) => {
+      if (uid) {
+        let nextID: string | undefined
+
+        switch (e.key) {
+          case 'ArrowDown': {
+            nextID = document.getElementById(uid)?.nextElementSibling?.id
+            break
+          }
+          case 'ArrowUp': {
+            nextID = document.getElementById(uid)?.previousElementSibling?.id
+            break
+          }
+        }
+
+        if (nextID) {
+          // Navigate to the next row
+          goto(`${baseURL}/${nextID}`)
+        }
+      }
+    }
+
+    // Bind the keyboard navigation event
+    window.addEventListener('keydown', keyboardNavigate)
+    const stop = rows.start()
+
+    // Clean up the event listener when the component is destroyed
+    return () => {
+      window.removeEventListener('keydown', keyboardNavigate)
+      stop()
+    }
   })
 </script>
+
+{#if resource}
+  <Drawer {resource} {baseURL} />
+{/if}
 
 <section class="table-section">
   <div class="table-container">
@@ -111,7 +203,11 @@
           </thead>
           <tbody>
             {#each $rows as row}
-              <tr>
+              <tr
+                id={row.resource.metadata?.uid}
+                on:click={() => goto(`${baseURL}/${row.resource.metadata?.uid}`)}
+                class:active={pathName.includes(row.resource.metadata?.uid ?? '')}
+              >
                 {#each columns as [key, style]}
                   <!-- Check object to avoid issues with `false` values -->
                   {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
