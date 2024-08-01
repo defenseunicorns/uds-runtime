@@ -5,22 +5,28 @@ import type { KubernetesObject } from '@kubernetes/client-node'
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
 
-import { type CommonRow, type ResourceWithTable, SearchByType } from './types'
+import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 
-export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
+export class ResourceStore<T extends KubernetesObject, U extends CommonRow> implements ResourceStoreInterface<T, U> {
   // Keep an internal store for the resources
-  private resources: Writable<ResourceWithTable<T, U>[]>
+  #resources: Writable<ResourceWithTable<T, U>[]>
 
   // Keep track of whether the store has been initialized
-  private initialized = false
+  #initialized = false
 
   // Keep an internal reference to the EventSource and the table
-  private eventSource: EventSource | null = null
-  private table: ResourceWithTable<T, U>[] = []
+  #eventSource: EventSource | null = null
+  #table: ResourceWithTable<T, U>[] = []
+
+  // Keep an internal reference to the createTableCallback
+  #tableCallback: (data: T[]) => ResourceWithTable<T, U>[]
 
   // Keep an internal reference to the age timer
-  private ageTimer: NodeJS.Timeout | null = null
-  private ageTimerStore: Writable<number> = writable(0)
+  #ageTimer: NodeJS.Timeout | null = null
+  #ageTimerStore: Writable<number> = writable(0)
+
+  // The URL for the EventSource
+  url = ''
 
   // Additional callback to stop the EventSource
   public stopCallback?: () => void
@@ -39,12 +45,17 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
   /**
    * Create a new ResourceStore instance
    *
+   * @param url The URL for the EventSource
+   * @param tableCallback The callback to create the table from the resources
    * @param sortBy The initial key to sort the table by
    * @param sortAsc The initial sort direction
    */
-  constructor(sortBy: keyof U, sortAsc = true) {
+  constructor(url: string, tableCallback: (data: T[]) => ResourceWithTable<T, U>[], sortBy: keyof U, sortAsc = true) {
+    this.url = url
+    this.#tableCallback = tableCallback
+
     // Initialize the internal store
-    this.resources = writable<ResourceWithTable<T, U>[]>([])
+    this.#resources = writable<ResourceWithTable<T, U>[]>([])
 
     // Initialize the public stores
     this.search = writable<string>('')
@@ -56,13 +67,13 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
     // Create a derived store that combines all the filtering and sorting logic
     const filteredAndSortedResources = derived(
       [
-        this.resources,
+        this.#resources,
         this.namespace,
         this.search,
         this.searchBy,
         this.sortBy,
         this.sortAsc,
-        this.ageTimerStore,
+        this.#ageTimerStore,
         ...this.additionalStores,
       ],
       ([$resources, $namespace, $search, $searchBy, $sortBy, $sortAsc]) => {
@@ -151,31 +162,31 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
    *
    * @returns A function to stop the EventSource
    */
-  start(url: string, createTableCallback: (data: T[]) => ResourceWithTable<T, U>[]) {
+  start() {
     // If the store has already been initialized, return
-    if (this.initialized) {
+    if (this.#initialized) {
       return () => {}
     }
 
-    this.initialized = true
-    this.eventSource = new EventSource(url)
+    this.#initialized = true
+    this.#eventSource = new EventSource(this.url)
 
-    this.eventSource.onmessage = ({ data }) => {
+    this.#eventSource.onmessage = ({ data }) => {
       try {
-        this.table = createTableCallback(JSON.parse(data))
-        this.resources.set(this.table)
+        this.#table = this.#tableCallback(JSON.parse(data))
+        this.#resources.set(this.#table)
       } catch (err) {
         console.error('Error updating resources:', err)
       }
     }
 
-    this.eventSource.onerror = (err) => {
+    this.#eventSource.onerror = (err) => {
       console.error('EventSource failed:', err)
     }
 
     // update age every 1 second
     const ageTimerInterval = setInterval(() => {
-      this.ageTimerStore.update((tick) => {
+      this.#ageTimerStore.update((tick) => {
         return tick + 1
       })
     }, 1000)
@@ -191,23 +202,14 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> {
       this.stopCallback()
     }
 
-    if (this.eventSource) {
-      this.eventSource.close()
-      this.eventSource = null
-      clearTimeout(this.ageTimer as NodeJS.Timeout)
+    if (this.#eventSource) {
+      this.#eventSource.close()
+      this.#eventSource = null
+      clearTimeout(this.#ageTimer as NodeJS.Timeout)
     }
   }
 
   subscribe: (run: (value: ResourceWithTable<T, U>[]) => void) => () => void
-}
-
-/**
- * Create a new ResourceStore instance
- * @param initialSortBy The initial key to sort the table by
- * @returns A new ResourceStore instance
- */
-export function createResourceStore<T extends KubernetesObject, U extends CommonRow>(initialSortBy: keyof U) {
-  return new ResourceStore<T, U>(initialSortBy)
 }
 
 /**
