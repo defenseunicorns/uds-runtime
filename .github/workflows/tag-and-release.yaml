@@ -25,8 +25,9 @@ jobs:
 
   release:
     permissions:
-      contents: read
+      contents: write
       packages: write
+      id-token: write
     needs: tag-new-version
     if: ${{ needs.tag-new-version.outputs.release_created == 'true'}}
     runs-on: ubuntu-latest
