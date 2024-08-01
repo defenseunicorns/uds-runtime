@@ -3,7 +3,7 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
-  import { Close } from 'carbon-icons-svelte'
+  import { Close, Table } from 'carbon-icons-svelte'
   import { onMount } from 'svelte'
 
   import { goto } from '$app/navigation'
@@ -14,11 +14,31 @@
 
   type Tab = 'metadata' | 'yaml' | 'events'
 
-  // If the Escape key is pressed, close the panel by navigating to the base URL
   onMount(() => {
     const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        goto(baseURL)
+      const tabList: Tab[] = ['metadata', 'yaml', 'events']
+      let targetTab: string | undefined
+
+      switch (e.key) {
+        // If the Escape key is pressed, close the panel by navigating to the base URL
+        case 'Escape':
+          goto(baseURL)
+          return
+
+        // If the left arrow key is pressed, move to the previous tab
+        case 'ArrowLeft':
+          targetTab = tabList[tabList.indexOf(activeTab) - 1]
+          break
+
+        // If the right arrow key is pressed, move to the next tab
+        case 'ArrowRight':
+          targetTab = tabList[tabList.indexOf(activeTab) + 1]
+          break
+      }
+
+      // Only update the active tab if the target tab is valid
+      if (targetTab) {
+        activeTab = targetTab as Tab
       }
     }
 
@@ -44,8 +64,9 @@
 
   let activeTab: Tab = 'metadata'
 
-  function setActiveTab(tab: Tab) {
-    activeTab = tab
+  function setActiveTab(evt: Event) {
+    const target = evt.target as HTMLButtonElement
+    activeTab = target.id as Tab
   }
 </script>
 
@@ -71,13 +92,13 @@
     <div class="bg-gray-800 text-sm font-medium text-center text-gray-400">
       <ul class="flex" id="drawer-tabs">
         <li class="mr-2">
-          <button class:active={activeTab === 'metadata'} on:click={() => setActiveTab('metadata')}>Metadata</button>
+          <button id="metadata" class:active={activeTab === 'metadata'} on:click={setActiveTab}>Metadata</button>
         </li>
         <li class="mr-2">
-          <button class:active={activeTab === 'yaml'} on:click={() => setActiveTab('yaml')}>YAML</button>
+          <button id="yaml" class:active={activeTab === 'yaml'} on:click={setActiveTab}>YAML</button>
         </li>
         <li class="mr-2">
-          <button class:active={activeTab === 'events'} on:click={() => setActiveTab('events')}>Events</button>
+          <button id="events" class:active={activeTab === 'events'} on:click={setActiveTab}>Events</button>
         </li>
       </ul>
     </div>
