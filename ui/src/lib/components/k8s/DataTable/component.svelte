@@ -9,10 +9,10 @@
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { SidePanel } from '$components'
+  import { Drawer } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
-  import { loadResourceDetail } from './component'
+  import { addToast } from '$features/toast'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -37,7 +37,7 @@
     unsubscribePage()
   })
 
-  unsubscribePage = page.subscribe(({ params, data, url }) => {
+  unsubscribePage = page.subscribe(async ({ params, data, url }) => {
     namespaces = data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
     uid = params.uid || ''
 
@@ -45,13 +45,38 @@
 
     // If UID is present, load the data
     if (uid) {
-      // Strip the UID from the URL
-      baseURL = pathName.replace(`/${uid}`, '')
+      try {
+        // Strip the UID from the URL
+        baseURL = pathName.replace(`/${uid}`, '')
 
-      loadResourceDetail(rows.url, uid).then((data) => {
-        resource = data
-      })
+        // Split because new URL() doesn't work without a complete URL
+        const [apiPath] = rows.url.split('?')
+
+        // Fetch the resource data
+        const results = await fetch(`${apiPath}/${uid}`)
+
+        // If the fetch is successful, set the resource data
+        if (results.ok) {
+          const data = await results.json()
+          resource = data.Object as KubernetesObject
+          return
+        } else {
+          // Otherwise, throw an error
+          throw new Error(`Failed to fetch resource: ${results.statusText}`)
+        }
+      } catch (e) {
+        // If an error occurs, set the resource to null
+        resource = null
+
+        // Display an error toast if the fetch fails
+        addToast({
+          timeoutSecs: 5,
+          message: e.message,
+          type: 'error',
+        })
+      }
     } else {
+      // If no UID is present, the path is the base URL and the resource is null
       baseURL = pathName
       resource = null
     }
@@ -94,7 +119,7 @@
 </script>
 
 {#if resource}
-  <SidePanel {resource} {baseURL} />
+  <Drawer {resource} {baseURL} />
 {/if}
 
 <section class="table-section">
