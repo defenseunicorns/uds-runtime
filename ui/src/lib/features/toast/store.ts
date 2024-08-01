@@ -13,8 +13,6 @@ export type Toast = {
 export const toast = writable<Toast[]>([])
 
 export const addToast = (newToast: Toast) => {
-  console.log('addToast', newToast)
-
   toast.update((toasts) => {
     const id = Date.now() + Math.random()
     const toast = { id, ...newToast }

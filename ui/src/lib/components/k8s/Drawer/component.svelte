@@ -2,19 +2,25 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import type { KubernetesObject } from '@kubernetes/client-node'
+  import type { V1Pod } from '@kubernetes/client-node'
   import { Close } from 'carbon-icons-svelte'
   import { onMount } from 'svelte'
+  import * as YAML from 'yaml'
+  import hljs from 'highlight.js/lib/core'
+  import yaml from 'highlight.js/lib/languages/yaml'
 
   import { goto } from '$app/navigation'
   import './styles.postcss'
 
-  export let resource: KubernetesObject
+  export let resource: V1Pod
   export let baseURL: string
 
   type Tab = 'metadata' | 'yaml' | 'events'
 
   onMount(() => {
+    // initialize highlight language
+    hljs.registerLanguage('yaml', yaml)
+
     const handleKeydown = (e: KeyboardEvent) => {
       const tabList: Tab[] = ['metadata', 'yaml', 'events']
       let targetTab: string | undefined
@@ -68,10 +74,12 @@
     const target = evt.target as HTMLButtonElement
     activeTab = target.id as Tab
   }
+
+  const { metadata, ...rest } = resource
 </script>
 
 <div
-  class="fixed top-16 right-0 z-40 h-screen overflow-y-auto transition-transform w-1/2 dark:bg-gray-800 shadow-2xl shadow-black/80 transform transition-transform duration-300 ease-in-out"
+  class="fixed top-16 right-0 z-40 h-screen overflow-y-auto w-1/2 dark:bg-gray-800 shadow-2xl shadow-black/80 transform transition-transform duration-300 ease-in-out"
 >
   <div class="flex flex-col h-full">
     <!-- Dark header -->
@@ -142,7 +150,11 @@
         </div>
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
-        <pre class="bg-gray-800 p-6 rounded-lg shadow-lg">{JSON.stringify(resource, null, 2)}</pre>
+        <div class="bg-black text-gray-200 p-4 pb-20">
+          <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre">
+            {@html hljs.highlight(YAML.stringify(rest), { language: 'yaml' }).value}
+          </code>
+        </div>
       {:else if activeTab === 'events'}
         <!-- Events tab -->
         <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
