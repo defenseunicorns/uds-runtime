@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-alpha.4](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.3...v0.1.0-alpha.4) (2024-08-01)
+
+
+### Bug Fixes
+
+* **ci:** more permissions for release ([#135](https://github.com/defenseunicorns/uds-runtime/issues/135)) ([3695630](https://github.com/defenseunicorns/uds-runtime/commit/36956305edfbcf2fa94befb20d900d1c7503d6b3))
+
 ## [0.1.0-alpha.3](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2024-08-01)
 
 
