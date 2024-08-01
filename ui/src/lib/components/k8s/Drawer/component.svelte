@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import type { V1Pod } from '@kubernetes/client-node'
+  import type { KubernetesObject } from '@kubernetes/client-node'
   import { Close } from 'carbon-icons-svelte'
   import { onMount } from 'svelte'
   import * as YAML from 'yaml'
@@ -13,7 +13,7 @@
   import { goto } from '$app/navigation'
   import './styles.postcss'
 
-  export let resource: V1Pod
+  export let resource: KubernetesObject
   export let baseURL: string
 
   type Tab = 'metadata' | 'yaml' | 'events'
@@ -153,7 +153,7 @@
         <!-- YAML tab -->
         <div class="bg-black text-gray-200 p-4 pb-20">
           <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre">
-            <!-- We turned off svelte/no-at-html-tags eslint rule because we are isomg DOMPurify to sanitize -->
+            <!-- We turned off svelte/no-at-html-tags eslint rule because we are using DOMPurify to sanitize -->
             {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(rest), { language: 'yaml' }).value)}
           </code>
         </div>
