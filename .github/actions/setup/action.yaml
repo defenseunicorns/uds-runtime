@@ -21,7 +21,7 @@ runs:
       shell: bash
       run: |
         brew tap defenseunicorns/tap
-        brew install uds@0.12.0
+        brew install uds@0.14.0
 
     - name: Install k3d
       shell: bash

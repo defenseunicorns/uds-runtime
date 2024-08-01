@@ -47,5 +47,10 @@
     "vite": "5.3.4",
     "vitest": "2.0.4"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "dompurify": "^3.1.6",
+    "highlight.js": "^11.10.0",
+    "yaml": "^2.5.0"
+  }
 }

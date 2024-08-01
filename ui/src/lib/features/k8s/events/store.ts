@@ -32,11 +32,11 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     creationTimestamp: new Date(r.metadata.creationTimestamp ?? ''),
   }))
 
-  const store = new ResourceStore<Resource, Row>('age', false)
+  const store = new ResourceStore<Resource, Row>(url, transform, 'age', false)
 
   return {
     ...store,
-    start: () => store.start(url, transform),
+    start: store.start.bind(store),
     sortByKey: store.sortByKey.bind(store),
   }
 }
