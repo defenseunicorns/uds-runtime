@@ -3,7 +3,7 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
-  import { ChevronDown, ChevronUp, Filter, Search } from 'carbon-icons-svelte'
+  import { ChevronDown, ChevronUp, Filter, Search, Information } from 'carbon-icons-svelte'
   import { onDestroy, onMount } from 'svelte'
   import { type Unsubscriber } from 'svelte/store'
 
@@ -23,8 +23,18 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
+  // name and descripton of K8s resource
+  export let name = ''
+  export let description = 'No description available'
+
   const rows = createStore()
-  const { namespace, search, searchBy, searchTypes, sortAsc, sortBy } = rows
+  const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
+
+  // check for filtering
+  let isFiltering = false
+  $: {
+    isFiltering = !!($search || $namespace)
+  }
 
   let resource: KubernetesObject | null = null
   let baseURL: string
@@ -59,6 +69,7 @@
         if (results.ok) {
           const data = await results.json()
           resource = data.Object as KubernetesObject
+          console.log(resource)
           return
         } else {
           // Otherwise, throw an error
@@ -125,6 +136,18 @@
 <section class="table-section">
   <div class="table-container">
     <div class="table-content">
+      <div class="table-header">
+        <span class="dark:text-white">{name}</span>
+        {#if isFiltering}
+          <span class="dark:text-gray-500">&nbsp;&nbsp;showing {$rows.length} of {$numResources} results</span>
+        {/if}
+        <div class="relative group">
+          <Information class="ml-2 w-4 h-4 text-gray-400" />
+          <div class="tooltip tooltip-right min-w-72">
+            <div class="whitespace-normal">{description}</div>
+          </div>
+        </div>
+      </div>
       <div class="table-filter-section">
         <div class="relative lg:w-96">
           <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">

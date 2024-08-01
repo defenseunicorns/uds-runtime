@@ -4,8 +4,11 @@
 <script lang="ts">
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
 
   export let columns: Columns = [['name', 'emphasize'], ['status'], ['roles'], ['taints'], ['version'], ['age']]
+  const name = 'Nodes'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} isNamespaced={false} />
+<DataTable {columns} {createStore} isNamespaced={false} {name} {description} />

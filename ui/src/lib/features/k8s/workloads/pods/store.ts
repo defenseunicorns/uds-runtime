@@ -19,7 +19,7 @@ interface Row extends CommonRow {
     }
   }
   restarts: number
-  controller: string
+  controlled_by: string
   node: string
   status: string
   metrics: {
@@ -80,7 +80,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       },
     },
     restarts: r.status?.containerStatuses?.reduce((acc, curr) => acc + curr.restartCount, 0) ?? 0,
-    controller: r.metadata?.ownerReferences?.at(0)?.kind ?? '',
+    controlled_by: r.metadata?.ownerReferences?.at(0)?.kind ?? '',
     status: r.status?.phase ?? '',
     // @todo: This will not work due to using the default sparerResource stream
     node: r.spec?.nodeName ?? '',
