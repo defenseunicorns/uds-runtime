@@ -10,6 +10,7 @@ import {
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
+import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { V1Pod } from '@kubernetes/client-node'
 import { SvelteComponent } from 'svelte'
 import Component from './component.svelte'
@@ -35,12 +36,15 @@ suite('PodTable Component', () => {
     vi.clearAllMocks()
   })
 
+  const name = 'Pods'
+  const description = resourceDescriptions[name]
+
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
       ['name', 'emphasize'],
       ['namespace'],
-      ['controller'],
+      ['controlled_by'],
       ['containers'],
       ['status'],
       ['restarts'],
@@ -48,9 +52,11 @@ suite('PodTable Component', () => {
       ['node'],
       ['age'],
     ],
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 
   // TODO: look into adding test capability for store.filterCallback
   // const podMetrics = [

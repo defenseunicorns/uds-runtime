@@ -10,6 +10,8 @@ import {
 import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1Deployment } from '@kubernetes/client-node'
 import '@testing-library/jest-dom'
+
+import { resourceDescriptions } from '$lib/utils/descriptions'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -18,12 +20,17 @@ suite('DeploymentTable Component', () => {
     vi.clearAllMocks()
   })
 
+  const name = 'Deployments'
+  const description = resourceDescriptions[name]
+
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['name', 'emphasize'], ['namespace'], ['ready'], ['up_to_date'], ['available'], ['age']],
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 
   vi.mock('../../store.ts', async (importOriginal) => {
     const mockData = [

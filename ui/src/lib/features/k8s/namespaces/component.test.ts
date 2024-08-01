@@ -4,6 +4,7 @@
 import '@testing-library/jest-dom'
 import { writable } from 'svelte/store'
 
+import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { V1Namespace } from '@kubernetes/client-node'
 import {
   expectEqualIgnoringFields,
@@ -28,14 +29,24 @@ suite('NamespaceTable Component', () => {
     vi.clearAllMocks()
   })
 
+  const name = 'Namespaces'
+  const description = resourceDescriptions[name]
+
   // Use expect.any(Function), because createStore is wrapped
   testK8sTableWithDefaults(Component, {
     createStore: expect.any(Function),
     columns: [['name', 'emphasize'], ['status'], ['age']],
     isNamespaced: false,
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore: expect.any(Function), isNamespaced: false })
+  testK8sTableWithCustomColumns(Component, {
+    createStore: expect.any(Function),
+    isNamespaced: false,
+    name,
+    description,
+  })
 
   vi.mock('../store.ts', async (importOriginal) => {
     const mockData = [

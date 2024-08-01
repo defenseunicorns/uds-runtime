@@ -10,6 +10,7 @@ import {
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
+import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { Package } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -18,6 +19,9 @@ suite('StatefulsetTable Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
+
+  const name = 'Packages'
+  const description = resourceDescriptions[name]
 
   testK8sTableWithDefaults(Component, {
     createStore,
@@ -31,9 +35,11 @@ suite('StatefulsetTable Component', () => {
       ['networkPolicies'],
       ['age'],
     ],
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 
   vi.mock('../../store.ts', async (importOriginal) => {
     const mockData = [

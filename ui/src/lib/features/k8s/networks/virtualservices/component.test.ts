@@ -10,6 +10,7 @@ import {
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
+import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { VirtualService } from 'uds-core-types/src/pepr/operator/crd/generated/istio/virtualservice-v1beta1'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -19,12 +20,17 @@ suite('VirtualServiceTable Component', () => {
     vi.clearAllMocks()
   })
 
+  const name = 'VirtualServices'
+  const description = resourceDescriptions[name]
+
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['name', 'emphasize'], ['namespace'], ['gateways'], ['hosts'], ['age']],
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 
   vi.mock('../../store.ts', async (importOriginal) => {
     const mockData = [

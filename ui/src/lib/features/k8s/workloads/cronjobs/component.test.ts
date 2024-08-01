@@ -10,6 +10,7 @@ import {
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
+import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { V1CronJob } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -19,12 +20,17 @@ suite('CronjobTable Component', () => {
     vi.clearAllMocks()
   })
 
+  const name = 'CronJobs'
+  const description = resourceDescriptions[name]
+
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['name', 'emphasize'], ['namespace'], ['schedule'], ['suspend'], ['last_scheduled'], ['age']],
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 
   vi.mock('../../store.ts', async (importOriginal) => {
     const mockData = [

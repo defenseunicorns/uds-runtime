@@ -3,6 +3,7 @@
 
 import '@testing-library/jest-dom'
 
+import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { CoreV1Event } from '@kubernetes/client-node'
 import {
   expectEqualIgnoringFields,
@@ -19,12 +20,17 @@ suite('EventTable Component', () => {
     vi.clearAllMocks()
   })
 
+  const name = 'Events'
+  const description = resourceDescriptions[name]
+
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['namespace'], ['age'], ['type'], ['reason'], ['object_kind'], ['object_name'], ['count']],
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 
   vi.mock('../store.ts', async (importOriginal) => {
     const mockData = [
