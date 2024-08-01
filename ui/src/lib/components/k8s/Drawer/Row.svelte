@@ -10,23 +10,27 @@
 
   import RowItem from './RowItem.svelte'
 
+  type BadgesType = {
+    [key: string]: string
+  }
+
   export let label: string = 'text'
 
-  type Props = {} & (
+  type RowType = {} & (
     | { variant: 'text'; value: string }
     | { variant: 'icon-text'; value: string }
     | { variant: 'external-link'; value: string }
     | { variant: 'internal-link'; value: string }
     | { variant: 'input-copy'; value: string[] }
-    | { variant: 'badges'; value: string[] }
+    | { variant: 'badges'; value: BadgesType }
   )
 
-  export let data: Props
+  export let data: RowType
 </script>
 
 {#if data.variant === 'text' || data.variant === 'icon-text'}
   <RowItem {label} variant={data.variant}>
-    <div class="text-gray-300 text-base font-extralight leading-normal">Value string</div>
+    <div class="text-gray-300 text-base font-extralight leading-normal">{data.value}</div>
   </RowItem>
 {:else if data.variant === 'external-link'}
   <RowItem {label} variant={data.variant}>
@@ -66,14 +70,12 @@
   </RowItem>
 {:else if data.variant === 'badges'}
   <RowItem {label} variant={data.variant}>
-    <div class="text-base leading-normal text-white flex">
-      {#each data.value as badge}
-        <span
-          class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300"
-        >
-          {badge}
-        </span>
-      {/each}
-    </div>
+    {#each Object.entries(data.value) as [key, val]}
+      <span
+        class="bg-gray-100 text-gray-800 text-xs font-medium m-1 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300"
+      >
+        {`${key}=${val}`}
+      </span>
+    {/each}
   </RowItem>
 {/if}

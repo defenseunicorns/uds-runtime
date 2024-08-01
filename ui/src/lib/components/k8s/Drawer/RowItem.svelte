@@ -11,13 +11,18 @@
 </script>
 
 <div class="py-1 border-b border-gray-700 gap-9 flex mt-3">
-  <div class="h-6 justify-start items-center gap-1.5 flex my-1 w-[180px]">
+  <div class="flex-none w-1/4">
     {#if variant === 'icon-text'}
       <Db2Database color="white" />
     {/if}
     <div class="text-white text-base font-semibold leading-normal">{label}</div>
   </div>
-  <div class="justify-start items-center gap-1.5 flex">
-    <slot />
+
+  <div class="flex w-3/4">
+    <div class="flex flex-col">
+      <div class="flex flex-wrap">
+        <slot />
+      </div>
+    </div>
   </div>
 </div>

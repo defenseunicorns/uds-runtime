@@ -11,6 +11,8 @@
   import DOMPurify from 'dompurify'
 
   import { goto } from '$app/navigation'
+  import Rows from './Rows.svelte'
+
   import './styles.postcss'
 
   export let resource: KubernetesObject
@@ -117,7 +119,12 @@
     <div class="flex-grow overflow-y-auto dark:text-gray-300">
       {#if activeTab === 'metadata'}
         <!-- Metadata tab -->
-        <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
+
+        <div class="p-6">
+          <Rows data={metadata} />
+        </div>
+
+        <!-- <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
           <dl class="space-y-4">
             {#each details as { label, value }}
               <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
@@ -148,7 +155,7 @@
               </dd>
             </div>
           </dl>
-        </div>
+        </div> -->
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="bg-black text-gray-200 p-4 pb-20">
