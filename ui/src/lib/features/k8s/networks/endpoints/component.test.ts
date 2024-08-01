@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1Endpoints } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,57 +26,61 @@ suite('EndpointTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'v1',
-      kind: 'Endpoints',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'alertmanager-operated',
-        namespace: 'monitoring',
-      },
-      subsets: [
-        {
-          addresses: [
-            {
-              hostname: 'alertmanager-kube-prometheus-stack-alertmanager-0',
-              ip: '10.42.0.52',
-              nodeName: 'k3d-uds-server-0',
-              targetRef: {
-                kind: 'Pod',
-                name: 'alertmanager-kube-prometheus-stack-alertmanager-0',
-                namespace: 'monitoring',
-                uid: '2d7bfb5e-2a97-4db6-b279-50168ace54a9',
-              },
-            },
-          ],
-          ports: [
-            { name: 'udp-mesh', port: 9094, protocol: 'UDP' },
-            { name: 'tcp-mesh', port: 9094, protocol: 'TCP' },
-            { name: 'http-web', port: 9093, protocol: 'TCP' },
-          ],
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'v1',
+        kind: 'Endpoints',
+        metadata: {
+          creationTimestamp: '2024-09-29T20:00:00Z',
+          name: 'alertmanager-operated',
+          namespace: 'monitoring',
         },
-      ],
-    },
-  ] as unknown as V1Endpoints[]
+        subsets: [
+          {
+            addresses: [
+              {
+                hostname: 'alertmanager-kube-prometheus-stack-alertmanager-0',
+                ip: '10.42.0.52',
+                nodeName: 'k3d-uds-server-0',
+                targetRef: {
+                  kind: 'Pod',
+                  name: 'alertmanager-kube-prometheus-stack-alertmanager-0',
+                  namespace: 'monitoring',
+                  uid: '2d7bfb5e-2a97-4db6-b279-50168ace54a9',
+                },
+              },
+            ],
+            ports: [
+              { name: 'udp-mesh', port: 9094, protocol: 'UDP' },
+              { name: 'tcp-mesh', port: 9094, protocol: 'TCP' },
+              { name: 'http-web', port: 9093, protocol: 'TCP' },
+            ],
+          },
+        ],
+      },
+    ] as unknown as V1Endpoints[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata?.name,
-      namespace: mockData[0].metadata?.namespace,
+      name: 'alertmanager-operated',
+      namespace: 'monitoring',
       endpoints: '10.42.0.52:9094, 10.42.0.52:9094, 10.42.0.52:9093',
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
     },
   ]
 
-  testK8sResourceStore(
-    'endpoints',
-    mockData,
-    expectedTables,
-    `/api/v1/resources/networks/endpoints?dense=true`,
-    createStore,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1Endpoints, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/networks/endpoints?dense=true`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

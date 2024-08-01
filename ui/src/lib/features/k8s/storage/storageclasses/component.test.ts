@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1StorageClass } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,41 +26,44 @@ suite('StorageClass Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'storage.k8s.io/v1',
-      kind: 'StorageClass',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'local-path',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'storage.k8s.io/v1',
+        kind: 'StorageClass',
+        metadata: {
+          creationTimestamp: '2024-09-29T20:00:00Z',
+          name: 'local-path',
+        },
+        provisioner: 'kubernetes.io/no-provisioner',
+        reclaimPolicy: 'Delete',
+        volumeBindingMode: 'Immediate',
+        allowVolumeExpansion: true,
+        age: '1 minute',
       },
-      provisioner: 'kubernetes.io/no-provisioner',
-      reclaimPolicy: 'Delete',
-      volumeBindingMode: 'Immediate',
-      allowVolumeExpansion: true,
-      age: '1 minute',
-    },
-  ] as unknown as V1StorageClass[]
+    ] as unknown as V1StorageClass[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata?.name,
+      name: 'local-path',
       namespace: '',
-      provisioner: mockData[0].provisioner,
-      reclaim_policy: mockData[0].reclaimPolicy,
+      provisioner: 'kubernetes.io/no-provisioner',
+      reclaim_policy: 'Delete',
       default: 'No',
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
     },
   ]
-
-  testK8sResourceStore(
-    'storageclasses',
-    mockData,
-    expectedTables,
-    '/api/v1/resources/storage/storageclasses',
-    createStore,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1StorageClass, any>[]
+  expect(store.url).toEqual('/api/v1/resources/storage/storageclasses')
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

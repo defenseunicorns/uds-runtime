@@ -6,11 +6,12 @@ import { writable } from 'svelte/store'
 
 import type { V1Namespace } from '@kubernetes/client-node'
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '../test-helper'
+import type { ResourceWithTable } from '../types'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -36,37 +37,44 @@ suite('NamespaceTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore: expect.any(Function), isNamespaced: false })
 
-  const mockData = [
-    {
-      apiVersion: 'v1',
-      kind: 'Namespace',
-      metadata: {
-        annotations: { 'uds.dev/original-istio-injection': 'non-existent', 'uds.dev/pkg-promtail': 'true' },
-        creationTimestamp: TestCreationTimestamp,
-        labels: {
-          'app.kubernetes.io/managed-by': 'zarf',
-          'istio-injection': 'enabled',
-          'kubernetes.io/metadata.name': 'promtail',
+  vi.mock('../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'v1',
+        kind: 'Namespace',
+        metadata: {
+          creationTimestamp: '2024-09-29T20:00:00Z',
+          labels: {
+            'app.kubernetes.io/managed-by': 'zarf',
+            'istio-injection': 'enabled',
+            'kubernetes.io/metadata.name': 'promtail',
+          },
+          name: 'promtail',
         },
-        name: 'promtail',
-        resourceVersion: '3833',
-        uid: 'ea570f9f-aa86-4793-a718-4f92686c1c08',
+        status: { phase: 'Active' },
       },
-      status: { phase: 'Active' },
-    },
-  ] as unknown as V1Namespace[]
+    ] as unknown as V1Namespace[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata?.name,
-      status: mockData[0].status?.phase,
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
+      name: 'promtail',
+      status: 'Active',
       namespace: '',
     },
   ]
 
-  testK8sResourceStore('namespaces', mockData, expectedTables, `/api/v1/resources/namespaces`, createStore)
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1Namespace, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/namespaces`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

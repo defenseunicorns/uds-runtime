@@ -5,11 +5,11 @@ import '@testing-library/jest-dom'
 
 import {
   expectEqualIgnoringFields,
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { Exemption } from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -61,21 +61,65 @@ suite('UDSExemptionTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'uds.dev/v1alpha1',
-      kind: 'Exemption',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'neuvector',
-        namespace: 'uds-policy-exemptions',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'uds.dev/v1alpha1',
+        kind: 'Exemption',
+        metadata: {
+          creationTimestamp: '2024-09-29T20:00:00Z',
+          name: 'neuvector',
+          namespace: 'uds-policy-exemptions',
+        },
+        spec: {
+          exemptions: [
+            {
+              description:
+                "Neuvector requires HostPath volume types Neuvector mounts the following hostPaths: `/var/neuvector`: (as writable) for Neuvector's buffering and persistent state `/var/run`: communication to docker daemon `/proc`: monitoring of processes for malicious activity `/sys/fs/cgroup`: important files the controller wants to monitor for malicious content https://github.com/neuvector/neuvector-helm/blob/master/charts/core/templates/enforcer-daemonset.yaml#L108",
+              matcher: { kind: 'pod', name: '^neuvector-enforcer-pod.*', namespace: 'neuvector' },
+              policies: [
+                'DisallowHostNamespaces',
+                'DisallowPrivileged',
+                'DropAllCapabilities',
+                'RequireNonRootUser',
+                'RestrictHostPathWrite',
+                'RestrictVolumeTypes',
+              ],
+              title: 'neuvector-enforcer-pod',
+            },
+          ],
+        },
       },
-      spec: {
-        exemptions: [
-          {
+    ] as unknown as Exemption[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
+
+  const expectedTables = [
+    {
+      name: 'neuvector',
+      namespace: 'uds-policy-exemptions',
+      title: 'neuvector-enforcer-pod',
+      details: {
+        component: vi.fn(),
+        sort: 'neuvector-enforcer-pod',
+        props: {
+          exemption: {
+            resource: {},
+            title: 'neuvector-enforcer-pod',
             description:
               "Neuvector requires HostPath volume types Neuvector mounts the following hostPaths: `/var/neuvector`: (as writable) for Neuvector's buffering and persistent state `/var/run`: communication to docker daemon `/proc`: monitoring of processes for malicious activity `/sys/fs/cgroup`: important files the controller wants to monitor for malicious content https://github.com/neuvector/neuvector-helm/blob/master/charts/core/templates/enforcer-daemonset.yaml#L108",
-            matcher: { kind: 'pod', name: '^neuvector-enforcer-pod.*', namespace: 'neuvector' },
+            matcher: {
+              kind: 'pod',
+              name: '^neuvector-enforcer-pod.*',
+              namespace: 'neuvector',
+            },
             policies: [
               'DisallowHostNamespaces',
               'DisallowPrivileged',
@@ -84,58 +128,44 @@ suite('UDSExemptionTable Component', () => {
               'RestrictHostPathWrite',
               'RestrictVolumeTypes',
             ],
-            title: 'neuvector-enforcer-pod',
           },
-        ],
-      },
-    },
-  ] as unknown as Exemption[]
-
-  const expectedTables = [
-    {
-      name: mockData[0].metadata!.name,
-      namespace: mockData[0].metadata?.namespace,
-      title: mockData[0].spec?.exemptions[0].title,
-      details: {
-        component: vi.fn(),
-        sort: 'neuvector-enforcer-pod',
-        props: {
-          exemption: { ...mockData[0].spec?.exemptions[0], resource: mockData[0] },
         },
       },
       matcher: {
         component: vi.fn(),
-        props: { matcher: mockData[0].spec?.exemptions[0].matcher },
+        props: {
+          matcher: {
+            kind: 'pod',
+            name: '^neuvector-enforcer-pod.*',
+            namespace: 'neuvector',
+          },
+        },
       },
       policies: {
         component: vi.fn(),
-        props: { policies: mockData[0].spec?.exemptions[0].policies },
+        props: {
+          policies: [
+            'DisallowHostNamespaces',
+            'DisallowPrivileged',
+            'DropAllCapabilities',
+            'RequireNonRootUser',
+            'RestrictHostPathWrite',
+            'RestrictVolumeTypes',
+          ],
+        },
       },
-      age: { text: '1 minute', sort: 1721923882000 },
     },
   ]
 
-  //eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const subscribeCallback = (data: any[]) => {
-    const { resource, table } = data[0]
-
-    // Assert the data was passed from eventSource to transformer (avoid date time inconsistencies by ignoring creationTimestamp)
-    expectEqualIgnoringFields({ ...resource }, { ...mockData[0] }, ['metadata.creationTimestamp'])
-    // Assert the data was transformed correctly to create the desired table rows
-    expectEqualIgnoringFields(table, expectedTables[0], [
-      'details.component',
-      'matcher.component',
-      'policies.component',
-      'creationTimestamp',
-    ])
-  }
-
-  testK8sResourceStore(
-    'UDSExemptions',
-    mockData,
-    expectedTables,
-    `/api/v1/resources/configs/uds-exemptions?dense=true`,
-    createStore,
-    subscribeCallback,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<Exemption, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/configs/uds-exemptions?dense=true`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, [
+    'creationTimestamp',
+    'details.props.exemption.resource',
+    'details.component',
+    'matcher.component',
+    'policies.component',
+  ])
 })

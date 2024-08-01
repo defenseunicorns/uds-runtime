@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1ConfigMap } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,37 +26,47 @@ suite('EventTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'v1',
-      data: {
-        'add-policy': null,
-        'add-svcacct': null,
-        'add-user': null,
-        'custom-command': null,
-        initialize: null,
-        'policy_0.json': null,
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'v1',
+        data: {
+          'add-policy': null,
+          'add-svcacct': null,
+          'add-user': null,
+          'custom-command': null,
+          initialize: null,
+          'policy_0.json': null,
+        },
+        kind: 'ConfigMap',
+        metadata: {
+          creationTimestamp: '2024-05-24T14:51:22Z',
+          name: 'minio',
+          namespace: 'uds-dev-stack',
+        },
       },
-      kind: 'ConfigMap',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'minio',
-        namespace: 'uds-dev-stack',
-      },
-    },
-  ] as unknown as V1ConfigMap[]
+    ] as unknown as V1ConfigMap[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata!.name,
-      namespace: mockData[0].metadata!.namespace,
+      name: 'minio',
+      namespace: 'uds-dev-stack',
       keys: 'add-policy, add-svcacct, add-user, custom-command, initialize, policy_0.json',
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
     },
   ]
 
-  testK8sResourceStore('ConfigMaps', mockData, expectedTables, `/api/v1/resources/configs/configmaps`, createStore)
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1ConfigMap, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/configs/configmaps`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

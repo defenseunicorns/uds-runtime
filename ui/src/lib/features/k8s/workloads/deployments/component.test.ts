@@ -2,11 +2,12 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1Deployment } from '@kubernetes/client-node'
 import '@testing-library/jest-dom'
 import Component from './component.svelte'
@@ -24,24 +25,36 @@ suite('DeploymentTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      metadata: { name: 'test', namespace: 'default', creationTimestamp: TestCreationTimestamp },
-      status: { readyReplicas: 1, replicas: 2, updatedReplicas: 1, conditions: [{ type: 'Available' }] },
-    },
-  ] as unknown as V1Deployment[]
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        metadata: { name: 'test', namespace: 'default', creationTimestamp: '2024-09-29T20:00:00Z' },
+        status: { readyReplicas: 1, replicas: 2, updatedReplicas: 1, conditions: [{ type: 'Available' }] },
+      },
+    ] as unknown as V1Deployment[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata!.name,
-      namespace: mockData[0].metadata!.namespace,
-      creationTimestamp: '',
+      name: 'test',
+      namespace: 'default',
       ready: '1 / 2',
       up_to_date: 1,
       available: 1,
-      age: { text: '1 minute', sort: 1721923882000 },
     },
   ]
 
-  testK8sResourceStore('deployments', mockData, expectedTables, '/api/v1/resources/workloads/deployments', createStore)
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1Deployment, any>[]
+  expect(store.url).toEqual('/api/v1/resources/workloads/deployments')
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

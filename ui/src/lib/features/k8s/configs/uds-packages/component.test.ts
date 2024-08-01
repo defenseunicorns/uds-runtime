@@ -4,11 +4,12 @@
 import { beforeEach, vi } from 'vitest'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { Package } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -34,53 +35,55 @@ suite('StatefulsetTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'uds.dev/v1alpha1',
-      kind: 'Package',
-      metadata: {
-        annotations: {
-          'meta.helm.sh/release-name': 'uds-neuvector-config',
-          'meta.helm.sh/release-namespace': 'neuvector',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'uds.dev/v1alpha1',
+        kind: 'Package',
+        metadata: {
+          creationTimestamp: '2024-07-25T16:10:22Z',
+          name: 'neuvector',
+          namespace: 'neuvector',
         },
-        creationTimestamp: TestCreationTimestamp,
-        generation: 1,
-        labels: { 'app.kubernetes.io/managed-by': 'Helm' },
-        name: 'neuvector',
-        namespace: 'neuvector',
-        resourceVersion: '2451',
-        uid: '963b2b20-a5f4-4b70-8562-3245c696913e',
+        status: {
+          authserviceClients: [],
+          endpoints: ['neuvector.admin.uds.dev', '2.admin.uds.dev'],
+          monitors: ['testMonitor', 'testMonitor2'],
+          networkPolicyCount: 13,
+          observedGeneration: 1,
+          phase: 'Ready',
+          retryAttempt: 0,
+          ssoClients: ['uds-core-admin-neuvector'],
+        },
       },
-      status: {
-        authserviceClients: [],
-        endpoints: ['neuvector.admin.uds.dev', '2.admin.uds.dev'],
-        monitors: ['testMonitor', 'testMonitor2'],
-        networkPolicyCount: 13,
-        observedGeneration: 1,
-        phase: 'Ready',
-        retryAttempt: 0,
-        ssoClients: ['uds-core-admin-neuvector'],
-      },
-    },
-  ] as unknown as Package[]
+    ] as unknown as Package[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
       creationTimestamp: '2024-07-25T16:10:22.000Z',
       endpoints: 'neuvector.admin.uds.dev, 2.admin.uds.dev',
       monitors: 'testMonitor, testMonitor2',
-      name: mockData[0].metadata!.name,
-      namespace: mockData[0].metadata?.namespace,
-      networkPolicies: mockData[0].status?.networkPolicyCount,
-      retryAttempts: mockData[0].status?.retryAttempt,
+      name: 'neuvector',
+      namespace: 'neuvector',
+      networkPolicies: 13,
+      retryAttempts: 0,
       ssoClients: 'uds-core-admin-neuvector',
       status: 'Ready',
     },
   ]
 
-  testK8sResourceStore('uds-packages', mockData, expectedTables, `/api/v1/resources/configs/uds-packages`, createStore)
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<Package, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/configs/uds-packages`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

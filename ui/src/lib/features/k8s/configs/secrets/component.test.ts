@@ -4,11 +4,12 @@
 import '@testing-library/jest-dom'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1Secret } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,32 +26,42 @@ suite('EventTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'v1',
-      data: { '.dockerconfigjson': null },
-      kind: 'Secret',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'private-registry',
-        namespace: 'loki',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'v1',
+        data: { '.dockerconfigjson': null },
+        kind: 'Secret',
+        metadata: {
+          creationTimestamp: '2024-09-29T20:00:00Z',
+          name: 'private-registry',
+          namespace: 'loki',
+        },
+        type: 'kubernetes.io/dockerconfigjson',
       },
-      type: 'kubernetes.io/dockerconfigjson',
-    },
-  ] as unknown as V1Secret[]
+    ] as unknown as V1Secret[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata!.name,
-      namespace: mockData[0].metadata!.namespace,
-      type: mockData[0].type,
+      name: 'private-registry',
+      namespace: 'loki',
+      type: 'kubernetes.io/dockerconfigjson',
       keys: '.dockerconfigjson',
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
     },
   ]
 
-  testK8sResourceStore('Secrets', mockData, expectedTables, `/api/v1/resources/configs/secrets`, createStore)
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1Secret, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/configs/secrets`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

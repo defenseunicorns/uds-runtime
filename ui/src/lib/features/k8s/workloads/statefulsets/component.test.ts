@@ -4,11 +4,12 @@
 import { beforeEach, vi } from 'vitest'
 
 import {
-  TestCreationTimestamp,
-  testK8sResourceStore,
+  expectEqualIgnoringFields,
+  MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
+import type { ResourceWithTable } from '$features/k8s/types'
 import type { V1StatefulSet } from '@kubernetes/client-node'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -25,50 +26,54 @@ suite('StatefulsetTable Component', () => {
 
   testK8sTableWithCustomColumns(Component, { createStore })
 
-  const mockData = [
-    {
-      apiVersion: 'apps/v1',
-      kind: 'StatefulSet',
-      metadata: {
-        creationTimestamp: TestCreationTimestamp,
-        name: 'hello',
-        namespace: 'default',
+  vi.mock('../../store.ts', async (importOriginal) => {
+    const mockData = [
+      {
+        apiVersion: 'apps/v1',
+        kind: 'StatefulSet',
+        metadata: {
+          creationTimestamp: '2024-05-24T14:51:22Z',
+          name: 'hello',
+          namespace: 'default',
+        },
+        spec: {
+          replicas: 1,
+          serviceName: 'hello',
+        },
+        status: {
+          replicas: 1,
+          readyReplicas: 1,
+          currentReplicas: 1,
+          updatedReplicas: 1,
+          currentRevision: 'hello',
+          updateRevision: 'hello',
+          availableReplicas: 1,
+        },
       },
-      spec: {
-        replicas: 1,
-        serviceName: 'hello',
-      },
-      status: {
-        replicas: 1,
-        readyReplicas: 1,
-        currentReplicas: 1,
-        updatedReplicas: 1,
-        currentRevision: 'hello',
-        updateRevision: 'hello',
-        availableReplicas: 1,
-      },
-    },
-  ] as unknown as V1StatefulSet[]
+    ] as unknown as V1StatefulSet[]
+
+    const original: any = await importOriginal()
+    return {
+      ...original,
+      ResourceStore: vi
+        .fn()
+        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+    }
+  })
 
   const expectedTables = [
     {
-      name: mockData[0].metadata?.name,
-      namespace: mockData[0].metadata?.namespace,
+      name: 'hello',
+      namespace: 'default',
       ready: '1 / 1',
       up_to_date: 1,
       available: 1,
-      age: {
-        sort: 1721923882000,
-        text: '1 minute',
-      },
     },
   ]
 
-  testK8sResourceStore(
-    'statefulsets',
-    mockData,
-    expectedTables,
-    `/api/v1/resources/workloads/statefulsets`,
-    createStore,
-  )
+  const store = createStore()
+  const start = store.start as unknown as () => ResourceWithTable<V1StatefulSet, any>[]
+  expect(store.url).toEqual(`/api/v1/resources/workloads/statefulsets`)
+  // ignore creationTimestamp because age is not calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })
