@@ -15,8 +15,9 @@
 </script>
 
 <script lang="ts">
-  import Row from './Row.svelte'
-  export let data: any
+  import Row, { type RowType } from './Row.svelte'
+
+  export let data: RowType
 </script>
 
 {#each Object.entries(data) as [key, val]}

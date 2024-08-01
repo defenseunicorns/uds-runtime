@@ -3,20 +3,12 @@
 
 <script context="module" lang="ts">
   export type VariantType = 'text' | 'icon-text' | 'external-link' | 'internal-link' | 'input-copy' | 'badges'
-</script>
-
-<script lang="ts">
-  import { CopyFile } from 'carbon-icons-svelte'
-
-  import RowItem from './RowItem.svelte'
 
   type BadgesType = {
     [key: string]: string
   }
 
-  export let label: string = 'text'
-
-  type RowType = {} & (
+  export type RowType = {} & (
     | { variant: 'text'; value: string }
     | { variant: 'icon-text'; value: string }
     | { variant: 'external-link'; value: string }
@@ -24,6 +16,14 @@
     | { variant: 'input-copy'; value: string[] }
     | { variant: 'badges'; value: BadgesType }
   )
+</script>
+
+<script lang="ts">
+  import { CopyFile } from 'carbon-icons-svelte'
+
+  import RowItem from './RowItem.svelte'
+
+  export let label: string = 'text'
 
   export let data: RowType
 
@@ -38,12 +38,18 @@
 
     return value
   }
+
+  const formatToStringOrDatetime = (str: string) => {
+    const newDate = new Date(str).toLocaleString()
+
+    return newDate === 'Invalid Date' ? str : newDate
+  }
 </script>
 
 {#if hasValue(data.value)}
   {#if data.variant === 'text' || data.variant === 'icon-text'}
     <RowItem {label} variant={data.variant}>
-      <div class="text-gray-300 text-base font-extralight leading-normal">{data.value}</div>
+      <div class="text-gray-300 text-base font-extralight leading-normal">{formatToStringOrDatetime(data.value)}</div>
     </RowItem>
   {:else if data.variant === 'external-link'}
     <RowItem {label} variant={data.variant}>

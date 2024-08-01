@@ -61,16 +61,9 @@
     }
   })
 
-  function formatDate(dateString: string) {
-    return new Date(dateString).toLocaleString()
-  }
-
   const { metadata, ...rest } = resource
 
   let activeTab: Tab = 'metadata'
-
-  console.log('metadata')
-  console.log(metadata)
 
   function setActiveTab(evt: Event) {
     const target = evt.target as HTMLButtonElement

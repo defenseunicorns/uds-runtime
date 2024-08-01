@@ -69,7 +69,7 @@
         if (results.ok) {
           const data = await results.json()
           resource = data.Object as KubernetesObject
-          console.log(resource)
+
           return
         } else {
           // Otherwise, throw an error
