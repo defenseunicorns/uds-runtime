@@ -139,7 +139,7 @@
       <div class="table-header">
         <span class="dark:text-white">{name}</span>
         {#if isFiltering}
-          <span class="dark:text-gray-500 pl-2">showing {$rows.length} of {$numResources}</span>
+          <span class="dark:text-gray-500 pl-2">(showing {$rows.length} of {$numResources})</span>
         {:else}
           <span class="dark:text-gray-500 pl-2">({$numResources})</span>
         {/if}
