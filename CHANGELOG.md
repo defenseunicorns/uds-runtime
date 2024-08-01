@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.0-alpha.3](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2024-08-01)
+
+
+### Features
+
+* **ui:** show results even if not filtering ([#131](https://github.com/defenseunicorns/uds-runtime/issues/131)) ([4603b65](https://github.com/defenseunicorns/uds-runtime/commit/4603b656b41e3a94883a4694a4a881f27512424b))
+
+
+### Bug Fixes
+
+* use docker buildx in github actions ([#133](https://github.com/defenseunicorns/uds-runtime/issues/133)) ([d52cb6c](https://github.com/defenseunicorns/uds-runtime/commit/d52cb6cebb3eaab211d0087726b7c3f2a4d18b4b))
+
 ## [0.1.0-alpha.2](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.1...v0.1.0-alpha.2) (2024-08-01)
 
 

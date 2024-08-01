@@ -7,9 +7,7 @@ on:
 
 jobs:
   tag-new-version:
-    permissions:
-      contents: write
-      pull-requests: write
+    permissions: write-all
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release-flag.outputs.release_created }}
@@ -25,8 +23,9 @@ jobs:
 
   release:
     permissions:
-      contents: read
+      contents: write
       packages: write
+      id-token: write
     needs: tag-new-version
     if: ${{ needs.tag-new-version.outputs.release_created == 'true'}}
     runs-on: ubuntu-latest
