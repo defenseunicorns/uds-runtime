@@ -139,9 +139,9 @@
       <div class="table-header">
         <span class="dark:text-white">{name}</span>
         {#if isFiltering}
-          <span class="dark:text-gray-500">&nbsp;&nbsp;showing {$rows.length} of {$numResources} results</span>
+          <span class="dark:text-gray-500 pl-2">&nbsp;showing {$rows.length} of {$numResources} results</span>
         {:else}
-          <span class="dark:text-gray-500">&nbsp;&nbsp;{$numResources} results</span>
+          <span class="dark:text-gray-500 pl-2">{$numResources} results</span>
         {/if}
         <div class="relative group">
           <Information class="ml-2 w-4 h-4 text-gray-400" />
