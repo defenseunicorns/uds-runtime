@@ -12,6 +12,7 @@
 
   import { goto } from '$app/navigation'
   import Rows from './Rows.svelte'
+  import RowItem from './RowItem.svelte'
 
   import './styles.postcss'
 
@@ -66,14 +67,10 @@
 
   const { metadata, ...rest } = resource
 
-  const details = [
-    { label: 'Created', value: formatDate(metadata?.creationTimestamp as unknown as string) },
-    { label: 'Name', value: metadata?.name },
-    { label: 'Namespace', value: metadata?.namespace },
-    { label: 'Controller', value: metadata?.ownerReferences?.[0]?.name },
-  ]
-
   let activeTab: Tab = 'metadata'
+
+  console.log('metadata')
+  console.log(metadata)
 
   function setActiveTab(evt: Event) {
     const target = evt.target as HTMLButtonElement
@@ -122,40 +119,13 @@
 
         <div class="p-6">
           <Rows data={metadata} />
+
+          <RowItem label="Controlled By" variant="text">
+            <div class="text-gray-300 text-base font-extralight leading-normal">
+              {metadata?.ownerReferences?.[0]?.name}
+            </div>
+          </RowItem>
         </div>
-
-        <!-- <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
-          <dl class="space-y-4">
-            {#each details as { label, value }}
-              <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
-                <dt class="font-bold text-sm sm:w-1/3">{label}</dt>
-                <dd class="text-gray-400 sm:w-2/3">{value || 'N/A'}</dd>
-              </div>
-            {/each}
-
-            <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
-              <dt class="font-bold text-sm sm:w-1/3">Labels</dt>
-              <dd class="sm:w-2/3">
-                <div class="flex flex-wrap gap-2">
-                  {#each Object.entries(metadata?.labels || {}) as [key, value]}
-                    <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
-                  {/each}
-                </div>
-              </dd>
-            </div>
-
-            <div class="flex flex-col sm:flex-row sm:justify-between">
-              <dt class="font-bold text-sm sm:w-1/3">Annotations</dt>
-              <dd class="sm:w-2/3">
-                <div class="flex flex-wrap gap-2">
-                  {#each Object.entries(metadata?.annotations || {}) as [key, value]}
-                    <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
-                  {/each}
-                </div>
-              </dd>
-            </div>
-          </dl>
-        </div> -->
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="bg-black text-gray-200 p-4 pb-20">

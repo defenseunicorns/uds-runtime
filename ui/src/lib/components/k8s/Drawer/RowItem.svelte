@@ -17,7 +17,7 @@
       <Db2Database color="white" />
     {/if}
     <div class="text-white text-base font-semibold leading-normal">
-      {fieldNameMap.get(label)}
+      {fieldNameMap.get(label) || label}
     </div>
   </div>
 
