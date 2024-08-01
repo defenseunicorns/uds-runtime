@@ -19,11 +19,11 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     keys: Object.keys(r.data ?? {}).join(', '),
   }))
 
-  const store = new ResourceStore<Resource, Row>('name', true)
+  const store = new ResourceStore<Resource, Row>(url, transform, 'name', true)
 
   return {
     ...store,
-    start: () => store.start(url, transform),
+    start: store.start.bind(store),
     sortByKey: store.sortByKey.bind(store),
   }
 }
