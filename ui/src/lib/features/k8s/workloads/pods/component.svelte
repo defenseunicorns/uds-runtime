@@ -8,7 +8,7 @@
   export let columns: Columns = [
     ['name', 'emphasize'],
     ['namespace'],
-    ['controller'],
+    ['controlled_by'],
     ['containers'],
     ['status'],
     ['restarts'],

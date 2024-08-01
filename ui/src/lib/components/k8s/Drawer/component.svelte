@@ -59,7 +59,7 @@
     { label: 'Created', value: formatDate(resource.metadata?.creationTimestamp as unknown as string) },
     { label: 'Name', value: resource.metadata?.name },
     { label: 'Namespace', value: resource.metadata?.namespace },
-    { label: 'Controller', value: resource.metadata?.ownerReferences?.[0]?.name },
+    { label: 'Controlled By', value: resource.metadata?.ownerReferences?.[0]?.name },
   ]
 
   let activeTab: Tab = 'metadata'

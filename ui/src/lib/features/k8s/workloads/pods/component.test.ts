@@ -17,7 +17,7 @@ suite('PodTable Component', () => {
     columns: [
       ['name', 'emphasize'],
       ['namespace'],
-      ['controller'],
+      ['controlled_by'],
       ['containers'],
       ['status'],
       ['restarts'],
