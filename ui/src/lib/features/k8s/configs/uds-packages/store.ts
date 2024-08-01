@@ -5,10 +5,11 @@ import type { Package as Resource } from 'uds-core-types/src/pepr/operator/crd/g
 
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import EndpointLinks from './links/component.svelte'
 
 interface Row extends CommonRow {
   monitors: string
-  endpoints: string
+  endpoints: { component: typeof EndpointLinks; props: { endpoints: string[] } }
   ssoClients: string
   networkPolicies: number
   status: string
@@ -22,7 +23,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
 
   const transform = transformResource<Resource, Row>((r) => ({
     monitors: r.status?.monitors?.join(', ') ?? '',
-    endpoints: r.status?.endpoints?.join(', ') ?? '',
+    endpoints: { component: EndpointLinks, props: { endpoints: r.status?.endpoints || [] } },
     ssoClients: r.status?.ssoClients?.join(', ') ?? '',
     networkPolicies: r.status?.networkPolicyCount ?? 0,
     status: r.status?.phase ?? '',
