@@ -34,15 +34,15 @@ func CreateZarfStateHandler(cache *resources.Cache) func() []unstructured.Unstru
 			}
 		}
 
-		// decode secret to get Zarf state data
-		componentStatuses := make(map[string]string)
+		// get Zarf state data from package secret and track deployed component statuses
 		var result []unstructured.Unstructured
 		for _, secret := range zarfPkgSecrets {
+			componentStatuses := make(map[string]string)
 			for _, val := range secret.Data {
 				var deployedPkg zarfTypes.DeployedPackage
 				err := json.Unmarshal(val, &deployedPkg)
 				if err != nil {
-					message.Warnf("failed to unmarshal secret data for %s: %v", secret.GetName(), err)
+					message.Warnf("failed to unmarshal secret data for %s: %v", secret.Name, err)
 					continue
 				}
 				deployedComponents := deployedPkg.DeployedComponents
@@ -54,12 +54,8 @@ func CreateZarfStateHandler(cache *resources.Cache) func() []unstructured.Unstru
 
 				unstructuredSecret := &unstructured.Unstructured{
 					Object: map[string]interface{}{
-						"apiVersion": "v1",
-						"kind":       "ZarfPackageState",
-						"metadata": map[string]interface{}{
-							"name":      secret.Name,
-							"namespace": secret.Namespace,
-						},
+						"name":       secret.Name,
+						"namespace":  secret.Namespace,
 						"components": componentStatuses,
 					},
 				}
