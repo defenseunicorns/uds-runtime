@@ -5,6 +5,7 @@
   import { Db2Database } from 'carbon-icons-svelte'
 
   import { type VariantType } from './Row.svelte'
+  import { fieldNameMap } from './Rows.svelte'
 
   export let label: string
   export let variant: VariantType
@@ -15,7 +16,9 @@
     {#if variant === 'icon-text'}
       <Db2Database color="white" />
     {/if}
-    <div class="text-white text-base font-semibold leading-normal">{label}</div>
+    <div class="text-white text-base font-semibold leading-normal">
+      {fieldNameMap.get(label)}
+    </div>
   </div>
 
   <div class="flex w-3/4">
