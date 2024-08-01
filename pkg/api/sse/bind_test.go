@@ -25,8 +25,8 @@ func TestBind(t *testing.T) {
 	}
 	resourceList.Resources["1"] = test.CreateMockPod("mock-pod-1", "uds-dev-stack", "1")
 	resourceList.Resources["2"] = test.CreateMockPod("mock-pod-2", "uds-dev-stack", "2")
-	resourceList.SparseResources["1"] = test.CreateMockPod("mock-pod-1", "uds-dev-stack", "1")
-	resourceList.SparseResources["2"] = test.CreateMockPod("mock-pod-2", "uds-dev-stack", "2")
+	resourceList.SparseResources["1"] = test.CreateMockPod("mock-pod-1-sparse", "uds-dev-stack", "1")
+	resourceList.SparseResources["2"] = test.CreateMockPod("mock-pod-2-sparse", "uds-dev-stack", "2")
 
 	// Create a new router
 	r := chi.NewRouter()
@@ -56,8 +56,8 @@ func TestBind(t *testing.T) {
 			url:            "/resources/workloads/pods?once=true",
 			expectedStatus: http.StatusOK,
 			expectedResponse: []string{
-				`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-1","namespace":"uds-dev-stack","uid":"1"}}`,
-				`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-2","namespace":"uds-dev-stack","uid":"2"}}`,
+				`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-1-sparse","namespace":"uds-dev-stack","uid":"1"}}`,
+				`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-2-sparse","namespace":"uds-dev-stack","uid":"2"}}`,
 			},
 		},
 		{
