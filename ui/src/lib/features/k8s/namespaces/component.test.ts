@@ -23,7 +23,7 @@ suite('NamespaceTable Component', () => {
   })
 
   const resourceName = 'Namespaces'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -33,8 +33,8 @@ suite('NamespaceTable Component', () => {
     createStore: expect.any(Function),
     columns: [['name', 'emphasize'], ['status'], ['age']],
     isNamespaced: false,
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore: expect.any(Function), isNamespaced: false, resource })
+  testK8sTableWithCustomColumns(Component, { createStore: expect.any(Function), isNamespaced: false, nameAndDesc })
 })

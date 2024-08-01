@@ -15,7 +15,7 @@ suite('PriorityClassesTable Component', () => {
   })
 
   const resourceName = 'PodDisruptionBudgets'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -31,8 +31,8 @@ suite('PriorityClassesTable Component', () => {
       ['desired_healthy'],
       ['age'],
     ],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

@@ -15,7 +15,7 @@ suite('ServiceTable Component', () => {
   })
 
   const resourceName = 'Services'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -32,8 +32,8 @@ suite('ServiceTable Component', () => {
       ['age'],
       ['status'],
     ],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

@@ -14,10 +14,10 @@
     ['age'],
   ]
   const resourceName = 'ConfigMaps'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
 </script>
 
-<DataTable {columns} {createStore} {resource} />
+<DataTable {columns} {createStore} {nameAndDesc} />

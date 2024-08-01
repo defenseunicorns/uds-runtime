@@ -9,10 +9,10 @@
 
   export let columns: Columns = [['name', 'emphasize'], ['webhooks'], ['age']]
   const resourceName = 'ValidatingWebhookConfigurations'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
 </script>
 
-<DataTable {columns} {createStore} {resource} />
+<DataTable {columns} {createStore} {nameAndDesc} />

@@ -15,7 +15,7 @@ suite('VirtualServiceTable Component', () => {
   })
 
   const resourceName = 'VirtualServices'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -23,8 +23,8 @@ suite('VirtualServiceTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['name', 'emphasize'], ['namespace'], ['gateways'], ['hosts'], ['age']],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

@@ -9,10 +9,10 @@
 
   export let columns: Columns = [['name', 'emphasize'], ['provisioner'], ['reclaim_policy'], ['default'], ['age']]
   const resourceName = 'StorageClasses'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
 </script>
 
-<DataTable {columns} {createStore} {resource} />
+<DataTable {columns} {createStore} {nameAndDesc} />

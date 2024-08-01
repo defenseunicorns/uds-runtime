@@ -15,7 +15,7 @@ suite('PersistentVolume Component', () => {
   })
 
   const resourceName = 'PersistentVolumes'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -23,8 +23,8 @@ suite('PersistentVolume Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['name', 'emphasize'], ['storage_class'], ['capacity'], ['claim'], ['age'], ['status']],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

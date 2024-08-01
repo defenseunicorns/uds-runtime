@@ -11,7 +11,7 @@
   import { page } from '$app/stores'
   import { Drawer } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
-  import { type ResourceStoreInterface } from '$features/k8s/types'
+  import { type NameAndDesc, type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
 
   // Determine if the data is namespaced
@@ -23,11 +23,8 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
-  export let resource: NameAndDesc = { name: '', desc: 'No description available' }
-  let { name, desc } = resource
-
-  // Load the namespaces from the page store
-  const namespaces = $page.data.namespaces as ResourceStoreInterface<KubernetesObject, NamespaceRow>
+  export let nameAndDesc: NameAndDesc = { name: '', desc: 'No description available' }
+  let { name, desc } = nameAndDesc
 
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
@@ -71,6 +68,7 @@
         if (results.ok) {
           const data = await results.json()
           resource = data.Object as KubernetesObject
+          console.log(resource)
           return
         } else {
           // Otherwise, throw an error

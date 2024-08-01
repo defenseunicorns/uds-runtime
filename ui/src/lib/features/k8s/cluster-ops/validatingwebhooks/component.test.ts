@@ -15,7 +15,7 @@ suite('EventTable Component', () => {
   })
 
   const resourceName = 'ValidatingWebhookConfigurations'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -23,8 +23,8 @@ suite('EventTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['name', 'emphasize'], ['webhooks'], ['age']],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

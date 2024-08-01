@@ -15,7 +15,7 @@ suite('PriorityClassesTable Component', () => {
   })
 
   const resourceName = 'HorizontalPodAutoscalers'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -32,8 +32,8 @@ suite('PriorityClassesTable Component', () => {
       ['age'],
       ['status'],
     ],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

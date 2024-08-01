@@ -15,7 +15,7 @@ suite('NetworkPolicyTable Component', () => {
   })
 
   const resourceName = 'NetworkPolicies'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -31,8 +31,8 @@ suite('NetworkPolicyTable Component', () => {
       ['egress_block'],
       ['age'],
     ],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

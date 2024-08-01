@@ -15,7 +15,7 @@ suite('EventTable Component', () => {
   })
 
   const resourceName = 'Events'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -23,8 +23,8 @@ suite('EventTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['namespace'], ['age'], ['type'], ['reason'], ['object_kind'], ['object_name'], ['count']],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

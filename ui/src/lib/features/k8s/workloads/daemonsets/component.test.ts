@@ -15,7 +15,7 @@ suite('DaemonsetTable Component', () => {
   })
 
   const resourceName = 'DaemonSets'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -33,8 +33,8 @@ suite('DaemonsetTable Component', () => {
       ['node_selector'],
       ['age'],
     ],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

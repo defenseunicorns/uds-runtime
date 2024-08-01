@@ -12,8 +12,8 @@ export function testK8sTableWithDefaults(Component: ComponentType, props: Record
     render(Component)
 
     // Ensure tooltip desc isn't empty
-    const resource: NameAndDesc = props.resource as NameAndDesc
-    expect(resource.desc).toBeTruthy()
+    const nameAndDesc: NameAndDesc = props.nameAndDesc as NameAndDesc
+    expect(nameAndDesc.desc).toBeTruthy()
 
     // Check if DataTable was called
     expect(DataTable).toHaveBeenCalled()

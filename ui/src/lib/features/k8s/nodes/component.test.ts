@@ -15,7 +15,7 @@ suite('NodeTable Component', () => {
   })
 
   const resourceName = 'Nodes'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -24,8 +24,8 @@ suite('NodeTable Component', () => {
     createStore,
     columns: [['name', 'emphasize'], ['status'], ['roles'], ['taints'], ['version'], ['age']],
     isNamespaced: false,
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, isNamespaced: false, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, isNamespaced: false, nameAndDesc })
 })

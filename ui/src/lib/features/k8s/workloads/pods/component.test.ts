@@ -15,7 +15,7 @@ suite('PodTable Component', () => {
   })
 
   const name = 'Pods'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: name,
     desc: resourceDescriptions[name],
   }
@@ -33,8 +33,8 @@ suite('PodTable Component', () => {
       ['node'],
       ['age'],
     ],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

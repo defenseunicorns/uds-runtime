@@ -15,7 +15,7 @@ suite('StatefulsetTable Component', () => {
   })
 
   const resourceName = 'Packages'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
@@ -32,8 +32,8 @@ suite('StatefulsetTable Component', () => {
       ['networkPolicies'],
       ['age'],
     ],
-    resource,
+    nameAndDesc,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, resource })
+  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
 })

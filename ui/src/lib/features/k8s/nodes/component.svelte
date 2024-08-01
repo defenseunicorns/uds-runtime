@@ -9,10 +9,10 @@
 
   export let columns: Columns = [['name', 'emphasize'], ['status'], ['roles'], ['taints'], ['version'], ['age']]
   const resourceName = 'Nodes'
-  const resource: NameAndDesc = {
+  const nameAndDesc: NameAndDesc = {
     name: resourceName,
     desc: resourceDescriptions[resourceName],
   }
 </script>
 
-<DataTable {columns} {createStore} isNamespaced={false} {resource} />
+<DataTable {columns} {createStore} isNamespaced={false} {nameAndDesc} />
