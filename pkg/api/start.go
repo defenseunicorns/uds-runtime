@@ -98,6 +98,8 @@ func Start(assets embed.FS) error {
 
 				r.Get("/secrets", getSecrets(cache))
 				r.Get("/secrets/{uid}", getSecret(cache))
+
+				r.Get("/zarf-packages", getZarfPackages(cache))
 			})
 
 			// Cluster ops resources

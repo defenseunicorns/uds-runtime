@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/defenseunicorns/uds-runtime/pkg/api/customhandlers"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/sse"
@@ -328,6 +329,17 @@ func getSecrets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Param dense query bool false "Send the data in dense format"
 func getSecret(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Secrets)
+}
+
+// @Description Get ZarfPackages
+// @Tags configs
+// @Accept  html
+// @Produce text/event-stream,json
+// @Success 200
+// @Router /resources/configs/zarf-packages [get]
+func getZarfPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
+	zarfPackageHandler := customhandlers.CreateZarfStateHandler(cache)
+	return sse.Bind(cache.Secrets, sse.WithCustomDataHandler(zarfPackageHandler))
 }
 
 // @Description Get MutatingWebhooks
