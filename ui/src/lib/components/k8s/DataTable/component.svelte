@@ -25,7 +25,7 @@
 
   // name and descripton of K8s resource
   export let name = ''
-  export let desc = 'No description available'
+  export let description = 'No description available'
 
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
@@ -144,7 +144,7 @@
         <div class="relative group">
           <Information class="ml-2 w-4 h-4 text-gray-400" />
           <div class="tooltip tooltip-right min-w-72">
-            <div class="whitespace-normal">{desc}</div>
+            <div class="whitespace-normal">{description}</div>
           </div>
         </div>
       </div>

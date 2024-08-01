@@ -4,7 +4,6 @@
 <script lang="ts">
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
-  import type { NameAndDesc } from '$features/k8s/types'
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
   export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['gateways'], ['hosts'], ['age']]

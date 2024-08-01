@@ -5,7 +5,6 @@
   import { DataTable } from '$components'
   import { createStore, type Columns } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
-  import type { NameAndDesc } from '$features/k8s/types'
 
   export let columns: Columns = [
     ['name', 'emphasize'],

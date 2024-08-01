@@ -6,7 +6,7 @@
 
   import { page } from '$app/stores'
   import { DataTable } from '$components'
-  import type { NameAndDesc, ResourceStoreInterface } from '$features/k8s/types'
+  import type { ResourceStoreInterface } from '$features/k8s/types'
   import { type Columns, type Row } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
