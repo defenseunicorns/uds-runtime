@@ -13,11 +13,8 @@
     ['keys', 'line-clamp-3 max-w-screen-md'],
     ['age'],
   ]
-  const resourceName = 'ConfigMaps'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'ConfigMaps'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

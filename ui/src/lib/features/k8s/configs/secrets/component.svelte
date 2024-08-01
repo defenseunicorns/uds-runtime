@@ -15,11 +15,8 @@
     ['age'],
   ]
 
-  const resourceName = 'Secrets'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'Secrets'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

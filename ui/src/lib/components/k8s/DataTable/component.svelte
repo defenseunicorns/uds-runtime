@@ -11,7 +11,7 @@
   import { page } from '$app/stores'
   import { Drawer } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
-  import { type NameAndDesc, type ResourceStoreInterface } from '$features/k8s/types'
+  import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
 
   // Determine if the data is namespaced
@@ -23,8 +23,9 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
-  export let nameAndDesc: NameAndDesc = { name: '', desc: 'No description available' }
-  let { name, desc } = nameAndDesc
+  // name and descripton of K8s resource
+  export let name = ''
+  export let desc = 'No description available'
 
   const rows = createStore()
   const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
@@ -32,7 +33,7 @@
   // check for filtering
   let isFiltering = false
   $: {
-    isFiltering = !!($search || $searchBy != 'Anywhere' || $namespace)
+    isFiltering = !!($search || $namespace)
   }
 
   let resource: KubernetesObject | null = null

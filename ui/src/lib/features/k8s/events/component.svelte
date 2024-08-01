@@ -17,11 +17,8 @@
     ['count'],
   ]
 
-  const resourceName = 'Events'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'Events'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

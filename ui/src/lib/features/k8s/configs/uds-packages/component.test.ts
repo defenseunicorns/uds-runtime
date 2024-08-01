@@ -4,7 +4,6 @@
 import { beforeEach, vi } from 'vitest'
 
 import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
-import type { NameAndDesc } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -14,11 +13,8 @@ suite('StatefulsetTable Component', () => {
     vi.clearAllMocks()
   })
 
-  const resourceName = 'Packages'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'Packages'
+  const description = resourceDescriptions[name]
 
   testK8sTableWithDefaults(Component, {
     createStore,
@@ -32,8 +28,9 @@ suite('StatefulsetTable Component', () => {
       ['networkPolicies'],
       ['age'],
     ],
-    nameAndDesc,
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 })

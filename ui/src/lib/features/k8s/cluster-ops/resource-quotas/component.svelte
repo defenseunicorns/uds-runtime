@@ -8,11 +8,8 @@
   import type { NameAndDesc } from '$features/k8s/types'
 
   export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['age']]
-  const resourceName = 'ResourceQuotas'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'ResourceQuotas'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

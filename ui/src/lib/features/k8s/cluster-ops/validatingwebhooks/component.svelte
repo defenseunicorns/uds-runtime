@@ -8,11 +8,8 @@
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
   export let columns: Columns = [['name', 'emphasize'], ['webhooks'], ['age']]
-  const resourceName = 'ValidatingWebhookConfigurations'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'ValidatingWebhookConfigurations'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

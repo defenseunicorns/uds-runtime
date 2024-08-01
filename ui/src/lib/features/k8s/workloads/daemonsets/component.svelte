@@ -18,11 +18,8 @@
     ['node_selector'],
     ['age'],
   ]
-  const resourceName = 'DaemonSets'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'DaemonSets'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

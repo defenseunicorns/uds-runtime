@@ -4,7 +4,6 @@
 import '@testing-library/jest-dom'
 
 import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '$features/k8s/test-helper'
-import type { NameAndDesc } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -14,11 +13,8 @@ suite('PriorityClassesTable Component', () => {
     vi.clearAllMocks()
   })
 
-  const resourceName = 'HorizontalPodAutoscalers'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'HorizontalPodAutoscalers'
+  const description = resourceDescriptions[name]
 
   testK8sTableWithDefaults(Component, {
     createStore,
@@ -32,8 +28,9 @@ suite('PriorityClassesTable Component', () => {
       ['age'],
       ['status'],
     ],
-    nameAndDesc,
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 })

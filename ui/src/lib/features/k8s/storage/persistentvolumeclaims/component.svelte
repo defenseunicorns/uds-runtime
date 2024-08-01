@@ -15,11 +15,8 @@
     ['age'],
     ['status'],
   ]
-  const resourceName = 'PersistentVolumeClaims'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'PersistentVolumeClaims'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

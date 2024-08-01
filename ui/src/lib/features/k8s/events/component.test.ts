@@ -3,7 +3,6 @@
 
 import '@testing-library/jest-dom'
 
-import type { NameAndDesc } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '../test-helper'
 import Component from './component.svelte'
@@ -14,17 +13,15 @@ suite('EventTable Component', () => {
     vi.clearAllMocks()
   })
 
-  const resourceName = 'Events'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'Events'
+  const description = resourceDescriptions[name]
 
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [['namespace'], ['age'], ['type'], ['reason'], ['object_kind'], ['object_name'], ['count']],
-    nameAndDesc,
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, nameAndDesc })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description })
 })

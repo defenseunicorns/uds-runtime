@@ -4,7 +4,6 @@
 import '@testing-library/jest-dom'
 import { writable } from 'svelte/store'
 
-import type { NameAndDesc } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import { testK8sTableWithCustomColumns, testK8sTableWithDefaults } from '../test-helper'
 import Component from './component.svelte'
@@ -22,19 +21,22 @@ suite('NamespaceTable Component', () => {
     vi.clearAllMocks()
   })
 
-  const resourceName = 'Namespaces'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'Namespaces'
+  const description = resourceDescriptions[name]
 
   // Use expect.any(Function), because createStore is wrapped
   testK8sTableWithDefaults(Component, {
     createStore: expect.any(Function),
     columns: [['name', 'emphasize'], ['status'], ['age']],
     isNamespaced: false,
-    nameAndDesc,
+    name,
+    description,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore: expect.any(Function), isNamespaced: false, nameAndDesc })
+  testK8sTableWithCustomColumns(Component, {
+    createStore: expect.any(Function),
+    isNamespaced: false,
+    name,
+    description,
+  })
 })

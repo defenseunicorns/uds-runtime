@@ -8,11 +8,8 @@
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
   export let columns: Columns = [['name', 'emphasize'], ['provisioner'], ['reclaim_policy'], ['default'], ['age']]
-  const resourceName = 'StorageClasses'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'StorageClasses'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

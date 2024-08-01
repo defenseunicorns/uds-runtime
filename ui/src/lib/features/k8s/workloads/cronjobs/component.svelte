@@ -15,11 +15,8 @@
     ['last_scheduled'],
     ['age'],
   ]
-  const resourceName = 'CronJobs'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'CronJobs'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

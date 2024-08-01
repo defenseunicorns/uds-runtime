@@ -16,11 +16,8 @@
     ['desired_healthy'],
     ['age'],
   ]
-  const resourceName = 'PodDisruptionBudgets'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'PodDisruptionBudgets'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

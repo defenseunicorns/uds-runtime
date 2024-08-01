@@ -18,11 +18,8 @@
     ['status'],
   ]
 
-  const resourceName = 'HorizontalPodAutoscalers'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'HorizontalPodAutoscalers'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />

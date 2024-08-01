@@ -18,13 +18,10 @@
     return namespaces
   }
 
-  const resourceName = 'Namespaces'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'Namespaces'
+  const description = resourceDescriptions[name]
 </script>
 
 {#if $namespaces}
-  <DataTable {columns} {createStore} isNamespaced={false} {nameAndDesc} />
+  <DataTable {columns} {createStore} isNamespaced={false} {name} {description} />
 {/if}

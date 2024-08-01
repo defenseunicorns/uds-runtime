@@ -48,8 +48,3 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
   // The url for the EventSource
   url: string
 }
-
-export interface NameAndDesc {
-  name: string
-  desc: string
-}

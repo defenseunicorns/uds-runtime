@@ -16,11 +16,8 @@
     ['egress_block'],
     ['age'],
   ]
-  const resourceName = 'NetworkPolicies'
-  const nameAndDesc: NameAndDesc = {
-    name: resourceName,
-    desc: resourceDescriptions[resourceName],
-  }
+  const name = 'NetworkPolicies'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {nameAndDesc} />
+<DataTable {columns} {createStore} {name} {description} />
