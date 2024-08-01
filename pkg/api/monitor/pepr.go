@@ -18,6 +18,13 @@ import (
 	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
+// @Description Get Pepr data
+// @Tags monitor
+// @Accept  html
+// @Produce  text/event-stream
+// @Success 200
+// @Router /monitor/pepr/{stream} [get]
+// @Param stream path string false "stream type to filter on, all streams by default" Enums(AnyStream, PolicyStream, OperatorStream, AllowStream, DenyStream, MutateStream, FailureStream)
 func Pepr(w http.ResponseWriter, r *http.Request) {
 	streamFilter := chi.URLParam(r, "stream")
 
