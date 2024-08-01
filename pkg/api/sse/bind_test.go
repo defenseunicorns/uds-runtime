@@ -52,16 +52,22 @@ func TestBind(t *testing.T) {
 			expectedResponse: []string{"Resource not found\n"},
 		},
 		{
-			name:             "Get all resources (sparse)",
-			url:              "/resources/workloads/pods?once=true",
-			expectedStatus:   http.StatusOK,
-			expectedResponse: []string{`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-1","namespace":"uds-dev-stack","uid":"1"}}`, `{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-2","namespace":"uds-dev-stack","uid":"2"}}`},
+			name:           "Get all resources (sparse)",
+			url:            "/resources/workloads/pods?once=true",
+			expectedStatus: http.StatusOK,
+			expectedResponse: []string{
+				`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-1","namespace":"uds-dev-stack","uid":"1"}}`,
+				`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-2","namespace":"uds-dev-stack","uid":"2"}}`,
+			},
 		},
 		{
-			name:             "Get all resources (dense)",
-			url:              "/resources/workloads/pods?once=true&dense=true",
-			expectedStatus:   http.StatusOK,
-			expectedResponse: []string{`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-1","namespace":"uds-dev-stack","uid":"1"}}`, `{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-2","namespace":"uds-dev-stack","uid":"2"}}]`},
+			name:           "Get all resources (dense)",
+			url:            "/resources/workloads/pods?once=true&dense=true",
+			expectedStatus: http.StatusOK,
+			expectedResponse: []string{
+				`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-1","namespace":"uds-dev-stack","uid":"1"}}`,
+				`{"apiVersion":"v1","kind":"Pod","metadata":{"name":"mock-pod-2","namespace":"uds-dev-stack","uid":"2"}}`,
+			},
 		},
 	}
 
