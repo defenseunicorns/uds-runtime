@@ -107,7 +107,11 @@
 
             tbody {
               tr {
-                @apply border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700;
+                @apply border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700 hover:cursor-pointer;
+
+                &.active {
+                  @apply border-solid border-4 bg-gray-100 dark:bg-gray-700/50;
+                }
 
                 td {
                   @apply px-4 py-2;

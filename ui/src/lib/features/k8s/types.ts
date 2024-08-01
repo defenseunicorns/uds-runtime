@@ -45,6 +45,8 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
   namespace: Writable<string>
   // Store for number of resources
   numResources: Writable<number>
+  // The url for the EventSource
+  url: string
 }
 
 export interface NameAndDesc {
