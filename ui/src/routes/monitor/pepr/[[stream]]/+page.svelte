@@ -10,6 +10,7 @@
   import { page } from '$app/stores'
   import { type PeprEvent } from '$lib/types'
   import './page.postcss'
+  import { getDetails } from './helpers'
 
   let loaded = false
   let streamFilter = ''
@@ -45,9 +46,9 @@
     eventSource.onmessage = (e) => {
       try {
         const payload: PeprEvent = JSON.parse(e.data)
-
         // The event type is the first word in the header
         payload.event = payload.header.split(' ')[0]
+        payload.details = getDetails(payload)
 
         // If this is a repeated event, update the count
         if (payload.repeated) {
@@ -141,6 +142,7 @@
             <tr>
               <th>Event</th>
               <th>Resource</th>
+              <th>Details</th>
               <th>Count</th>
               <th>Timestamp</th>
             </tr>
@@ -158,6 +160,13 @@
                       <span class="pepr-event {item.event}">{item.event}</span>
                     </td>
                     <td>{item._name}</td>
+                    <td class="flex flex-row items-center">
+                      {#if item.details}
+                        <svelte:component this={item.details.component} details={item.details} />
+                      {:else}
+                        -
+                      {/if}
+                    </td>
                     <td>{item.count || 1}</td>
                     <td>{item.ts}</td>
                   </tr>

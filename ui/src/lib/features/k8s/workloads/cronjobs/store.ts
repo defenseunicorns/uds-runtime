@@ -26,11 +26,11 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     last_scheduled: r.status?.lastScheduleTime ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>('name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
 
   return {
     ...store,
-    start: () => store.start(url, transform),
+    start: store.start.bind(store),
     sortByKey: store.sortByKey.bind(store),
   }
 }
