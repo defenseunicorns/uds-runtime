@@ -9,7 +9,7 @@
 
 <div class="whitespace-nowrap relative group py-4 flex">
   <span class="text-blue-400">Details</span>
-  <div class="tooltip tooltip-right">
+  <div class="tooltip tooltip-left">
     {#each Object.entries(details.operations || {}) as [key, ops], index}
       {#if index > 0}
         <br />
