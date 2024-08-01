@@ -38,6 +38,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
   public sortBy: Writable<keyof U>
   public sortAsc: Writable<boolean>
   public namespace: Writable<string>
+  public numResources: Writable<number>
   public additionalStores: Writable<unknown>[] = []
 
   // The list of search types
@@ -63,6 +64,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
     this.sortBy = writable<keyof U>(sortBy)
     this.sortAsc = writable<boolean>(sortAsc)
     this.namespace = writable<string>('')
+    this.numResources = writable<number>(0)
 
     // Create a derived store that combines all the filtering and sorting logic
     const filteredAndSortedResources = derived(
@@ -73,11 +75,13 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
         this.searchBy,
         this.sortBy,
         this.sortAsc,
+        this.numResources,
         this.#ageTimerStore,
         ...this.additionalStores,
       ],
       ([$resources, $namespace, $search, $searchBy, $sortBy, $sortAsc]) => {
         let filtered = $resources
+        this.numResources.set($resources.length)
 
         // If there is a namespace, filter the resources
         if ($namespace) {
