@@ -4,7 +4,11 @@
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { Close } from 'carbon-icons-svelte'
+  import DOMPurify from 'dompurify'
+  import hljs from 'highlight.js/lib/core'
+  import yaml from 'highlight.js/lib/languages/yaml'
   import { onMount } from 'svelte'
+  import * as YAML from 'yaml'
 
   import { goto } from '$app/navigation'
   import './styles.postcss'
@@ -15,6 +19,9 @@
   type Tab = 'metadata' | 'yaml' | 'events'
 
   onMount(() => {
+    // initialize highlight language
+    hljs.registerLanguage('yaml', yaml)
+
     const handleKeydown = (e: KeyboardEvent) => {
       const tabList: Tab[] = ['metadata', 'yaml', 'events']
       let targetTab: string | undefined
@@ -59,8 +66,11 @@
     { label: 'Created', value: formatDate(resource.metadata?.creationTimestamp as unknown as string) },
     { label: 'Name', value: resource.metadata?.name },
     { label: 'Namespace', value: resource.metadata?.namespace },
-    { label: 'Controlled By', value: resource.metadata?.ownerReferences?.[0]?.name },
   ]
+
+  if (resource.metadata?.ownerReferences?.length || 0 > 0) {
+    details.push({ label: 'Controlled By', value: resource.metadata?.ownerReferences?.[0]?.name })
+  }
 
   let activeTab: Tab = 'metadata'
 
@@ -71,7 +81,7 @@
 </script>
 
 <div
-  class="fixed top-16 right-0 z-40 h-screen overflow-y-auto transition-transform w-1/2 dark:bg-gray-800 shadow-2xl shadow-black/80 transform transition-transform duration-300 ease-in-out"
+  class="fixed top-16 right-0 z-40 h-screen overflow-y-auto w-1/2 dark:bg-gray-800 shadow-2xl shadow-black/80 transform transition-transform duration-300 ease-in-out"
 >
   <div class="flex flex-col h-full">
     <!-- Dark header -->
@@ -117,32 +127,41 @@
               </div>
             {/each}
 
-            <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
-              <dt class="font-bold text-sm sm:w-1/3">Labels</dt>
-              <dd class="sm:w-2/3">
-                <div class="flex flex-wrap gap-2">
-                  {#each Object.entries(resource.metadata?.labels || {}) as [key, value]}
-                    <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
-                  {/each}
-                </div>
-              </dd>
-            </div>
+            {#if resource.metadata?.labels}
+              <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
+                <dt class="font-bold text-sm sm:w-1/3">Labels</dt>
+                <dd class="sm:w-2/3">
+                  <div class="flex flex-wrap gap-2">
+                    {#each Object.entries(resource.metadata?.labels || {}) as [key, value]}
+                      <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
+                    {/each}
+                  </div>
+                </dd>
+              </div>
+            {/if}
 
-            <div class="flex flex-col sm:flex-row sm:justify-between">
-              <dt class="font-bold text-sm sm:w-1/3">Annotations</dt>
-              <dd class="sm:w-2/3">
-                <div class="flex flex-wrap gap-2">
-                  {#each Object.entries(resource.metadata?.annotations || {}) as [key, value]}
-                    <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
-                  {/each}
-                </div>
-              </dd>
-            </div>
+            {#if resource.metadata?.annotations}
+              <div class="flex flex-col sm:flex-row sm:justify-between">
+                <dt class="font-bold text-sm sm:w-1/3">Annotations</dt>
+                <dd class="sm:w-2/3">
+                  <div class="flex flex-wrap gap-2">
+                    {#each Object.entries(resource.metadata?.annotations || {}) as [key, value]}
+                      <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
+                    {/each}
+                  </div>
+                </dd>
+              </div>
+            {/if}
           </dl>
         </div>
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
-        <pre class="bg-gray-800 p-6 rounded-lg shadow-lg">{JSON.stringify(resource, null, 2)}</pre>
+        <div class="bg-black text-gray-200 p-4 pb-20">
+          <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre">
+            <!-- We turned off svelte/no-at-html-tags eslint rule because we are using DOMPurify to sanitize -->
+            {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(resource), { language: 'yaml' }).value)}
+          </code>
+        </div>
       {:else if activeTab === 'events'}
         <!-- Events tab -->
         <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
