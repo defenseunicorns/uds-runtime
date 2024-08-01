@@ -20,8 +20,8 @@ const (
 // ResourceList is a thread-safe struct to store the list of resources and notify subscribers of changes.
 type ResourceList struct {
 	mutex           sync.RWMutex
-	resources       map[string]*unstructured.Unstructured
-	sparseResources map[string]*unstructured.Unstructured
+	Resources       map[string]*unstructured.Unstructured
+	SparseResources map[string]*unstructured.Unstructured
 	HasSynced       cache.InformerSynced
 	Changes         chan struct{}
 	gvk             schema.GroupVersionKind
@@ -30,8 +30,8 @@ type ResourceList struct {
 // NewResourceList initializes a ResourceList and sets up event handlers for resource changes.
 func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersionKind) *ResourceList {
 	r := &ResourceList{
-		resources:       make(map[string]*unstructured.Unstructured),
-		sparseResources: make(map[string]*unstructured.Unstructured),
+		Resources:       make(map[string]*unstructured.Unstructured),
+		SparseResources: make(map[string]*unstructured.Unstructured),
 		Changes:         make(chan struct{}, 1),
 		HasSynced:       informer.HasSynced,
 		gvk:             gvk,
@@ -59,7 +59,7 @@ func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersion
 func (r *ResourceList) GetResource(uid string) (unstructured.Unstructured, bool) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
-	resource, found := r.resources[uid]
+	resource, found := r.Resources[uid]
 	if !found {
 		return unstructured.Unstructured{}, false
 	}
@@ -72,8 +72,8 @@ func (r *ResourceList) GetResources() []unstructured.Unstructured {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	resources := make([]unstructured.Unstructured, 0, len(r.resources))
-	for _, resource := range r.resources {
+	resources := make([]unstructured.Unstructured, 0, len(r.Resources))
+	for _, resource := range r.Resources {
 		resources = append(resources, *resource)
 	}
 
@@ -85,8 +85,8 @@ func (r *ResourceList) GetSparseResources() []unstructured.Unstructured {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	resources := make([]unstructured.Unstructured, 0, len(r.sparseResources))
-	for _, resource := range r.sparseResources {
+	resources := make([]unstructured.Unstructured, 0, len(r.SparseResources))
+	for _, resource := range r.SparseResources {
 		resources = append(resources, *resource)
 	}
 
@@ -120,11 +120,11 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 	// Update the resource list based on the event type
 	switch eventType {
 	case Added, Modified:
-		r.resources[uid] = resource
-		r.sparseResources[uid] = sparseResource
+		r.Resources[uid] = resource
+		r.SparseResources[uid] = sparseResource
 	case Deleted:
-		delete(r.resources, uid)
-		delete(r.sparseResources, uid)
+		delete(r.Resources, uid)
+		delete(r.SparseResources, uid)
 	}
 
 	// Notify subscribers of the change
