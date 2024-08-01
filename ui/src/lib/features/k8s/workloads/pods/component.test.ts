@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-// eslint-disable @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeEach, vi, type Mock } from 'vitest'
 
 import {
@@ -17,15 +17,10 @@ import { SvelteComponent } from 'svelte'
 import Component from './component.svelte'
 import { createStore } from './store'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Procedure = (...args: any[]) => any
 
 class MockEventSource {
-  constructor(
-    url: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    urlAssertionMock: Mock<Procedure>,
-  ) {
+  constructor(url: string, urlAssertionMock: Mock<Procedure>) {
     // Used for testing the correct URL was passed to the EventSource
     urlAssertionMock(url)
   }
@@ -226,7 +221,7 @@ suite('PodTable Component', () => {
       props: { containers: [] },
     },
     restarts: 1,
-    controller: 'DaemonSet',
+    controlled_by: 'DaemonSet',
     status: 'Running',
     node: '',
   }

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
-// eslint-disable @typescript-eslint/no-explicit-any
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
 import {
@@ -103,11 +104,7 @@ suite('PriorityClassesTable Component', () => {
   ]
 
   const store = createStore()
-  type RowType =
-    ReturnType<typeof createStore> extends { start: () => ResourceWithTable<V2HorizontalPodAutoscaler, infer R>[] }
-      ? R
-      : never
-  const start = store.start as unknown as () => ResourceWithTable<V2HorizontalPodAutoscaler, RowType>[]
+  const start = store.start as unknown as () => ResourceWithTable<V2HorizontalPodAutoscaler, any>[]
   expect(store.url).toEqual('/api/v1/resources/cluster-ops/hpas?dense=true')
   // ignore creationTimestamp because age is not calculated at this point and added to the table
   expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])

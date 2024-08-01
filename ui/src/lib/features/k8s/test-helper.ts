@@ -5,9 +5,6 @@ import type { KubernetesObject } from '@kubernetes/client-node'
 import type { ComponentType } from 'svelte'
 import type { CommonRow, ResourceWithTable } from './types'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Procedure = (...args: any[]) => any
-
 export function testK8sTableWithDefaults(Component: ComponentType, props: Record<string, unknown>) {
   test('creates component with correct props and default columns', () => {
     // Access the mocked DataTable
@@ -92,7 +89,6 @@ export class MockResourceStore {
   constructor(
     url: string,
     transform: <R extends KubernetesObject, U extends CommonRow>(resources: R[]) => ResourceWithTable<R, U>[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: KubernetesObject[],
   ) {
     // Used for testing the correct URL was passed to the EventSource
