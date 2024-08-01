@@ -10,6 +10,12 @@ export function testK8sTableWithDefaults(Component: ComponentType, props: Record
 
     render(Component)
 
+    // Ensure name and ooltip desc aren't empty
+    const name: string = props.name as string
+    expect(name).toBeTruthy()
+    const description: string = props.description as string
+    expect(description).toBeTruthy()
+
     // Check if DataTable was called
     expect(DataTable).toHaveBeenCalled()
 
