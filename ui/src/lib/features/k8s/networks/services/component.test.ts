@@ -118,12 +118,10 @@ suite('ServiceTable Component', () => {
       },
     ] as unknown as V1Service[]
 
-    const original: any = await importOriginal()
+    const original: Record<string, unknown> = await importOriginal()
     return {
       ...original,
-      ResourceStore: vi
-        .fn()
-        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+      ResourceStore: vi.fn().mockImplementation((url, transform) => new MockResourceStore(url, transform, mockData)),
     }
   })
 

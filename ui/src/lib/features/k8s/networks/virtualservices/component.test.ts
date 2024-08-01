@@ -60,12 +60,10 @@ suite('VirtualServiceTable Component', () => {
       },
     ] as unknown as VirtualService[]
 
-    const original: any = await importOriginal()
+    const original: Record<string, unknown> = await importOriginal()
     return {
       ...original,
-      ResourceStore: vi
-        .fn()
-        .mockImplementation((url, transform, ...args) => new MockResourceStore(url, transform, mockData)),
+      ResourceStore: vi.fn().mockImplementation((url, transform) => new MockResourceStore(url, transform, mockData)),
     }
   })
 
