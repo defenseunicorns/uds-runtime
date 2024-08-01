@@ -1,3 +1,4 @@
+// eslint-disable @typescript-eslint/no-explicit-any
 import { render } from '@testing-library/svelte'
 import type { Policy } from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
 

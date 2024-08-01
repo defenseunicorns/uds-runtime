@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+// eslint-disable @typescript-eslint/no-explicit-any
 import type { V1ContainerStatus } from '@kubernetes/client-node/dist/gen/models/V1ContainerStatus'
 import { render } from '@testing-library/svelte'
 import ContainerStatus from './component.svelte'
