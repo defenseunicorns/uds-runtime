@@ -7,9 +7,7 @@ on:
 
 jobs:
   tag-new-version:
-    permissions:
-      contents: write
-      pull-requests: write
+    permissions: write-all
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release-flag.outputs.release_created }}
