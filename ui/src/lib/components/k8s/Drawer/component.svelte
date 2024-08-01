@@ -3,7 +3,7 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
-  import { Close, Table } from 'carbon-icons-svelte'
+  import { Close } from 'carbon-icons-svelte'
   import { onMount } from 'svelte'
 
   import { goto } from '$app/navigation'
