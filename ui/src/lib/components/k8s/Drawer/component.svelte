@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import type { V1Pod } from '@kubernetes/client-node'
+  import type { KubernetesObject } from '@kubernetes/client-node'
   import { Close } from 'carbon-icons-svelte'
   import { onMount } from 'svelte'
   import * as YAML from 'yaml'
@@ -13,7 +13,7 @@
   import { goto } from '$app/navigation'
   import './styles.postcss'
 
-  export let resource: V1Pod
+  export let resource: KubernetesObject
   export let baseURL: string
 
   type Tab = 'metadata' | 'yaml' | 'events'
