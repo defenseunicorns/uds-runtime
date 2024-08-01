@@ -3,8 +3,7 @@ import { render } from '@testing-library/svelte'
 import * as components from '$components'
 import type { KubernetesObject } from '@kubernetes/client-node'
 import type { ComponentType } from 'svelte'
-import type { Mock } from 'vitest'
-import type { CommonRow, ResourceStoreInterface, ResourceWithTable } from './types'
+import type { CommonRow, ResourceWithTable } from './types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Procedure = (...args: any[]) => any
@@ -78,94 +77,27 @@ export function expectEqualIgnoringFields<T>(actual: T, expected: T, fieldsToIgn
   expect(actualWithoutFields).toEqual(expectedWithoutFields)
 }
 
-export const TestCreationTimestamp = '2024-07-25T16:11:22.000Z'
+// export const TestCreationTimestamp = '2024-07-25T16:11:22.000Z'
 
-export function testK8sResourceStore<R extends KubernetesObject, U extends CommonRow>(
-  resource: string,
-  mockData: R[],
-  expectedTables: Record<string, unknown>[],
-  expectedUrl: string,
-  createStore: () => ResourceStoreInterface<R, U>,
-  subscribeCallback?: (data: ResourceWithTable<R, U>[]) => void,
-) {
-  test(`createStore for ${resource}`, async () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2024-07-25T16:10:22.000Z'))
-
-    const urlAssertionMock = vi.fn().mockImplementation((url: string) => {
-      console.log(url)
-    })
-
-    const closeMock = vi.fn()
-
-    vi.stubGlobal(
-      'EventSource',
-      vi.fn().mockImplementation((url: string) => new MockEventSource(url, mockData, urlAssertionMock, closeMock)),
-    )
-
-    // initialize store
-    const store = createStore()
-    const storeStop = store.start()
-
-    // Assert the correct URL was given to the EventSource
-    expect(urlAssertionMock).toHaveBeenCalledTimes(1)
-    expect(urlAssertionMock).toHaveBeenCalledWith(expectedUrl)
-
-    // advance timers triggers the EventSource.onmessage callback in MockEventSource
-    vi.advanceTimersByTime(500)
-
-    if (subscribeCallback) {
-      store.subscribe(subscribeCallback)
-    } else {
-      store.subscribe((data) => {
-        data.forEach((d, idx) => {
-          const { resource, table } = d
-          // Assert the data was passed from eventSource to transformer (avoid date time inconsistencies by ignoring creationTimestamp)
-          expectEqualIgnoringFields(resource, mockData[idx], ['metadata.creationTimestamp'])
-          // Assert the data was transformed correctly to create the desired table rows
-          expectEqualIgnoringFields(table, expectedTables[idx] as unknown, ['creationTimestamp'])
-        })
-      })
-    }
-
-    // call store.stop()
-    storeStop()
-    expect(closeMock).toHaveBeenCalledTimes(1)
-
-    vi.unstubAllGlobals()
-    vi.useRealTimers()
-  })
-}
-
-export class MockEventSource {
-  onmessage: (event: MessageEvent) => void | null = () => {}
-  close: Mock<Procedure>
-
+export class MockResourceStore {
+  url: string
+  #tableCallback: (data: KubernetesObject[]) => ResourceWithTable<KubernetesObject, CommonRow>[]
+  data: KubernetesObject[]
   constructor(
     url: string,
+    transform: <R extends KubernetesObject, U extends CommonRow>(resources: R[]) => ResourceWithTable<R, U>[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: KubernetesObject | any[],
-    urlAssertionMock: Mock<Procedure>,
-    closeMock: Mock<Procedure>,
+    data: KubernetesObject[],
   ) {
     // Used for testing the correct URL was passed to the EventSource
-    urlAssertionMock(url)
-    // Used for testing the EventSource was closed
-    this.close = closeMock
-
-    // After 500ms simulate message event and pass the data to the onmessage callback
-    setTimeout(() => {
-      const messageEvent = {
-        data: JSON.stringify(data),
-        origin: url,
-        lastEventId: '',
-      }
-
-      // Check that onmessage has been set to handler by MockEventSource caller (eg. this.onmessage = ({data}) => {do stuff...})
-      // then fire the onmessage callback with the messageEvent
-      if (typeof this.onmessage === 'function') {
-        this.onmessage(messageEvent as MessageEvent)
-      }
-    }, 500)
+    this.url = url
+    this.#tableCallback = transform
+    this.data = data
   }
+
+  start() {
+    return this.#tableCallback(this.data)
+  }
+
+  sortByKey() {}
 }
