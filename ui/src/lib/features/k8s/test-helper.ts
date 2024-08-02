@@ -80,26 +80,27 @@ export function expectEqualIgnoringFields<T>(actual: T, expected: T, fieldsToIgn
   expect(actualWithoutFields).toEqual(expectedWithoutFields)
 }
 
-// export const TestCreationTimestamp = '2024-07-25T16:11:22.000Z'
-
+// MockResourceStore is a lightweight mock of ResourceStore for testing URLs and data transformation callbacks
 export class MockResourceStore {
   url: string
-  #tableCallback: (data: KubernetesObject[]) => ResourceWithTable<KubernetesObject, CommonRow>[]
   data: KubernetesObject[]
+  #tableCallback: (data: KubernetesObject[]) => ResourceWithTable<KubernetesObject, CommonRow>[]
+
   constructor(
     url: string,
     transform: <R extends KubernetesObject, U extends CommonRow>(resources: R[]) => ResourceWithTable<R, U>[],
     data: KubernetesObject[],
   ) {
-    // Used for testing the correct URL was passed to the EventSource
     this.url = url
-    this.#tableCallback = transform
     this.data = data
+    this.#tableCallback = transform
   }
 
+  // call the given transform function, imitating the store.start()
   start() {
     return this.#tableCallback(this.data)
   }
 
+  // added to satisfy store.sortByKey.bind(store),
   sortByKey() {}
 }
