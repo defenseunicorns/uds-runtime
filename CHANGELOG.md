@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.1.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.5...v0.1.0) (2024-08-02)
+
+
+### Features
+
+* **ui:** updating drawer header ([#142](https://github.com/defenseunicorns/uds-runtime/issues/142)) ([98dad19](https://github.com/defenseunicorns/uds-runtime/commit/98dad199800d06a0fb2690673dc35785784400a0)), closes [#102](https://github.com/defenseunicorns/uds-runtime/issues/102)
+
+
+### Bug Fixes
+
+* enable release-please PRs to run workflows ([#146](https://github.com/defenseunicorns/uds-runtime/issues/146)) ([10d7858](https://github.com/defenseunicorns/uds-runtime/commit/10d7858adcffd2f977c6101a25b81696dd266f00))
+* remove alpha from release ([#145](https://github.com/defenseunicorns/uds-runtime/issues/145)) ([70344d8](https://github.com/defenseunicorns/uds-runtime/commit/70344d8a07a33df57d90cc848974e08fde327ac7))
+
+
+### Miscellaneous
+
+* **ui:** remove breadcrumb ([#132](https://github.com/defenseunicorns/uds-runtime/issues/132)) ([982c278](https://github.com/defenseunicorns/uds-runtime/commit/982c278cba5226515f9aef5942e5fcfa7bb3e76e))
+
 ## [0.1.0-alpha.5](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.4...v0.1.0-alpha.5) (2024-08-02)
 
 
