@@ -18,6 +18,9 @@
   // Determine if the data is namespaced
   export let isNamespaced = true
 
+  // Disable row click
+  export let disableRowClick = false
+
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
   export let columns: [name: string, styles?: string][]
 
@@ -230,8 +233,10 @@
             {#each $rows as row}
               <tr
                 id={row.resource.metadata?.uid}
-                on:click={() => row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
+                on:click={() =>
+                  !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
                 class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
+                class:cursor-pointer={!disableRowClick}
               >
                 {#each columns as [key, style]}
                   <!-- Check object to avoid issues with `false` values -->
