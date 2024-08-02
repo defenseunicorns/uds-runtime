@@ -48,8 +48,6 @@ func Start(assets embed.FS) error {
 		r.Get("/monitor/pepr/", monitor.Pepr)
 		r.Get("/monitor/pepr/{stream}", monitor.Pepr)
 
-		r.Get("/applications/zarfpackages", getZarfPackages(cache))
-
 		r.Route("/resources", func(r chi.Router) {
 			r.Get("/nodes", getNodes(cache))
 			r.Get("/nodes/{uid}", getNode(cache))

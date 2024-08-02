@@ -27,34 +27,43 @@ func NewPodMetrics() *PodMetrics {
 	}
 }
 
-func (pm *PodMetrics) GetAll() []unstructured.Unstructured {
+// GetAll returns all metrics in the cache with optional filtering by namespace, second argument is ignored
+func (pm *PodMetrics) GetAll(namespace string, _ string) []unstructured.Unstructured {
 	pm.RLock()
 	defer pm.RUnlock()
 	result := make([]unstructured.Unstructured, 0, len(pm.metrics))
 	for _, metric := range pm.metrics {
-		result = append(result, *metric)
+		// Filter by namespace
+		if namespace == "" || metric.GetNamespace() == namespace {
+			result = append(result, *metric)
+		}
 	}
+
 	return result
 }
 
+// Update updates the metrics for a pod in the cache
 func (pm *PodMetrics) Update(podUID string, metrics *unstructured.Unstructured) {
 	pm.Lock()
 	defer pm.Unlock()
 	pm.metrics[podUID] = metrics
 }
 
+// Get returns the metrics for a pod in the cache
 func (pm *PodMetrics) Get(podUID string) *unstructured.Unstructured {
 	pm.RLock()
 	defer pm.RUnlock()
 	return pm.metrics[podUID]
 }
 
+// Delete removes the metrics for a pod from the cache
 func (pm *PodMetrics) Delete(podUID string) {
 	pm.Lock()
 	defer pm.Unlock()
 	delete(pm.metrics, podUID)
 }
 
+// StartMetricsCollection starts a goroutine to collect metrics for all pods in the cache
 func (c *Cache) StartMetricsCollection(ctx context.Context, metricsClient *versioned.Clientset) {
 	// Collect metrics immediately
 	c.collectMetrics(ctx, metricsClient)
@@ -75,7 +84,7 @@ func (c *Cache) StartMetricsCollection(ctx context.Context, metricsClient *versi
 
 func (c *Cache) collectMetrics(ctx context.Context, metricsClient *versioned.Clientset) {
 	// Fetch all pods
-	pods := c.Pods.GetSparseResources()
+	pods := c.Pods.GetSparseResources("", "")
 
 	// Fetch metrics for each pod
 	for _, pod := range pods {

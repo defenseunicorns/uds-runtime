@@ -4,6 +4,7 @@
 package resources
 
 import (
+	"strings"
 	"sync"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -68,26 +69,32 @@ func (r *ResourceList) GetResource(uid string) (unstructured.Unstructured, bool)
 }
 
 // GetResources returns a slice of the current resources.
-func (r *ResourceList) GetResources() []unstructured.Unstructured {
+func (r *ResourceList) GetResources(namespace string, namePartial string) []unstructured.Unstructured {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	resources := make([]unstructured.Unstructured, 0, len(r.Resources))
 	for _, resource := range r.Resources {
-		resources = append(resources, *resource)
+		// Check if the resource matches the namespace and name filter
+		if r.isFilterMatch(resource, namespace, namePartial) {
+			resources = append(resources, *resource)
+		}
 	}
 
 	return resources
 }
 
 // GetSparseResources returns a slice of the current resources with only metadata and status fields.
-func (r *ResourceList) GetSparseResources() []unstructured.Unstructured {
+func (r *ResourceList) GetSparseResources(namespace string, namePartial string) []unstructured.Unstructured {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	resources := make([]unstructured.Unstructured, 0, len(r.SparseResources))
 	for _, resource := range r.SparseResources {
-		resources = append(resources, *resource)
+		// Check if the resource matches the namespace and name filter
+		if r.isFilterMatch(resource, namespace, namePartial) {
+			resources = append(resources, *resource)
+		}
 	}
 
 	return resources
@@ -132,6 +139,19 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 	case r.Changes <- struct{}{}:
 	default:
 	}
+}
+
+// isFilterMatch checks if the resource matches the namespace and name filter
+func (r *ResourceList) isFilterMatch(resource *unstructured.Unstructured, namespace string, namePartial string) bool {
+	if namespace != "" && resource.GetNamespace() != namespace {
+		return false
+	}
+
+	if namePartial != "" && !strings.Contains(resource.GetName(), namePartial) {
+		return false
+	}
+
+	return true
 }
 
 // extractSparseObject creates a sparse representation of the given unstructured object

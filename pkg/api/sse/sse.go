@@ -21,7 +21,7 @@ func WriteHeaders(w http.ResponseWriter) {
 }
 
 // Handler is a generic SSE handler that sends data to the client
-func Handler(w http.ResponseWriter, r *http.Request, getData func() []unstructured.Unstructured, changes <-chan struct{}) {
+func Handler(w http.ResponseWriter, r *http.Request, getData func(string, string) []unstructured.Unstructured, changes <-chan struct{}) {
 	WriteHeaders(w)
 
 	// Ensure the ResponseWriter supports flushing
@@ -30,6 +30,9 @@ func Handler(w http.ResponseWriter, r *http.Request, getData func() []unstructur
 		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
 		return
 	}
+
+	namespace := r.URL.Query().Get("namespace")
+	namePartial := r.URL.Query().Get("name")
 
 	// Track the last sent time
 	var lastSent time.Time
@@ -57,7 +60,7 @@ func Handler(w http.ResponseWriter, r *http.Request, getData func() []unstructur
 		defer flusher.Flush()
 
 		// Convert the data to JSON
-		data, err := json.Marshal(getData())
+		data, err := json.Marshal(getData(namespace, namePartial))
 		if err != nil {
 			fmt.Fprintf(w, "data: Error: %v\n\n", err)
 			return

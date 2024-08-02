@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/defenseunicorns/uds-runtime/pkg/api/customhandlers"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/sse"
@@ -17,6 +16,8 @@ import (
 // @Router /resources/nodes [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getNodes(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Nodes)
 }
@@ -29,6 +30,8 @@ func getNodes(cache *resources.Cache) func(w http.ResponseWriter, r *http.Reques
 // @Router /resources/nodes/{uid} [get]
 // @Param uid path string false "Get node by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getNode(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Nodes)
 }
@@ -41,6 +44,8 @@ func getNode(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Router /resources/events [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getEvents(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Events)
 }
@@ -53,6 +58,8 @@ func getEvents(cache *resources.Cache) func(w http.ResponseWriter, r *http.Reque
 // @Router /resources/events/{uid} [get]
 // @Param uid path string false "Get event by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getEvent(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Events)
 }
@@ -65,6 +72,8 @@ func getEvent(cache *resources.Cache) func(w http.ResponseWriter, r *http.Reques
 // @Router /resources/namespaces [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getNamespaces(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Namespaces)
 }
@@ -77,6 +86,8 @@ func getNamespaces(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Router /resources/namespaces/{uid} [get]
 // @Param uid path string false "Get namespace by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getNamespace(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Namespaces)
 }
@@ -89,6 +100,8 @@ func getNamespace(cache *resources.Cache) func(w http.ResponseWriter, r *http.Re
 // @Router /resources/workloads/pods [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPods(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Pods)
 }
@@ -101,6 +114,8 @@ func getPods(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Router /resources/workloads/pods/{uid} [get]
 // @Param uid path string false "Get pod by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPod(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Pods)
 }
@@ -113,6 +128,8 @@ func getPod(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 // @Router /resources/workloads/deployments [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getDeployments(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Deployments)
 }
@@ -125,6 +142,8 @@ func getDeployments(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Router /resources/workloads/deployments/{uid} [get]
 // @Param uid path string false "Get deployment by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getDeployment(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Deployments)
 }
@@ -137,6 +156,8 @@ func getDeployment(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Router /resources/workloads/daemonsets [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getDaemonsets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Daemonsets)
 }
@@ -149,6 +170,8 @@ func getDaemonsets(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Router /resources/workloads/daemonsets/{uid} [get]
 // @Param uid path string false "Get daemonset by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getDaemonset(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Daemonsets)
 }
@@ -161,6 +184,8 @@ func getDaemonset(cache *resources.Cache) func(w http.ResponseWriter, r *http.Re
 // @Router /resources/workloads/statefulsets [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getStatefulsets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Statefulsets)
 }
@@ -173,6 +198,8 @@ func getStatefulsets(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Router /resources/workloads/statefulsets/{uid} [get]
 // @Param uid path string false "Get statefulset by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getStatefulset(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Statefulsets)
 }
@@ -185,6 +212,8 @@ func getStatefulset(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Router /resources/workloads/jobs [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getJobs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Jobs)
 }
@@ -197,6 +226,8 @@ func getJobs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Router /resources/workloads/jobs/{uid} [get]
 // @Param uid path string false "Get job by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Jobs)
 }
@@ -209,6 +240,8 @@ func getJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 // @Router /resources/workloads/cronjobs [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getCronJobs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.CronJobs)
 }
@@ -221,6 +254,8 @@ func getCronJobs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Req
 // @Router /resources/workloads/cronjobs/{uid} [get]
 // @Param uid path string false "Get cronjob by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getCronJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.CronJobs)
 }
@@ -243,6 +278,8 @@ func getPodMetrics(w http.ResponseWriter, r *http.Request, cache *resources.Cach
 // @Router /resources/configs/uds-packages [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getUDSPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.UDSPackages)
 }
@@ -255,6 +292,8 @@ func getUDSPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Router /resources/configs/uds-packages/{uid} [get]
 // @Param uid path string false "Get uds package by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getUDSPackage(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.UDSPackages)
 }
@@ -267,6 +306,8 @@ func getUDSPackage(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Router /resources/configs/uds-exemptions [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getUDSExemptions(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.UDSExemptions)
 }
@@ -279,6 +320,8 @@ func getUDSExemptions(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Router /resources/configs/uds-exemptions/{uid} [get]
 // @Param uid path string false "Get uds exemption by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getUDSExemption(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.UDSExemptions)
 }
@@ -291,6 +334,8 @@ func getUDSExemption(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Router /resources/configs/configmaps [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getConfigMaps(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Configmaps)
 }
@@ -303,6 +348,8 @@ func getConfigMaps(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Router /resources/configs/configmaps/{uid} [get]
 // @Param uid path string false "Get configmap by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getConfigMap(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Configmaps)
 }
@@ -315,6 +362,8 @@ func getConfigMap(cache *resources.Cache) func(w http.ResponseWriter, r *http.Re
 // @Router /resources/configs/secrets [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getSecrets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Secrets)
 }
@@ -327,19 +376,10 @@ func getSecrets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Router /resources/configs/secrets/{uid} [get]
 // @Param uid path string false "Get secret by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getSecret(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Secrets)
-}
-
-// @Description Get ZarfPackages
-// @Tags configs
-// @Accept  html
-// @Produce text/event-stream,json
-// @Success 200
-// @Router /resources/configs/zarf-packages [get]
-func getZarfPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	zarfPackageHandler := customhandlers.CreateZarfStateHandler(cache)
-	return sse.Bind(cache.Secrets, sse.WithCustomDataHandler(zarfPackageHandler))
 }
 
 // @Description Get MutatingWebhooks
@@ -350,6 +390,8 @@ func getZarfPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Router /resources/cluster-ops/mutatingwebhooks [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getMutatingWebhooks(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.MutatingWebhooks)
 }
@@ -362,6 +404,8 @@ func getMutatingWebhooks(cache *resources.Cache) func(w http.ResponseWriter, r *
 // @Router /resources/cluster-ops/mutatingwebhooks/{uid} [get]
 // @Param uid path string false "Get mutatingwebhook by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getMutatingWebhook(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.MutatingWebhooks)
 }
@@ -374,6 +418,8 @@ func getMutatingWebhook(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Router /resources/cluster-ops/validatingwebhooks [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getValidatingWebhooks(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.ValidatingWebhooks)
 }
@@ -386,6 +432,8 @@ func getValidatingWebhooks(cache *resources.Cache) func(w http.ResponseWriter, r
 // @Router /resources/cluster-ops/validatingwebhooks/{uid} [get]
 // @Param uid path string false "Get validatingwebhook by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getValidatingWebhook(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.ValidatingWebhooks)
 }
@@ -398,6 +446,8 @@ func getValidatingWebhook(cache *resources.Cache) func(w http.ResponseWriter, r 
 // @Router /resources/cluster-ops/hpas [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getHPAs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.HPAs)
 }
@@ -410,6 +460,8 @@ func getHPAs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Router /resources/cluster-ops/hpas/{uid} [get]
 // @Param uid path string false "Get hpa by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getHPA(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.HPAs)
 }
@@ -422,6 +474,8 @@ func getHPA(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 // @Router /resources/cluster-ops/priority-classes [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPriorityClasses(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.PriorityClasses)
 }
@@ -434,6 +488,8 @@ func getPriorityClasses(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Router /resources/cluster-ops/priority-classes/{uid} [get]
 // @Param uid path string false "Get priority-class by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPriorityClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.PriorityClasses)
 }
@@ -446,6 +502,8 @@ func getPriorityClass(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Router /resources/cluster-ops/runtime-classes [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getRuntimeClasses(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.RuntimeClasses)
 }
@@ -458,6 +516,8 @@ func getRuntimeClasses(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Router /resources/cluster-ops/runtime-classes/{uid} [get]
 // @Param uid path string false "Get runtime-class by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getRuntimeClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.RuntimeClasses)
 }
@@ -470,6 +530,8 @@ func getRuntimeClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Router /resources/cluster-ops/poddisruptionbudgets [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPodDisruptionBudgets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.PodDisruptionBudgets)
 }
@@ -482,6 +544,8 @@ func getPodDisruptionBudgets(cache *resources.Cache) func(w http.ResponseWriter,
 // @Router /resources/cluster-ops/poddisruptionbudgets/{uid} [get]
 // @Param uid path string false "Get poddisruptionbudget by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPodDisruptionBudget(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.PodDisruptionBudgets)
 }
@@ -494,6 +558,8 @@ func getPodDisruptionBudget(cache *resources.Cache) func(w http.ResponseWriter, 
 // @Router /resources/cluster-ops/limit-ranges [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getLimitRanges(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.LimitRanges)
 }
@@ -506,6 +572,8 @@ func getLimitRanges(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Router /resources/cluster-ops/limit-ranges/{uid} [get]
 // @Param uid path string false "Get limit-range by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getLimitRange(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.LimitRanges)
 }
@@ -518,6 +586,8 @@ func getLimitRange(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Router /resources/cluster-ops/resource-quotas [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getResourceQuotas(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.ResourceQuotas)
 }
@@ -530,6 +600,8 @@ func getResourceQuotas(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Router /resources/cluster-ops/resource-quotas/{uid} [get]
 // @Param uid path string false "Get resource-quota by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getResourceQuota(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.ResourceQuotas)
 }
@@ -542,6 +614,8 @@ func getResourceQuota(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Router /resources/networks/services [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getServices(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Services)
 }
@@ -554,6 +628,8 @@ func getServices(cache *resources.Cache) func(w http.ResponseWriter, r *http.Req
 // @Router /resources/networks/services/{uid} [get]
 // @Param uid path string false "Get service by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getService(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Services)
 }
@@ -566,6 +642,8 @@ func getService(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Router /resources/networks/networkpolicies [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getNetworkPolicies(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.NetworkPolicies)
 }
@@ -578,6 +656,8 @@ func getNetworkPolicies(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Router /resources/networks/networkpolicies/{uid} [get]
 // @Param uid path string false "Get networkpolicy by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getNetworkPolicy(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.NetworkPolicies)
 }
@@ -590,6 +670,8 @@ func getNetworkPolicy(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Router /resources/networks/endpoints [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getEndpoints(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Endpoints)
 }
@@ -602,6 +684,8 @@ func getEndpoints(cache *resources.Cache) func(w http.ResponseWriter, r *http.Re
 // @Router /resources/networks/endpoints/{uid} [get]
 // @Param uid path string false "Get endpoint by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getEndpoint(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.Endpoints)
 }
@@ -614,6 +698,8 @@ func getEndpoint(cache *resources.Cache) func(w http.ResponseWriter, r *http.Req
 // @Router /resources/networks/virtualservices [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getVirtualServices(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.VirtualServices)
 }
@@ -626,6 +712,8 @@ func getVirtualServices(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Router /resources/networks/virtualservices/{uid} [get]
 // @Param uid path string false "Get virtualservice by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getVirtualService(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.VirtualServices)
 }
@@ -638,6 +726,8 @@ func getVirtualService(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Router /resources/storage/persistentvolumes [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPersistentVolumes(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.PersistentVolumes)
 }
@@ -650,6 +740,8 @@ func getPersistentVolumes(cache *resources.Cache) func(w http.ResponseWriter, r 
 // @Router /resources/storage/persistentvolumes/{uid} [get]
 // @Param uid path string false "Get persistentvolume by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPersistentVolume(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.PersistentVolumes)
 }
@@ -662,6 +754,8 @@ func getPersistentVolume(cache *resources.Cache) func(w http.ResponseWriter, r *
 // @Router /resources/storage/persistentvolumeclaims [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPersistentVolumeClaims(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.PersistentVolumeClaims)
 }
@@ -674,6 +768,8 @@ func getPersistentVolumeClaims(cache *resources.Cache) func(w http.ResponseWrite
 // @Router /resources/storage/persistentvolumeclaims/{uid} [get]
 // @Param uid path string false "Get persistentvolumeclaim by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getPersistentVolumeClaim(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.PersistentVolumeClaims)
 }
@@ -686,6 +782,8 @@ func getPersistentVolumeClaim(cache *resources.Cache) func(w http.ResponseWriter
 // @Router /resources/storage/storageclasses [get]
 // @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getStorageClasses(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.StorageClasses)
 }
@@ -698,6 +796,8 @@ func getStorageClasses(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Router /resources/storage/storageclasses/{uid} [get]
 // @Param uid path string false "Get storageclass by uid"
 // @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
 func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return sse.Bind(cache.StorageClasses)
 }
