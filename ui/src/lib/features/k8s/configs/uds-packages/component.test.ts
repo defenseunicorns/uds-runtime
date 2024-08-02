@@ -75,7 +75,7 @@ suite('StatefulsetTable Component', () => {
   const expectedTables = [
     {
       creationTimestamp: '2024-07-25T16:10:22.000Z',
-      endpoints: 'neuvector.admin.uds.dev, 2.admin.uds.dev',
+      endpoints: { component: {}, props: { endpoints: ['neuvector.admin.uds.dev', '2.admin.uds.dev'] } },
       monitors: 'testMonitor, testMonitor2',
       name: 'neuvector',
       namespace: 'neuvector',
@@ -90,5 +90,8 @@ suite('StatefulsetTable Component', () => {
   const start = store.start as unknown as () => ResourceWithTable<Package, any>[]
   expect(store.url).toEqual(`/api/v1/resources/configs/uds-packages`)
   // ignore creationTimestamp because age is not calculated at this point and added to the table
-  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, [
+    'creationTimestamp',
+    'endpoints.component',
+  ])
 })
