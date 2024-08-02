@@ -7,7 +7,8 @@ export { default as NamespaceTable } from './namespaces/component.svelte'
 export { default as NodeTable } from './nodes/component.svelte'
 
 // Application resources
-export { default as ZarfPackageTable } from './applications/zarf-packages/component.svelte'
+export { default as ApplicationEndpointTable } from './applications/endpoints/component.svelte'
+export { default as ApplicationPackageTable } from './applications/packages/component.svelte'
 
 // Workload resources
 export { default as CronJobTable } from './workloads/cronjobs/component.svelte'
