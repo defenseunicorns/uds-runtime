@@ -24,7 +24,7 @@ const baseRoutes: BaseRoute[] = [
   {
     name: 'Applications',
     icon: DataTableReference,
-    children: ['Zarf Packages'],
+    children: ['Packages', 'Endpoints'],
   },
   {
     name: 'Monitor',
