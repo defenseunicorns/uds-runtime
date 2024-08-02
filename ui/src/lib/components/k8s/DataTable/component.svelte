@@ -241,9 +241,9 @@
                       <svelte:component this={value.component} {...value.props} />
                     </td>
                   {:else if value.text}
-                    <td class={style || ''}>{value.text}</td>
+                    <td class={style || ''}>{value.text || '-'}</td>
                   {:else}
-                    <td class={style || ''}>{value}</td>
+                    <td class={style || ''}>{value || '-'}</td>
                   {/if}
                 {/each}
               </tr>
