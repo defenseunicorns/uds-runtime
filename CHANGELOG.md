@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.5...v0.1.0) (2024-08-02)
+
+
+### Miscellaneous
+
+* remove alpha from release tag ([fa6a020](https://github.com/defenseunicorns/uds-runtime/commit/fa6a020b86ba74e22d69c30d0725a6c742cbe88e))
+
 ## [0.1.0-alpha.5](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.4...v0.1.0-alpha.5) (2024-08-02)
 
 
