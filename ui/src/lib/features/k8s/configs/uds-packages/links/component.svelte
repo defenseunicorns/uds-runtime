@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Link } from '$components'
+
   export let endpoints: string[]
 </script>
 
@@ -7,11 +9,5 @@
 {/if}
 
 {#each endpoints as endpoint}
-  <a
-    href={`https://${endpoint}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    on:click|stopPropagation
-    class="font-medium text-blue-600 dark:text-blue-500 hover:underline pr-4">{endpoint}</a
-  >
+  <Link href={`https://${endpoint}`} text={endpoint} />
 {/each}
