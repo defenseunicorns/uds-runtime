@@ -29,4 +29,6 @@
       {/each}
     </div>
   </div>
+{:else}
+  <p class="text-gray-500 dark:text-gray-400">-</p>
 {/if}
