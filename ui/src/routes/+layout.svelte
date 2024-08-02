@@ -25,7 +25,7 @@
     ? 'md:ml-64'
     : 'md:ml-16'}"
 >
-  <div class="flex-grow overflow-hidden p-4">
+  <div class="flex-grow overflow-hidden p-4 pt-6">
     <ToastPanel />
     <slot />
   </div>
