@@ -48,17 +48,25 @@ func CreateZarfStateHandler(cache *resources.Cache) func() []unstructured.Unstru
 				deployedComponents := deployedPkg.DeployedComponents
 
 				// get status of each component and determine if all components are deployed
-				status := "Failed"
+				status := "Deploying"
 				if len(deployedComponents) > 0 {
 					status = "Succeeded"
 					for _, comp := range deployedComponents {
 						componentStatuses[comp.Name] = string(comp.Status)
-						if comp.Status != zarfTypes.ComponentStatusSucceeded {
+						switch comp.Status {
+						case zarfTypes.ComponentStatusDeploying:
+							status = "Deploying"
+						case zarfTypes.ComponentStatusFailed:
 							status = "Failed"
+						case zarfTypes.ComponentStatusRemoving:
+							status = "Removing"
+						}
+						if status != "Succeeded" {
+							break
 						}
 					}
 				}
-
+				// send back unstructured data with package status
 				unstructuredSecret := &unstructured.Unstructured{
 					Object: map[string]interface{}{
 						"metadata": map[string]interface{}{
