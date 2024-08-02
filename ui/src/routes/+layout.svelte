@@ -8,10 +8,9 @@
   import { onMount } from 'svelte'
 
   import { afterNavigate } from '$app/navigation'
-
-  import { Breadcrumb, isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
-  import '../app.postcss'
+  import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
+  import '../app.postcss'
 
   onMount(initFlowbite)
   afterNavigate(initFlowbite)
@@ -26,10 +25,7 @@
     ? 'md:ml-64'
     : 'md:ml-16'}"
 >
-  <div class="p-5">
-    <Breadcrumb />
-  </div>
-  <div class="flex-grow overflow-hidden p-4 pt-0">
+  <div class="flex-grow overflow-hidden p-4 pt-6">
     <ToastPanel />
     <slot />
   </div>

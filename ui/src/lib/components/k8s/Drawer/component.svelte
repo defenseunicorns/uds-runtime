@@ -159,7 +159,7 @@
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="bg-black text-gray-200 p-4 pb-20">
-          <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre">
+          <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre w-full block">
             <!-- We turned off svelte/no-at-html-tags eslint rule because we are using DOMPurify to sanitize -->
             {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(resource), { language: 'yaml' }).value)}
           </code>
