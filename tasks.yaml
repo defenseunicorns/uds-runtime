@@ -8,7 +8,7 @@ variables:
   - name: REF
     description: "reference for the runtime image and zarf package"
     # x-release-please-start-version
-    default: 0.1.0-alpha.5
+    default: 0.1.0
     # x-release-please-end
 
 tasks:

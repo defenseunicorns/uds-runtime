@@ -1,5 +1,8 @@
 name: Validate Lint
-on: pull_request
+on:
+  pull_request:
+    branches: [main]
+    types: [milestoned, opened, edited, synchronize]
 
 permissions:
   contents: read
