@@ -16,17 +16,18 @@ interface ZarfMetadata {
   name: string
   namespace: string
   creationTimestamp: string
+  uid: string // unused until we decide on a details view
 }
 
 export interface ZarfPackage {
   metadata: ZarfMetadata
   components: ZarfComponents
-  succeeded: boolean
+  status: boolean
 }
 
 interface Row extends CommonRow {
   components: string[]
-  succeeded: boolean
+  status: boolean
 }
 
 export function createStore(): ResourceStoreInterface<ZarfPackage, Row> {
@@ -34,7 +35,7 @@ export function createStore(): ResourceStoreInterface<ZarfPackage, Row> {
 
   const transform = transformResource<ZarfPackage, Row>((z) => ({
     components: Object.keys(z.components) ?? [],
-    succeeded: z.succeeded ?? false,
+    status: z.status ?? 'Unknown',
   }))
 
   const store = new ResourceStore<ZarfPackage, Row>(url, transform, 'name')

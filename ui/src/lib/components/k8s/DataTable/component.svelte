@@ -70,7 +70,6 @@
         if (results.ok) {
           const data = await results.json()
           resource = data.Object as KubernetesObject
-          console.log(resource)
           return
         } else {
           // Otherwise, throw an error
@@ -231,8 +230,8 @@
             {#each $rows as row}
               <tr
                 id={row.resource.metadata?.uid}
-                on:click={() => goto(`${baseURL}/${row.resource.metadata?.uid}`)}
-                class:active={pathName.includes(row.resource.metadata?.uid ?? '')}
+                on:click={() => row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
+                class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
               >
                 {#each columns as [key, style]}
                   <!-- Check object to avoid issues with `false` values -->

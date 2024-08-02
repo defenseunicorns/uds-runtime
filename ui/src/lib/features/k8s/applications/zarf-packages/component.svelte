@@ -6,7 +6,7 @@
   import { createStore, type Columns } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
-  export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['components'], ['succeeded']]
+  export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['components'], ['status'], ['age']]
   const name = 'Zarf Packages'
   const description = resourceDescriptions[name]
 </script>

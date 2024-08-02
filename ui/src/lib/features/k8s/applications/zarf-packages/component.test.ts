@@ -13,12 +13,12 @@ suite('LimitRangesTable Component', () => {
     vi.clearAllMocks()
   })
 
-  const name = 'LimitRanges'
+  const name = 'Zarf Packages'
   const description = resourceDescriptions[name]
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['namespace'], ['age']],
+    columns: [['name', 'emphasize'], ['namespace'], ['components'], ['status'], ['age']],
     name,
     description,
   })

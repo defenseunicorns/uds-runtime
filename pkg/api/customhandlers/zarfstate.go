@@ -48,13 +48,13 @@ func CreateZarfStateHandler(cache *resources.Cache) func() []unstructured.Unstru
 				deployedComponents := deployedPkg.DeployedComponents
 
 				// get status of each component and determine if all components are deployed
-				success := false
+				status := "Failed"
 				if len(deployedComponents) > 0 {
-					success = true
+					status = "Succeeded"
 					for _, comp := range deployedComponents {
 						componentStatuses[comp.Name] = string(comp.Status)
 						if comp.Status != zarfTypes.ComponentStatusSucceeded {
-							success = false
+							status = "Failed"
 						}
 					}
 				}
@@ -67,7 +67,7 @@ func CreateZarfStateHandler(cache *resources.Cache) func() []unstructured.Unstru
 							"creationTimestamp": secret.CreationTimestamp,
 						},
 						"components": componentStatuses,
-						"succeeded":  success,
+						"status":     status,
 					},
 				}
 				result = append(result, *unstructuredSecret)
