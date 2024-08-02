@@ -5,12 +5,9 @@ import type { KubernetesObject } from '@kubernetes/client-node'
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
 
-import type { ZarfPackage } from '$features/k8s/applications/zarf-packages/store'
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 
-export class ResourceStore<T extends KubernetesObject | ZarfPackage, U extends CommonRow>
-  implements ResourceStoreInterface<T, U>
-{
+export class ResourceStore<T extends KubernetesObject, U extends CommonRow> implements ResourceStoreInterface<T, U> {
   // Keep an internal store for the resources
   #resources: Writable<ResourceWithTable<T, U>[]>
 
@@ -225,7 +222,7 @@ export class ResourceStore<T extends KubernetesObject | ZarfPackage, U extends C
  * @param transformer The transformer function to apply to each resource
  * @returns A function to transform KubernetesObject resources
  */
-export function transformResource<T extends KubernetesObject | ZarfPackage, U extends CommonRow>(
+export function transformResource<T extends KubernetesObject, U extends CommonRow>(
   transformer: (r: T, c?: CommonRow) => Partial<U>,
 ) {
   // Return a function to transform KubernetesObject resources
