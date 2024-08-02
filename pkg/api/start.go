@@ -45,8 +45,11 @@ func Start(assets embed.FS) error {
 	// Add Swagger UI route
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Get("/monitor/pepr/", monitor.Pepr)
-		r.Get("/monitor/pepr/{stream}", monitor.Pepr)
+		r.Route("/monitor", func(r chi.Router) {
+			r.Get("/pepr/", monitor.Pepr)
+			r.Get("/pepr/{stream}", monitor.Pepr)
+			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(cache))
+		})
 
 		r.Route("/resources", func(r chi.Router) {
 			r.Get("/nodes", getNodes(cache))

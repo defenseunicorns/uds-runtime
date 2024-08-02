@@ -13,18 +13,53 @@ import (
 
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
 	"k8s.io/metrics/pkg/client/clientset/versioned"
 )
+
+const MAX_HISTORY_LENGTH = 200
+
+type Usage struct {
+	Timestamp time.Time
+	CPU       float64
+	Memory    float64
+}
 
 type PodMetrics struct {
 	sync.RWMutex
 	metrics map[string]*unstructured.Unstructured
+	current struct {
+		CPU    float64
+		Memory float64
+	}
+	historical []Usage
 }
 
 func NewPodMetrics() *PodMetrics {
 	return &PodMetrics{
 		metrics: make(map[string]*unstructured.Unstructured),
 	}
+}
+
+// GetCount returns the number of metrics in the cache
+func (pm *PodMetrics) GetCount() int {
+	pm.RLock()
+	defer pm.RUnlock()
+	return len(pm.metrics)
+}
+
+// GetUsage returns the current CPU and memory usage
+func (pm *PodMetrics) GetUsage() (cpu float64, mem float64) {
+	pm.RLock()
+	defer pm.RUnlock()
+	return pm.current.CPU, pm.current.Memory
+}
+
+// GetHistoricalUsage returns the historical usage data
+func (pm *PodMetrics) GetHistoricalUsage() []Usage {
+	pm.RLock()
+	defer pm.RUnlock()
+	return pm.historical
 }
 
 // GetAll returns all metrics in the cache with optional filtering by namespace, second argument is ignored
@@ -82,9 +117,23 @@ func (c *Cache) StartMetricsCollection(ctx context.Context, metricsClient *versi
 	}()
 }
 
+// Update the CalculateUsage function
+func (c *Cache) CalculateUsage(metrics *v1beta1.PodMetrics) (float64, float64) {
+	var totalCPU, totalMemory float64
+	for _, container := range metrics.Containers {
+		totalCPU += float64(container.Usage.Cpu().MilliValue())
+		totalMemory += float64(container.Usage.Memory().Value())
+	}
+
+	// CPU in millicores, memory in bytes
+	return totalCPU, totalMemory
+}
+
 func (c *Cache) collectMetrics(ctx context.Context, metricsClient *versioned.Clientset) {
 	// Fetch all pods
 	pods := c.Pods.GetSparseResources("", "")
+
+	var totalCPU, totalMemory float64
 
 	// Fetch metrics for each pod
 	for _, pod := range pods {
@@ -101,6 +150,11 @@ func (c *Cache) collectMetrics(ctx context.Context, metricsClient *versioned.Cli
 			continue
 		}
 
+		// Calculate the total CPU and memory usage
+		cpu, mem := c.CalculateUsage(metrics)
+		totalCPU += cpu
+		totalMemory += mem
+
 		// Convert the metrics to unstructured
 		converted, err := toUnstructured(metrics)
 		if err != nil {
@@ -110,6 +164,20 @@ func (c *Cache) collectMetrics(ctx context.Context, metricsClient *versioned.Cli
 
 		// Update the cache with the new metrics
 		c.PodMetrics.Update(string(pod.GetUID()), converted)
+	}
+
+	// Add the metrics to the cache and historical usage
+	c.PodMetrics.current.CPU = totalCPU
+	c.PodMetrics.current.Memory = totalMemory
+	c.PodMetrics.historical = append(c.PodMetrics.historical, Usage{
+		Timestamp: time.Now(),
+		CPU:       totalCPU,
+		Memory:    totalMemory,
+	})
+
+	// Limit the historical usage to the maximum length
+	if len(c.PodMetrics.historical) > MAX_HISTORY_LENGTH {
+		c.PodMetrics.historical = c.PodMetrics.historical[len(c.PodMetrics.historical)-MAX_HISTORY_LENGTH:]
 	}
 
 	// Notify subscribers of the change
