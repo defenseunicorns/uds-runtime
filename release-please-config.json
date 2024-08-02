@@ -15,6 +15,7 @@
       ],
       "extra-files": [
         "zarf.yaml",
+        "tasks.yaml",
         "tasks/build.yaml",
         "chart/values.yaml"
       ]

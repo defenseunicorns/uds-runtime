@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.0-alpha.5](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.4...v0.1.0-alpha.5) (2024-08-02)
+
+
+### Features
+
+* **ui:** make package endpoints links ([#136](https://github.com/defenseunicorns/uds-runtime/issues/136)) ([572f385](https://github.com/defenseunicorns/uds-runtime/commit/572f3859b0ba5901182fe335eb5e9ac679635716))
+
+
+### Bug Fixes
+
+* add tasks file to release please config and add docker login ([#139](https://github.com/defenseunicorns/uds-runtime/issues/139)) ([f61680f](https://github.com/defenseunicorns/uds-runtime/commit/f61680f2941bb8e092b8da69d5c9cbcdcbb12d43))
+
 ## [0.1.0-alpha.4](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0-alpha.3...v0.1.0-alpha.4) (2024-08-01)
 
 
