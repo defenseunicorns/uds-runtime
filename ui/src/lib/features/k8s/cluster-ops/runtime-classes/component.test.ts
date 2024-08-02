@@ -21,7 +21,8 @@ suite('RuntimeClassesTable Component', () => {
     columns: [['name', 'emphasize'], ['handler'], ['age']],
     name,
     description,
+    isNamespaced: false,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, name, description })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description, isNamespaced: false })
 })

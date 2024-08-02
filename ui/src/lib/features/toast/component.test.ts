@@ -3,7 +3,7 @@
 
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { get } from 'svelte/store'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, vi } from 'vitest'
 import ToastComponent from './component.svelte'
 import { addToast, toast } from './store'
 
@@ -32,18 +32,18 @@ describe('Toast Component', () => {
     toast.set([])
   })
 
-  it('renders nothing when there are no toasts', () => {
+  test('renders nothing when there are no toasts', () => {
     const { container } = render(ToastComponent)
     expect(container.firstChild?.childNodes.length).toBe(0)
   })
 
-  it('renders a toast message', () => {
+  test('renders a toast message', () => {
     addToast({ message: 'Test toast', timeoutSecs: 3, type: 'info' })
     render(ToastComponent)
     expect(screen.getByText('Test toast')).toBeInTheDocument()
   })
 
-  it('renders multiple toast messages', () => {
+  test('renders multiple toast messages', () => {
     addToast({ message: 'Toast 1', timeoutSecs: 3, type: 'info' })
     addToast({ message: 'Toast 2', timeoutSecs: 3, type: 'success' })
     render(ToastComponent)
@@ -51,7 +51,7 @@ describe('Toast Component', () => {
     expect(screen.getByText('Toast 2')).toBeInTheDocument()
   })
 
-  it('renders the correct number of icons for each toast type', () => {
+  test('renders the correct number of icons for each toast type', () => {
     addToast({ message: 'Error toast', timeoutSecs: 3, type: 'error' })
     addToast({ message: 'Warning toast', timeoutSecs: 3, type: 'warning' })
     addToast({ message: 'Info toast', timeoutSecs: 3, type: 'info' })
@@ -63,7 +63,7 @@ describe('Toast Component', () => {
     expect(icons.length).toBe(8)
   })
 
-  it('removes a toast when the close button is clicked', async () => {
+  test('removes a toast when the close button is clicked', async () => {
     addToast({ message: 'Test toast', timeoutSecs: 3, type: 'info' })
     render(ToastComponent)
 
