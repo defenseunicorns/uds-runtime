@@ -89,20 +89,10 @@ suite('PodTable Component', () => {
         containerID: 'containerd://1cd2b918e208d181dd3be8a6d0b651b962b1ae24946bfc8c27476f33b9e5b80b',
         image: 'quay.io/frrouting/frr:9.0.2',
         imageID: 'quay.io/frrouting/frr@sha256:086acb1278fe86118345f456a1fbfafb80c34d03f7bca9137da0729a1aee5e9c',
-        lastState: {
-          terminated: {
-            containerID: 'containerd://cc2e1f4154a9fcd1c28e55e36635c0255338f64bb2f1d6defb9bf12dd725170f',
-            exitCode: 255,
-            finishedAt: '2024-07-25T13:03:14Z',
-            reason: 'Unknown',
-            startedAt: '2024-07-23T14:16:27Z',
-          },
-        },
         name: 'frr',
         ready: true,
         restartCount: 1,
         started: true,
-        state: { running: { startedAt: '2024-07-25T13:03:26Z' } },
       },
       {
         containerID: 'containerd://7b0e9ea8d2c615883f4e808d9dec53294ca2f5a2e0590a2c7586c681ddb207d9',
@@ -112,15 +102,6 @@ suite('PodTable Component', () => {
         ready: true,
         restartCount: 1,
         started: false,
-        state: {
-          terminated: {
-            containerID: 'containerd://7b0e9ea8d2c615883f4e808d9dec53294ca2f5a2e0590a2c7586c681ddb207d9',
-            exitCode: 0,
-            finishedAt: '2024-07-25T13:03:21Z',
-            reason: 'Completed',
-            startedAt: '2024-07-25T13:03:21Z',
-          },
-        },
       },
     ]
 
@@ -173,24 +154,10 @@ suite('PodTable Component', () => {
             containerID: 'containerd://1cd2b918e208d181dd3be8a6d0b651b962b1ae24946bfc8c27476f33b9e5b80b',
             image: 'quay.io/frrouting/frr:9.0.2',
             imageID: 'quay.io/frrouting/frr@sha256:086acb1278fe86118345f456a1fbfafb80c34d03f7bca9137da0729a1aee5e9c',
-            lastState: {
-              terminated: {
-                containerID: 'containerd://cc2e1f4154a9fcd1c28e55e36635c0255338f64bb2f1d6defb9bf12dd725170f',
-                exitCode: 255,
-                finishedAt: '2024-07-25T13:03:14Z',
-                reason: 'Unknown',
-                startedAt: '2024-07-23T14:16:27Z',
-              },
-            },
             name: 'frr',
             ready: true,
             restartCount: 1,
             started: true,
-            state: {
-              running: {
-                startedAt: '2024-07-25T13:03:26Z',
-              },
-            },
           },
           {
             containerID: 'containerd://7b0e9ea8d2c615883f4e808d9dec53294ca2f5a2e0590a2c7586c681ddb207d9',
@@ -200,15 +167,6 @@ suite('PodTable Component', () => {
             ready: true,
             restartCount: 1,
             started: false,
-            state: {
-              terminated: {
-                containerID: 'containerd://7b0e9ea8d2c615883f4e808d9dec53294ca2f5a2e0590a2c7586c681ddb207d9',
-                exitCode: 0,
-                finishedAt: '2024-07-25T13:03:21Z',
-                reason: 'Completed',
-                startedAt: '2024-07-25T13:03:21Z',
-              },
-            },
           },
         ],
       },
