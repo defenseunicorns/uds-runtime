@@ -2,10 +2,11 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { beforeEach, vi, type Mock } from 'vitest'
+import { beforeEach, vi } from 'vitest'
 
 import {
   expectEqualIgnoringFields,
+  MockEventSource,
   MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -16,16 +17,6 @@ import type { V1Pod } from '@kubernetes/client-node'
 import { SvelteComponent } from 'svelte'
 import Component from './component.svelte'
 import { createStore } from './store'
-
-type Procedure = (...args: any[]) => any
-
-class MockEventSource {
-  constructor(url: string, urlAssertionMock: Mock<Procedure>) {
-    // Used for testing the correct URL was passed to the EventSource
-    urlAssertionMock(url)
-  }
-  close() {}
-}
 
 suite('PodTable Component', () => {
   beforeEach(() => {

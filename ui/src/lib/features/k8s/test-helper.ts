@@ -3,7 +3,11 @@ import { render } from '@testing-library/svelte'
 import * as components from '$components'
 import type { KubernetesObject } from '@kubernetes/client-node'
 import type { ComponentType } from 'svelte'
+import type { Mock } from 'vitest'
 import type { CommonRow, ResourceWithTable } from './types'
+
+// Vitest type redeclared cause it's not exported from vitest
+type Procedure = (...args: any[]) => any
 
 export function testK8sTableWithDefaults(Component: ComponentType, props: Record<string, unknown>) {
   test('creates component with correct props and default columns', () => {
@@ -103,4 +107,13 @@ export class MockResourceStore {
 
   // added to satisfy store.sortByKey.bind(store),
   sortByKey() {}
+}
+
+export class MockEventSource {
+  constructor(url: string, urlAssertionMock: Mock<Procedure>) {
+    // Used for testing the correct URL was passed to the EventSource
+    urlAssertionMock(url)
+  }
+  // satisfies store.stopCallback = metricsEvents.close.bind(metricsEvents)
+  close() {}
 }
