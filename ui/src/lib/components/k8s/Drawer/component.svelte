@@ -69,7 +69,10 @@
   ]
 
   if (resource.metadata?.ownerReferences?.length || 0 > 0) {
-    details.push({ label: 'Controlled By', value: resource.metadata?.ownerReferences?.[0]?.name })
+    details.push({
+      label: 'Controlled By',
+      value: `${resource.metadata?.ownerReferences?.[0]?.kind} ${resource.metadata?.ownerReferences?.[0]?.name}`,
+    })
   }
 
   let activeTab: Tab = 'metadata'
@@ -85,9 +88,11 @@
 >
   <div class="flex flex-col h-full">
     <!-- Dark header -->
-    <div class="bg-gray-900 text-white p-4">
+    <div class="bg-gray-900 text-white p-4 pb-0">
       <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold">{resource.metadata?.name}</h2>
+        <h2 class="text-xl">
+          <span class="font-semibold">{resource.kind}</span>:&nbsp;<span>{resource.metadata?.name}</span>
+        </h2>
         <button
           type="button"
           class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -96,21 +101,18 @@
           <Close />
         </button>
       </div>
-    </div>
 
-    <!-- Tabs -->
-    <div class="bg-gray-800 text-sm font-medium text-center text-gray-400">
-      <ul class="flex" id="drawer-tabs">
-        <li class="mr-2">
-          <button id="metadata" class:active={activeTab === 'metadata'} on:click={setActiveTab}>Metadata</button>
-        </li>
-        <li class="mr-2">
-          <button id="yaml" class:active={activeTab === 'yaml'} on:click={setActiveTab}>YAML</button>
-        </li>
-        <li class="mr-2">
-          <button id="events" class:active={activeTab === 'events'} on:click={setActiveTab}>Events</button>
-        </li>
-      </ul>
+      <!-- Tabs -->
+      <div class="flex font-medium pt-3">
+        <ul class="flex w-full" id="drawer-tabs">
+          <li class="flex-1">
+            <button id="metadata" class:active={activeTab === 'metadata'} on:click={setActiveTab}>Metadata</button>
+          </li>
+          <li class="flex-1">
+            <button id="yaml" class:active={activeTab === 'yaml'} on:click={setActiveTab}>YAML</button>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <!-- Content -->
@@ -118,19 +120,19 @@
     <div class="flex-grow overflow-y-auto dark:text-gray-300">
       {#if activeTab === 'metadata'}
         <!-- Metadata tab -->
-        <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
+        <div class="bg-gray-800 text-gray-200 p-6 rounded-lg">
           <dl class="space-y-4">
             {#each details as { label, value }}
-              <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
-                <dt class="font-bold text-sm sm:w-1/3">{label}</dt>
-                <dd class="text-gray-400 sm:w-2/3">{value || 'N/A'}</dd>
+              <div class="flex flex-col sm:flex-row gap-9 border-b border-gray-700 pb-2">
+                <dt class="font-bold text-sm flex-none w-[180px]">{label}</dt>
+                <dd class="text-gray-400">{value || 'N/A'}</dd>
               </div>
             {/each}
 
             {#if resource.metadata?.labels}
-              <div class="flex flex-col sm:flex-row sm:justify-between border-b border-gray-700 pb-2">
-                <dt class="font-bold text-sm sm:w-1/3">Labels</dt>
-                <dd class="sm:w-2/3">
+              <div class="flex flex-col sm:flex-row gap-9 border-b border-gray-700 pb-2">
+                <dt class="font-bold text-sm flex-none w-[180px]">Labels</dt>
+                <dd class="overflow-x-auto">
                   <div class="flex flex-wrap gap-2">
                     {#each Object.entries(resource.metadata?.labels || {}) as [key, value]}
                       <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
@@ -141,9 +143,9 @@
             {/if}
 
             {#if resource.metadata?.annotations}
-              <div class="flex flex-col sm:flex-row sm:justify-between">
-                <dt class="font-bold text-sm sm:w-1/3">Annotations</dt>
-                <dd class="sm:w-2/3">
+              <div class="flex flex-col sm:flex-row gap-9">
+                <dt class="font-bold text-sm flex-none w-[180px]">Annotations</dt>
+                <dd class="overflow-x-auto">
                   <div class="flex flex-wrap gap-2">
                     {#each Object.entries(resource.metadata?.annotations || {}) as [key, value]}
                       <span class="bg-gray-600 px-2 py-0.5 rounded text-white text-xs">{key}: {value}</span>
