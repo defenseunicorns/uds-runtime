@@ -28,7 +28,6 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     try {
       // Base64 decode the data
       const { data, name, deployedComponents } = JSON.parse(atob(r.data?.data ?? '')) as DeployedPackage
-      console.debug(data)
 
       return {
         name,
