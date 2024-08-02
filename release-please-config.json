@@ -3,7 +3,6 @@
     ".": {
       "release-type": "simple",
       "bump-minor-pre-major": true,
-      "versioning": "prerelease",
       "draft": false,
       "changelog-path": "CHANGELOG.md",
       "changelog-sections": [
