@@ -1,3 +1,4 @@
+import type { ZarfPackage } from '$features/k8s/applications/zarf-packages/store'
 import type { KubernetesObject } from '@kubernetes/client-node'
 import { type Writable } from 'svelte/store'
 
@@ -19,12 +20,12 @@ export enum SearchByType {
   NAME = 'Name',
 }
 
-export interface ResourceWithTable<T extends KubernetesObject, U extends CommonRow> {
+export interface ResourceWithTable<T extends KubernetesObject | ZarfPackage, U extends CommonRow> {
   resource: T
   table: U
 }
 
-export interface ResourceStoreInterface<T extends KubernetesObject, U extends CommonRow> {
+export interface ResourceStoreInterface<T extends KubernetesObject | ZarfPackage, U extends CommonRow> {
   // Start the EventSource and update the resources
   start: () => () => void
   // Sort the table by the key

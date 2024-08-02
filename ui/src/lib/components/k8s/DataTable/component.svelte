@@ -13,6 +13,7 @@
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
+  import type { ZarfPackage } from '$features/k8s/applications/zarf-packages/store'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -21,7 +22,7 @@
   export let columns: [name: string, styles?: string][]
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
+  export let createStore: () => ResourceStoreInterface<KubernetesObject | ZarfPackage, any>
 
   // name and descripton of K8s resource
   export let name = ''

@@ -5,6 +5,7 @@ import {
   AudioConsole,
   BareMetalServer,
   ChartCombo,
+  DataTableReference,
   Db2Database,
   KubernetesPod,
   Layers,
@@ -19,6 +20,11 @@ const baseRoutes: BaseRoute[] = [
   {
     name: 'Overview',
     icon: ChartCombo,
+  },
+  {
+    name: 'Applications',
+    icon: DataTableReference,
+    children: ['Zarf Packages'],
   },
   {
     name: 'Monitor',

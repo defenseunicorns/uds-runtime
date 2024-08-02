@@ -6,6 +6,9 @@ export { default as EventTable } from './events/component.svelte'
 export { default as NamespaceTable } from './namespaces/component.svelte'
 export { default as NodeTable } from './nodes/component.svelte'
 
+// Application resources
+export { default as ZarfPackageTable } from './applications/zarf-packages/component.svelte'
+
 // Workload resources
 export { default as CronJobTable } from './workloads/cronjobs/component.svelte'
 export { default as DaemonSetsTable } from './workloads/daemonsets/component.svelte'
