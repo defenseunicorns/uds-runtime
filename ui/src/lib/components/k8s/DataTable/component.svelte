@@ -256,8 +256,10 @@
                     {:else if key === 'namespace'}
                       <button
                         on:click|stopPropagation={() => namespace.set(value)}
-                        class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left">{value}</button
+                        class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left"
                       >
+                        {value}
+                      </button>
                     {:else}
                       {value.text || value || '-'}
                     {/if}
