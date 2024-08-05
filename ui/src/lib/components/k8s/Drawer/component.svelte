@@ -91,8 +91,7 @@
     <div class="bg-gray-900 text-white p-4 pb-0">
       <div class="flex justify-between items-center">
         <h2 class="text-xl">
-          <span class="font-semibold">{resource.kind}</span>
-          :&nbsp;
+          <span class="font-semibold">{resource.kind}:</span>
           <span>{resource.metadata?.name}</span>
         </h2>
         <button
