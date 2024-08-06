@@ -4,6 +4,7 @@ import { render } from '@testing-library/svelte'
 
 import * as components from '$components'
 import type { KubernetesObject } from '@kubernetes/client-node'
+import _ from 'lodash'
 import type { ComponentType } from 'svelte'
 import type { Mock } from 'vitest'
 import type { CommonRow, ResourceWithTable } from './types'
@@ -53,35 +54,15 @@ export function testK8sTableWithCustomColumns(Component: ComponentType, props: R
   })
 }
 
-// TODO: look into deep copies since nested objects are still references and are getting mutated
-// Helper function to compare two objects while ignoring certain fields; can ignore nested fields (eg 'metadata.creationTimestamp')
 export function expectEqualIgnoringFields<T>(actual: T, expected: T, fieldsToIgnore: string[]) {
-  const expectedWithoutFields = { ...expected }
-  const actualWithoutFields = { ...actual }
+  const removeFields = (obj: T, fields: string[]) => {
+    const result = _.cloneDeep(obj)
+    fields.forEach((field) => _.unset(result, field))
+    return result
+  }
 
-  fieldsToIgnore.forEach((field) => {
-    if (field.includes('.')) {
-      const paths = field.split('.')
-
-      // Create temporary objects to traverse the object and delete the last field
-      let tmpExpect = expectedWithoutFields
-      let tmpActual = actualWithoutFields
-      // Traverse the object to the second to last field (e.g. [field1, field2, field3] -> field2)
-      for (let i = 0; i <= paths.length - 2; i++) {
-        tmpExpect = tmpExpect[paths[i] as keyof typeof tmpExpect] as T
-        tmpActual = tmpActual[paths[i] as keyof typeof tmpActual] as T
-
-        // when second to last field reached (e.g. field2 of 3), delete the last field (e.g. delete {field3: value})
-        if (i === paths.length - 2) {
-          delete tmpExpect[paths[i + 1] as keyof typeof tmpExpect]
-          delete tmpActual[paths[i + 1] as keyof typeof tmpActual]
-        }
-      }
-    } else {
-      delete expectedWithoutFields[field as keyof typeof expectedWithoutFields]
-      delete actualWithoutFields[field as keyof typeof actualWithoutFields]
-    }
-  })
+  const expectedWithoutFields = removeFields(expected, fieldsToIgnore)
+  const actualWithoutFields = removeFields(actual, fieldsToIgnore)
 
   expect(actualWithoutFields).toEqual(expectedWithoutFields)
 }
