@@ -11,4 +11,4 @@
   const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {name} {description} />
+<DataTable {columns} {createStore} {name} {description} isNamespaced={false} />

@@ -17,7 +17,6 @@ import {
 } from '$features/k8s/types'
 import ExemptionDetails from './exemption-details/component.svelte'
 import ExemptionMatcher from './exemption-matcher/component.svelte'
-import ExemptionPolicies from './exemption-policies/component.svelte'
 
 interface Row extends CommonRow {
   title: string
@@ -35,10 +34,7 @@ interface Row extends CommonRow {
     }
   }
   policies: {
-    component: typeof ExemptionPolicies
-    props: {
-      policies: Policy[]
-    }
+    list: Policy[]
   }
 }
 
@@ -74,10 +70,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
             },
           },
           policies: {
-            component: ExemptionPolicies,
-            props: {
-              policies: e.policies.sort(),
-            },
+            list: e.policies.sort(),
           },
         },
       }))

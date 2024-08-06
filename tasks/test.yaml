@@ -5,8 +5,9 @@ tasks:
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
-      - cmd: which playwright || npx playwright install
       - task: setup:build-ui
+      - cmd: npm run test:install # install playwright
+        dir: ui
       - task: setup:build-api
       - task: setup:slim-cluster
       - cmd: npm run test:integration

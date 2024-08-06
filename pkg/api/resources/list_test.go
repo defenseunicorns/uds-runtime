@@ -28,7 +28,7 @@ func TestGetResources(t *testing.T) {
 	resourceList := setupResourceList()
 
 	// Test GetResources
-	resources := resourceList.GetResources()
+	resources := resourceList.GetResources("", "")
 	require.Len(t, resources, 2)
 
 	// Extract resource names

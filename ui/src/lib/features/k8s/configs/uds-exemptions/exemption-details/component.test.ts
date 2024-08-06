@@ -23,14 +23,14 @@ describe('ExemptionElement', () => {
     expect(getByText('Test Exemption')).toBeInTheDocument()
   })
 
-  it('does not render information icon when description is missing', () => {
+  test('does not render information icon when description is missing', () => {
     const exemption = { title: 'No Description Exemption' } as ExemptionElement
     const { container } = render(ExemptionDetails, { props: { exemption } })
     expect(Information).not.toHaveBeenCalled()
     expect(container.querySelector('.tooltip')).toBeNull()
   })
 
-  it('renders information icon and tooltip when description is present', () => {
+  test('renders information icon and tooltip when description is present', () => {
     const exemption = { title: 'With Description', description: 'Test description' } as ExemptionElement
     const { container } = render(ExemptionDetails, { props: { exemption } })
     expect(Information).toHaveBeenCalled()

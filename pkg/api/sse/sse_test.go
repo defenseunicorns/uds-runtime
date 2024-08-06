@@ -31,7 +31,7 @@ func TestHandler(t *testing.T) {
 	mockPodData := test.CreateMockPod("mock-pod-1", "namespace1", "1")
 
 	// Mock getData function
-	getData := func() []unstructured.Unstructured {
+	getData := func(string, string) []unstructured.Unstructured {
 		return []unstructured.Unstructured{*mockPodData}
 	}
 

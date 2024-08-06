@@ -29,9 +29,10 @@ suite('PriorityClassesTable Component', () => {
     columns: [['name', 'emphasize'], ['value'], ['global_default'], ['description'], ['age']],
     name,
     description,
+    isNamespaced: false,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, name, description })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description, isNamespaced: false })
 
   vi.mock('../../store.ts', async (importOriginal) => {
     const mockData = [

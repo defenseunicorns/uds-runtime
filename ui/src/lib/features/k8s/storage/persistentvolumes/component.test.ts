@@ -29,9 +29,10 @@ suite('PersistentVolume Component', () => {
     columns: [['name', 'emphasize'], ['storage_class'], ['capacity'], ['claim'], ['age'], ['status']],
     name,
     description,
+    isNamespaced: false,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, name, description })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description, isNamespaced: false })
 
   vi.mock('../../store.ts', async (importOriginal) => {
     const mockData = [
