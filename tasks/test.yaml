@@ -9,7 +9,7 @@ tasks:
         dir: ui
       - task: setup:build-ui
       - task: setup:build-api
-#      - task: setup:slim-cluster
+      - task: setup:slim-cluster
       - cmd: npm run test:integration
         dir: ui
 
