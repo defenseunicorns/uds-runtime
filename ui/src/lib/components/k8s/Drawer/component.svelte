@@ -62,13 +62,13 @@
     return new Date(dateString).toLocaleString()
   }
 
-  const details = [
+  $: details = [
     { label: 'Created', value: formatDate(resource.metadata?.creationTimestamp as unknown as string) },
     { label: 'Name', value: resource.metadata?.name },
     { label: 'Namespace', value: resource.metadata?.namespace },
   ]
 
-  if (resource.metadata?.ownerReferences?.length || 0 > 0) {
+  if ((resource.metadata?.ownerReferences?.length && details) || 0 > 0) {
     details.push({
       label: 'Controlled By',
       value: `${resource.metadata?.ownerReferences?.[0]?.kind} ${resource.metadata?.ownerReferences?.[0]?.name}`,
