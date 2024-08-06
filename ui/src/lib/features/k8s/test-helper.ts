@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { render } from '@testing-library/svelte'
 
 import * as components from '$components'

@@ -147,17 +147,14 @@ suite('UDSExemptionTable Component', () => {
         },
       },
       policies: {
-        component: vi.fn(),
-        props: {
-          policies: [
-            'DisallowHostNamespaces',
-            'DisallowPrivileged',
-            'DropAllCapabilities',
-            'RequireNonRootUser',
-            'RestrictHostPathWrite',
-            'RestrictVolumeTypes',
-          ],
-        },
+        list: [
+          'DisallowHostNamespaces',
+          'DisallowPrivileged',
+          'DropAllCapabilities',
+          'RequireNonRootUser',
+          'RestrictHostPathWrite',
+          'RestrictVolumeTypes',
+        ],
       },
     },
   ]
@@ -165,6 +162,7 @@ suite('UDSExemptionTable Component', () => {
   const store = createStore()
   const start = store.start as unknown as () => ResourceWithTable<Exemption, any>[]
   expect(store.url).toEqual(`/api/v1/resources/configs/uds-exemptions?dense=true`)
+  console.log(start()[0].table)
   // ignore creationTimestamp because age is not calculated at this point and added to the table
   expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, [
     'creationTimestamp',
