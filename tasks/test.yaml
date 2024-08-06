@@ -37,7 +37,7 @@ tasks:
     actions:
       - task: deploy-min-core
       - cmd: uds zarf dev deploy
-        dir: ui/tests/package/podinfo
+        dir: ui/tests/packages/podinfo
 
   - name: deploy-min-core
     description: only run engine e2e tests
