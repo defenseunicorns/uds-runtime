@@ -1,5 +1,6 @@
 name: PR
 on:
+  workflow_call:
   pull_request:
     branches: [main]
     types: [milestoned, opened, edited, synchronize]
