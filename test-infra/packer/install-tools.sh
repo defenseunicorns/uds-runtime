@@ -39,4 +39,5 @@ sudo apt-get install helm
 
 # install uds-cli
 curl -LO "https://github.com/defenseunicorns/uds-cli/releases/download/v0.14.0/uds-cli_v0.14.0_Linux_amd64"
-sudo install -o root -g root -m 0755 uds /usr/local/bin/uds
+sudo mv uds-cli_v0.14.0_Linux_amd64 /usr/local/bin/uds
+sudo chmod +x /usr/local/bin/uds

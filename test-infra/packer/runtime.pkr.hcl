@@ -29,7 +29,10 @@ build {
 
   # wait for cloud-init to finish before running the install script
   provisioner "shell" {
-    inline = ["/usr/bin/cloud-init status --wait"]
+    inline = ["/usr/bin/cloud-init status --wait",
+     "echo set debconf to Noninteractive",
+      "echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections"
+    ]
     timeout = "5m"
   }
 
