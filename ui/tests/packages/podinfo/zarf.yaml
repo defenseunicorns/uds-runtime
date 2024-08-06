@@ -14,8 +14,15 @@ components:
         namespace: podinfo
         url: https://github.com/stefanprodan/podinfo.git
         gitPath: charts/podinfo
+        valuesFiles:
+          - values.yaml
     images:
       - ghcr.io/stefanprodan/podinfo:6.4.0
+    manifests:
+      - name: uds-crs
+        files:
+            - exemptions.yaml
+            - uds-package.yaml
     actions:
       onDeploy:
         after:

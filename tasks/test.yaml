@@ -35,14 +35,15 @@ tasks:
   - name: deploy-load
     description: "deploy some Zarf packages to test against"
     actions:
-      - task: deploy-core-pepr
+      - task: deploy-min-core
       - cmd: uds zarf dev deploy
         dir: ui/tests
 
-  - name: deploy-core-pepr
+  - name: deploy-min-core
     description: only run engine e2e tests
     actions:
       - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
         description: clone UDS Core
-      - cmd: cd tmp/uds-core && npm i && npx pepr deploy --confirm
-        description: cd into the tmp/uds-core directory and deploy UDS Core's Pepr module
+      - cmd: npm i && npx pepr deploy --confirm
+        dir: tmp/uds-core
+        description: deploy UDS Core's Pepr module
