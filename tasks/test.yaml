@@ -9,7 +9,7 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: setup:build-api
-      - cmd: k3d cluster create --image="rancher/k3s:v1.28.4-k3s2"
+      - cmd: k3d cluster create
       - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
@@ -36,7 +36,8 @@ tasks:
     description: "deploy some Zarf packages to test against"
     actions:
       - task: deploy-core-pepr
-      - cmd: uds zarf dev deploy oci://ghcr.io/defenseunicorns/uds-cli/podinfo:0.0.2 --confirm
+      - cmd: uds zarf dev deploy
+        dir: ui/tests
 
   - name: deploy-core-pepr
     description: only run engine e2e tests

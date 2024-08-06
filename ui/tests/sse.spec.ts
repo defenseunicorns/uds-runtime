@@ -20,7 +20,9 @@ async function deletePod(namespace: string, podName: string) {
 test.describe('SSE and reactivity', async () => {
   test('Pods are updated', async ({ page }) => {
     await page.goto('/workloads/pods')
-    const originalPodName = await page.getByRole('cell', { name: 'podinfo' }).first().textContent()
+    const originalPodName = await page.getByRole('cell', { name: 'podinfo-' }).first().textContent()
+
+    console.log('Original pod name:', originalPodName)
 
     // get pod name
     expect(originalPodName).not.toBeNull()
