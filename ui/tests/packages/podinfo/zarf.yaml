@@ -1,0 +1,34 @@
+kind: ZarfPackageConfig
+metadata:
+  name: test
+  description: |
+    used to load the cluster for e2e testing; using a local zarf.yaml for dev deploy
+  version: 0.0.1
+
+components:
+  - name: podinfo
+    required: true
+    charts:
+      - name: podinfo
+        version: 6.4.0
+        namespace: podinfo
+        url: https://github.com/stefanprodan/podinfo.git
+        gitPath: charts/podinfo
+        valuesFiles:
+          - values.yaml
+    images:
+      - ghcr.io/stefanprodan/podinfo:6.4.0
+    manifests:
+      - name: uds-crs
+        files:
+          - exemptions.yaml
+          - uds-package.yaml
+    actions:
+      onDeploy:
+        after:
+          - wait:
+              cluster:
+                kind: deployment
+                name: podinfo
+                namespace: podinfo
+                condition: available
