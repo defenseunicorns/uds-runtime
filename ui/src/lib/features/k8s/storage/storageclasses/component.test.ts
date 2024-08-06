@@ -21,7 +21,8 @@ suite('StorageClass Component', () => {
     columns: [['name', 'emphasize'], ['provisioner'], ['reclaim_policy'], ['default'], ['age']],
     name,
     description,
+    isNamespaced: false,
   })
 
-  testK8sTableWithCustomColumns(Component, { createStore, name, description })
+  testK8sTableWithCustomColumns(Component, { createStore, name, description, isNamespaced: false })
 })

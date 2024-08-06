@@ -3,13 +3,13 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
-  import { ChevronDown, ChevronUp, Filter, Search, Information } from 'carbon-icons-svelte'
+  import { ChevronDown, ChevronUp, Filter, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy, onMount } from 'svelte'
   import { type Unsubscriber } from 'svelte/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { Drawer } from '$components'
+  import { Drawer, Link } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
@@ -17,13 +17,16 @@
   // Determine if the data is namespaced
   export let isNamespaced = true
 
+  // Disable row click
+  export let disableRowClick = false
+
   // We have to be a bit generic here to handle the various Column/Row types coming from the various stores
-  export let columns: [name: string, styles?: string][]
+  export let columns: [name: string, styles?: string, modifier?: 'link-external' | 'link-internal'][]
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
 
-  // name and descripton of K8s resource
+  // name and description of K8s resource
   export let name = ''
   export let description = 'No description available'
 
@@ -69,7 +72,6 @@
         if (results.ok) {
           const data = await results.json()
           resource = data.Object as KubernetesObject
-          console.log(resource)
           return
         } else {
           // Otherwise, throw an error
@@ -230,21 +232,38 @@
             {#each $rows as row}
               <tr
                 id={row.resource.metadata?.uid}
-                on:click={() => goto(`${baseURL}/${row.resource.metadata?.uid}`)}
-                class:active={pathName.includes(row.resource.metadata?.uid ?? '')}
+                on:click={() =>
+                  !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
+                class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
+                class:cursor-pointer={!disableRowClick}
               >
-                {#each columns as [key, style]}
+                {#each columns as [key, style, modifier]}
                   <!-- Check object to avoid issues with `false` values -->
                   {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
-                  {#if value.component}
-                    <td class={style || ''}>
+                  <td class={style || ''}>
+                    {#if value.component}
                       <svelte:component this={value.component} {...value.props} />
-                    </td>
-                  {:else if value.text}
-                    <td class={style || ''}>{value.text || '-'}</td>
-                  {:else}
-                    <td class={style || ''}>{value || '-'}</td>
-                  {/if}
+                    {:else if value.list}
+                      <ul class="mt-4 text-sm">
+                        {#each value.list as item}
+                          <li>- {item}</li>
+                        {/each}
+                      </ul>
+                    {:else if modifier === 'link-external'}
+                      <Link href={value.href || value} text={value.text || value} target={'_blank'} />
+                    {:else if modifier === 'link-internal'}
+                      <Link href={value.href || value} text={value.text || value} target={''} />
+                    {:else if key === 'namespace'}
+                      <button
+                        on:click|stopPropagation={() => namespace.set(value)}
+                        class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left"
+                      >
+                        {value}
+                      </button>
+                    {:else}
+                      {value.text || value || '-'}
+                    {/if}
+                  </td>
                 {/each}
               </tr>
             {/each}

@@ -11,7 +11,7 @@ export interface CommonRow {
   }
 }
 
-export type ColumnWrapper<T> = [name: keyof T, styles?: string][]
+export type ColumnWrapper<T> = [name: keyof T, styles?: string, modifier?: 'link-external' | 'link-internal'][]
 
 export enum SearchByType {
   ANYWHERE = 'Anywhere',

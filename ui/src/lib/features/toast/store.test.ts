@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import { get } from 'svelte/store'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, vi } from 'vitest'
 import { addToast, removeToast, toast, type Toast } from './store'
 
 describe('Toast Store', () => {
@@ -16,11 +16,11 @@ describe('Toast Store', () => {
     vi.useRealTimers()
   })
 
-  it('should initialize with an empty array', () => {
+  test('should initialize with an empty array', () => {
     expect(get(toast)).toEqual([])
   })
 
-  it('should add a toast to the store', () => {
+  test('should add a toast to the store', () => {
     const newToast: Toast = {
       message: 'Test toast',
       timeoutSecs: 3,
@@ -33,7 +33,7 @@ describe('Toast Store', () => {
     expect(toasts[0].id).toBeDefined()
   })
 
-  it('should remove a toast from the store', () => {
+  test('should remove a toast from the store', () => {
     const newToast: Toast = {
       message: 'Test toast',
       timeoutSecs: 3,
@@ -47,7 +47,7 @@ describe('Toast Store', () => {
     expect(get(toast)).toHaveLength(0)
   })
 
-  it('should automatically remove a toast after the specified timeout', () => {
+  test('should automatically remove a toast after the specified timeout', () => {
     vi.useFakeTimers()
     const newToast: Toast = {
       message: 'Test toast',
@@ -61,7 +61,7 @@ describe('Toast Store', () => {
     expect(get(toast)).toHaveLength(0)
   })
 
-  it('should not remove a toast if timeout is not specified', () => {
+  test('should not remove a toast if timeout is not specified', () => {
     vi.useFakeTimers()
     const newToast: Toast = {
       message: 'Test toast',
@@ -75,7 +75,7 @@ describe('Toast Store', () => {
     expect(get(toast)).toHaveLength(1)
   })
 
-  it('should add multiple toasts and maintain their order', () => {
+  test('should add multiple toasts and maintain their order', () => {
     const toast1: Toast = { message: 'Toast 1', timeoutSecs: 3, type: 'info' }
     const toast2: Toast = { message: 'Toast 2', timeoutSecs: 3, type: 'success' }
     const toast3: Toast = { message: 'Toast 3', timeoutSecs: 3, type: 'error' }
@@ -91,7 +91,7 @@ describe('Toast Store', () => {
     expect(toasts[2].message).toBe('Toast 3')
   })
 
-  it('should not remove other toasts when removing a specific toast', () => {
+  test('should not remove other toasts when removing a specific toast', () => {
     const toast1: Toast = { message: 'Toast 1', timeoutSecs: 3, type: 'info' }
     const toast2: Toast = { message: 'Toast 2', timeoutSecs: 3, type: 'success' }
 
@@ -106,7 +106,7 @@ describe('Toast Store', () => {
     expect(updatedToasts[0].message).toBe('Toast 2')
   })
 
-  it('should do nothing when trying to remove a non-existent toast', () => {
+  test('should do nothing when trying to remove a non-existent toast', () => {
     const toast1: Toast = { message: 'Toast 1', timeoutSecs: 3, type: 'info' }
     addToast(toast1)
 

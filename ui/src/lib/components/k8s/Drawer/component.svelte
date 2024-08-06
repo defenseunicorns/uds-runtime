@@ -91,7 +91,8 @@
     <div class="bg-gray-900 text-white p-4 pb-0">
       <div class="flex justify-between items-center">
         <h2 class="text-xl">
-          <span class="font-semibold">{resource.kind}</span>:&nbsp;<span>{resource.metadata?.name}</span>
+          <span class="font-semibold">{resource.kind}:</span>
+          <span>{resource.metadata?.name}</span>
         </h2>
         <button
           type="button"
@@ -158,7 +159,7 @@
         </div>
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
-        <div class="bg-black text-gray-200 p-4 pb-20">
+        <div class="text-gray-200 p-4 pb-20">
           <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre w-full block">
             <!-- We turned off svelte/no-at-html-tags eslint rule because we are using DOMPurify to sanitize -->
             {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(resource), { language: 'yaml' }).value)}

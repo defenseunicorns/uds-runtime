@@ -58,4 +58,5 @@ export const resourceDescriptions: { [key: string]: string } = {
   VirtualServices: 'A VirtualService defines a set of traffic routing rules to apply when a host is addressed.',
   VolumeAttachments:
     'A VolumeAttachment captures the intent to attach or detach the specified volume to/from the specified node.',
+  'Zarf Packages': 'Artifact containing a set of components and configurations for air-gapped workloads.',
 }
