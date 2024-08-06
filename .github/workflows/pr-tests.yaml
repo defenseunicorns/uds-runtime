@@ -1,4 +1,4 @@
-name: PR
+name: PR Tests
 on:
   workflow_call:
   pull_request:
