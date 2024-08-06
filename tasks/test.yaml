@@ -9,10 +9,10 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: setup:build-api
-      - task: setup:slim-cluster
+      - cmd: k3d cluster create --image="rancher/k3s:v1.28.4-k3s2"
+      - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
-
   - name: go
     description: "run api server unit tests"
     actions:
@@ -31,3 +31,18 @@ tasks:
         description: "build ui since embedded in main.go"
       - task: go
       - task: ui-unit
+
+  - name: deploy-load
+    description: "deploy some Zarf packages to test against"
+    actions:
+      - task: deploy-core-pepr
+      - cmd: uds zarf p d oci://ghcr.io/defenseunicorns/packages/init:v0.36.1 --confirm
+      - cmd: uds zarf p d oci://ghcr.io/defenseunicorns/uds-cli/podinfo:0.0.2 --confirm
+
+  - name: deploy-core-pepr
+    description: only run engine e2e tests
+    actions:
+      - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
+        description: clone UDS Core
+      - cmd: cd tmp/uds-core && npm i && npx pepr deploy --confirm
+        description: cd into the tmp/uds-core directory and deploy UDS Core's Pepr module
