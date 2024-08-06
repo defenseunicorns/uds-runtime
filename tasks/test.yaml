@@ -36,8 +36,7 @@ tasks:
     description: "deploy some Zarf packages to test against"
     actions:
       - task: deploy-core-pepr
-      - cmd: uds zarf p d oci://ghcr.io/defenseunicorns/packages/init:v0.36.1 --confirm
-      - cmd: uds zarf p d oci://ghcr.io/defenseunicorns/uds-cli/podinfo:0.0.2 --confirm
+      - cmd: uds zarf dev deploy oci://ghcr.io/defenseunicorns/uds-cli/podinfo:0.0.2 --confirm
 
   - name: deploy-core-pepr
     description: only run engine e2e tests
