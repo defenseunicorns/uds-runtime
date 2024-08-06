@@ -21,8 +21,8 @@ components:
     manifests:
       - name: uds-crs
         files:
-            - exemptions.yaml
-            - uds-package.yaml
+          - exemptions.yaml
+          - uds-package.yaml
     actions:
       onDeploy:
         after:

@@ -7,7 +7,7 @@ spec:
   exemptions:
     - policies:
         - RequireNonRootUser
-      title: "podinfo2"
+      title: 'podinfo2'
       matcher:
         namespace: podinfo
-        name: "^podinfo.*"
+        name: '^podinfo.*'
