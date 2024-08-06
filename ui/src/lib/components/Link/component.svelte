@@ -7,12 +7,16 @@
   export let text: string
 </script>
 
-<a
-  {href}
-  {target}
-  on:click|stopPropagation
-  rel="noopener noreferrer"
-  class="font-medium text-blue-600 dark:text-blue-500 hover:underline pr-4"
->
-  {text}
-</a>
+{#if href !== ''}
+  <a
+    {href}
+    {target}
+    on:click|stopPropagation
+    rel="noopener noreferrer"
+    class="font-medium text-blue-600 dark:text-blue-500 hover:underline pr-4"
+  >
+    {text}
+  </a>
+{:else}
+  <span class="dark:text-gray-400 mt-4 text-sm">{text}</span>
+{/if}
