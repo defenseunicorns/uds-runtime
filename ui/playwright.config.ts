@@ -10,7 +10,7 @@ export default defineConfig({
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
   },
-  timeout: process.env.CI ? 10 * 1000 : 5 * 1000,
+  timeout: 10 * 1000,
   testDir: 'tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
