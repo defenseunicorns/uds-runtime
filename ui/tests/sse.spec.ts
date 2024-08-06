@@ -22,8 +22,6 @@ test.describe('SSE and reactivity', async () => {
     await page.goto('/workloads/pods')
     const originalPodName = await page.getByRole('cell', { name: 'podinfo-' }).first().textContent()
 
-    console.log('Original pod name:', originalPodName)
-
     // get pod name
     expect(originalPodName).not.toBeNull()
 
