@@ -9,10 +9,10 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: setup:build-api
-      - task: setup:slim-cluster
+      - cmd: k3d cluster create
+      - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
-
   - name: go
     description: "run api server unit tests"
     actions:
@@ -31,3 +31,19 @@ tasks:
         description: "build ui since embedded in main.go"
       - task: go
       - task: ui-unit
+
+  - name: deploy-load
+    description: "deploy some Zarf packages to test against"
+    actions:
+      - task: deploy-min-core
+      - cmd: uds zarf dev deploy
+        dir: ui/tests/packages/podinfo
+
+  - name: deploy-min-core
+    description: only run engine e2e tests
+    actions:
+      - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
+        description: clone UDS Core
+      - cmd: npm i && npx pepr deploy --confirm
+        dir: tmp/uds-core
+        description: deploy UDS Core's Pepr module
