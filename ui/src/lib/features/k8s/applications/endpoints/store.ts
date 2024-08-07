@@ -26,6 +26,9 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/configs/uds-packages?dense=true`
 
   const endpointBuilder = (r: Resource, e: Expose) => {
+    if (r.status?.phase === 'Pending') {
+      return { href: '', sort: '', text: 'Pending' }
+    }
     const url = r.status?.endpoints?.find((ep) => ep.includes(`${e.host}.`)) ?? ''
     return {
       href: `https://${url}`,

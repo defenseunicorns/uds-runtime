@@ -250,9 +250,9 @@
                         {/each}
                       </ul>
                     {:else if modifier === 'link-external'}
-                      <Link href={value.href || value} text={value.text || value} target={'_blank'} />
+                      <Link href={value.href || ''} text={value.text || ''} target={'_blank'} />
                     {:else if modifier === 'link-internal'}
-                      <Link href={value.href || value} text={value.text || value} target={''} />
+                      <Link href={value.href || ''} text={value.text || ''} target={''} />
                     {:else if key === 'namespace'}
                       <button
                         on:click|stopPropagation={() => namespace.set(value)}
