@@ -7,6 +7,9 @@ variables:
     # x-release-please-start-version
     default: 0.1.0
     # x-release-please-end
+  - name: DIR
+    description: "directory of the zarf.yaml"
+    default: .
 
 tasks:
   - name: publish-uds-runtime
@@ -31,10 +34,14 @@ tasks:
     description: "build the uds runtime zarf packages (multi-arch)"
     actions:
       - cmd: ./uds zarf p create --set REF=${REF} -a amd64 -o build --confirm
+        dir: ${DIR}
       - cmd: ./uds zarf p create --set REF=${REF} -a arm64 -o build --confirm
+        dir: ${DIR}
 
   - name: publish-zarf-packages
     description: "publish uds runtime zarf packages (multi-arch)"
     actions:
       - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-amd64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds
+        dir: ${DIR}
       - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-arm64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds
+        dir: ${DIR}
