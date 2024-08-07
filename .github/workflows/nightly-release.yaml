@@ -54,6 +54,7 @@ jobs:
       - name: Update nightly-unstable tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+        working-directory: hack
         run: |
           # cleanup old release
           gh release delete nightly-unstable --cleanup-tag -y || true
