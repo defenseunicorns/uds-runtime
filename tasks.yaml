@@ -3,6 +3,7 @@ includes:
   - lint: tasks/lint.yaml
   - setup: tasks/setup.yaml
   - build: tasks/build.yaml
+  - swagger: tasks/swagger.yaml
 
 variables:
   - name: REF

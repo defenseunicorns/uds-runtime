@@ -1,3 +1,5 @@
+exclude: '^docs/swagger.*\.json$|^docs/swagger.*\.yaml$'
+
 repos:
   ### Global ###
   - repo: https://github.com/pre-commit/pre-commit-hooks
