@@ -84,6 +84,7 @@
 </script>
 
 <div
+  data-testid="drawer"
   class="fixed top-16 right-0 z-40 h-screen overflow-y-auto w-1/2 dark:bg-gray-800 shadow-2xl shadow-black/80 transform transition-transform duration-300 ease-in-out"
 >
   <div class="flex flex-col h-full">
