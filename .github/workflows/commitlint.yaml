@@ -1,4 +1,4 @@
-name: PR Ttle
+name: PR Title and Commit Lint
 
 on:
   pull_request:
