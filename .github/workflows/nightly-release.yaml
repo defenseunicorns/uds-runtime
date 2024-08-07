@@ -49,7 +49,7 @@ jobs:
 
       - name: Publish
         run: |
-          uds run build:publish-uds-runtime --set REF=nightly-unstable
+          uds run build:publish-uds-runtime --set REF=nightly-unstable --DIR=hack
 
       - name: Update nightly-unstable tag
         env:

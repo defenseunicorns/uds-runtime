@@ -10,6 +10,9 @@ variables:
     # x-release-please-start-version
     default: 0.1.0
     # x-release-please-end
+  - name: DIR
+    description: "directory of the zarf.yaml"
+    default: .
 
 tasks:
   - name: dev-server
