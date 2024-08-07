@@ -17,7 +17,7 @@ test.describe('Drawer', async () => {
       await expect(drawerEl).toBeVisible()
       await expect(drawerEl.getByText('Created')).toBeVisible()
       await expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
-      await expect(drawerEl.getByText('Namespace')).toBeVisible()
+      await expect(drawerEl.getByText('Annotations')).toBeVisible()
       await expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
     })
 
