@@ -13,7 +13,7 @@ data "aws_ami" "latest_runtime_ephemeral_ami" {
 
   filter {
     name   = "name"
-    values = ["runtime-epehemeral-*"]
+    values = ["runtime-ephemeral-*"]
   }
 
   owners = ["${data.aws_caller_identity.current.account_id}"]
@@ -31,23 +31,12 @@ locals {
 resource "time_static" "creation_time" {}
 
 resource "aws_instance" "ec2_instance" {
-  ami           = data.aws_ami.latest_platform_interview_ami.image_id
+  ami           = data.aws_ami.latest_runtime_ephemeral_ami.image_id
   instance_type = "t2.xlarge"
   tags          = local.tags
 
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data              = file("setup.sh")
-
-   provisioner "file" {
-    source      = "../bundle/uds-bunle.yaml"
-    destination = "/tmp/bundle/uds-bundle.yaml"
-  }
-
-   provisioner "file" {
-    source      = "../tasks/infra.yaml"
-    destination = "/tmp/infra.yaml"
-  }
-
 
   root_block_device {
     volume_size           = 32

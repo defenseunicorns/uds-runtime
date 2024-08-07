@@ -51,4 +51,4 @@ tasks:
     description: "destroy runtime test infra (requires aws cli and terminal authenticated to aws account)"
     actions:
       - cmd: |
-          tofu -chdir=../terraform destroy -auto-approve
+          tofu -chdir=test-infra/terraform destroy -auto-approve
