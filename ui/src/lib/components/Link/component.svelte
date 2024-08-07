@@ -7,7 +7,7 @@
   export let text: string
 </script>
 
-{#if href !== ''}
+{#if href}
   <a
     {href}
     {target}
