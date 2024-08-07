@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
+  region = var.region
 }
 
 resource "random_id" "unique_id" {
@@ -32,7 +32,7 @@ resource "time_static" "creation_time" {}
 
 resource "aws_instance" "ec2_instance" {
   ami           = data.aws_ami.latest_runtime_ephemeral_ami.image_id
-  instance_type = "t2.xlarge"
+  instance_type = "t3.2xl"
   tags          = local.tags
 
   vpc_security_group_ids = [aws_security_group.security_group.id]
