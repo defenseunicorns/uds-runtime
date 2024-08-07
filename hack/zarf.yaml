@@ -1,0 +1,16 @@
+kind: ZarfPackageConfig
+metadata:
+  name: uds-runtime
+  description: nightly release of uds-runtime
+  version: nightly-unstable
+
+components:
+  - name: uds-runtime
+    required: true
+    images:
+      - ghcr.io/defenseunicorns/uds-runtime:nightly-unstable
+    charts:
+      - name: uds-runtime
+        localPath: ../chart
+        namespace: uds-runtime
+        version: 0.1.0
