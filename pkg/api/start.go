@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"log"
 	"net/http"
 
 	"strings"
@@ -29,7 +28,7 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 // @schemes http https
-func Start(assets embed.FS) error {
+func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r := chi.NewRouter()
 
 	r.Use(udsmiddleware.ConditionalCompress)
@@ -39,7 +38,7 @@ func Start(assets embed.FS) error {
 	ctx := context.Background()
 	cache, err := resources.NewCache(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to create cache: %w", err)
+		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 
 	// Add Swagger UI route
@@ -160,22 +159,18 @@ func Start(assets embed.FS) error {
 	})
 
 	// Serve static files from embed.FS
-	staticFS, err := fs.Sub(assets, "ui/build")
-	if err != nil {
-		return fmt.Errorf("failed to create static file system: %w", err)
+	if assets != nil {
+		staticFS, err := fs.Sub(assets, "ui/build")
+		if err != nil {
+			return nil, fmt.Errorf("failed to create static file system: %w", err)
+		}
+
+		if err := fileServer(r, http.FS(staticFS)); err != nil {
+			return nil, fmt.Errorf("failed to serve static files: %w", err)
+		}
 	}
 
-	if err := fileServer(r, http.FS(staticFS)); err != nil {
-		return fmt.Errorf("failed to serve static files: %w", err)
-	}
-
-	log.Println("Starting server on :8080")
-	//nolint:gosec
-	if err := http.ListenAndServe(":8080", r); err != nil {
-		return fmt.Errorf("server failed to start: %w", err)
-	}
-
-	return nil
+	return r, nil
 }
 
 // fileServer is a custom file server handler for embedded files
