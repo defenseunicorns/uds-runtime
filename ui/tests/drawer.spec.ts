@@ -18,7 +18,7 @@ test.describe('Drawer', async () => {
       await expect(drawerEl.getByText('Created')).toBeVisible()
       await expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
       await expect(drawerEl.getByText('Namespace')).toBeVisible()
-      await expect(drawerEl.getByText('istio-admin-gateway')).toBeVisible()
+      await expect(drawerEl.getByText('kube-system')).toBeVisible()
     })
 
     test('will display YAML details', async ({ page }) => {
@@ -26,7 +26,7 @@ test.describe('Drawer', async () => {
 
       await drawerEl.getByRole('button', { name: 'YAML' }).click()
       await expect(drawerEl.getByText('namespace:')).toBeVisible()
-      await expect(drawerEl.getByText('istio-admin-gateway', { exact: true })).toBeVisible()
+      await expect(drawerEl.getByText('kube-system', { exact: true })).toBeVisible()
     })
   })
 })
