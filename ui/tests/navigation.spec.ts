@@ -17,7 +17,8 @@ test.describe('Navigation', async () => {
 
   test.describe('navigates to Applications', async () => {
     test('Packages page', async ({ page }) => {
-      await page.goto('/applications/packages')
+      await page.getByRole('button', { name: 'Applications' }).click()
+      await page.getByRole('link', { name: 'Packages' }).click()
 
       const query = 'podinfo-test' // package name
       const element = page.locator(`.emphasize:has-text("${query}")`)
@@ -29,6 +30,10 @@ test.describe('Navigation', async () => {
     test('Pepr page', async ({ page }) => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Pepr' }).click()
+
+      const query = 'uds-policy-exemptions/podinfo2' // package name
+      const element = page.locator(`td:has-text("${query}")`).first()
+      await expect(element).toBeVisible()
     })
 
     test('Events page', async ({ page }) => {
@@ -189,8 +194,19 @@ test.describe('Navigation', async () => {
     })
   })
 
-  test('Namespaces page', async ({ page }) => {
+  test('navigates to Namespaces page', async ({ page }) => {
     await page.getByRole('link', { name: 'Namespaces' }).click()
+
+    const element = page.locator(`.emphasize:has-text("${query}")`).first()
+    await expect(element).toBeVisible()
+  })
+
+  test('navigates to Nodes page', async ({ page }) => {
+    await page.getByRole('link', { name: 'Nodes' }).click()
+
+    const query = 'k3d-runtime-server-0'
+    const element = page.locator(`.emphasize:has-text("${query}")`).first()
+    await expect(element).toBeVisible()
   })
 
   test('navigates to Docs page', async ({ page }) => {
