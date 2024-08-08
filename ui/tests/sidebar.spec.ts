@@ -47,4 +47,19 @@ test.describe('Sidebar', async () => {
     await sideBarText.click()
     await expect(subMenuText).not.toBeVisible()
   })
+
+  test('filter sidebar items', async ({ page }) => {
+    const nonFilteredText = page.getByText('Configs')
+    await expect(nonFilteredText).toBeVisible()
+
+    // type in searchbar
+    const filterInput = page.getByPlaceholder('Filter Pages')
+    await filterInput.pressSequentially('Pods')
+    await expect(filterInput).toHaveValue('Pods')
+
+    // check if Pods is visible and Configs is not after filtering
+    const filteredText = page.getByText('Pods')
+    await expect(filteredText).toBeVisible()
+    await expect(nonFilteredText).not.toBeVisible()
+  })
 })
