@@ -13,7 +13,7 @@ async function deletePod(namespace: string, podName: string) {
     kc.loadFromDefault() // Load the kubeconfig file from default location
 
     const k8sApi = kc.makeApiClient(k8s.CoreV1Api)
-    await k8sApi.deleteNamespacedPod({ name: podName, namespace: namespace })
+    await k8sApi.deleteNamespacedPod({ name: podName, namespace: namespace, gracePeriodSeconds: 0 })
     console.log(`Pod ${podName} deleted successfully`)
   } catch (err) {
     console.error(`Failed to delete pod ${podName}:`, err)
