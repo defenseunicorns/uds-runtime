@@ -201,7 +201,7 @@
         <div class="flex-grow"></div>
         <div>
           {#if isNamespaced}
-            <select id="stream" bind:value={$namespace} data-testid={`${name}-namespace-select`}>
+            <select id="stream" bind:value={$namespace} data-testid={`${name}-table-filter-namespace-select`}>
               <option value="" data-testid={`${name}-namespace-select-all`}>All Namespaces</option>
               <hr />
               {#each $namespaces as ns}
