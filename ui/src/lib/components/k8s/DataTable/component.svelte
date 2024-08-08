@@ -139,11 +139,13 @@
   <div class="table-container">
     <div class="table-content">
       <div class="table-header">
-        <span class="dark:text-white">{name}</span>
+        <span class="dark:text-white" data-testid="table-header">{name}</span>
         {#if isFiltering}
-          <span class="dark:text-gray-500 pl-2">(showing {$rows.length} of {$numResources})</span>
+          <span class="dark:text-gray-500 pl-2" data-testid="table-header-results">
+            (showing {$rows.length} of {$numResources})
+          </span>
         {:else}
-          <span class="dark:text-gray-500 pl-2">({$numResources})</span>
+          <span class="dark:text-gray-500 pl-2" data-testid="table-header-results">({$numResources})</span>
         {/if}
         <div class="relative group">
           <Information class="ml-2 w-4 h-4 text-gray-400" />
@@ -199,11 +201,13 @@
         <div class="flex-grow"></div>
         <div>
           {#if isNamespaced}
-            <select id="stream" bind:value={$namespace}>
-              <option value="">All Namespaces</option>
+            <select id="stream" bind:value={$namespace} data-testid="table-filter-namespace-select">
+              <option value="" data-testid="namespace-select-all">All Namespaces</option>
               <hr />
               {#each $namespaces as ns}
-                <option value={ns.table.name}>{ns.table.name}</option>
+                <option value={ns.table.name} data-testid={`namespace-select-${ns.table.name}`}>
+                  {ns.table.name}
+                </option>
               {/each}
             </select>
           {/if}

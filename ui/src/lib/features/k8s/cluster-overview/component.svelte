@@ -206,7 +206,7 @@
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
       <div class="px-4 py-5 sm:p-6">
         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Nodes</dt>
-        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white" data-testid="node-count">
           {clusterData.totalNodes}
         </dd>
       </div>

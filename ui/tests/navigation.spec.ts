@@ -14,9 +14,8 @@ test.describe('Navigation', async () => {
   test('Overview page', async ({ page }) => {
     await page.getByRole('link', { name: 'Overview' }).click()
 
-    const query = '1' // number of running nodes
-    const element = page.locator(`//dd[normalize-space(text())="${query}"]`)
-    await expect(element).toHaveText('1') // ensure exact match
+    const nodeCountEl = page.getByTestId(`node-count`)
+    await expect(nodeCountEl).toHaveText('1')
   })
 
   test.describe('navigates to Applications', async () => {
