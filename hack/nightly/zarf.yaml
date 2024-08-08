@@ -14,3 +14,9 @@ components:
         localPath: ../chart
         namespace: uds-runtime
         version: 0.1.0
+        values:
+          replicaCount: 1
+          image:
+            repository: ghcr.io/defenseunicorns/uds-runtime
+            tag: 0.1.0
+            pullPolicy: Always
