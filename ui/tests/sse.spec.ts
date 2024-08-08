@@ -4,6 +4,9 @@
 import k8s from '@kubernetes/client-node'
 import { expect, test } from '@playwright/test'
 
+// Annotate entire file as serial.
+test.describe.configure({ mode: 'serial' })
+
 async function deletePod(namespace: string, podName: string) {
   try {
     const kc = new k8s.KubeConfig()
