@@ -13,6 +13,10 @@ test.describe('Navigation', async () => {
 
   test('Overview page', async ({ page }) => {
     await page.getByRole('link', { name: 'Overview' }).click()
+
+    const query = '1' // number of running nodes
+    const element = page.locator(`//dd[normalize-space(text())="${query}"]`)
+    await expect(element).toHaveText('1') // ensure exact match
   })
 
   test.describe('navigates to Applications', async () => {
@@ -169,6 +173,10 @@ test.describe('Navigation', async () => {
     test('Network Policies page', async ({ page }) => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Network Policies' }).click()
+
+      const query = 'allow-podinfo-egress-dns-lookup-via-coredns' // network policy name
+      const element = page.locator(`.emphasize:has-text("${query}")`).first()
+      await expect(element).toBeVisible()
     })
 
     test('Endpoints page', async ({ page }) => {
