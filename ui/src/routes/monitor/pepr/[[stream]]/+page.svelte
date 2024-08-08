@@ -100,6 +100,11 @@
 
   const widths = ['w-1/6', 'w-1/3', 'w-1/4', 'w-2/5', 'w-1/2', 'w-1/5', 'w-1/3', 'w-1/4']
   const skeletonRows = widths.sort(() => Math.random() - 0.5)
+
+  function handleStreamChange(event: Event) {
+    const target = event.target as HTMLSelectElement
+    goto(`/monitor/pepr/${target.value}`)
+  }
 </script>
 
 <section class="table-section">
@@ -108,13 +113,7 @@
       <div class="table-filter-section">
         <div class="grid w-full grid-cols-1 md:grid-cols-4 md:gap-4 lg:w-2/3">
           <div class="w-full">
-            <select
-              id="stream"
-              bind:value={streamFilter}
-              on:change={(val) => {
-                goto(`/monitor/pepr/${val.target.value}`)
-              }}
-            >
+            <select id="stream" bind:value={streamFilter} on:change={handleStreamChange}>
               <option value="">All Data</option>
               <hr />
               <option value="policies">UDS Policies</option>
