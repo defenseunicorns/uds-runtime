@@ -23,11 +23,15 @@ tasks:
       - task: common:yaml
 
   - name: ui
-    description: "Run ui linters and type check"
+    description: "Run ui lint and type check"
     actions:
       - cmd: npm run lint
         dir: ui
-      - cmd: npm run format
-        dir: ui
       - cmd: npm run check
+        dir: ui
+
+  - name: format-ui
+    description: "Format ui code"
+    actions:
+      - cmd: npm ci && npm run format
         dir: ui
