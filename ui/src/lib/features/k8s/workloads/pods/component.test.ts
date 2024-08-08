@@ -171,7 +171,7 @@ suite('PodTable Component', () => {
     },
     restarts: 1,
     controlled_by: 'DaemonSet',
-    status: 'Running',
+    status: { component: SvelteComponent, props: { status: 'Running' } },
     node: '',
   }
 
@@ -187,6 +187,7 @@ suite('PodTable Component', () => {
     'creationTimestamp',
     'containers.component',
     'metrics.component',
+    'status.component',
   ])
   vi.unstubAllGlobals()
 })
