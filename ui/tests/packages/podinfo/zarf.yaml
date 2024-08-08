@@ -1,6 +1,6 @@
 kind: ZarfPackageConfig
 metadata:
-  name: test
+  name: podinfo-test
   description: |
     used to load the cluster for e2e testing; using a local zarf.yaml for dev deploy
   version: 0.0.1
