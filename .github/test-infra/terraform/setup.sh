@@ -11,7 +11,7 @@ public_ip="$(curl -s https://checkip.amazonaws.com/)"
 #     --k3s-arg "--tls-san=$public_ip@server:*"
 
 # Build and Deploy Bundle
-cat <<EOF > /tmp/bundle/uds-bundle.yaml
+cat <<EOF > /tmp/uds-bundle.yaml
     kind: UDSBundle
     metadata:
       name: runtime-test
@@ -49,14 +49,14 @@ cat <<EOF > /tmp/bundle/uds-bundle.yaml
 
       - name: runtime
         repository: ghcr.io/defenseunicorns/packages/uds/uds-runtime
-        ref: 0.1.0
+        ref: nightly-unstable
 EOF
 
-uds create /tmp/bundle/ --confirm -o /tmp/bundle/
-uds deploy /tmp/bundle/uds-bundle-runtime-test-*.tar.zst --confirm --set uds-k3d-dev.K3D_EXTRA_ARGS="--k3s-arg --tls-san=$public_ip@server:*"
+uds create /tmp --confirm -o /tmp
+uds deploy /tmp/uds-bundle-runtime-test-*.tar.zst --confirm --set uds-k3d-dev.K3D_EXTRA_ARGS="--k3s-arg --tls-san=$public_ip@server:*"
 
 # Edit kubeconfig for remote access
 mkdir -p /home/ubuntu/.kube
-k3d kubeconfig get interview > /home/ubuntu/.kube/config
+k3d kubeconfig get uds > /home/ubuntu/.kube/config
 kubeconfig=$(sed 's/0\.0\.0\.0/'"$public_ip"'/g' /home/ubuntu/.kube/config)
 echo "$kubeconfig" > /home/ubuntu/kubeconfig-remote.yaml

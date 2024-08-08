@@ -32,7 +32,7 @@ resource "time_static" "creation_time" {}
 
 resource "aws_instance" "ec2_instance" {
   ami           = data.aws_ami.latest_runtime_ephemeral_ami.image_id
-  instance_type = "t3.2xl"
+  instance_type = "m5.2xlarge"
   tags          = local.tags
 
   vpc_security_group_ids = [aws_security_group.security_group.id]
@@ -50,11 +50,18 @@ resource "aws_security_group" "security_group" {
   description = "kube-api access from anywhere"
 
   ingress {
-    from_port   = 6443
-    to_port     = 6443
+    from_port   = 6550
+    to_port     = 6550
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # ingress {
+  #   from_port   = 6443
+  #   to_port     = 6443
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
 
   egress {
     from_port   = 0
