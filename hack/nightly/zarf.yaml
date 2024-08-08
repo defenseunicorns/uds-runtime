@@ -11,7 +11,7 @@ components:
       - ghcr.io/defenseunicorns/uds-runtime:nightly-unstable
     charts:
       - name: uds-runtime
-        localPath: ../chart
+        localPath: ../../chart
         namespace: uds-runtime
         version: 0.1.0
         valuesFiles:
