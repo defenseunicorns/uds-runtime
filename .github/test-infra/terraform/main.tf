@@ -61,14 +61,8 @@ resource "local_file" "ssh_pem" {
 
   filename        = "runtime-dev.pem"
   content         = tls_private_key.ssh[0].private_key_pem
-  file_permission = "0600"
+  file_permission = "0400"
 }
-
-# data "tls_public_key" "ssh" {
-#   count = var.enable_ssh ? 1 : 0
-
-#   private_key_pem  = tls_private_key.ssh[0].private_key_pem
-# }
 
 resource "local_file" "ssh_pub" {
   count = var.enable_ssh ? 1 : 0
