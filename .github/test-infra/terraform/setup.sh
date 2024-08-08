@@ -16,7 +16,6 @@ cat <<EOF > /tmp/uds-bundle.yaml
     metadata:
       name: runtime-test
       description: A UDS bundle for deploying UDS Runtime with UDS Core
-      version: "0.24.0"
 
     packages:
       - name: uds-k3d-dev
@@ -53,10 +52,4 @@ cat <<EOF > /tmp/uds-bundle.yaml
 EOF
 
 uds create /tmp --confirm -o /tmp
-uds deploy /tmp/uds-bundle-runtime-test-*.tar.zst --confirm --set uds-k3d-dev.K3D_EXTRA_ARGS="--k3s-arg --tls-san=$public_ip@server:*"
-
-# Edit kubeconfig for remote access
-mkdir -p /home/ubuntu/.kube
-k3d kubeconfig get uds > /home/ubuntu/.kube/config
-kubeconfig=$(sed 's/0\.0\.0\.0/'"$public_ip"'/g' /home/ubuntu/.kube/config)
-echo "$kubeconfig" > /home/ubuntu/kubeconfig-remote.yaml
+uds deploy /tmp/uds-bundle-runtime-test-*.tar.zst --confirm

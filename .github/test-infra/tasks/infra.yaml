@@ -8,17 +8,14 @@ tasks:
   - name: create-iac
     description: "spinup runtime test infra"
     actions:
-      - cmd: echo ${STATE_KEY} | sed 's/\.tfstate/-buckets1.tfstate/g'
-        setVariables:
-          - name: BUCKETS_STATE_KEY
       - cmd: |
           tofu init -force-copy \
           -backend-config="bucket=${STATE_BUCKET}" \
-          -backend-config="key=${BUCKETS_STATE_KEY}" \
+          -backend-config="key=${STATE_KEY}" \
           -backend-config="region=${REGION}" \
           -backend-config="dynamodb_table=${DYNAMODB_TABLE}"
         dir: .github/test-infra/terraform
-      - cmd: terraform apply -auto-approve
+      - cmd: tofu apply -auto-approve
         dir: .github/test-infra/terraform
 
   - name: destroy-iac

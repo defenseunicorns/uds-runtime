@@ -33,6 +33,7 @@ resource "time_static" "creation_time" {}
 resource "aws_instance" "ec2_instance" {
   ami           = data.aws_ami.latest_runtime_ephemeral_ami.image_id
   instance_type = "m5.2xlarge"
+  key_name = var.enable_ssh ? aws_key_pair.ssh[0].key_name: null
   tags          = local.tags
 
   vpc_security_group_ids = [aws_security_group.security_group.id]
@@ -45,9 +46,56 @@ resource "aws_instance" "ec2_instance" {
   }
 }
 
+#
+# SSH Config for Testing
+#
+resource "tls_private_key" "ssh" {
+  count = var.enable_ssh ? 1 : 0
+
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "ssh_pem" {
+  count = var.enable_ssh ? 1 : 0
+
+  filename        = "runtime-dev.pem"
+  content         = tls_private_key.ssh[0].private_key_pem
+  file_permission = "0600"
+}
+
+# data "tls_public_key" "ssh" {
+#   count = var.enable_ssh ? 1 : 0
+
+#   private_key_pem  = tls_private_key.ssh[0].private_key_pem
+# }
+
+resource "local_file" "ssh_pub" {
+  count = var.enable_ssh ? 1 : 0
+
+  filename        = "runtime-dev.pub"
+  content         = tls_private_key.ssh[0].public_key_openssh
+  file_permission = "0644"
+}
+
+resource "aws_key_pair" "ssh" {
+  count = var.enable_ssh ? 1 : 0
+
+  key_name   = "runtime-dev-key"
+  # public_key = tls_private_key.ssh[0].public_key_openssh
+   public_key = local_file.ssh_pub[0].content
+}
+
+
 resource "aws_security_group" "security_group" {
   name        = "runtime-ephemeral-sg-${random_id.unique_id.hex}"
-  description = "kube-api access from anywhere"
+
+   ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${var.ssh_ip}/32"]
+  }
 
   ingress {
     from_port   = 6550
@@ -56,12 +104,12 @@ resource "aws_security_group" "security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # ingress {
-  #   from_port   = 6443
-  #   to_port     = 6443
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   egress {
     from_port   = 0
