@@ -3,6 +3,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
+  // @ts-expect-error types don't exist for svelte-apexcharts
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
 
