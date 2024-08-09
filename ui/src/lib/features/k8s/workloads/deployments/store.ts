@@ -20,7 +20,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const transform = transformResource<Resource, Row>((r) => ({
     ready: `${r.status?.readyReplicas ?? 0} / ${r.status?.replicas ?? 0}`,
     up_to_date: r.status?.updatedReplicas ?? 0,
-    available: r.status?.conditions?.filter((c) => c.type === 'Available').length ?? 0,
+    available: r.status?.availableReplicas ?? 0,
   }))
 
   const store = new ResourceStore<Resource, Row>(url, transform, 'name')
