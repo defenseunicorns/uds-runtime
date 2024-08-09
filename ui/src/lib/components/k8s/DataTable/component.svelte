@@ -165,6 +165,7 @@
             autocomplete="off"
             class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-9 text-gray-900 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
             placeholder="Search"
+            data-testid="datatable-search"
             bind:value={$search}
           />
         </div>
@@ -173,6 +174,7 @@
           data-dropdown-toggle="filterDropdown"
           class="hover:text-primary-700 flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 md:w-auto dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
           type="button"
+          data-testid="datatable-filter-dropdown"
         >
           <Filter class="mr-2 h-4 w-4 text-gray-400" />
           {$searchBy}
