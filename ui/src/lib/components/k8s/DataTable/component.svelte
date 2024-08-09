@@ -265,7 +265,7 @@
                         {value}
                       </button>
                     {:else}
-                      {value.text || value || '-'}
+                      {value.text || value || (value === 0 && '0') || '-'}
                     {/if}
                   </td>
                 {/each}
