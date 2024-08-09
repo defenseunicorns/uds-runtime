@@ -37,7 +37,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run tests
-        run: uds run test:${{ matrix.type }} --no-progress
+        run: uds run test:${{ matrix.type }}
         timeout-minutes: 30
 
       - name: Debug Output
