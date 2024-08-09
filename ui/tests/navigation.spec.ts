@@ -4,18 +4,39 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Navigation', async () => {
+  // podinfo is deployed into the test cluster, we will use this to check if various pages render correctly
+  const query = 'podinfo'
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
   })
 
   test('Overview page', async ({ page }) => {
     await page.getByRole('link', { name: 'Overview' }).click()
+
+    const nodeCountEl = page.getByTestId(`node-count`)
+    await expect(nodeCountEl).toHaveText('1')
+  })
+
+  test.describe('navigates to Applications', async () => {
+    test('Packages page', async ({ page }) => {
+      await page.getByRole('button', { name: 'Applications' }).click()
+      await page.getByRole('link', { name: 'Packages' }).click()
+
+      const query = 'podinfo-test' // package name
+      const element = page.locator(`.emphasize:has-text("${query}")`)
+      await expect(element).toBeVisible()
+    })
   })
 
   test.describe('navigates to Monitor', async () => {
     test('Pepr page', async ({ page }) => {
       await page.getByRole('button', { name: 'Monitor' }).click()
       await page.getByRole('link', { name: 'Pepr' }).click()
+
+      const query = 'uds-policy-exemptions/podinfo2' // package name
+      const element = page.locator(`td:has-text("${query}")`).first()
+      await expect(element).toBeVisible()
     })
 
     test('Events page', async ({ page }) => {
@@ -28,11 +49,17 @@ test.describe('Navigation', async () => {
     test('Pods page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
+
+      const element = page.locator(`.emphasize:has-text("${query}")`)
+      await expect(element).toBeVisible()
     })
 
     test('Deployments page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Deployments' }).click()
+
+      const element = page.locator(`.emphasize:has-text("${query}")`)
+      await expect(element).toBeVisible()
     })
 
     test('DaemonSets page', async ({ page }) => {
@@ -60,11 +87,22 @@ test.describe('Navigation', async () => {
     test('Packages page', async ({ page }) => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Packages' }).click()
+
+      const element = page.locator(`.emphasize:has-text("${query}")`)
+      await expect(element).toBeVisible()
     })
 
     test('UDS Exemptions page', async ({ page }) => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Exemptions' }).click()
+
+      let query = 'podinfo2' // exemption name
+      let element = page.locator(`.emphasize:has-text("${query}")`)
+      await expect(element).toBeVisible()
+
+      query = '- RequireNonRootUser' // exemption policy name
+      element = page.locator(`td:has-text("${query}")`)
+      await expect(element).toBeVisible()
     })
 
     test('ConfigMaps page', async ({ page }) => {
@@ -134,6 +172,10 @@ test.describe('Navigation', async () => {
     test('Network Policies page', async ({ page }) => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Network Policies' }).click()
+
+      const query = 'allow-podinfo-egress-dns-lookup-via-coredns' // network policy name
+      const element = page.locator(`.emphasize:has-text("${query}")`).first()
+      await expect(element).toBeVisible()
     })
 
     test('Endpoints page', async ({ page }) => {
@@ -159,8 +201,19 @@ test.describe('Navigation', async () => {
     })
   })
 
-  test('Namespaces page', async ({ page }) => {
+  test('navigates to Namespaces page', async ({ page }) => {
     await page.getByRole('link', { name: 'Namespaces' }).click()
+
+    const element = page.locator(`.emphasize:has-text("${query}")`).first()
+    await expect(element).toBeVisible()
+  })
+
+  test('navigates to Nodes page', async ({ page }) => {
+    await page.getByRole('link', { name: 'Nodes' }).click()
+
+    const query = 'k3d-runtime-server-0'
+    const element = page.locator(`.emphasize:has-text("${query}")`).first()
+    await expect(element).toBeVisible()
   })
 
   test('navigates to Docs page', async ({ page }) => {

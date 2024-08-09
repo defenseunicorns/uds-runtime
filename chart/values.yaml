@@ -5,3 +5,5 @@ image:
   tag: 0.1.0
   # x-release-please-end
   pullPolicy: Always
+package:
+  gateway: admin
