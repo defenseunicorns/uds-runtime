@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestConditionalCompress(t *testing.T) {
@@ -49,32 +51,24 @@ func TestConditionalCompress(t *testing.T) {
 			resp := rr.Result()
 			defer resp.Body.Close()
 
-			if encoding := resp.Header.Get("Content-Encoding"); encoding != tt.expectedEncoding {
-				t.Errorf("Expected Content-Encoding %q, got %q", tt.expectedEncoding, encoding)
-			}
+			encoding := resp.Header.Get("Content-Encoding")
+			require.Equal(t, encoding, tt.expectedEncoding)
 
 			var body []byte
 			var err error
 			if tt.expectedEncoding == "gzip" {
 				reader, err := gzip.NewReader(resp.Body)
-				if err != nil {
-					t.Fatalf("Failed to create gzip reader: %v", err)
-				}
+				require.NoError(t, err)
 				defer reader.Close()
+
 				body, err = io.ReadAll(reader)
-				if err != nil {
-					t.Fatalf("Failed to read gzipped body: %v", err)
-				}
+				require.NoError(t, err)
 			} else {
 				body, err = io.ReadAll(resp.Body)
-				if err != nil {
-					t.Fatalf("Failed to read response body: %v", err)
-				}
+				require.NoError(t, err)
 			}
 
-			if string(body) != tt.expectedBody {
-				t.Errorf("Expected body %q, got %q", tt.expectedBody, string(body))
-			}
+			require.Equal(t, tt.expectedBody, string(body))
 		})
 	}
 }
@@ -86,28 +80,18 @@ func TestGzipResponseWriter(t *testing.T) {
 
 	testContent := "Hello, Gzip!"
 	n, err := grw.Write([]byte(testContent))
-	if err != nil {
-		t.Fatalf("Failed to write to gzipResponseWriter: %v", err)
-	}
-	if n != len(testContent) {
-		t.Errorf("Expected to write %d bytes, but wrote %d", len(testContent), n)
-	}
+	require.NoError(t, err)
+	require.Equal(t, len(testContent), n)
 
 	grw.Flush()
 	gzw.Close()
 
 	reader, err := gzip.NewReader(w.Body)
-	if err != nil {
-		t.Fatalf("Failed to create gzip reader: %v", err)
-	}
+	require.NoError(t, err)
 	defer reader.Close()
 
 	decompressed, err := io.ReadAll(reader)
-	if err != nil {
-		t.Fatalf("Failed to read decompressed content: %v", err)
-	}
+	require.NoError(t, err)
 
-	if string(decompressed) != testContent {
-		t.Errorf("Expected decompressed content %q, got %q", testContent, string(decompressed))
-	}
+	require.Equal(t, testContent, string(decompressed))
 }
