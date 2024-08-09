@@ -30,7 +30,7 @@ test.describe('DataTable', async () => {
     expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 3 of 7)')
   })
 
-  test('filters rows when enterting search values with "Anywhere" selected', async ({ page }) => {
+  test('filters rows when entering search values with "Anywhere" selected', async ({ page }) => {
     await page.getByTestId('datatable-search').fill('pepr')
 
     expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 4 of 7)')
