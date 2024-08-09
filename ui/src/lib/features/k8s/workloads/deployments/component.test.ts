@@ -37,7 +37,13 @@ suite('DeploymentTable Component', () => {
     const mockData = [
       {
         metadata: { name: 'test', namespace: 'default', creationTimestamp: '2024-09-29T20:00:00Z' },
-        status: { readyReplicas: 1, replicas: 2, updatedReplicas: 1, conditions: [{ type: 'Available' }] },
+        status: {
+          availableReplicas: 2,
+          readyReplicas: 1,
+          replicas: 2,
+          updatedReplicas: 1,
+          conditions: [{ type: 'Available' }],
+        },
       },
     ] as unknown as V1Deployment[]
 
@@ -54,7 +60,7 @@ suite('DeploymentTable Component', () => {
       namespace: 'default',
       ready: '1 / 2',
       up_to_date: 1,
-      available: 1,
+      available: 2,
     },
   ]
 
