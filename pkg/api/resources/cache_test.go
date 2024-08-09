@@ -253,13 +253,11 @@ func TestBindStorageResources(t *testing.T) {
 
 	// Create multiple mock persistent volumes
 	mockPV := &corev1.PersistentVolume{}
-	mockPVName := "test-pv"
-	mockPV.SetName(mockPVName)
+	mockPV.SetName("test-pv")
 	mockPV.SetUID("123e4567-e89b-12d3-a456-426614174P3RS1ST3NT")
 
 	mockPV2 := &corev1.PersistentVolume{}
-	mockPV2Name := "test-pv2"
-	mockPV2.SetName(mockPV2Name)
+	mockPV2.SetName("test-pv2")
 	mockPV2.SetUID("123e4567-e89b-12d3-a456-42661417P3RS1ST3NT2")
 
 	// Add the mocks to the fake clientset
@@ -293,10 +291,11 @@ func TestBindStorageResources(t *testing.T) {
 	defer close(c.stopper)
 
 	// Test multiple resources
-	require.Equal(t, len(c.PersistentVolumes.GetResources("", mockPVName)), 2)
+	require.Equal(t, len(c.PersistentVolumes.GetResources("", "")), 2)
+	pvs := c.PersistentVolumes.GetResources("", "")
 	names := []string{
-		c.PersistentVolumes.GetResources("", mockPVName)[0].GetName(),
-		c.PersistentVolumes.GetResources("", mockPVName)[1].GetName(),
+		pvs[0].GetName(),
+		pvs[1].GetName(),
 	}
 	require.Contains(t, names, mockPV.Name)
 	require.Contains(t, names, mockPV2.Name)
