@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  test-eks-install:
+  ephemerial-cluster:
     runs-on: ubuntu-latest
     env:
       SHA: ${{ github.sha }}

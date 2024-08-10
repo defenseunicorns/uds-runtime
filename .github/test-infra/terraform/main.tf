@@ -86,7 +86,7 @@ resource "aws_iam_role" "ec2_instance_role" {
       }
     ]
   })
-   permissions_boundary = var.permissions_boundary_arn
+   permissions_boundary = "${var.permissions_boundary_arn}"
    tags = {
       // Add permissions boundary tag to handle all roles in a simple way
       PermissionsBoundary = "${var.permissions_boundary_name}"
