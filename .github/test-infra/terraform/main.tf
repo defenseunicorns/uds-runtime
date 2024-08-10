@@ -134,11 +134,14 @@ resource "aws_key_pair" "ssh" {
 resource "aws_security_group" "security_group" {
   name        = "runtime-ephemeral-sg-${random_id.unique_id.hex}"
 
-   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["${var.ssh_ip}/32"]
+   dynamic "ingress" {
+    for_each = var.enable_ssh ? [1] : []
+    content {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["${var.ssh_ip}/32"]
+    }
   }
 
   # ingress {
