@@ -20,9 +20,9 @@ jobs:
       UDS_REGION: us-west-2
       UDS_PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
       UDS_PERMISSIONS_BOUNDARY_NAME: ${{ secrets.PERMISSIONS_BOUNDARY_NAME }}
-      UDS_STATE_BUCKET_NAME: uds-aws-ci-commercial-us-west-2-5246-tfstate
-      UDS_STATE_DYNAMODB_TABLE_NAME: uds-aws-ci-commercial-org-us-west-2-5246-tfstate-lock
-      UDS_STATE_KEY: tristan-runtime-dev.tfstate
+      UDS_STATE_BUCKET: uds-aws-ci-commercial-us-west-2-5246-tfstate
+      UDS_STATE_DYNAMODB_TABLE: uds-aws-ci-commercial-org-us-west-2-5246-tfstate-lock
+      UDS_STATE_KEY: runtime-ephemeral.tfstate
     steps:
       - name: Set ENV
         run: |
@@ -53,3 +53,4 @@ jobs:
 
       - name: Create Infra (creates and deploys runtime + core bundle on instance startup)
         run: uds run -f .github/test-infra/tasks/infra.yaml create-iac
+        timeout-minutes: 30
