@@ -1,4 +1,4 @@
-provider "aws" {
+ provider "aws" {
   region = var.region
 }
 
@@ -33,6 +33,7 @@ resource "time_static" "creation_time" {}
 resource "aws_instance" "ec2_instance" {
   ami           = data.aws_ami.latest_runtime_ephemeral_ami.image_id
   instance_type = "m5.2xlarge"
+   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
   key_name = var.enable_ssh ? aws_key_pair.ssh[0].key_name: null
   tags          = local.tags
 
@@ -46,6 +47,56 @@ resource "aws_instance" "ec2_instance" {
   }
 }
 
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "runtime-ephemeral-EC2InstanceProfile"
+  role = aws_iam_role.ec2_instance_role.name
+}
+
+resource "aws_iam_policy" "ssm_parameter_policy" {
+  name        = "runtime-ephemeral-SSMParameterAccessPolicy"
+  description = "Allows access to specific SSM parameters"
+
+  # Define the policy JSON
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "ssm:GetParameter",
+          "ssm:GetParameters"
+        ]
+        Resource = "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/runtime-ephemeral-*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "ec2_instance_role" {
+  name               = "runtime-ephemeral-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+   permissions_boundary = var.permissions_boundary_arn
+   tags = {
+      // Add permissions boundary tag to handle all roles in a simple way
+      PermissionsBoundary = "${var.permissions_boundary_name}"
+    }
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_policy_attachment" {
+  role       = aws_iam_role.ec2_instance_role.name
+  policy_arn  = aws_iam_policy.ssm_parameter_policy.arn
+}
 #
 # SSH Config for Testing
 #
@@ -76,8 +127,7 @@ resource "aws_key_pair" "ssh" {
   count = var.enable_ssh ? 1 : 0
 
   key_name   = "runtime-dev-key"
-  # public_key = tls_private_key.ssh[0].public_key_openssh
-   public_key = local_file.ssh_pub[0].content
+  public_key = local_file.ssh_pub[0].content
 }
 
 
@@ -91,12 +141,12 @@ resource "aws_security_group" "security_group" {
     cidr_blocks = ["${var.ssh_ip}/32"]
   }
 
-  ingress {
-    from_port   = 6550
-    to_port     = 6550
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  # ingress {
+  #   from_port   = 6550
+  #   to_port     = 6550
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
 
   ingress {
     from_port   = 443

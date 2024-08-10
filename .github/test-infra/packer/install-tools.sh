@@ -41,3 +41,11 @@ sudo apt-get install helm
 curl -LO "https://github.com/defenseunicorns/uds-cli/releases/download/v0.14.0/uds-cli_v0.14.0_Linux_amd64"
 sudo mv uds-cli_v0.14.0_Linux_amd64 /usr/local/bin/uds
 sudo chmod +x /usr/local/bin/uds
+
+# install unzip for aws-cli
+sudo apt-get install unzip -y
+
+# install aws-cli
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install

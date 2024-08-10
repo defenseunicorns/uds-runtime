@@ -1,50 +1,37 @@
-#!/bin/bash -x
+#!/bin/sh
 
-# Get instance public IP
-public_ip="$(curl -s https://checkip.amazonaws.com/)"
+# clone and alter uds-k3d with new domain
+git clone https://github.com/defenseunicorns/uds-k3d.git
 
-# Create k3d cluster
-# k3d cluster create uds \
-#     --api-port 6443 \
-#     --port 80:80@loadbalancer \
-#     --port 443:443@loadbalancer \
-#     --k3s-arg "--tls-san=$public_ip@server:*"
+# Define the file path
+ file_path="uds-k3d/chart/templates/nginx.yaml"
 
-# Build and Deploy Bundle
-cat <<EOF > /tmp/uds-bundle.yaml
-    kind: UDSBundle
-    metadata:
-      name: runtime-test
-      description: A UDS bundle for deploying UDS Runtime with UDS Core
-      version: 0.1.0
+# # Replace 'uds.dev' with 'unicorn.dev'
+ sed -i 's/uds\.dev/unicorn.dev/g' "$file_path"
 
-    packages:
-      - name: uds-k3d-dev
-        repository: ghcr.io/defenseunicorns/packages/uds-k3d
-        ref: 0.8.0
+# # Deploy cluster
+cd uds-k3d && uds run default
 
-      - name: init
-        repository: ghcr.io/defenseunicorns/packages/init
-        ref: v0.35.0
+cd ..
 
-      - name: core
-        repository: ghcr.io/defenseunicorns/packages/uds/core
-        ref: 0.25.0-upstream
-        optionalComponents:
-          - istio-passthrough-gateway
-          - metrics-server
+# Get kubeconfig for uds to find
+mkdir -p /home/ubuntu/.kube
+k3d kubeconfig get uds > /home/ubuntu/.kube/config
 
-      - name: runtime
-        repository: ghcr.io/defenseunicorns/packages/uds/uds-runtime
-        ref: nightly-unstable
-        overrides:
-          uds-runtime:
-            uds-runtime:
-              variables:
-                - name: IMG_TAG
-                  path: image.tag
-                  default: nightly-unstable
-EOF
+# Get TLS cert and key
+CA_CERT=$(aws ssm get-parameter --name "runtime-ephemeral-ca-cert" --with-decryption --query "Parameter.Value" --output text)
+TLS_KEY=$(aws ssm get-parameter --name "runtime-ephemeral-key" --with-decryption --query "Parameter.Value" --output text)
+TLS_CERT=$(aws ssm get-parameter --name "runtime-ephemeral-cert" --with-decryption --query "Parameter.Value" --output text)
 
-uds create /tmp --confirm -o /tmp || exit 1
-uds deploy /tmp/uds-bundle-runtime-test-*.tar.zst --confirm || exit 1
+export UDS_CA_CERT=$CA_CERT
+export UDS_ADMIN_TLS_CERT=$TLS_CERT
+export UDS_ADMIN_TLS_KEY=$TLS_KEY
+export UDS_TENANT_TLS_CERT=$TLS_CERT
+export UDS_TENANT_TLS_KEY=$TLS_KEY
+
+# CD to home directory or uds can't find the kubeconfig
+cd /home/ubuntu
+uds zarf tools kubectl config get-contexts
+
+uds deploy ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-slim-dev:0.25.2 --packages=init,core-slim-dev --set DOMAIN=unicorn.dev --confirm
+uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime:0.1.0 --confirm

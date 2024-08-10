@@ -2,6 +2,9 @@ name: Deploy Runtime + Core on AWS
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
   schedule:
     - cron: "0 3 * * *" ## nightly at 3am UTC
 
@@ -15,17 +18,17 @@ jobs:
     env:
       SHA: ${{ github.sha }}
       UDS_REGION: us-west-2
-      # PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
-      # PERMISSIONS_BOUNDARY_NAME: ${{ secrets.PERMISSIONS_BOUNDARY_NAME }}
-      UDS_STATE_BUCKET: uds-aws-ci-commercial-us-west-2-5246-tfstate
-      UDS_STATE_DYNAMODB_TABLE: uds-aws-ci-commercial-org-us-west-2-5246-tfstate-lock
+      UDS_PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+      UDS_PERMISSIONS_BOUNDARY_NAME: ${{ secrets.PERMISSIONS_BOUNDARY_NAME }}
+      UDS_STATE_BUCKET_NAME: uds-aws-ci-commercial-us-west-2-5246-tfstate
+      UDS_STATE_DYNAMODB_TABLE_NAME: uds-aws-ci-commercial-org-us-west-2-5246-tfstate-lock
+      UDS_STATE_KEY: tristan-runtime-dev.tfstate
     steps:
       - name: Set ENV
         run: |
-          echo "UDS_STATE_KEY="tfstate/ci/install/${SHA:0:7}-runtime-aws.tfstate >> $GITHUB_ENV
-          echo "TF_VAR_region=${REGION}" >> $GITHUB_ENV
-          # echo "TF_VAR_use_permissions_boundary=true" >> $GITHUB_ENV
-          # echo "TF_VAR_permissions_boundary_name=${PERMISSIONS_BOUNDARY_NAME}" >> $GITHUB_ENV
+          echo "TF_VAR_region=${UDS_REGION}" >> $GITHUB_ENV
+          echo "TF_VAR_permissions_boundary_arn=${UDS_PERMISSIONS_BOUNDARY_ARN}" >> $GITHUB_ENV
+          echo "TF_VAR_permissions_boundary_name=${UDS_PERMISSIONS_BOUNDARY_NAME}" >> $GITHUB_ENV
 
       - name: Checkout repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
@@ -45,8 +48,8 @@ jobs:
         with:
           tofu_version: 1.6.2
 
-      - name: Teardown Infra (destroy running instance first)
-        run: uds run -f ../test-infra/tasks/infra.yaml destroy-iac
+      # - name: Teardown Infra (destroy running instance first)
+      #   run: uds run -f .github/test-infra/tasks/infra.yaml destroy-iac
 
       - name: Create Infra (creates and deploys runtime + core bundle on instance startup)
-        run: uds run -f ../test-infra/tasks/infra.yaml create-iac
+        run: uds run -f .github/test-infra/tasks/infra.yaml create-iac
