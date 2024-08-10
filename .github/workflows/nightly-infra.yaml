@@ -48,8 +48,9 @@ jobs:
         with:
           tofu_version: 1.6.2
 
-      # - name: Teardown Infra (destroy running instance first)
-      #   run: uds run -f .github/test-infra/tasks/infra.yaml destroy-iac
+      - name: Teardown Infra (destroy running instance first)
+        run: uds run -f .github/test-infra/tasks/infra.yaml destroy-iac
+        timeout-minutes: 30
 
       - name: Create Infra (creates and deploys runtime + core bundle on instance startup)
         run: uds run -f .github/test-infra/tasks/infra.yaml create-iac
