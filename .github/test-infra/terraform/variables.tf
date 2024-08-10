@@ -1,7 +1,17 @@
 variable "region" {
   description = "The AWS region to deploy the EC2 instance"
   type        = string
-  default    = "us-east-1"
+  default    = "us-west-2"
+}
+
+variable "permissions_boundary_name" {
+  description = "The name of the permissions boundary to attach to the IAM role"
+  type        = string
+}
+
+variable "permissions_boundary_arn" {
+  description = "The ARN of the permissions boundary to attach to the IAM role"
+  type        = string
 }
 
 variable "enable_ssh" {
