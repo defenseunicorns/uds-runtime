@@ -247,13 +247,13 @@
   </div>
   <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
-    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow">
+    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow mb-10">
       <div use:chart={options} />
     </div>
 
-    <div class="mt-10 p-10 bg-gray-800 rounded-lg overflow-hidden shadow">
+    <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow" style:position="relative" style:margin="auto">
       <Line
-        height={100}
+        height={350}
         data={{
           labels: clusterData.historicalUsage.map((point) => [formatTime(point.Timestamp)]),
           datasets: [
@@ -280,9 +280,10 @@
           ],
         }}
         options={{
+          maintainAspectRatio: false,
           elements: {
-            line: {
-              backgroundColor: '#4b5563',
+            point: {
+              radius: 0,
             },
           },
           scales: {
