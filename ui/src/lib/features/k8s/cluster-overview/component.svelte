@@ -326,6 +326,17 @@
                 borderRadius: 7,
               },
             },
+            tooltip: {
+              enabled: true,
+              mode: 'index',
+              intersect: false,
+              backgroundColor: '#1F2937',
+              borderColor: 'white',
+              borderWidth: 1,
+            },
+          },
+          hover: {
+            intersect: true,
           },
         }}
       />
