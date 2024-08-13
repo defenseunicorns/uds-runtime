@@ -48,7 +48,7 @@ resource "aws_instance" "runtime" {
 }
 
 // Get EIP ID
-data "aws_eips" "runtime_eips" {
+data "aws_eip" "runtime_eip" {
   filter {
     name   = "tag:Name"
     values = ["runtime-ephemeral"]
@@ -58,7 +58,7 @@ data "aws_eips" "runtime_eips" {
 // Attach EIP to Instance
 resource "aws_eip_association" "runtime" {
   instance_id   = aws_instance.runtime.id
-  allocation_id = data.aws_eips.runtime_eips.id
+  allocation_id = data.aws_eip.runtime_eip.id
 }
 resource "aws_iam_instance_profile" "runtime_profile" {
   name = "runtime-ephemeral-EC2InstanceProfile"
