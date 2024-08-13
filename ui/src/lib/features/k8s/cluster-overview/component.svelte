@@ -6,6 +6,8 @@
   // @ts-expect-error types don't exist for svelte-apexcharts
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
+  import Chart from 'chart.js/auto'
+  import { Line } from 'svelte-chartjs'
 
   type ClusterData = {
     totalPods: number
@@ -55,6 +57,12 @@
 
   function formatMemory(value: number): string {
     return formatNumber(value) + ' GB'
+  }
+
+  const formatTime = (timestamp: string) => {
+    let parts = new Date(timestamp).toISOString().split('T')
+    parts.shift()
+    return parts.join('').split('.')[0]
   }
 
   let options: ApexOptions = {
@@ -187,6 +195,8 @@
       memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
     }
 
+    Chart.register({})
+
     return () => {
       overview.close()
     }
@@ -239,6 +249,64 @@
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
     <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow">
       <div use:chart={options} />
+    </div>
+
+    <div class="mt-10 p-10 bg-gray-800 rounded-lg overflow-hidden shadow">
+      <Line
+        height={100}
+        data={{
+          labels: clusterData.historicalUsage.map((point) => [formatTime(point.Timestamp)]),
+          datasets: [
+            {
+              label: 'CPU Usage',
+              data: clusterData.historicalUsage.map((point) => ({
+                x: new Date(point.Timestamp).getTime(),
+                y: point.CPU / 1000, // Convert millicores to cores
+              })),
+              borderColor: '#057FDD',
+              yAxisID: 'y',
+              tension: 0.4,
+            },
+            {
+              label: 'Memory Usage',
+              data: clusterData.historicalUsage.map((point) => ({
+                x: new Date(point.Timestamp).getTime(),
+                y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
+              })),
+              borderColor: '#00D39F',
+              yAxisID: 'y1',
+              tension: 0.4,
+            },
+          ],
+        }}
+        options={{
+          elements: {
+            line: {
+              backgroundColor: '#4b5563',
+            },
+          },
+          scales: {
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: {
+                display: true,
+                text: 'CPU Usage (cores)',
+              },
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: {
+                display: true,
+                text: 'Memory Usage (GB)',
+              },
+            },
+          },
+        }}
+      />
     </div>
   </div>
 </div>
