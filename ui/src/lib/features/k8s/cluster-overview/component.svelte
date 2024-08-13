@@ -201,6 +201,9 @@
       overview.close()
     }
   })
+
+  // Chart.js settings
+  Chart.defaults.datasets.line.tension = 0.4
 </script>
 
 <div class="p-4 dark:text-white pt-0">
@@ -264,8 +267,8 @@
                 y: point.CPU / 1000, // Convert millicores to cores
               })),
               borderColor: '#057FDD',
+              backgroundColor: '#057FDD',
               yAxisID: 'y',
-              tension: 0.4,
             },
             {
               label: 'Memory Usage',
@@ -274,8 +277,8 @@
                 y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
               })),
               borderColor: '#00D39F',
+              backgroundColor: '#00D39F',
               yAxisID: 'y1',
-              tension: 0.4,
             },
           ],
         }}
@@ -295,6 +298,9 @@
                 display: true,
                 text: 'CPU Usage (cores)',
               },
+              ticks: {
+                color: 'white',
+              },
             },
             y1: {
               type: 'linear',
@@ -303,6 +309,21 @@
               title: {
                 display: true,
                 text: 'Memory Usage (GB)',
+              },
+              ticks: {
+                color: 'white',
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: 'white',
+                boxHeight: 14,
+                boxWidth: 14,
+                useBorderRadius: true,
+                borderRadius: 7,
               },
             },
           },
