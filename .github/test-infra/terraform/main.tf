@@ -31,16 +31,15 @@ locals {
 
 resource "time_static" "creation_time" {}
 
-resource "aws_instance" "ec2_instance" {
+resource "aws_instance" "runtime" {
   ami                  = data.aws_ami.latest_runtime_ephemeral_ami.image_id
   instance_type        = "m5.2xlarge"
-  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+  iam_instance_profile = aws_iam_instance_profile.runtime_profile.name
   key_name             = var.enable_ssh ? aws_key_pair.ssh[0].key_name : null
   tags                 = local.tags
 
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data              = file("setup.sh")
-
   root_block_device {
     volume_size           = 32
     volume_type           = "gp2"
@@ -48,9 +47,22 @@ resource "aws_instance" "ec2_instance" {
   }
 }
 
-resource "aws_iam_instance_profile" "ec2_instance_profile" {
+// Get EIP ID
+data "aws_eips" "runtime_eips" {
+  filter {
+    name   = "tag:Name"
+    values = ["runtime-ephemeral"]
+  }
+}
+
+// Attach EIP to Instance
+resource "aws_eip_association" "runtime" {
+  instance_id   = aws_instance.runtime.id
+  allocation_id = data.aws_eips.runtime_eips.id
+}
+resource "aws_iam_instance_profile" "runtime_profile" {
   name = "runtime-ephemeral-EC2InstanceProfile"
-  role = aws_iam_role.ec2_instance_role.name
+  role = aws_iam_role.runtime_role.name
 }
 
 resource "aws_iam_policy" "ssm_parameter_policy" {
@@ -73,7 +85,7 @@ resource "aws_iam_policy" "ssm_parameter_policy" {
   })
 }
 
-resource "aws_iam_role" "ec2_instance_role" {
+resource "aws_iam_role" "runtime_role" {
   name = "runtime-ephemeral-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -95,10 +107,9 @@ resource "aws_iam_role" "ec2_instance_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_policy_attachment" {
-  role       = aws_iam_role.ec2_instance_role.name
+  role       = aws_iam_role.runtime_role.name
   policy_arn = aws_iam_policy.ssm_parameter_policy.arn
 }
-
 
 resource "aws_security_group" "security_group" {
   name = "runtime-ephemeral-sg-${random_id.unique_id.hex}"

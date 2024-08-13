@@ -46,7 +46,7 @@ jobs:
 
       - uses: opentofu/setup-opentofu@ae80d4ecaab946d8f5ff18397fbf6d0686c6d46a # v1.0.3
         with:
-          tofu_version: 1.6.2
+          tofu_version: 1.8.1
 
       - name: Teardown Infra (destroy running instance first)
         run: uds run -f .github/test-infra/tasks/infra.yaml destroy-iac
