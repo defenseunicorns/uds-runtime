@@ -1,4 +1,4 @@
- provider "aws" {
+provider "aws" {
   region = var.region
 }
 
@@ -25,17 +25,18 @@ locals {
     "Name"         = "runtime-ephemeral-${local.suffix}"
     "ManagedBy"    = "Terraform"
     "CreationDate" = time_static.creation_time.rfc3339
+    "nuke" : "DO-NOT-DELETE"
   })
 }
 
 resource "time_static" "creation_time" {}
 
 resource "aws_instance" "ec2_instance" {
-  ami           = data.aws_ami.latest_runtime_ephemeral_ami.image_id
-  instance_type = "m5.2xlarge"
-   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
-  key_name = var.enable_ssh ? aws_key_pair.ssh[0].key_name: null
-  tags          = local.tags
+  ami                  = data.aws_ami.latest_runtime_ephemeral_ami.image_id
+  instance_type        = "m5.2xlarge"
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+  key_name             = var.enable_ssh ? aws_key_pair.ssh[0].key_name : null
+  tags                 = local.tags
 
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data              = file("setup.sh")
@@ -61,8 +62,8 @@ resource "aws_iam_policy" "ssm_parameter_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "ssm:GetParameter",
           "ssm:GetParameters"
         ]
@@ -73,7 +74,7 @@ resource "aws_iam_policy" "ssm_parameter_policy" {
 }
 
 resource "aws_iam_role" "ec2_instance_role" {
-  name               = "runtime-ephemeral-role"
+  name = "runtime-ephemeral-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -86,17 +87,49 @@ resource "aws_iam_role" "ec2_instance_role" {
       }
     ]
   })
-   permissions_boundary = "${var.permissions_boundary_arn}"
-   tags = {
-      // Add permissions boundary tag to handle all roles in a simple way
-      PermissionsBoundary = "${var.permissions_boundary_name}"
-    }
+  permissions_boundary = var.permissions_boundary_arn
+  tags = {
+    // Add permissions boundary tag to handle all roles in a simple way
+    PermissionsBoundary = "${var.permissions_boundary_name}"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_policy_attachment" {
   role       = aws_iam_role.ec2_instance_role.name
-  policy_arn  = aws_iam_policy.ssm_parameter_policy.arn
+  policy_arn = aws_iam_policy.ssm_parameter_policy.arn
 }
+
+
+resource "aws_security_group" "security_group" {
+  name = "runtime-ephemeral-sg-${random_id.unique_id.hex}"
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # for local testing
+  dynamic "ingress" {
+    for_each = var.enable_ssh ? [1] : []
+    content {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["${var.ssh_ip}/32"]
+    }
+  }
+
+  tags = local.tags
+}
+
 #
 # SSH Config for Testing
 #
@@ -128,42 +161,4 @@ resource "aws_key_pair" "ssh" {
 
   key_name   = "runtime-dev-key"
   public_key = local_file.ssh_pub[0].content
-}
-
-
-resource "aws_security_group" "security_group" {
-  name        = "runtime-ephemeral-sg-${random_id.unique_id.hex}"
-
-   dynamic "ingress" {
-    for_each = var.enable_ssh ? [1] : []
-    content {
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_blocks = ["${var.ssh_ip}/32"]
-    }
-  }
-
-  # ingress {
-  #   from_port   = 6550
-  #   to_port     = 6550
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = local.tags
 }
