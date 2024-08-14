@@ -6,6 +6,7 @@
   // @ts-expect-error types don't exist for svelte-apexcharts
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
+  import * as echarts from 'echarts'
 
   type ClusterData = {
     totalPods: number
@@ -179,16 +180,114 @@
 
   onMount(() => {
     const overview = new EventSource(`/api/v1/monitor/cluster-overview`)
+    const colors = ['#057FDD', '#00D39F']
+    var chartDom = document.getElementById('my-chart')
+    var myChart = echarts.init(chartDom)
+
+    const listiner = () => {
+      myChart.resize()
+    }
+
+    window.addEventListener('resize', listiner)
 
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData
 
       cpuPercentage = calculatePercentage(clusterData.currentUsage.CPU, clusterData.cpuCapacity)
       memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
+
+      type EChartsOption = echarts.EChartsOption
+
+      let myChartOptions: EChartsOption = {
+        color: colors,
+        grid: {
+          top: 70,
+          bottom: 50,
+        },
+        tooltip: {
+          trigger: 'axis',
+        },
+        legend: {
+          bottom: 0,
+          itemHeight: 18,
+          itemWidth: 18,
+          data: ['CPU Usage', 'Memory Usage'],
+          textStyle: {
+            color: '#efefef',
+          },
+        },
+        xAxis: {
+          type: 'category',
+          data: clusterData.historicalUsage.map((point) => new Date(point.Timestamp).getTime()),
+          axisLine: {
+            lineStyle: {
+              color: '#efefef',
+            },
+          },
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: 'CPU Usage (cores)',
+            axisLine: {
+              lineStyle: {
+                color: '#efefef',
+              },
+            },
+            splitLine: {
+              show: false,
+            },
+          },
+          {
+            type: 'value',
+            name: 'Memory Usage (GBs)',
+            position: 'right',
+            axisLine: {
+              lineStyle: {
+                color: '#efefef',
+              },
+            },
+            splitLine: {
+              show: true,
+              lineStyle: {
+                color: 'rgba(255, 255, 255, 0.5)',
+                width: 0.25,
+              },
+            },
+          },
+        ],
+        series: [
+          {
+            name: 'CPU Usage',
+            type: 'line',
+            data: clusterData.historicalUsage.map((point) => point.CPU / 1000),
+            yAxisIndex: 0,
+            smooth: true,
+            emphasis: {
+              focus: 'series',
+            },
+            showSymbol: false,
+          },
+          {
+            name: 'Memory Usage',
+            type: 'line',
+            data: clusterData.historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024)),
+            yAxisIndex: 1,
+            smooth: true,
+            emphasis: {
+              focus: 'series',
+            },
+            showSymbol: false,
+          },
+        ],
+      }
+
+      myChart.setOption(myChartOptions)
     }
 
     return () => {
       overview.close()
+      window.removeEventListener('resize', listiner)
     }
   })
 </script>
@@ -237,8 +336,12 @@
   </div>
   <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
-    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow">
+    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow mb-10">
       <div use:chart={options} />
+    </div>
+
+    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow">
+      <div id="my-chart" style:width="auto" style:height="350px" />
     </div>
   </div>
 </div>
