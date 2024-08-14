@@ -31,6 +31,11 @@ Because the UDS Runtime backend code is reasonably generic with respect to creat
 - Network resources
 - Storage resources
 
+Furthermore, there are endpoints that are specific to UDS, such as Pepr endpoints, that are present under the `/monitor` path; for example
+- `/api/v1/monitor/pepr`
+- `/api/v1/monitor/pepr/{stream}`
+- `/api/v1/monitor/cluster-overview`
+
 #### Assertions
 
 Options for test assertions include:
@@ -42,5 +47,5 @@ Options for test assertions include:
 We will use the `net/http/httptest` package from the Go standard library to write tests for the UDS Runtime API.
 
 - For test data, we will use a minimal version of UDS Core to include Pepr and Istio, and deploy a simple app such as podinfo that is integrated with UDS.
-- For test coverage, we will test endpoints from each of the bind groupings listed above, with the addition of testing Pepr endpoints and emphasizing our core UDS custom resources.
+- For test coverage, we will test endpoints from each of the bind groupings listed above, with the addition of testing the more custom endpoints under the `/monitor` path.
 - For assertions, we will marshal the received JSON response into a Kubernetes struct and test key fields from the expected response.
