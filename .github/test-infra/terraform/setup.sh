@@ -7,10 +7,10 @@ git clone https://github.com/defenseunicorns/uds-k3d.git
  file_path="uds-k3d/chart/templates/nginx.yaml"
 
 # # Replace 'uds.dev' with 'exploding.boats'
- sed -i 's/uds\.dev/exploding.boats/g' "$file_path"
+ sed -i 's/uds\.dev/burning.boats/g' "$file_path"
 
 # # Deploy cluster
-cd uds-k3d && uds run default
+cd uds-k3d && uds run
 
 cd ..
 
@@ -31,7 +31,6 @@ export UDS_TENANT_TLS_KEY=$TLS_KEY
 
 # CD to home directory or uds can't find the kubeconfig
 cd /home/ubuntu
-uds zarf tools kubectl config get-contexts
 
-uds deploy ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-slim-dev:0.25.2 --packages=init,core-slim-dev --set DOMAIN=exploding.boats --confirm
+uds deploy ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-slim-dev:0.25.2 --packages=init,core-slim-dev --set DOMAIN=burning.boats --confirm
 uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable --confirm

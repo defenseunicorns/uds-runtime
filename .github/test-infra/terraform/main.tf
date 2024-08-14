@@ -120,6 +120,13 @@ resource "aws_security_group" "security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -158,18 +165,9 @@ resource "local_file" "ssh_pem" {
   content         = tls_private_key.ssh[0].private_key_pem
   file_permission = "0400"
 }
-
-resource "local_file" "ssh_pub" {
-  count = var.enable_ssh ? 1 : 0
-
-  filename        = "runtime-dev.pub"
-  content         = tls_private_key.ssh[0].public_key_openssh
-  file_permission = "0644"
-}
-
 resource "aws_key_pair" "ssh" {
   count = var.enable_ssh ? 1 : 0
 
   key_name   = "runtime-dev-key"
-  public_key = local_file.ssh_pub[0].content
+  public_key = tls_private_key.ssh[0].public_key_openssh
 }
