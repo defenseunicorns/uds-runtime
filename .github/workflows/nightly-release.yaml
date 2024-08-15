@@ -33,6 +33,9 @@ jobs:
 
       - name: Setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
         uses: ./.github/actions/setup
+        with:
+          qemu: "true"
+          buildx: "true"
 
       - name: Publish
         run: |
