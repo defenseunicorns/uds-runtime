@@ -2,12 +2,11 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { onMount, tick } from 'svelte'
+  import { onMount } from 'svelte'
   // @ts-expect-error types don't exist for svelte-apexcharts
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
   import * as echarts from 'echarts'
-  import _ from 'lodash'
 
   type ClusterData = {
     totalPods: number
