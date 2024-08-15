@@ -10,7 +10,7 @@ UDS Runtime is the frontend for all things UDS, providing views and insights int
 ### Pre-requisites
 
 Recommended:
-* [uds-cli](https://github.com/defenseunicorns/uds-cli#install)
+* [UDS-CLI](https://github.com/defenseunicorns/uds-cli#install)
 
 If building locally:
 * `Go >= 1.22.0`
