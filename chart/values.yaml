@@ -7,3 +7,4 @@ image:
   pullPolicy: Always
 package:
   gateway: admin
+  host: runtime
