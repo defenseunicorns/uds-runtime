@@ -2,11 +2,12 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, tick } from 'svelte'
   // @ts-expect-error types don't exist for svelte-apexcharts
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
   import * as echarts from 'echarts'
+  import _ from 'lodash'
 
   type ClusterData = {
     totalPods: number
@@ -56,6 +57,12 @@
 
   function formatMemory(value: number): string {
     return formatNumber(value) + ' GB'
+  }
+
+  const formatTime = (timestamp: string) => {
+    let parts = new Date(timestamp).toISOString().split('T')
+    parts.shift()
+    return parts.join('').split('.')[0]
   }
 
   let options: ApexOptions = {
@@ -198,6 +205,14 @@
 
       type EChartsOption = echarts.EChartsOption
 
+      const cpuData = clusterData.historicalUsage.map((point) => point.CPU / 1000)
+      const cpuMin = Math.min(...cpuData)
+      const cpuMax = Math.max(...cpuData)
+      const memoryData = clusterData.historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
+      const memoryMin = Math.min(...memoryData)
+      const memoryMax = Math.max(...memoryData)
+      const chartTimes = clusterData.historicalUsage.map((point) => formatTime(new Date(point.Timestamp).toISOString()))
+
       let myChartOptions: EChartsOption = {
         color: colors,
         grid: {
@@ -218,7 +233,7 @@
         },
         xAxis: {
           type: 'category',
-          data: clusterData.historicalUsage.map((point) => new Date(point.Timestamp).getTime()),
+          data: chartTimes,
           axisLine: {
             lineStyle: {
               color: '#efefef',
@@ -234,6 +249,9 @@
                 color: '#efefef',
               },
             },
+            min: cpuMin,
+            max: cpuMax,
+            position: 'left',
             splitLine: {
               show: false,
             },
@@ -242,6 +260,8 @@
             type: 'value',
             name: 'Memory Usage (GBs)',
             position: 'right',
+            min: memoryMin,
+            max: memoryMax,
             axisLine: {
               lineStyle: {
                 color: '#efefef',
@@ -260,23 +280,17 @@
           {
             name: 'CPU Usage',
             type: 'line',
-            data: clusterData.historicalUsage.map((point) => point.CPU / 1000),
+            data: cpuData,
             yAxisIndex: 0,
             smooth: true,
-            emphasis: {
-              focus: 'series',
-            },
             showSymbol: false,
           },
           {
             name: 'Memory Usage',
             type: 'line',
-            data: clusterData.historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024)),
+            data: memoryData,
             yAxisIndex: 1,
             smooth: true,
-            emphasis: {
-              focus: 'series',
-            },
             showSymbol: false,
           },
         ],
