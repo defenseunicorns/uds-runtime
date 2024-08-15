@@ -1,19 +1,103 @@
 # UDS Runtime
 
-## Development
+UDS Runtime is a cluster analytics and insights web application, capable of running locally or in cluster.
 
-To start the backend server, run the following command:
+## Quickstart Deploy
 
+> !**WARNING**  
+> DO NOT USE IN PRODUCTION ENVIRONMENTS AT THIS TIME
+
+### Pre-requisites
+
+Recommended:
+* [uds-cli](https://github.com/defenseunicorns/uds-cli#install)
+
+If building locally:
+* `Go >= 1.22.0`
+* `Node >= v21.1.0`
+
+### In Cluster
+
+Assumes cluster is running and `uds-core` is deployed.
+
+#### Standalone Package
+```bash
+uds deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:<tag> --confirm
+```
+
+#### In Bundle
+
+```yaml
+kind: UDSBundle
+metadata:
+  name: example-bundle
+  description: Example bundle
+  version: 0.1.0
+
+packages:
+  - name: init
+    repository: ghcr.io/zarf-dev/packages/init
+    ref: v0.38.2
+
+  - name: core
+    repository: ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-demo
+    ref: 0.25.2
+    optionalComponents:
+      - istio-passthrough-gateway
+      - metrics-server
+
+  - name: runtime
+    repository: ghcr.io/defenseunicorns/packages/uds/uds-runtime
+    ref: <tag>
+```
+
+**See [all tags](https://github.com/defenseunicorns/uds-runtime/pkgs/container/packages%2Fuds%2Fuds-runtime)*
+
+
+### Locally (Out of Cluster)
+
+1. clone this repo
+1. compile: `uds run compile`
+1. run: `./build/main`
+
+## Quickstart Development
+
+For a full guide on developing for UDS Runtime, please read the [CONTRIBUTING.md](./CONTRIBUTING.md)
+
+### To start the backend development server, run the following command:
+
+**With uds-cli**
+```bash
+uds run dev-server
+```
+
+**Without uds-cli**
 ```bash
 air
 ```
 
 > **NOTE**: If you do not have air installed, you can find instructions for how to install at [here](https://github.com/air-verse/air)
 
-To start the frontend server, run the following command:
+### To start the frontend server, run the following command:
+
+**With uds-cli**
+```bash
+uds run dev-ui
+```
+
+**Wihtout uds-cli**
+```bash
+cd ui
+npm ci
+npm run dev
+```
+
+## Nightly Releases
+
+UDS Runtime publishes a canary release of latest changes every night tagged `nightly-unstable`
 
 ```bash
-cd ui && npm run dev
+uds deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable
 ```
 
 ## Techstack
