@@ -40,7 +40,7 @@ test.describe('Sidebar', async () => {
 
     // expand Workloads section
     await sideBarText.click()
-    const subMenuText = page.getByText('Pods')
+    const subMenuText = page.getByText('Pods', { exact: true })
     await expect(subMenuText).toBeVisible()
 
     // collapse Workloads section
