@@ -60,12 +60,14 @@ resource "aws_eip_association" "runtime" {
   instance_id   = aws_instance.runtime.id
   allocation_id = data.aws_eip.runtime_eip.id
 }
+
 resource "aws_iam_instance_profile" "runtime_profile" {
   name = "runtime-ephemeral-EC2InstanceProfile"
   role = aws_iam_role.runtime_role.name
+  tags          = local.tags
 }
 
-resource "aws_iam_policy" "ssm_parameter_policy" {
+resource "aws_iam_policy" "secrets_manager_policy" {
   name        = "runtime-ephemeral-SecretsManagerPolicy"
   description = "Allows access to specific secrets"
 
@@ -104,12 +106,13 @@ resource "aws_iam_role" "runtime_role" {
   tags = {
     // Add permissions boundary tag to handle all roles in a simple way
     PermissionsBoundary = "${var.permissions_boundary_name}"
+    nuke = "DO-NOT-DELETE"
   }
 }
 
-resource "aws_iam_role_policy_attachment" "ssm_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "secrets_manager_policy_attachment" {
   role       = aws_iam_role.runtime_role.name
-  policy_arn = aws_iam_policy.ssm_parameter_policy.arn
+  policy_arn = aws_iam_policy.secrets_manager_policy.arn
 }
 
 resource "aws_security_group" "security_group" {
