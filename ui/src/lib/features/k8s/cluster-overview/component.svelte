@@ -6,6 +6,7 @@
   // @ts-expect-error types don't exist for svelte-apexcharts
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
+  import * as echarts from 'echarts'
 
   type ClusterData = {
     totalPods: number
@@ -55,6 +56,12 @@
 
   function formatMemory(value: number): string {
     return formatNumber(value) + ' GB'
+  }
+
+  const formatTime = (timestamp: string) => {
+    let parts = new Date(timestamp).toISOString().split('T')
+    parts.shift()
+    return parts.join('').split('.')[0]
   }
 
   let options: ApexOptions = {
@@ -179,16 +186,165 @@
 
   onMount(() => {
     const overview = new EventSource(`/api/v1/monitor/cluster-overview`)
+    const colors = ['#057FDD', '#00D39F']
+    var chartDom = document.getElementById('my-chart')
+    var myChart = echarts.init(chartDom)
+
+    const listiner = () => {
+      myChart.resize()
+    }
+
+    window.addEventListener('resize', listiner)
 
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData
 
       cpuPercentage = calculatePercentage(clusterData.currentUsage.CPU, clusterData.cpuCapacity)
       memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
+
+      type EChartsOption = echarts.EChartsOption
+
+      const cpuData = clusterData.historicalUsage.map((point) => point.CPU / 1000)
+      const cpuMin = Math.min(...cpuData)
+      const cpuMax = Math.max(...cpuData)
+      const memoryData = clusterData.historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
+      const memoryMin = Math.min(...memoryData)
+      const memoryMax = Math.max(...memoryData)
+      const chartTimes = clusterData.historicalUsage.map((point) => formatTime(new Date(point.Timestamp).toISOString()))
+
+      let myChartOptions: EChartsOption = {
+        toolbox: {
+          show: true,
+          feature: {
+            dataZoom: {
+              yAxisIndex: 'none',
+              iconStyle: {
+                borderColor: 'white',
+              },
+            },
+            saveAsImage: {
+              iconStyle: {
+                borderColor: 'white',
+              },
+            },
+          },
+        },
+        textStyle: {
+          color: '#efefef',
+          fontSize: 11,
+        },
+        color: colors,
+        grid: {
+          top: 50,
+          bottom: 50,
+          left: '7%',
+          right: '7%',
+        },
+        tooltip: {
+          trigger: 'axis',
+        },
+        legend: {
+          bottom: -5,
+          itemHeight: 18,
+          itemWidth: 18,
+          data: ['CPU Usage', 'Memory Usage'],
+          textStyle: {
+            color: '#efefef',
+          },
+          lineStyle: {
+            width: 0,
+          },
+        },
+        xAxis: {
+          type: 'category',
+          data: chartTimes,
+          axisLabel: {
+            fontSize: 12,
+          },
+          axisLine: {
+            lineStyle: {
+              color: '#efefef',
+            },
+          },
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: 'CPU Usage (cores)',
+            nameRotate: 90,
+            nameTextStyle: {
+              fontWeight: 'bold',
+            },
+            nameGap: 60,
+            nameLocation: 'middle',
+            axisLabel: {
+              formatter: (value) => formatCPU(value),
+              customValues: [cpuMin, cpuMax],
+              fontSize: 11,
+            },
+            min: cpuMin,
+            max: cpuMax,
+            splitLine: {
+              show: false,
+            },
+          },
+          {
+            type: 'value',
+            name: 'Memory Usage (GB)',
+            nameRotate: -90,
+            nameTextStyle: {
+              fontWeight: 'bold',
+            },
+            nameGap: 60,
+            nameLocation: 'middle',
+            axisLabel: {
+              formatter: (value) => formatMemory(value),
+              customValues: [memoryMin, memoryMax],
+              fontSize: 11,
+            },
+            min: memoryMin,
+            max: memoryMax,
+            splitLine: {
+              show: true,
+              lineStyle: {
+                color: 'rgba(255, 255, 255, 0.5)',
+                width: 0.25,
+              },
+            },
+          },
+        ],
+        series: [
+          {
+            name: 'CPU Usage',
+            type: 'line',
+            data: cpuData,
+            yAxisIndex: 0,
+            smooth: true,
+            showSymbol: false,
+            lineStyle: {
+              width: 3,
+            },
+          },
+          {
+            name: 'Memory Usage',
+            type: 'line',
+            data: memoryData,
+            yAxisIndex: 1,
+            smooth: true,
+            showSymbol: false,
+            lineStyle: {
+              width: 3,
+            },
+          },
+        ],
+      }
+
+      myChart.setOption(myChartOptions)
     }
 
     return () => {
       overview.close()
+      window.removeEventListener('resize', listiner)
     }
   })
 </script>
@@ -237,8 +393,12 @@
   </div>
   <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
-    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow">
+    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow mb-10">
       <div use:chart={options} />
+    </div>
+
+    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow">
+      <div id="my-chart" style:width="auto" style:height="350px" />
     </div>
   </div>
 </div>
