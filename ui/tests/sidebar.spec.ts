@@ -58,7 +58,7 @@ test.describe('Sidebar', async () => {
     await expect(filterInput).toHaveValue('Pods')
 
     // check if Pods is visible and Configs is not after filtering
-    const filteredText = page.getByText('Pods')
+    const filteredText = page.getByText('Pods', { exact: true })
     await expect(filteredText).toBeVisible()
     await expect(nonFilteredText).not.toBeVisible()
   })
