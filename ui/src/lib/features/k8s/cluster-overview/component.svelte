@@ -214,10 +214,32 @@
       const chartTimes = clusterData.historicalUsage.map((point) => formatTime(new Date(point.Timestamp).toISOString()))
 
       let myChartOptions: EChartsOption = {
+        toolbox: {
+          show: true,
+          feature: {
+            dataZoom: {
+              yAxisIndex: 'none',
+              iconStyle: {
+                borderColor: 'white',
+              },
+            },
+            saveAsImage: {
+              iconStyle: {
+                borderColor: 'white',
+              },
+            },
+          },
+        },
+        textStyle: {
+          color: '#efefef',
+          fontSize: 11,
+        },
         color: colors,
         grid: {
-          top: 70,
+          top: 50,
           bottom: 50,
+          left: '7%',
+          right: '7%',
         },
         tooltip: {
           trigger: 'axis',
@@ -237,6 +259,9 @@
         xAxis: {
           type: 'category',
           data: chartTimes,
+          axisLabel: {
+            fontSize: 12,
+          },
           axisLine: {
             lineStyle: {
               color: '#efefef',
@@ -251,16 +276,12 @@
             nameTextStyle: {
               fontWeight: 'bold',
             },
-            nameGap: 75,
+            nameGap: 60,
             nameLocation: 'middle',
             axisLabel: {
               formatter: (value) => formatCPU(value),
               customValues: [cpuMin, cpuMax],
-            },
-            axisLine: {
-              lineStyle: {
-                color: '#efefef',
-              },
+              fontSize: 11,
             },
             min: cpuMin,
             max: cpuMax,
@@ -275,19 +296,15 @@
             nameTextStyle: {
               fontWeight: 'bold',
             },
-            nameGap: 75,
+            nameGap: 60,
             nameLocation: 'middle',
             axisLabel: {
               formatter: (value) => formatMemory(value),
               customValues: [memoryMin, memoryMax],
+              fontSize: 11,
             },
             min: memoryMin,
             max: memoryMax,
-            axisLine: {
-              lineStyle: {
-                color: '#efefef',
-              },
-            },
             splitLine: {
               show: true,
               lineStyle: {
