@@ -66,7 +66,7 @@ For a full guide on developing for UDS Runtime, please read the [CONTRIBUTING.md
 
 ### To start the backend development server, run the following command:
 
-**With uds-cli**
+**With UDS-CLI**
 ```bash
 uds run dev-server
 ```
