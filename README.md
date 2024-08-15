@@ -5,12 +5,12 @@ UDS Runtime is the frontend for all things UDS, providing views and insights int
 ## Quickstart Deploy
 
 > !**WARNING**  
-> UDS Runtime is in early alpha, expect breaking changes to functionality 
+> UDS Runtime is in early alpha, expect breaking changes to functionality
 
 ### Pre-requisites
 
 Recommended:
-* [UDS-CLI](https://github.com/defenseunicorns/uds-cli#install)
+* [UDS-CLI](https://github.com/defenseunicorns/UDS-CLI#install)
 
 If building locally:
 * `Go >= 1.22.0`
@@ -20,39 +20,11 @@ If building locally:
 
 Assumes a K8s cluster is running and the appropriate K8s context has been selected
 
-#### Standalone Package
 ```bash
 uds deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:<tag> --confirm
 ```
 
-#### In Bundle
-
-```yaml
-kind: UDSBundle
-metadata:
-  name: example-bundle
-  description: Example bundle
-  version: 0.1.0
-
-packages:
-  - name: init
-    repository: ghcr.io/zarf-dev/packages/init
-    ref: v0.38.2
-
-  - name: core
-    repository: ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-demo
-    ref: 0.25.2
-    optionalComponents:
-      - istio-passthrough-gateway
-      - metrics-server
-
-  - name: runtime
-    repository: ghcr.io/defenseunicorns/packages/uds/uds-runtime
-    ref: <tag>
-```
-
 **See [all tags](https://github.com/defenseunicorns/uds-runtime/pkgs/container/packages%2Fuds%2Fuds-runtime)*
-
 
 ### Locally (Out of Cluster)
 
@@ -71,7 +43,7 @@ For a full guide on developing for UDS Runtime, please read the [CONTRIBUTING.md
 uds run dev-server
 ```
 
-**Without uds-cli**
+**Without UDS-CLI**
 ```bash
 air
 ```
@@ -80,12 +52,12 @@ air
 
 ### To start the frontend server, run the following command:
 
-**With uds-cli**
+**With UDS-CLI**
 ```bash
 uds run dev-ui
 ```
 
-**Wihtout uds-cli**
+**Wihtout UDS-CLI**
 ```bash
 cd ui
 npm ci
