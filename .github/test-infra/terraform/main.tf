@@ -66,8 +66,8 @@ resource "aws_iam_instance_profile" "runtime_profile" {
 }
 
 resource "aws_iam_policy" "ssm_parameter_policy" {
-  name        = "runtime-ephemeral-SSMParameterAccessPolicy"
-  description = "Allows access to specific SSM parameters"
+  name        = "runtime-ephemeral-SecretsManagerPolicy"
+  description = "Allows access to specific secrets"
 
   # Define the policy JSON
   policy = jsonencode({
@@ -76,10 +76,11 @@ resource "aws_iam_policy" "ssm_parameter_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ssm:GetParameter",
-          "ssm:GetParameters"
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:ListSecrets",
+          "secretsmanager:DescribeSecret"
         ]
-        Resource = "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/runtime-ephemeral-*"
+        Resource = "arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.current.account_id}:secret:runtime-tls-*"
       }
     ]
   })

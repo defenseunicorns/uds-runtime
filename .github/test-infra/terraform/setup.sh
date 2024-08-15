@@ -19,8 +19,8 @@ mkdir -p /home/ubuntu/.kube
 k3d kubeconfig get uds > /home/ubuntu/.kube/config
 
 # Get TLS cert and key
-TLS_CERT=$(aws secretsmanager get-secret-value --secret-id "runtime-tls-cert" --query "SecretString" --output text --region us-west-2 | jq -r '."runtime-tls-cert"')
-TLS_KEY=$(aws secretsmanager get-secret-value --secret-id "runtime-tls-key" --query "SecretString" --output text --region us-west-2 | jq -r '."runtime-tls-cert"')
+TLS_CERT=$(aws secretsmanager get-secret-value --secret-id "runtime-tls-cert" --query "SecretString" --output text --region us-west-2 | uds zarf tools yq --input-format json '."runtime-tls-cert"')
+TLS_KEY=$(aws secretsmanager get-secret-value --secret-id "runtime-tls-key" --query "SecretString" --output text --region us-west-2 | uds zarf tools yq --input-format json '."runtime-tls-key"')
 
 export UDS_ADMIN_TLS_CERT=$TLS_CERT
 export UDS_ADMIN_TLS_KEY=$TLS_KEY
