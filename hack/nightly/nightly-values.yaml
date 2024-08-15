@@ -2,3 +2,4 @@ image:
   tag: nightly-unstable
 package:
   gateway: tenant
+  host: runtime-canary
