@@ -5,7 +5,7 @@ UDS Runtime is the frontend for all things UDS, providing views and insights int
 ## Quickstart Deploy
 
 > !**WARNING**  
-> DO NOT USE IN PRODUCTION ENVIRONMENTS AT THIS TIME
+> UDS Runtime is in early alpha, expect breaking changes to functionality 
 
 ### Pre-requisites
 
