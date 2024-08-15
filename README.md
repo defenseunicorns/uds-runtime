@@ -18,7 +18,7 @@ If building locally:
 
 ### In Cluster
 
-Assumes cluster is running and `uds-core` is deployed.
+Assumes a K8s cluster is running and the appropriate K8s context has been selected
 
 #### Standalone Package
 ```bash
