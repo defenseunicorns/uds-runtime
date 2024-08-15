@@ -121,6 +121,7 @@ resource "aws_security_group" "security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  // Allow HTTP traffic but istio will redirect to HTTPS
   ingress {
     from_port   = 80
     to_port     = 80
@@ -166,6 +167,7 @@ resource "local_file" "ssh_pem" {
   content         = tls_private_key.ssh[0].private_key_pem
   file_permission = "0400"
 }
+
 resource "aws_key_pair" "ssh" {
   count = var.enable_ssh ? 1 : 0
 

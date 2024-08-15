@@ -12,11 +12,12 @@ git clone https://github.com/defenseunicorns/uds-k3d.git
 # # Deploy cluster
 cd uds-k3d && uds run
 
-cd ..
-
 # Get kubeconfig for uds to find
 mkdir -p /home/ubuntu/.kube
 k3d kubeconfig get uds > /home/ubuntu/.kube/config
+
+# CD to home directory so uds can see kubeconfig
+cd /home/ubuntu
 
 # Get TLS cert and key
 TLS_CERT=$(aws secretsmanager get-secret-value --secret-id "runtime-tls-cert" --query "SecretString" --output text --region us-west-2 | uds zarf tools yq --input-format json '."runtime-tls-cert"')
@@ -27,8 +28,5 @@ export UDS_ADMIN_TLS_KEY=$TLS_KEY
 export UDS_TENANT_TLS_CERT=$TLS_CERT
 export UDS_TENANT_TLS_KEY=$TLS_KEY
 
-# CD to home directory or uds can't find the kubeconfig
-cd /home/ubuntu
-
-uds deploy ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-slim-dev:0.25.2 --packages=init,core-slim-dev --set DOMAIN=burning.boats --confirm
+uds deploy ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-demo:0.25.2--set DOMAIN=burning.boats --confirm
 uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable --confirm
