@@ -8,5 +8,4 @@
     ":semanticCommits",
     ":semanticCommitTypeAll(chore)"
   ]
-
 }
