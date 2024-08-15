@@ -223,12 +223,15 @@
           trigger: 'axis',
         },
         legend: {
-          bottom: 0,
+          bottom: -5,
           itemHeight: 18,
           itemWidth: 18,
           data: ['CPU Usage', 'Memory Usage'],
           textStyle: {
             color: '#efefef',
+          },
+          lineStyle: {
+            width: 0,
           },
         },
         xAxis: {
@@ -244,6 +247,16 @@
           {
             type: 'value',
             name: 'CPU Usage (cores)',
+            nameRotate: 90,
+            nameTextStyle: {
+              fontWeight: 'bold',
+            },
+            nameGap: 75,
+            nameLocation: 'middle',
+            axisLabel: {
+              formatter: (value) => formatCPU(value),
+              customValues: [cpuMin, cpuMax],
+            },
             axisLine: {
               lineStyle: {
                 color: '#efefef',
@@ -251,15 +264,23 @@
             },
             min: cpuMin,
             max: cpuMax,
-            position: 'left',
             splitLine: {
               show: false,
             },
           },
           {
             type: 'value',
-            name: 'Memory Usage (GBs)',
-            position: 'right',
+            name: 'Memory Usage (GB)',
+            nameRotate: -90,
+            nameTextStyle: {
+              fontWeight: 'bold',
+            },
+            nameGap: 75,
+            nameLocation: 'middle',
+            axisLabel: {
+              formatter: (value) => formatMemory(value),
+              customValues: [memoryMin, memoryMax],
+            },
             min: memoryMin,
             max: memoryMax,
             axisLine: {
@@ -284,6 +305,9 @@
             yAxisIndex: 0,
             smooth: true,
             showSymbol: false,
+            lineStyle: {
+              width: 3,
+            },
           },
           {
             name: 'Memory Usage',
@@ -292,6 +316,9 @@
             yAxisIndex: 1,
             smooth: true,
             showSymbol: false,
+            lineStyle: {
+              width: 3,
+            },
           },
         ],
       }
