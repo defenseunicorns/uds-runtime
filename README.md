@@ -1,6 +1,6 @@
 # UDS Runtime
 
-UDS Runtime is a cluster analytics and insights web application, capable of running locally or in cluster.
+UDS Runtime is the frontend for all things UDS, providing views and insights into your UDS cluster.
 
 ## Quickstart Deploy
 
