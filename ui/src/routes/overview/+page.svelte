@@ -1,8 +1,12 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
-<script lang="ts">
-  import { ClusterOverview } from '$features/k8s'
-</script>
+<script>
+  import { goto } from '$app/navigation'
+  import { onMount } from 'svelte'
 
-<ClusterOverview />
+  onMount(() => {
+    // redirect to root because that's where the overview page is
+    goto('/')
+  })
+</script>
