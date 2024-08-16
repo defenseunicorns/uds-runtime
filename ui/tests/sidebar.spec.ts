@@ -40,7 +40,7 @@ test.describe('Sidebar', async () => {
 
     // expand Workloads section
     await sideBarText.click()
-    const subMenuText = page.getByText('Pods')
+    const subMenuText = page.getByText('Pods', { exact: true })
     await expect(subMenuText).toBeVisible()
 
     // collapse Workloads section
@@ -58,7 +58,7 @@ test.describe('Sidebar', async () => {
     await expect(filterInput).toHaveValue('Pods')
 
     // check if Pods is visible and Configs is not after filtering
-    const filteredText = page.getByText('Pods')
+    const filteredText = page.getByText('Pods', { exact: true })
     await expect(filteredText).toBeVisible()
     await expect(nonFilteredText).not.toBeVisible()
   })
