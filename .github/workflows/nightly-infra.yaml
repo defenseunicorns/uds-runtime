@@ -3,7 +3,7 @@ name: Deploy Runtime + Core on AWS
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 4 * * *" ## nightly at 4am UTC so can use package from 3am nightly release
+    - cron: "0 10 * * *" # Runs at 10:00 AM UTC, which is 4:00 AM MT during Daylight Saving Time
 
 permissions:
   id-token: write
