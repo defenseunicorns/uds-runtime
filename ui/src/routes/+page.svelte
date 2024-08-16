@@ -1,7 +1,14 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
-<script lang="ts">
-</script>
+<script>
+  import { goto } from '$app/navigation'
+  import { onMount } from 'svelte'
 
-<h1 class="text-white text-5xl">Home</h1>
+  onMount(() => {
+    // redirect to overview page
+    if (window.location.pathname === '/') {
+      goto('/overview')
+    }
+  })
+</script>

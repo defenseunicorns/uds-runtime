@@ -159,6 +159,11 @@ func Start(assets embed.FS) error {
 		})
 	})
 
+	// redirect to Overview page
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/overview", http.StatusFound)
+	})
+
 	// Serve static files from embed.FS
 	staticFS, err := fs.Sub(assets, "ui/build")
 	if err != nil {
