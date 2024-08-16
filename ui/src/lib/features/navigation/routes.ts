@@ -20,6 +20,7 @@ const baseRoutes: BaseRoute[] = [
   {
     name: 'Overview',
     icon: ChartCombo,
+    path: '/',
   },
   {
     name: 'Applications',
@@ -81,9 +82,9 @@ const baseRoutes: BaseRoute[] = [
 const createPath = (name: string) => `/${name.replace(/\s+/g, '-').toLowerCase()}`
 
 // Convert the base routes to routes
-export const routes: Route[] = baseRoutes.map(({ name, children, ...rest }) => ({
+export const routes: Route[] = baseRoutes.map(({ name, children, path, ...rest }) => ({
   ...rest,
   name,
-  path: name === 'Overview' ? '/' : createPath(name),
+  path: path || createPath(name),
   children: children?.map((name) => ({ name, path: createPath(name) })),
 }))
