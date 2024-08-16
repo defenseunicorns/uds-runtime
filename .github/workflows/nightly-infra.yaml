@@ -1,0 +1,54 @@
+name: Deploy Runtime + Core on AWS
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * *" # Runs at 10:00 AM UTC, which is 4:00 AM MT during Daylight Saving Time
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  ephemerial-cluster:
+    runs-on: ubuntu-latest
+    env:
+      SHA: ${{ github.sha }}
+      UDS_REGION: us-west-2
+      UDS_PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+      UDS_PERMISSIONS_BOUNDARY_NAME: ${{ secrets.PERMISSIONS_BOUNDARY_NAME }}
+      UDS_STATE_BUCKET: uds-aws-ci-commercial-us-west-2-5246-tfstate
+      UDS_STATE_DYNAMODB_TABLE: uds-aws-ci-commercial-org-us-west-2-5246-tfstate-lock
+      UDS_STATE_KEY: runtime-ephemeral.tfstate
+    steps:
+      - name: Set ENV
+        run: |
+          echo "TF_VAR_region=${UDS_REGION}" >> $GITHUB_ENV
+          echo "TF_VAR_permissions_boundary_arn=${UDS_PERMISSIONS_BOUNDARY_ARN}" >> $GITHUB_ENV
+          echo "TF_VAR_permissions_boundary_name=${UDS_PERMISSIONS_BOUNDARY_NAME}" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          role-to-assume: ${{ secrets.AWS_COMMERCIAL_ROLE_TO_ASSUME }}
+          role-session-name: ${{ github.job || github.event.client_payload.pull_request.head.sha || github.sha }}
+          aws-region: ${{ env.UDS_REGION }}
+          role-duration-seconds: 21600
+
+      - name: Environment setup
+        uses: ./.github/actions/setup
+
+      - uses: opentofu/setup-opentofu@ae80d4ecaab946d8f5ff18397fbf6d0686c6d46a # v1.0.3
+        with:
+          tofu_version: 1.8.1
+
+      - name: Teardown Infra (destroy running instance first)
+        run: uds run -f .github/test-infra/tasks/infra.yaml destroy-iac
+        timeout-minutes: 30
+
+      - name: Create Infra (creates and deploys runtime + core bundle on instance startup)
+        run: uds run -f .github/test-infra/tasks/infra.yaml create-iac
+        timeout-minutes: 30
