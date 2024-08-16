@@ -26,6 +26,7 @@ locals {
     "ManagedBy"    = "Terraform"
     "CreationDate" = time_static.creation_time.rfc3339
     "nuke" : "DO-NOT-DELETE"
+    "PermissionsBoundary" = "${var.permissions_boundary_name}"
   })
 }
 
@@ -103,11 +104,7 @@ resource "aws_iam_role" "runtime_role" {
     ]
   })
   permissions_boundary = var.permissions_boundary_arn
-  tags = {
-    // Add permissions boundary tag to handle all roles in a simple way
-    PermissionsBoundary = "${var.permissions_boundary_name}"
-    nuke = "DO-NOT-DELETE"
-  }
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "secrets_manager_policy_attachment" {
