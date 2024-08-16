@@ -84,6 +84,6 @@ const createPath = (name: string) => `/${name.replace(/\s+/g, '-').toLowerCase()
 export const routes: Route[] = baseRoutes.map(({ name, children, ...rest }) => ({
   ...rest,
   name,
-  path: createPath(name),
+  path: name === 'Overview' ? '/' : createPath(name),
   children: children?.map((name) => ({ name, path: createPath(name) })),
 }))
