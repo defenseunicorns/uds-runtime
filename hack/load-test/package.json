@@ -5,7 +5,7 @@
   "main": "load.js",
   "type": "module",
   "dependencies": {
-    "kubernetes-fluent-client": "^2.6.5"
+    "kubernetes-fluent-client": "^3.0.0"
   },
   "scripts": {
     "load": "node load.js"
