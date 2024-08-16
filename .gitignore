@@ -27,3 +27,6 @@ vite.config.ts.timestamp-*
 zarf-sbom
 tmp/
 *.tar.zst
+
+
+.github/test-infra/**/.terraform*
