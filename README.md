@@ -72,7 +72,7 @@ UDS Runtime publishes a canary release of latest changes every night tagged `nig
 uds deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable
 ```
 
-## Techstack
+## Tech Stack
 
 - Backend:
 
