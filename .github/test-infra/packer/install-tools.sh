@@ -3,7 +3,7 @@
 set -e
 
 # renovate: datasource=github-tags depName=k3d-io/k3d versioning=semver
-export K3D_VERSION="v5.5.1"
+export K3D_VERSION="v5.7.3"
 
 # Install docker
 sudo apt-get update -y
