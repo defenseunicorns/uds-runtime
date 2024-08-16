@@ -84,8 +84,10 @@ uds deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable
 
   - [Sveltekit](https://kit.svelte.dev/)
   - [Vite](https://vitejs.dev/)
+  - [Typescript](https://typescriptlang.org/)
   - [TailwindCSS](https://tailwindcss.com/) ([Flowbite](https://flowbite.com/))
   - [Carbon Icons](https://www.carbondesignsystem.com/guidelines/icons/library)
+  - [svelte-apexcharts](https://github.com/bn3t/svelte-apexcharts)
 
 - Networking:
 
