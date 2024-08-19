@@ -15,7 +15,7 @@ runs:
         node-version: 21.1.0
 
     - name: Set up Homebrew
-      uses: Homebrew/actions/setup-homebrew@584b164680f7635c2bb88e26a56dde79146ca66d # master
+      uses: Homebrew/actions/setup-homebrew@586516f25156b8094aeb6791d5f177c17250bc4b # master
 
     - name: Install UDS CLI
       shell: bash
