@@ -4,7 +4,7 @@ image:
   # x-release-please-start-version
   tag: 0.1.0
   # x-release-please-end
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 package:
   gateway: admin
   host: runtime
