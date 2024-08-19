@@ -1,5 +1,12 @@
 # UDS Runtime
 
+[![Tests](https://github.com/defenseunicorns/uds-runtime/actions/workflows/pr-tests.yaml/badge.svg)](https://github.com/defenseunicorns/uds-runtime/actions/workflows/pr-tests.yaml)
+[![lint](https://github.com/defenseunicorns/uds-runtime/actions/workflows/scan-lint.yaml/badge.svg)](https://github.com/defenseunicorns/uds-runtime/actions/workflows/scan-lint.yaml)
+
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/defenseunicorns/uds-runtime)](https://goreportcard.com/report/github.com/defenseunicorns/uds-runtime)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/defenseunicorns/uds-runtime/badge)](https://scorecard.dev/viewer/?uri=github.com/defenseunicorns/uds-runtime)
+
 UDS Runtime is the frontend for all things UDS, providing views and insights into your UDS cluster.
 
 ## Quickstart Deploy
