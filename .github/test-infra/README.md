@@ -17,6 +17,22 @@ When the nightly workflow kicks off, it will `tofu init` using the backend varia
 
 The ec2 instance is created with a custom AMI. We use `packer` to define the AMI in [runtime.pkr.hcl](./packer/runtime.pkr.hcl) and build / push it to our AWS accounts.
 
+***Only needed if you're updating the AMI***
+
+pre-requisites:
+* [packer](https://developer.hashicorp.com/packer/tutorials/docker-get-started/get-started-install-cli)
+* [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+
+*Don't forget to authenticate to the AWS account*
+```bash
+cd .github/test-infra/packer
+packer init runtime.pkr.hcl
+packer build runtime.pkr.hcl
+```
+
+> **NOTE**  
+> Please delete old instances of the AMI from whatever AWS account you push too
+
 ## Development and Testing
 
 > **NOTE**  

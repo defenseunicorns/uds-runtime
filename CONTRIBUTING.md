@@ -58,24 +58,35 @@ A list of runnable tasks from `uds run --list-all`
 
 | Name                 | Description                                                                                                    |
 | -------------------- | -------------------------------------------------------------------------------------------------------------- |
-| dev-server           | run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation) |
-| dev-ui               | run the ui in dev mode                                                                                  |
-| test:e2e             | run end-to-end tests (assumes api server is running on port 8080)                                              |
-| test:go              | run api server unit tests                                                                                      |
-| test:ui-unit         | run frontend unit tests                                                                                        |
-| test:unit            | run all unit tests (backend and frontend)                                                                      |
-| lint:all             | Run all linters                                                                                                |
-| lint:golangci        | Run golang linters                                                                                             |
-| lint:yaml            | Run yaml linters                                                                                               |
-| lint:ui              | Run ui linters                                                                                                 |
-| lint:format-ui       | Format ui code                                                                                                 |
-| setup:build-api      | build the go api server                                                                                        |
-| setup:build-ui       | build ui                                                                                                |
-| setup:slim-cluster   | Create a k3d cluster and deploy core slim dev with metrics server                                              |
-| setup:simple-cluster | Create a k3d cluster, no core                                                                                  |
-| setup:golangci       | Install golangci-lint to GOPATH using install.sh                                                               |
-| setup:clone-core     | Clone uds-core for custom slim dev setup                                                                       |
-| setup:metrics-server | Create and deploy metrics server from cloned core                                                              |
+| dev-server                  | run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation)
+| dev-ui                      | run the ui in dev mode
+| compile                     | compile the api server and ui outputting to build/
+| test:e2e                    | run end-to-end tests (assumes api server is running on port 8080)
+| test:go                     | run api server unit tests
+| test:ui-unit                | run frontend unit tests
+| test:unit                   | run all unit tests (backend and frontend)
+| test:deploy-load            | deploy some Zarf packages to test against
+| test:deploy-min-core        | install min resources for UDS Core
+| lint:all                    | Run all linters
+| lint:golangci               | Run golang linters
+| lint:yaml                   | Run yaml linters
+| lint:ui                     | Run ui lint and type check
+| lint:format-ui              | Format ui code
+| setup:build-api             | build the go api server for the local platform
+| setup:build-api-linux-amd64 | build the go api server for linux amd64 (used for multi-arch container)
+| setup:build-api-linux-arm64 | build the go api server for linux arm64 (used for multi-arch container)
+| setup:build-ui              | build ui
+| setup:slim-cluster          | Create a k3d cluster and deploy core slim dev with metrics server
+| setup:simple-cluster        | Create a k3d cluster, no core
+| setup:golangci              | Install golangci-lint to GOPATH using install.sh
+| setup:clone-core            | Clone uds-core for custom slim dev setup
+| setup:metrics-server        | Create and deploy metrics server from cloned core
+| build:publish-uds-runtime   | publish the uds runtime including its image and Zarf pkg (multi-arch)
+| build:push-container        | build container and push to GHCR (multi-arch)
+| build:build-zarf-packages   | build the uds runtime zarf packages (multi-arch)
+| build:publish-zarf-packages | publish uds runtime zarf packages (multi-arch)
+| swagger:generate            | Generate Swagger docs
+| swagger:test                | Ensure no changes to Swagger docs
 
 ### Pre-Commit Hooks and Linting
 
@@ -103,3 +114,7 @@ E2E tests reside in the `ui/tests/` directory and can be named `*.test.ts` or `*
 1. build the api server
 1. setup the slim cluster (core-slim-dev + metrics server)
 1. run the e2e script, which starts the api server (serves ui) to test against.
+
+#### Ephemeral EC2 for Usability Tests
+
+There is an ephemeral ec2 instance deploying the nightly release of UDS Runtime along with `UDS Core`. For more details, please see the test IAC [README.md](./.github/test-infra/README.md).
