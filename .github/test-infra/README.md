@@ -4,7 +4,7 @@ The UDS Runtime IAC is used by the [nightly-infra workflow](../workflows/nightly
 
 ## How it Works
 
-When the nightly workflow kicks off, it will `init` using the backend variables defined in the workflow to then destroy the currently running ec2 instance and cluster. After removing the old instance, it will create a new ec2 instance in the UDS CI AWS account, that on startup will do the following:
+When the nightly workflow kicks off, it will `tofu init` using the backend variables defined in the workflow, then destroy the currently running EC2 instance and related infra. After removing the old infra, it will create a new EC2 instance in the UDS CI AWS account, that on startup will do the following:
 
 1. clone the [uds-k3d](https://github.com/defenseunicorns/uds-k3d) repo, setting `nginx.conf` to redirect for the `.burning.boats` domain
 1. run the default task of `uds-k3d`, creating the k3d cluster on the instance
