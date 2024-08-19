@@ -54,3 +54,15 @@ sudo ./aws/install
 sudo snap install amazon-ssm-agent --classic
 sudo systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
 sudo systemctl start snap.amazon-ssm-agent.amazon-ssm-agent.service
+
+# Set ulimit values for running core / software factory
+echo "* soft nofile 1000000" | sudo tee -a /etc/security/limits.conf
+echo "* hard nofile 1000000" | sudo tee -a /etc/security/limits.conf
+echo "* soft nproc 8192" | sudo tee -a /etc/security/limits.conf
+echo "* hard nproc 8192" | sudo tee -a /etc/security/limits.conf
+
+# Update sysctl settings for running core / software factory
+echo "fs.file-max = 1000000" | sudo tee -a /etc/sysctl.conf
+echo "vm.max_map_count = 1524288" | sudo tee -a /etc/sysctl.conf
+echo "fs.inotify.max_user_instances = 8192" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
