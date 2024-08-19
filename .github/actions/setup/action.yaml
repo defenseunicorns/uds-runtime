@@ -19,9 +19,8 @@ runs:
 
     - name: Install UDS CLI
       shell: bash
-      run: |
-        brew tap defenseunicorns/tap
-        brew install uds@0.14.0
+      # renovate: datasource=github-tags depName=defenseunicorns/uds-cli versioning=semver
+      run: brew install defenseunicorns/tap/uds@0.14.0
 
     - name: Install Swagger CLI
       shell: bash
