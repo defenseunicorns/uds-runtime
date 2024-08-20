@@ -19,7 +19,17 @@ export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   // Using dense=true because most of the fields are stripped out in the default spareResource stream
-  const url = `/api/v1/resources/events?dense=true`
+  let url = `/api/v1/resources/events?dense=true`
+
+  // Check if API AUTH is enabled
+  const apiAuthSet: boolean = import.meta.env.VITE_API_AUTH
+    ? import.meta.env.VITE_API_AUTH.toLowerCase() === 'true'
+    : false
+
+  if (apiAuthSet) {
+    // need to handle the multiple url search params
+    url = url + `&`
+  }
 
   const transform = transformResource<Resource, Row>((r) => ({
     count: r.count ?? 0,

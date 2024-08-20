@@ -36,7 +36,19 @@
     peprStream.set([])
     streamFilter = params.stream || ''
 
-    eventSource = new EventSource(`/api/v1/monitor/pepr/${streamFilter}`)
+    const path: string = `/api/v1/monitor/pepr/${streamFilter}`
+
+    // Check if API AUTH is enabled
+    const apiAuthSet: boolean = import.meta.env.VITE_API_AUTH
+      ? import.meta.env.VITE_API_AUTH.toLowerCase() === 'true'
+      : false
+
+    if (apiAuthSet) {
+      let apiToken: string = sessionStorage.getItem('token') ?? ''
+      eventSource = new EventSource(path + '?token=' + apiToken)
+    } else {
+      eventSource = new EventSource(path)
+    }
 
     // Set the loaded flag when the connection is established
     eventSource.onopen = () => {

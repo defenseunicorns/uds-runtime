@@ -11,9 +11,11 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 
 	"strings"
 
+	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
@@ -30,6 +32,22 @@ import (
 // @BasePath /api/v1
 // @schemes http https
 func Start(assets embed.FS) error {
+	apiAuth := os.Getenv("VITE_API_AUTH")
+	port := "8080"
+
+	ip := "127.0.0.1"
+
+	// If the env variable API_TOKEN is set, use that for the API secret
+	token := os.Getenv("API_TOKEN")
+	var err error
+	// Otherwise, generate a random secret
+	if token == "" {
+		token, err = auth.RandomString(96)
+		if err != nil {
+			return fmt.Errorf("failed to generate random string: %w", err)
+		}
+	}
+
 	r := chi.NewRouter()
 
 	r.Use(udsmiddleware.ConditionalCompress)
@@ -45,6 +63,11 @@ func Start(assets embed.FS) error {
 	// Add Swagger UI route
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	r.Route("/api/v1", func(r chi.Router) {
+		// Require a valid token for API calls
+		if strings.EqualFold(apiAuth, "true") {
+			r.Use(auth.RequireSecret(token))
+			r.Head("/", auth.Connect)
+		}
 		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
@@ -159,6 +182,13 @@ func Start(assets embed.FS) error {
 		})
 	})
 
+	if strings.EqualFold(apiAuth, "true") {
+		colorYellow := "\033[33m"
+		colorReset := "\033[0m"
+		url := fmt.Sprintf("http://%s:%s/auth?token=%s", ip, port, token)
+		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
+	}
+
 	// Serve static files from embed.FS
 	staticFS, err := fs.Sub(assets, "ui/build")
 	if err != nil {
@@ -169,9 +199,9 @@ func Start(assets embed.FS) error {
 		return fmt.Errorf("failed to serve static files: %w", err)
 	}
 
-	log.Println("Starting server on :8080")
+	log.Printf("Starting server on :%s", port)
 	//nolint:gosec
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	if err := http.ListenAndServe(":"+port, r); err != nil {
 		return fmt.Errorf("server failed to start: %w", err)
 	}
 

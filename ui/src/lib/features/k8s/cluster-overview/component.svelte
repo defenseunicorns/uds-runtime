@@ -178,7 +178,20 @@
   }
 
   onMount(() => {
-    const overview = new EventSource(`/api/v1/monitor/cluster-overview`)
+    // Check if API AUTH is enabled
+    const apiAuthSet: boolean = import.meta.env.VITE_API_AUTH
+      ? import.meta.env.VITE_API_AUTH.toLowerCase() === 'true'
+      : false
+
+    let overview
+    const path: string = `/api/v1/monitor/cluster-overview`
+
+    if (apiAuthSet) {
+      let apiToken: string = sessionStorage.getItem('token') ?? ''
+      overview = new EventSource(path + '?token=' + apiToken)
+    } else {
+      overview = new EventSource(path)
+    }
 
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData

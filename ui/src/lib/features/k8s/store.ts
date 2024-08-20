@@ -167,13 +167,25 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
    * @returns A function to stop the EventSource
    */
   start() {
+    // Check if API AUTH is enabled
+    const apiAuthSet: boolean = import.meta.env.VITE_API_AUTH
+      ? import.meta.env.VITE_API_AUTH.toLowerCase() === 'true'
+      : false
     // If the store has already been initialized, return
     if (this.#initialized) {
       return () => {}
     }
 
     this.#initialized = true
-    this.#eventSource = new EventSource(this.url)
+
+    if (!apiAuthSet) {
+      this.#eventSource = new EventSource(this.url)
+    } else {
+      let apiToken: string = sessionStorage.getItem('token') ?? ''
+      // Check if the URL already contains a '?' for urls with multiple search params
+      const separator = this.url.includes('?') ? '&' : '?'
+      this.#eventSource = new EventSource(`${this.url}${separator}token=${apiToken}`)
+    }
 
     this.#eventSource.onmessage = ({ data }) => {
       try {

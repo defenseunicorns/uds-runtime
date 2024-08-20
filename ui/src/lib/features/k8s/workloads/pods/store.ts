@@ -40,7 +40,20 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const metrics = new Map<string, PodMetric>()
   // Store to trigger updates
   const metricsStore = writable<number>()
-  const metricsEvents = new EventSource(`/api/v1/resources/workloads/podmetrics`)
+  // Check if API AUTH is enabled
+  const apiAuthSet: boolean = import.meta.env.VITE_API_AUTH
+    ? import.meta.env.VITE_API_AUTH.toLowerCase() === 'true'
+    : false
+
+  let metricsEvents
+  const path: string = `/api/v1/resources/workloads/podmetrics`
+
+  if (apiAuthSet) {
+    let apiToken: string = sessionStorage.getItem('token') ?? ''
+    metricsEvents = new EventSource(path + '?token=' + apiToken)
+  } else {
+    metricsEvents = new EventSource(path)
+  }
 
   // Listen for new metrics
   metricsEvents.onmessage = (event) => {

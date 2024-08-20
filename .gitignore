@@ -27,3 +27,4 @@ vite.config.ts.timestamp-*
 zarf-sbom
 tmp/
 *.tar.zst
+.vscode/
