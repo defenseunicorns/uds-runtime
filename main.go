@@ -22,9 +22,9 @@ func main() {
 		os.Exit(1)
 	}
 	log.Println("Starting server on :8080")
-	//nolint:gosec
+	//nolint:gosec,govet
 	if err = http.ListenAndServe(":8080", r); err != nil {
-		message.WarnErrf("server failed to start: %w", err.Error())
+		message.WarnErrf(err, "server failed to start: %s", err.Error())
 		os.Exit(1)
 	}
 }
