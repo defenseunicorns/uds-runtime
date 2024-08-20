@@ -12,6 +12,12 @@ git clone https://github.com/defenseunicorns/uds-k3d.git
 # # Deploy cluster
 cd uds-k3d && uds run
 
+# Add ssm-user to docker group
+usermod -aG docker ssm-user
+
+# Restart SSM agent to apply changes
+systemctl restart amazon-ssm-agent
+
 # Get kubeconfig
 mkdir -p /home/ubuntu/.kube
 k3d kubeconfig get uds > /home/ubuntu/.kube/config
