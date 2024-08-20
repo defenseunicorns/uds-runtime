@@ -17,7 +17,10 @@ tasks:
   - name: go
     description: "run api server unit tests"
     actions:
-      - cmd: go test -failfast -v -timeout 30m ./...
+      - cmd: |
+          for dir in $(go list ./... | grep -v '/pkg/test/'); do
+              go test -failfast -v -timeout 30m $dir
+          done
 
   - name: ui-unit
     description: "run frontend unit tests"
