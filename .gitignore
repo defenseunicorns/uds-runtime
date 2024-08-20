@@ -28,3 +28,6 @@ zarf-sbom
 tmp/
 *.tar.zst
 .vscode/
+
+*.pem
+.github/test-infra/**/.terraform*
