@@ -9,11 +9,11 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: setup:build-api
-      - cmd: |
-          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
+      - task: k3d
       - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
+
   - name: go
     description: "run api server unit tests"
     actions:
@@ -33,6 +33,15 @@ tasks:
       - task: go
       - task: ui-unit
 
+  - name: api
+    description: "run api server tests"
+    actions:
+      - description: "build ui since embedded in main.go"
+        task: setup:build-ui
+      - task: k3d
+      - task: deploy-load
+      - cmd: go test -failfast -v -timeout 30m ./pkg/test/api_test.go
+
   - name: deploy-load
     description: "deploy some Zarf packages to test against"
     actions:
@@ -45,10 +54,16 @@ tasks:
     actions:
       - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
         description: clone UDS Core
-      - cmd: npm i && npx pepr deploy --confirm
+      - cmd: npm ci && npx pepr deploy --confirm
         description: deploy UDS Core's Pepr module
         dir: tmp/uds-core
       - cmd: |
           helm repo add istio https://istio-release.storage.googleapis.com/charts
           helm install istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
         description: install Istio CRDs
+
+  - name: k3d
+    description: "start a k3d cluster"
+    actions:
+      - cmd: |
+          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
