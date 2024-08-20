@@ -11,14 +11,33 @@
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
   import '../app.postcss'
+  import { authenticated } from '$lib/features/api-auth/store'
 
-  onMount(initFlowbite)
+  let isAuthenticated: boolean
+  const apiAuthEnabled = import.meta.env.VITE_API_AUTH?.toLowerCase() === 'true'
+
+  // If API_AUTH is enabled, subscribe to the authenticated store to check if the user is authenticated
+  if (apiAuthEnabled) {
+    authenticated.subscribe((value) => {
+      isAuthenticated = value
+    })
+  }
+
+  onMount(() => {
+    initFlowbite()
+  })
+
   afterNavigate(initFlowbite)
+  console.log('apiAuthEnabled:' + apiAuthEnabled)
+  console.log('authenticated:' + authenticated)
 </script>
 
 <Navbar />
 
-<Sidebar />
+<!-- Hide navbar if api auth is enabled and user is not authenticated-->
+{#if !apiAuthEnabled || (apiAuthEnabled && isAuthenticated)}
+  <Sidebar />
+{/if}
 
 <main
   class="flex h-screen flex-col pt-16 transition-all duration-300 ease-in-out {$isSidebarExpanded
