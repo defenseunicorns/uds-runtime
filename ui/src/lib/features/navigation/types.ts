@@ -8,6 +8,7 @@ export interface BaseRoute {
   icon?: typeof CarbonIcon
   class?: string
   children?: string[]
+  path?: string
 }
 
 export interface Route {

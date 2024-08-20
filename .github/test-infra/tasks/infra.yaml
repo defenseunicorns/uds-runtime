@@ -1,0 +1,32 @@
+variables:
+  - name: REGION
+  - name: STATE_BUCKET
+  - name: STATE_DYNAMO_TABLE
+  - name: STATE_KEY
+
+tasks:
+  - name: init
+    description: "initialize runtime test infra"
+    actions:
+      - dir: .github/test-infra/terraform
+        cmd: |
+          tofu init -force-copy \
+          -backend-config="bucket=${STATE_BUCKET}" \
+          -backend-config="key=${STATE_KEY}" \
+          -backend-config="region=${REGION}" \
+          -backend-config="dynamodb_table=${DYNAMODB_TABLE}"
+
+  - name: create-iac
+    description: "spinup runtime test infra"
+    actions:
+      - task: init
+      - cmd: tofu apply -auto-approve
+        dir: .github/test-infra/terraform
+
+  - name: destroy-iac
+    description: "destroy runtime test infra"
+    actions:
+      - task: init
+        description: "initialize to get state from s3 in order to destroy from previous run"
+      - cmd: tofu destroy -auto-approve
+        dir: .github/test-infra/terraform
