@@ -28,5 +28,5 @@ zarf-sbom
 tmp/
 *.tar.zst
 
-
+*.pem
 .github/test-infra/**/.terraform*

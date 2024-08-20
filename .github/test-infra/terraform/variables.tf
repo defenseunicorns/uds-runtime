@@ -1,7 +1,7 @@
 variable "region" {
   description = "The AWS region to deploy the EC2 instance"
   type        = string
-  default    = "us-west-2"
+  default     = "us-west-2"
 }
 
 variable "permissions_boundary_name" {
@@ -23,5 +23,5 @@ variable "enable_ssh" {
 variable "ssh_ip" {
   description = "The IP address to allow SSH access from"
   type        = string
-  default    = ""
+  default     = ""
 }
