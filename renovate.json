@@ -4,10 +4,17 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>defenseunicorns/uds-common//config/renovate.json5",
-    ":semanticPrefixFixDepsChoreOthers",
-    "config:base",
-    "group:all",
-    "replacements:all",
-    "workarounds:all"
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "packageRules": [
+     {
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "devDependencies"
+    },
+    {
+      "matchDatasources": ["github-tags"],
+      "groupName": "github actions"
+    }
   ]
 }
