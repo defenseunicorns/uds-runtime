@@ -13,8 +13,6 @@ import (
 	"github.com/defenseunicorns/uds-runtime/pkg/api"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
 func TestQueryParams(t *testing.T) {
@@ -92,10 +90,10 @@ func TestQueryParams(t *testing.T) {
 type TestRoute struct {
 	name         string
 	url          string
-	expectedKind runtime.Object
+	expectedKind string
 }
 
-func TestRoutes(t *testing.T) {
+func TestPodRoutes(t *testing.T) {
 	r, err := api.Setup(nil)
 	require.NoError(t, err)
 
@@ -106,12 +104,12 @@ func TestRoutes(t *testing.T) {
 		{
 			name:         "pods",
 			url:          "/api/v1/resources/workloads/pods",
-			expectedKind: &v1.Pod{},
+			expectedKind: "Pod",
 		},
 		{
 			name:         "pods/{uid}",
 			url:          "/api/v1/resources/workloads/pods/{uid}",
-			expectedKind: &v1.Pod{},
+			expectedKind: "Pod",
 		},
 	}
 
@@ -120,6 +118,94 @@ func TestRoutes(t *testing.T) {
 	}
 }
 
+func TestPackageRoutes(t *testing.T) {
+	r, err := api.Setup(nil)
+	require.NoError(t, err)
+
+	// Map so can mutate reference between tests
+	uidMap := map[string]string{"uid": ""}
+
+	packageTests := []TestRoute{
+		{
+			name:         "uds-packages",
+			url:          "/api/v1/resources/configs/uds-packages",
+			expectedKind: "Package",
+		},
+		{
+			name:         "uds-packages/{uid}",
+			url:          "/api/v1/resources/configs/uds-packages/{uid}",
+			expectedKind: "Package",
+		},
+	}
+
+	for _, tt := range packageTests {
+		testRoutesHelper(t, tt, uidMap, r)
+	}
+}
+
+func TestPeprRoutes(t *testing.T) {
+	r, err := api.Setup(nil)
+	require.NoError(t, err)
+
+	peprTests := []TestRoute{
+		{
+			name: "uds-packages",
+			url:  "/api/v1/monitor/pepr/",
+		},
+		{
+			name: "pepr/{stream}",
+			url:  "/api/v1/monitor/pepr/policies",
+		},
+	}
+
+	for _, tt := range peprTests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create a new context with a timeout -- increase to 2s to aggregate data
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+
+			rr := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", tt.url, nil)
+
+			// Start serving the request for 2 second
+			go func(ctx context.Context) {
+				r.ServeHTTP(rr, req)
+			}(ctx)
+
+			// wait for the context to be done
+			<-ctx.Done()
+			require.Equal(t, http.StatusOK, rr.Code)
+			require.NotEmpty(t, rr.Body.String())
+			require.Contains(t, rr.Body.String(), "header")
+		})
+	}
+}
+
+func TestClusterOverview(t *testing.T) {
+	r, err := api.Setup(nil)
+	require.NoError(t, err)
+
+	t.Run("cluster-overview", func(t *testing.T) {
+		// Create a new context with a timeout -- increase to 2s to aggregate data
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/api/v1/monitor/cluster-overview", nil)
+
+		// Start serving the request for 2 second
+		go func(ctx context.Context) {
+			r.ServeHTTP(rr, req)
+		}(ctx)
+
+		// wait for the context to be done
+		<-ctx.Done()
+		require.Equal(t, http.StatusOK, rr.Code)
+		require.Contains(t, rr.Body.String(), "totalPods")
+	})
+}
+
+// testRoutesHelper handles logic for testing getResources and getResource routes (e.g. /pods and /pods/{uid})
 func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *chi.Mux) {
 	fmt.Println("uid " + uidMap["uid"])
 	t.Run(tt.name, func(t *testing.T) {
@@ -143,26 +229,15 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 
 		if uidMap["uid"] != "" {
 			keyIndx := 0
-			var data json.RawMessage
-			err := json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
-			require.NoError(t, err)
-
-			// Unmarshal the data into the expected kind
-			err = json.Unmarshal(data, tt.expectedKind)
-			require.NoError(t, err)
+			var data map[string]interface{}
+			json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
+			require.Equal(t, tt.expectedKind, data["Object"].(map[string]interface{})["kind"])
 		} else {
 			keyIndx := 5
-			var data []json.RawMessage
+			var data []map[string]interface{}
 			json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
-
-			// Unmarshal the first entry into the expected kind
-			err := json.Unmarshal(data[0], tt.expectedKind)
-			require.NoError(t, err)
-
-			// Get the UID from the first entry for the next test
-			var dataStruct []map[string]interface{}
-			json.Unmarshal(rr.Body.Bytes()[keyIndx:], &dataStruct)
-			uidMap["uid"] = dataStruct[0]["metadata"].(map[string]interface{})["uid"].(string)
+			require.Equal(t, tt.expectedKind, data[0]["kind"])
+			uidMap["uid"] = data[0]["metadata"].(map[string]interface{})["uid"].(string)
 		}
 	})
 }
