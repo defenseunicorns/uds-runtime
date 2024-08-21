@@ -34,7 +34,7 @@
 
 <Navbar />
 
-<!-- Hide navbar if api auth is enabled and user is not authenticated-->
+<!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
 {#if !apiAuthEnabled || (apiAuthEnabled && $authenticated)}
   <Sidebar />
 {/if}
