@@ -39,17 +39,25 @@ func TestQueryParams(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			isDense:        true,
 		},
+		{
+			name:           "sse namespace & name",
+			url:            "/api/v1/resources/workloads/pods?namespace=podinfo&name=podinfo",
+			expectedStatus: http.StatusOK,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			keyIndx := 5
+			if strings.Contains(tt.url, "once=true") {
+				keyIndx = 0
+			}
+
 			// Create a new context with a timeout
 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 			defer cancel()
 
-			// Response recorder
 			rr := httptest.NewRecorder()
-			// Request
 			req := httptest.NewRequest("GET", tt.url, nil)
 
 			// Start serving the request for 1 second
@@ -59,21 +67,24 @@ func TestQueryParams(t *testing.T) {
 
 			// wait for the context to be done
 			<-ctx.Done()
-
 			require.Equal(t, tt.expectedStatus, rr.Code)
 
 			var data []map[string]interface{}
-			dataKey := 5
-			if strings.Contains(tt.url, "once=true") {
-				dataKey = 0
-			}
-			err = json.Unmarshal(rr.Body.Bytes()[dataKey:], &data)
+			err = json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
 			require.NoError(t, err)
 
+			// Assert dense versus sparse
 			if tt.isDense {
 				require.NotNil(t, data[0]["spec"].(map[string]interface{})["containers"])
 			} else {
 				require.Nil(t, data[0]["spec"].(map[string]interface{})["containers"])
+			}
+
+			// Assert namespace and name filtering
+			if strings.Contains(tt.url, "namespace=podinfo&name=podinfo") {
+				require.Equal(t, 1, len(data))
+				require.Equal(t, data[0]["metadata"].(map[string]interface{})["namespace"], "podinfo")
+				require.Contains(t, data[0]["metadata"].(map[string]interface{})["name"], "podinfo")
 			}
 		})
 	}
