@@ -119,17 +119,6 @@
         </li>
       {/each}
     </ul>
-    <ul class="mt-5 space-y-2 border-t border-gray-200 pt-5 dark:border-gray-700">
-      <li>
-        <a
-          href="/docs"
-          class="group flex items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-300 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600"
-        >
-          <DocumentMultiple_01 class="icon" />
-          <span class="expanded-only ml-3">Docs</span>
-        </a>
-      </li>
-    </ul>
     <div class="grow"></div>
     <div id="sidebar-footer" class="flex hidden justify-center bg-white mb-16 mt-8 lg:flex dark:bg-gray-800">
       <a
