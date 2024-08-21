@@ -4,7 +4,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import { ChevronRight, DocumentMultiple_01, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
+  import { ChevronRight, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
   import { routes } from '../routes'
   import { isSidebarExpanded } from '../store'
   import './styles.postcss'
