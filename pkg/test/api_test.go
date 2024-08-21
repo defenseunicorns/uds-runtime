@@ -193,7 +193,7 @@ func TestClusterOverview(t *testing.T) {
 		rr := httptest.NewRecorder()
 		req := httptest.NewRequest("GET", "/api/v1/monitor/cluster-overview", nil)
 
-		// Start serving the request for 2 second
+		// Start serving the request for 1 second
 		go func(ctx context.Context) {
 			r.ServeHTTP(rr, req)
 		}(ctx)

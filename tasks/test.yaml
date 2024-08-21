@@ -39,8 +39,6 @@ tasks:
   - name: api
     description: "run api server tests"
     actions:
-      - description: "build ui since embedded in main.go"
-        task: setup:build-ui
       - task: k3d
       - task: deploy-load
       - cmd: go test -failfast -v -timeout 30m ./pkg/test/api_test.go
