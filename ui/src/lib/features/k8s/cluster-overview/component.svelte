@@ -7,6 +7,8 @@
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
 
+  import './styles.postcss'
+
   type ClusterData = {
     totalPods: number
     totalNodes: number
