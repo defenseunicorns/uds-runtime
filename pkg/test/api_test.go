@@ -11,6 +11,8 @@ import (
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api"
 	"github.com/stretchr/testify/require"
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 func TestQueryParams(t *testing.T) {
@@ -18,31 +20,26 @@ func TestQueryParams(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := []struct {
-		name           string
-		url            string
-		expectedStatus int
-		isDense        bool
+		name    string
+		url     string
+		isDense bool
 	}{
 		{
-			name:           "once=true",
-			url:            "/api/v1/resources/workloads/pods?once=true",
-			expectedStatus: http.StatusOK,
+			name: "once=true",
+			url:  "/api/v1/resources/workloads/pods?once=true",
 		},
 		{
-			name:           "sse sparse",
-			url:            "/api/v1/resources/workloads/pods",
-			expectedStatus: http.StatusOK,
+			name: "sse sparse",
+			url:  "/api/v1/resources/workloads/pods",
 		},
 		{
-			name:           "sse dense=true",
-			url:            "/api/v1/resources/workloads/pods?dense=true",
-			expectedStatus: http.StatusOK,
-			isDense:        true,
+			name:    "sse dense=true",
+			url:     "/api/v1/resources/workloads/pods?dense=true",
+			isDense: true,
 		},
 		{
-			name:           "sse namespace & name",
-			url:            "/api/v1/resources/workloads/pods?namespace=podinfo&name=podinfo",
-			expectedStatus: http.StatusOK,
+			name: "sse namespace & name",
+			url:  "/api/v1/resources/workloads/pods?namespace=podinfo&name=podinfo",
 		},
 	}
 
@@ -67,7 +64,7 @@ func TestQueryParams(t *testing.T) {
 
 			// wait for the context to be done
 			<-ctx.Done()
-			require.Equal(t, tt.expectedStatus, rr.Code)
+			require.Equal(t, http.StatusOK, rr.Code)
 
 			var data []map[string]interface{}
 			err = json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
@@ -90,56 +87,72 @@ func TestQueryParams(t *testing.T) {
 	}
 }
 
-// func TestRoutes(t *testing.T) {
-// 	r, err := api.Setup(nil)
-// 	require.NoError(t, err)
+func TestRoutes(t *testing.T) {
+	r, err := api.Setup(nil)
+	require.NoError(t, err)
+	uid := ""
 
-// 	tests := []struct {
-// 		name             string
-// 		url              string
-// 		expectedStatus   int
-// 		expectedKind     runtime.Object
-// 		expectedResponse []string
-// 	}{
-// 		{
-// 			name:           "once=true",
-// 			url:            "/api/v1/resources/workloads/pods?once=true",
-// 			expectedStatus: http.StatusOK,
-// 			expectedKind:   &v1.Pod{},
-// 		},
-// 	}
+	tests := []struct {
+		name         string
+		url          string
+		expectedKind runtime.Object
+	}{
+		{
+			name:         "pods",
+			url:          "/api/v1/resources/workloads/pods",
+			expectedKind: &v1.Pod{},
+		},
+		{
+			name:         "pods/{uid}",
+			url:          "/api/v1/resources/workloads/pods/{uid}",
+			expectedKind: &v1.Pod{},
+		},
+	}
 
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			// Create a new context with a timeout
-// 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-// 			defer cancel()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create a new context with a timeout
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			defer cancel()
 
-// 			// Start serving the request for 1 second
-// 			var testServer *httptest.Server
-// 			go func(ctx context.Context) {
-// 				testServer = httptest.NewServer(r)
-// 			}(ctx)
+			rr := httptest.NewRecorder()
 
-// 			// wait for the context to be done
-// 			<-ctx.Done()
+			tt.url = strings.Replace(tt.url, "{uid}", uid, 1)
+			req := httptest.NewRequest("GET", tt.url, nil)
 
-// 			resp, err := testServer.Client().Get(testServer.URL + tt.url)
-// 			require.NoError(t, err)
-// 			require.Equal(t, 200, resp.StatusCode)
+			// Start serving the request for 1 second
+			go func(ctx context.Context) {
+				r.ServeHTTP(rr, req)
+			}(ctx)
 
-// 			body, err := io.ReadAll(resp.Body) // Read the response body
-// 			require.NoError(t, err)
-// 			defer resp.Body.Close()
+			// wait for the context to be done
+			<-ctx.Done()
+			require.Equal(t, http.StatusOK, rr.Code)
 
-// 			var responseArray []json.RawMessage
-// 			err = json.Unmarshal(body, &responseArray) // Unmarshal the response body into an array of json.RawMessage
-// 			require.NoError(t, err)
-// 			require.NotEmpty(t, responseArray)
+			if uid != "" {
+				keyIndx := 0
+				var data json.RawMessage
+				err = json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
+				require.NoError(t, err)
 
-// 			err = json.Unmarshal(responseArray[0], tt.expectedKind) // Unmarshal the first entry into the expected kind
-// 			require.NoError(t, err)
-// 		})
-// 	}
+				// Unmarshal the data into the expected kind
+				err = json.Unmarshal(data, tt.expectedKind)
+				require.NoError(t, err)
+			} else {
+				keyIndx := 5
+				var data []json.RawMessage
+				err = json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
 
-// }
+				// Unmarshal the first entry into the expected kind
+				err = json.Unmarshal(data[0], tt.expectedKind)
+				require.NoError(t, err)
+
+				// Get the UID from the first entry for the next test
+				var dataStruct []map[string]interface{}
+				err = json.Unmarshal(rr.Body.Bytes()[keyIndx:], &dataStruct)
+				uid = dataStruct[0]["metadata"].(map[string]interface{})["uid"].(string)
+			}
+		})
+	}
+
+}
