@@ -3,7 +3,6 @@ package test
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -207,7 +206,6 @@ func TestClusterOverview(t *testing.T) {
 
 // testRoutesHelper handles logic for testing getResources and getResource routes (e.g. /pods and /pods/{uid})
 func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *chi.Mux) {
-	fmt.Println("uid " + uidMap["uid"])
 	t.Run(tt.name, func(t *testing.T) {
 		// Create a new context with a timeout
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
