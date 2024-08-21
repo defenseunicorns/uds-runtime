@@ -15,6 +15,7 @@ import (
 
 	"strings"
 
+	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
@@ -187,6 +188,10 @@ func Start(assets embed.FS) error {
 		colorReset := "\033[0m"
 		url := fmt.Sprintf("http://%s:%s/auth?token=%s", ip, port, token)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
+		err := exec.LaunchURL(url)
+		if err != nil {
+			return fmt.Errorf("failed to launch URL: %w", err)
+		}
 	}
 
 	// Serve static files from embed.FS
