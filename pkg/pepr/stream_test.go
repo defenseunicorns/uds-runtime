@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+//go:build unit
+
 // Package pepr contains the logic monitoring Pepr operations in a UDS Cluster
 package pepr
 

@@ -14,13 +14,10 @@ tasks:
       - cmd: npm run test:integration
         dir: ui
 
-  - name: go
+  - name: go-unit
     description: "run api server unit tests"
     actions:
-      - cmd: |
-          for dir in $(go list ./... | grep -v '/pkg/test'); do
-              go test -failfast -v -timeout 30m $dir
-          done
+      - cmd: go test -failfast -v -timeout 30m --tags=unit ./...
 
   - name: ui-unit
     description: "run frontend unit tests"
@@ -33,7 +30,7 @@ tasks:
     actions:
       - task: setup:build-ui
         description: "build ui since embedded in main.go"
-      - task: go
+      - task: go-unit
       - task: ui-unit
 
   - name: api
@@ -41,7 +38,7 @@ tasks:
     actions:
       - task: k3d
       - task: deploy-load
-      - cmd: go test -failfast -v -timeout 30m ./pkg/test/api_test.go
+      - cmd: go test -failfast -v -timeout 30m  --tags=integration ./...
 
   - name: deploy-load
     description: "deploy some Zarf packages to test against"
