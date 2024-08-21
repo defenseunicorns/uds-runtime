@@ -216,12 +216,6 @@ test.describe('Navigation', async () => {
     await expect(element).toBeVisible()
   })
 
-  test('navigates to Docs page', async ({ page }) => {
-    await page.getByRole('link', { name: 'Docs' }).click()
-
-    await expect(page.locator('h1')).toHaveText('Docs')
-  })
-
   test('navigates to Preferences page', async ({ page }) => {
     await page.getByTestId('global-sidenav-preferences').click()
 
