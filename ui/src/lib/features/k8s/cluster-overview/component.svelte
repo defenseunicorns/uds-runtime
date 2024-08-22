@@ -8,6 +8,8 @@
   import type { ApexOptions } from 'apexcharts'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
+  import './styles.postcss'
+
   type ClusterData = {
     totalPods: number
     totalNodes: number

@@ -45,7 +45,7 @@ tasks:
     actions:
       - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
         description: clone UDS Core
-      - cmd: npm i && npx pepr deploy --confirm
+      - cmd: npm ci && npx pepr deploy --confirm
         description: deploy UDS Core's Pepr module
         dir: tmp/uds-core
       - cmd: |

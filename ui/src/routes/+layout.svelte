@@ -4,7 +4,6 @@
 <script lang="ts">
   import 'flowbite'
   import { initFlowbite } from 'flowbite'
-  import 'flowbite/dist/flowbite.css'
   import { onMount } from 'svelte'
 
   import { afterNavigate } from '$app/navigation'
@@ -14,6 +13,8 @@
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
+  // These initiFlowbite calls help load the js necessary to target components which use flowbite js
+  // i.e. data-dropdown-toggle
   onMount(() => {
     initFlowbite()
   })
