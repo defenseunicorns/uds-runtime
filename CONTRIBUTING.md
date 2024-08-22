@@ -123,7 +123,7 @@ When using locators for Playwright, these are the recommended built-in locators.
 - **`page.getByPlaceholder()`** to _locate an input by placeholder_.
 - **`page.getByAltText()`** to _locate an element, usually image, by its text alternative_.
 - **`page.getByTitle()`** to _locate an element by its title attribute_.
-- **`page.getByTestId()`** _to locate an element based on its data-testid attribute (other attributes can be configured)_.
+- **`page.getByTestId()`** to _locate an element based on its data-testid attribute (other attributes can be configured)_.
 
 Before using `page.locator()` to use either the html structure or some complicated locator, please use the `page.getByTestID` locator to target an element. Naming conventions can be found in this [Test ID's ADR](https://github.com/defenseunicorns/uds-runtime/blob/main/adr/0002-testing-with-data-testids.md#decision) as well as the reasoning behind this decision
 
