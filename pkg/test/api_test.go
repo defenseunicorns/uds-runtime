@@ -30,6 +30,11 @@ func TestQueryParams(t *testing.T) {
 			url:  "/api/v1/resources/workloads/pods?once=true",
 		},
 		{
+			name:    "once=true&dense=true",
+			url:     "/api/v1/resources/workloads/pods?once=true&dense=true",
+			isDense: true,
+		},
+		{
 			name: "sse sparse",
 			url:  "/api/v1/resources/workloads/pods",
 		},

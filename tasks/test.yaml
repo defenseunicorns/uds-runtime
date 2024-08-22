@@ -14,10 +14,10 @@ tasks:
       - cmd: npm run test:integration
         dir: ui
 
-  - name: go
+  - name: go-unit
     description: "run api server unit tests"
     actions:
-      - cmd:  go test -failfast -v -timeout 30m --tags=unit ./...
+      - cmd: go test -failfast -v -timeout 30m --tags=unit ./...
 
   - name: ui-unit
     description: "run frontend unit tests"
@@ -30,7 +30,7 @@ tasks:
     actions:
       - task: setup:build-ui
         description: "build ui since embedded in main.go"
-      - task: go
+      - task: go-unit
       - task: ui-unit
 
   - name: api
