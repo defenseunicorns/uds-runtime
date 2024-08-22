@@ -12,30 +12,19 @@
   import { ToastPanel } from '$features/toast'
   import '../app.postcss'
   import { authenticated } from '$lib/features/api-auth/store'
-
-  let isAuthenticated: boolean
-  const apiAuthEnabled = import.meta.env.VITE_API_AUTH?.toLowerCase() === 'true'
-
-  // If API_AUTH is enabled, subscribe to the authenticated store to check if the user is authenticated
-  if (apiAuthEnabled) {
-    authenticated.subscribe((value) => {
-      isAuthenticated = value
-    })
-  }
+  import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
   onMount(() => {
     initFlowbite()
   })
 
   afterNavigate(initFlowbite)
-  console.log('apiAuthEnabled:' + apiAuthEnabled)
-  console.log('authenticated:' + authenticated)
 </script>
 
 <Navbar />
 
 <!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
-{#if !apiAuthEnabled || (apiAuthEnabled && $authenticated)}
+{#if !$apiAuthEnabled || ($apiAuthEnabled && $authenticated)}
   <Sidebar />
 {/if}
 

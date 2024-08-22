@@ -6,6 +6,7 @@
   // @ts-expect-error types don't exist for svelte-apexcharts
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
+  import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
   type ClusterData = {
     totalPods: number
@@ -178,15 +179,10 @@
   }
 
   onMount(() => {
-    // Check if API AUTH is enabled
-    const apiAuthSet: boolean = import.meta.env.VITE_API_AUTH
-      ? import.meta.env.VITE_API_AUTH.toLowerCase() === 'true'
-      : false
-
     let overview
     const path: string = `/api/v1/monitor/cluster-overview`
 
-    if (apiAuthSet) {
+    if ($apiAuthEnabled) {
       let apiToken: string = sessionStorage.getItem('token') ?? ''
       overview = new EventSource(path + '?token=' + apiToken)
     } else {

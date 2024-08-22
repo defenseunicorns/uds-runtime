@@ -13,6 +13,11 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/config': {
+        // Add this new proxy entry
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
   test: {

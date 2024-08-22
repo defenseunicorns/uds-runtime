@@ -5,6 +5,7 @@
   import { Export } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
+  import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
@@ -38,12 +39,7 @@
 
     const path: string = `/api/v1/monitor/pepr/${streamFilter}`
 
-    // Check if API AUTH is enabled
-    const apiAuthSet: boolean = import.meta.env.VITE_API_AUTH
-      ? import.meta.env.VITE_API_AUTH.toLowerCase() === 'true'
-      : false
-
-    if (apiAuthSet) {
+    if ($apiAuthEnabled) {
       let apiToken: string = sessionStorage.getItem('token') ?? ''
       eventSource = new EventSource(path + '?token=' + apiToken)
     } else {

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+import { apiAuthEnabled } from '$lib/features/api-auth/store'
 import type { KubernetesObject } from '@kubernetes/client-node'
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
@@ -167,18 +168,13 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
    * @returns A function to stop the EventSource
    */
   start() {
-    // Check if API AUTH is enabled
-    const apiAuthSet: boolean = import.meta.env.VITE_API_AUTH
-      ? import.meta.env.VITE_API_AUTH.toLowerCase() === 'true'
-      : false
-    // If the store has already been initialized, return
     if (this.#initialized) {
       return () => {}
     }
 
     this.#initialized = true
 
-    if (!apiAuthSet) {
+    if (!apiAuthEnabled) {
       this.#eventSource = new EventSource(this.url)
     } else {
       let apiToken: string = sessionStorage.getItem('token') ?? ''

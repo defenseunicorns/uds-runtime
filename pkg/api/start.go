@@ -15,6 +15,8 @@ import (
 
 	"strings"
 
+	"encoding/json"
+
 	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
@@ -63,6 +65,8 @@ func Start(assets embed.FS) error {
 
 	// Add Swagger UI route
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
+	// expose env vars to frontend via endpoint
+	r.Get("/config", serveConfig)
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
 		if strings.EqualFold(apiAuth, "true") {
@@ -254,4 +258,16 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	})
 
 	return nil
+}
+
+func serveConfig(w http.ResponseWriter, _ *http.Request) {
+	config := map[string]string{
+		"VITE_API_AUTH": os.Getenv("VITE_API_AUTH"),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(config)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
