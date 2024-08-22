@@ -3,12 +3,12 @@
 
 // Test file prefixed with "z-" to ensure it runs last since it stops the server and restarts it
 import { expect, test } from '@playwright/test'
-import { exec } from 'child_process'
+import { ChildProcess, exec } from 'child_process'
 import find from 'find-process'
 import { port } from '../playwright.config'
 
-let serverProcess: any
-let serverLogs: string[] = []
+let serverProcess: ChildProcess
+const serverLogs: string[] = []
 let extractedToken: string | null = null
 
 test.beforeAll(async () => {
@@ -16,7 +16,7 @@ test.beforeAll(async () => {
   // Start the server
   console.log(process.cwd())
   await new Promise<void>((resolve, reject) => {
-    serverProcess = exec('VITE_API_AUTH=true ../build/uds-runtime', (error, stdout, stderr) => {
+    serverProcess = exec('VITE_API_AUTH=true ../build/uds-runtime', (error) => {
       if (error) {
         console.error(`Error starting server: ${error}`)
         reject(error)
@@ -25,12 +25,14 @@ test.beforeAll(async () => {
     })
 
     // Capture stdout
-    serverProcess.stdout.on('data', (data: any) => {
-      const log = data.toString()
-      serverLogs.push(`stdout: ${log}`)
-      resolve() // Resolve the promise after pushing to serverLogs
-      extractToken(log)
-    })
+    if (serverProcess && serverProcess.stdout) {
+      serverProcess.stdout.on('data', (data) => {
+        const log = data.toString()
+        serverLogs.push(`stdout: ${log}`)
+        resolve() // Resolve the promise after pushing to serverLogs
+        extractToken(log)
+      })
+    }
   })
 
   // Wait for the server to be ready

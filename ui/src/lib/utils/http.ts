@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 import { apiAuthEnabled } from '$lib/features/api-auth/store'
+import { get } from 'svelte/store'
 
 const BASE_URL = '/api/v1'
 
@@ -19,7 +20,8 @@ type ResponseType = 'json' | 'boolean' | 'text'
 export class HTTP {
   constructor() {
     const token = sessionStorage.getItem('token') || ''
-    if (!token) {
+    const isApiAuthEnabled = get(apiAuthEnabled)
+    if (!token && isApiAuthEnabled) {
       this.invalidateAuth()
     }
   }
@@ -42,7 +44,7 @@ export class HTTP {
 
   // Private wrapper for handling the request/response cycle.
   private async request<T>(req: APIRequest<T>, responseType: ResponseType = 'json'): Promise<T> {
-    let token = sessionStorage.getItem('token')
+    const token = sessionStorage.getItem('token')
     const url = BASE_URL + req.path + (token ? `?token=${token}` : '')
     const payload: RequestInit = { method: req.method, headers }
 

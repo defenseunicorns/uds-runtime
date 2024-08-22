@@ -4,8 +4,7 @@
 import { apiAuthEnabled } from '$lib/features/api-auth/store'
 import type { KubernetesObject } from '@kubernetes/client-node'
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
-import { derived, writable, type Writable } from 'svelte/store'
-
+import { derived, get, writable, type Writable } from 'svelte/store'
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> implements ResourceStoreInterface<T, U> {
@@ -174,10 +173,10 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
 
     this.#initialized = true
 
-    if (!apiAuthEnabled) {
+    if (!get(apiAuthEnabled)) {
       this.#eventSource = new EventSource(this.url)
     } else {
-      let apiToken: string = sessionStorage.getItem('token') ?? ''
+      const apiToken: string = sessionStorage.getItem('token') ?? ''
       // Check if the URL already contains a '?' for urls with multiple search params
       const separator = this.url.includes('?') ? '&' : '?'
       this.#eventSource = new EventSource(`${this.url}${separator}token=${apiToken}`)

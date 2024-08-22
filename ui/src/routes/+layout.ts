@@ -3,6 +3,7 @@
 
 import { createStore } from '$features/k8s/namespaces/store'
 import { apiAuthEnabled } from '$lib/features/api-auth/store'
+import { get } from 'svelte/store'
 
 export const ssr = false
 
@@ -11,7 +12,7 @@ export const load = async () => {
   const namespaces = createStore()
 
   // namespaces.start() called in auth page when apiAuthEnabled
-  if (!apiAuthEnabled) {
+  if (!get(apiAuthEnabled)) {
     namespaces.start()
   }
 

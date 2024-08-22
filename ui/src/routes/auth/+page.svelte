@@ -16,18 +16,20 @@
   onMount(async () => {
     authenticated.set(false)
     await updateApiAuthEnabled()
-    const url = new URL(window.location.href)
-    let token = url.searchParams.get('token') || ''
-    if (await Auth.connect(token)) {
-      authenticated.set(true)
-      goto('/')
-    } else {
-      authenticated.set(false) // Update the store
-      authFailure = true
-    }
+    if ($apiAuthEnabled) {
+      const url = new URL(window.location.href)
+      let token = url.searchParams.get('token') || ''
+      if (await Auth.connect(token)) {
+        authenticated.set(true)
+        goto('/')
+      } else {
+        authenticated.set(false) // Update the store
+        authFailure = true
+      }
 
-    //set namespaces
-    data.namespaces.start()
+      //set namespaces
+      data.namespaces.start()
+    }
   })
 </script>
 
