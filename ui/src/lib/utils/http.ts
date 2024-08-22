@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
+import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
 const BASE_URL = '/api/v1'
 
@@ -88,6 +89,19 @@ const Auth = {
     http.updateToken(token)
     return await http.head('/')
   },
+}
+
+export async function updateApiAuthEnabled() {
+  try {
+    const response = await fetch('/config')
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const envVars = await response.json()
+    apiAuthEnabled.set(envVars.VITE_API_AUTH?.toLowerCase() === 'true')
+  } catch (e) {
+    console.error('Failed to fetch config:', e)
+  }
 }
 
 export { Auth }

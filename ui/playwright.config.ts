@@ -20,3 +20,5 @@ export default defineConfig({
     baseURL: `http://localhost:${port}/`,
   },
 })
+
+export { port }

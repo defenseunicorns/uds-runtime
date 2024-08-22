@@ -7,21 +7,15 @@
   import { Auth } from '$lib/utils/http'
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
+  import { updateApiAuthEnabled } from '$lib/utils/http'
+
   export let data
 
   let authFailure = false
 
   onMount(async () => {
     authenticated.set(false)
-
-    try {
-      const response = await fetch('/config')
-      const envVars = await response.json()
-      apiAuthEnabled.set(envVars.VITE_API_AUTH?.toLowerCase() === 'true')
-    } catch (error) {
-      console.error('Failed to fetch environment variables:', error)
-    }
-
+    await updateApiAuthEnabled()
     const url = new URL(window.location.href)
     let token = url.searchParams.get('token') || ''
     if (await Auth.connect(token)) {
@@ -42,7 +36,7 @@
     <div class="flex flex-col items-center justify-start min-h-screen">
       <h2 class="text-xl mb-4 p-4 dark:text-white pt-0">
         <strong>Could not authenticate</strong>
-        : Please make sure you are using the complete link with api token to connect provided by UDS Runtime.
+        : Please make sure you are using the complete link with api token provided by UDS Runtime to connect.
       </h2>
       <img src="/doug.svg" alt="Authentication Failed" class="mx-auto mt-4" style="width: 250px; height: 250px;" />
     </div>
