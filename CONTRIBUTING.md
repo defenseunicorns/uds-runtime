@@ -36,7 +36,7 @@ Specifically:
 
 ## How to Contribute
 
-Please ensure there is a Gitub issue for your proposed change, this helps the UDS Runtime team to understand the context of the change and to track the progress of the work. If there isn't an issue for your change, please create one before starting work. The recommended workflow for contributing is as follows:
+Please ensure there is a Github issue for your proposed change, this helps the UDS Runtime team to understand the context of the change and to track the progress of the work. If there isn't an issue for your change, please create one before starting work. The recommended workflow for contributing is as follows:
 
 \*Before starting development, we highly recommend reading through the UDS Runtime [documentation](https://uds.defenseunicorns.com/) and our [ADRs](./adr).
 
@@ -51,42 +51,42 @@ Please ensure there is a Gitub issue for your proposed change, this helps the UD
 
 Most of the actions needed for running and testing UDS Runtime are contained in tasks ran by UDS CLI's `run` feature (ie. vendored [Maru](https://github.com/defenseunicorns/maru-runner)). While the actions can be performed manually without running tasks, we recommend installing the [`uds` binary](https://uds.defenseunicorns.com/cli/quickstart-and-usage/) and using tasks as much as possible.
 
-> !NOTE  
+> !NOTE
 > Tasks are used in CI. See the [pull request workflow](.github/workflows/pr-tests.yaml) for an example.
 
 A list of runnable tasks from `uds run --list-all`
 
-| Name                 | Description                                                                                                    |
-| -------------------- | -------------------------------------------------------------------------------------------------------------- |
-| dev-server                  | run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation)
-| dev-ui                      | run the ui in dev mode
-| compile                     | compile the api server and ui outputting to build/
-| test:e2e                    | run end-to-end tests (assumes api server is running on port 8080)
-| test:go                     | run api server unit tests
-| test:ui-unit                | run frontend unit tests
-| test:unit                   | run all unit tests (backend and frontend)
-| test:deploy-load            | deploy some Zarf packages to test against
-| test:deploy-min-core        | install min resources for UDS Core
-| lint:all                    | Run all linters
-| lint:golangci               | Run golang linters
-| lint:yaml                   | Run yaml linters
-| lint:ui                     | Run ui lint and type check
-| lint:format-ui              | Format ui code
-| setup:build-api             | build the go api server for the local platform
-| setup:build-api-linux-amd64 | build the go api server for linux amd64 (used for multi-arch container)
-| setup:build-api-linux-arm64 | build the go api server for linux arm64 (used for multi-arch container)
-| setup:build-ui              | build ui
-| setup:slim-cluster          | Create a k3d cluster and deploy core slim dev with metrics server
-| setup:simple-cluster        | Create a k3d cluster, no core
-| setup:golangci              | Install golangci-lint to GOPATH using install.sh
-| setup:clone-core            | Clone uds-core for custom slim dev setup
-| setup:metrics-server        | Create and deploy metrics server from cloned core
-| build:publish-uds-runtime   | publish the uds runtime including its image and Zarf pkg (multi-arch)
-| build:push-container        | build container and push to GHCR (multi-arch)
-| build:build-zarf-packages   | build the uds runtime zarf packages (multi-arch)
-| build:publish-zarf-packages | publish uds runtime zarf packages (multi-arch)
-| swagger:generate            | Generate Swagger docs
-| swagger:test                | Ensure no changes to Swagger docs
+| Name                        | Description                                                                                                    |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| dev-server                  | run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation) |
+| dev-ui                      | run the ui in dev mode                                                                                         |
+| compile                     | compile the api server and ui outputting to build/                                                             |
+| test:e2e                    | run end-to-end tests (assumes api server is running on port 8080)                                              |
+| test:go                     | run api server unit tests                                                                                      |
+| test:ui-unit                | run frontend unit tests                                                                                        |
+| test:unit                   | run all unit tests (backend and frontend)                                                                      |
+| test:deploy-load            | deploy some Zarf packages to test against                                                                      |
+| test:deploy-min-core        | install min resources for UDS Core                                                                             |
+| lint:all                    | Run all linters                                                                                                |
+| lint:golangci               | Run golang linters                                                                                             |
+| lint:yaml                   | Run yaml linters                                                                                               |
+| lint:ui                     | Run ui lint and type check                                                                                     |
+| lint:format-ui              | Format ui code                                                                                                 |
+| setup:build-api             | build the go api server for the local platform                                                                 |
+| setup:build-api-linux-amd64 | build the go api server for linux amd64 (used for multi-arch container)                                        |
+| setup:build-api-linux-arm64 | build the go api server for linux arm64 (used for multi-arch container)                                        |
+| setup:build-ui              | build ui                                                                                                       |
+| setup:slim-cluster          | Create a k3d cluster and deploy core slim dev with metrics server                                              |
+| setup:simple-cluster        | Create a k3d cluster, no core                                                                                  |
+| setup:golangci              | Install golangci-lint to GOPATH using install.sh                                                               |
+| setup:clone-core            | Clone uds-core for custom slim dev setup                                                                       |
+| setup:metrics-server        | Create and deploy metrics server from cloned core                                                              |
+| build:publish-uds-runtime   | publish the uds runtime including its image and Zarf pkg (multi-arch)                                          |
+| build:push-container        | build container and push to GHCR (multi-arch)                                                                  |
+| build:build-zarf-packages   | build the uds runtime zarf packages (multi-arch)                                                               |
+| build:publish-zarf-packages | publish uds runtime zarf packages (multi-arch)                                                                 |
+| swagger:generate            | Generate Swagger docs                                                                                          |
+| swagger:test                | Ensure no changes to Swagger docs                                                                              |
 
 ### Pre-Commit Hooks and Linting
 
@@ -114,6 +114,18 @@ E2E tests reside in the `ui/tests/` directory and can be named `*.test.ts` or `*
 1. build the api server
 1. setup the slim cluster (core-slim-dev + metrics server)
 1. run the e2e script, which starts the api server (serves ui) to test against.
+
+When using locators for Playwright, these are the recommended built-in locators.
+
+- **`page.getByRole()`** to _locate by explicit and implicit accessibility attributes_.
+- **`page.getByText()`** to _locate by text content_.
+- **`page.getByLabel()`** to _locate a form control by associated label's text_.
+- **`page.getByPlaceholder()`** to _locate an input by placeholder_.
+- **`page.getByAltText()`** to _locate an element, usually image, by its text alternative_.
+- **`page.getByTitle()`** to _locate an element by its title attribute_.
+- **`page.getByTestId()`** _to locate an element based on its data-testid attribute (other attributes can be configured)_.
+
+Before using `page.locator()` to use either the html structure or some complicated locator, please use the `page.getByTestID` locator to target an element. Naming conventions can be found in this [Test ID's ADR](https://github.com/defenseunicorns/uds-runtime/blob/main/adr/0002-testing-with-data-testids.md#decision) as well as the reasoning behind this decision
 
 #### Ephemeral EC2 for Usability Tests
 
