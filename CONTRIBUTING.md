@@ -112,7 +112,7 @@ E2E tests reside in the `ui/tests/` directory and can be named `*.test.ts` or `*
 
 1. build the ui
 1. build the api server
-1. setup the slim cluster (core-slim-dev + metrics server)
+1. setup and seed a k3d cluster
 1. run the e2e script, which starts the api server (serves ui) to test against.
 
 When using locators for Playwright, these are the recommended built-in locators.
