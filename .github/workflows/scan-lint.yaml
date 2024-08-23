@@ -1,5 +1,8 @@
 name: Validate Lint
-on: pull_request
+on:
+  pull_request:
+    branches: [main]
+    types: [milestoned, opened, edited, synchronize]
 
 permissions:
   contents: read
@@ -18,11 +21,14 @@ jobs:
         run: go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Install golangci-lint
-        run: uds run setup:golangci --no-progress
+        run: uds run setup:golangci
+
+      - name: Check Swagger Docs
+        run: uds run swagger:test
 
       # build ui so ui/build exists when pre-commit runs
       - name: build-ui
-        run: uds run setup:build-ui --no-progress
+        run: uds run setup:build-ui
 
       - name: Run pre-commit
         uses: pre-commit/action@f7acafac0271bdd064cdfa1b13f17b4350e565ed #
@@ -30,7 +36,7 @@ jobs:
           extra_args: --all-files --verbose # pre-commit run --all-files --verbose
 
       - name: Lint Yaml
-        run: uds run lint:yaml --no-progress
+        run: uds run lint:yaml
 
       - name: Lint UI
-        run: uds run lint:ui --no-progress
+        run: uds run lint:ui

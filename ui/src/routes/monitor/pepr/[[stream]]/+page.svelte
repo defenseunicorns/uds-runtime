@@ -10,6 +10,7 @@
   import { page } from '$app/stores'
   import { type PeprEvent } from '$lib/types'
   import './page.postcss'
+  import { getDetails } from './helpers'
 
   let loaded = false
   let streamFilter = ''
@@ -45,9 +46,9 @@
     eventSource.onmessage = (e) => {
       try {
         const payload: PeprEvent = JSON.parse(e.data)
-
         // The event type is the first word in the header
         payload.event = payload.header.split(' ')[0]
+        payload.details = getDetails(payload)
 
         // If this is a repeated event, update the count
         if (payload.repeated) {
@@ -99,6 +100,11 @@
 
   const widths = ['w-1/6', 'w-1/3', 'w-1/4', 'w-2/5', 'w-1/2', 'w-1/5', 'w-1/3', 'w-1/4']
   const skeletonRows = widths.sort(() => Math.random() - 0.5)
+
+  function handleStreamChange(event: Event) {
+    const target = event.target as HTMLSelectElement
+    goto(`/monitor/pepr/${target.value}`)
+  }
 </script>
 
 <section class="table-section">
@@ -107,13 +113,7 @@
       <div class="table-filter-section">
         <div class="grid w-full grid-cols-1 md:grid-cols-4 md:gap-4 lg:w-2/3">
           <div class="w-full">
-            <select
-              id="stream"
-              bind:value={streamFilter}
-              on:change={(val) => {
-                goto(`/monitor/pepr/${val.target.value}`)
-              }}
-            >
+            <select id="stream" bind:value={streamFilter} on:change={handleStreamChange}>
               <option value="">All Data</option>
               <hr />
               <option value="policies">UDS Policies</option>
@@ -141,6 +141,7 @@
             <tr>
               <th>Event</th>
               <th>Resource</th>
+              <th>Details</th>
               <th>Count</th>
               <th>Timestamp</th>
             </tr>
@@ -158,6 +159,13 @@
                       <span class="pepr-event {item.event}">{item.event}</span>
                     </td>
                     <td>{item._name}</td>
+                    <td class="flex flex-row items-center">
+                      {#if item.details}
+                        <svelte:component this={item.details.component} details={item.details} />
+                      {:else}
+                        -
+                      {/if}
+                    </td>
                     <td>{item.count || 1}</td>
                     <td>{item.ts}</td>
                   </tr>

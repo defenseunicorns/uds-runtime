@@ -4,7 +4,7 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import { ChevronRight, DocumentMultiple_01, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
+  import { ChevronRight, Help, SettingsAdjust, SettingsEdit } from 'carbon-icons-svelte'
   import { routes } from '../routes'
   import { isSidebarExpanded } from '../store'
   import './styles.postcss'
@@ -61,10 +61,11 @@
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
-            ><path
-              d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
-            ></path></svg
           >
+            <path
+              d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
+            ></path>
+          </svg>
         </div>
         <input
           type="search"
@@ -98,8 +99,10 @@
                   <a
                     href={route.path + child.path}
                     class="group flex w-full items-center rounded-lg p-2 pl-11 text-base font-light text-gray-900 transition duration-300 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600"
-                    class:active={$page.url.pathname.includes(route.path + child.path)}>{child.name}</a
+                    class:active={$page.url.pathname.includes(route.path + child.path)}
                   >
+                    {child.name}
+                  </a>
                 </li>
               {/each}
             </ul>
@@ -115,17 +118,6 @@
           {/if}
         </li>
       {/each}
-    </ul>
-    <ul class="mt-5 space-y-2 border-t border-gray-200 pt-5 dark:border-gray-700">
-      <li>
-        <a
-          href="/docs"
-          class="group flex items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-300 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600"
-        >
-          <DocumentMultiple_01 class="icon" />
-          <span class="expanded-only ml-3">Docs</span>
-        </a>
-      </li>
     </ul>
     <div class="grow"></div>
     <div id="sidebar-footer" class="flex hidden justify-center bg-white mb-16 mt-8 lg:flex dark:bg-gray-800">

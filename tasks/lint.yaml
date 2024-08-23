@@ -1,5 +1,5 @@
 includes:
-  - common: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.9.0/tasks/lint.yaml
+  - common: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.11.2/tasks/lint.yaml
   - setup: ./setup.yaml
 
 tasks:
@@ -23,9 +23,11 @@ tasks:
       - task: common:yaml
 
   - name: ui
-    description: "Run ui linters"
+    description: "Run ui lint and type check"
     actions:
-      - cmd: npm ci && npm run lint
+      - cmd: npm run lint
+        dir: ui
+      - cmd: npm run check
         dir: ui
 
   - name: format-ui

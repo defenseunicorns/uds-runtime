@@ -23,6 +23,31 @@
     background: rgba(156, 163, 175, 0.75);
   }
 
+  .tooltip {
+    @apply absolute top-0 transform -translate-y-0 p-2 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-50 pointer-events-none whitespace-nowrap;
+  }
+
+  .tooltip::before {
+    content: '';
+    @apply absolute top-[16px] transform -translate-y-0 border-solid border-8;
+  }
+
+  .tooltip-left {
+    @apply right-full mr-2;
+  }
+
+  .tooltip-left::before {
+    @apply left-full border-y-transparent border-r-transparent border-l-gray-900;
+  }
+
+  .tooltip-right {
+    @apply left-full ml-2;
+  }
+
+  .tooltip-right::before {
+    @apply right-full border-y-transparent border-l-transparent border-r-gray-900;
+  }
+
   select {
     @apply block w-full appearance-none border-0 border-b-2 border-gray-200 bg-transparent px-0 py-2.5 text-sm text-gray-500 focus:border-gray-200 focus:outline-none focus:ring-0 dark:border-gray-700 dark:text-gray-400;
   }
@@ -35,6 +60,10 @@
 
       .table-content {
         @apply relative flex h-full w-full flex-col overflow-hidden dark:bg-gray-800 sm:rounded-lg;
+
+        .table-header {
+          @apply flex items-center py-3 space-y-3 border-b dark:border-gray-700 mx-4 space-y-0;
+        }
 
         .table-filter-section {
           @apply sticky top-0 z-20 flex flex-col space-y-3 px-4 py-3 dark:bg-gray-800 lg:flex-row lg:items-center lg:justify-between lg:space-x-4 lg:space-y-0;
@@ -80,35 +109,13 @@
               tr {
                 @apply border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700;
 
-                td {
-                  @apply px-4 py-2;
-
-                  .tooltip {
-                    @apply absolute top-0 transform -translate-y-0 p-2 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-10 pointer-events-none whitespace-nowrap;
-                  }
-
-                  .tooltip::before {
-                    content: '';
-                    @apply absolute top-[16px] transform -translate-y-0 border-solid border-8;
-                  }
-
-                  .tooltip-left {
-                    @apply right-full mr-2;
-                  }
-
-                  .tooltip-left::before {
-                    @apply left-full border-y-transparent border-r-transparent border-l-gray-900;
-                  }
-
-                  .tooltip-right {
-                    @apply left-full ml-2;
-                  }
-
-                  .tooltip-right::before {
-                    @apply right-full border-y-transparent border-l-transparent border-r-gray-900;
-                  }
+                &.active {
+                  @apply border-solid border-4 bg-gray-100 dark:bg-gray-700/50;
                 }
 
+                td {
+                  @apply px-4 py-2;
+                }
                 td.emphasize {
                   @apply text-gray-900 dark:text-white;
                 }

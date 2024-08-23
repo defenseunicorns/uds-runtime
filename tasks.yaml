@@ -2,6 +2,18 @@ includes:
   - test: tasks/test.yaml
   - lint: tasks/lint.yaml
   - setup: tasks/setup.yaml
+  - build: tasks/build.yaml
+  - swagger: tasks/swagger.yaml
+
+variables:
+  - name: REF
+    description: "reference for the runtime image and zarf package"
+    # x-release-please-start-version
+    default: 0.2.0
+    # x-release-please-end
+  - name: DIR
+    description: "directory of the zarf.yaml"
+    default: .
 
 tasks:
   - name: dev-server
@@ -16,8 +28,8 @@ tasks:
       - cmd: npm ci && npm run dev
         dir: ui
 
-  - name: build
-    description: "build the api server and ui"
+  - name: compile
+    description: "compile the api server and ui outputting to build/"
     actions:
       - task: setup:build-ui
       - task: setup:build-api

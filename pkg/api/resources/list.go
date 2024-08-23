@@ -4,6 +4,7 @@
 package resources
 
 import (
+	"strings"
 	"sync"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -20,8 +21,8 @@ const (
 // ResourceList is a thread-safe struct to store the list of resources and notify subscribers of changes.
 type ResourceList struct {
 	mutex           sync.RWMutex
-	resources       map[string]*unstructured.Unstructured
-	sparseResources map[string]*unstructured.Unstructured
+	Resources       map[string]*unstructured.Unstructured
+	SparseResources map[string]*unstructured.Unstructured
 	HasSynced       cache.InformerSynced
 	Changes         chan struct{}
 	gvk             schema.GroupVersionKind
@@ -30,8 +31,8 @@ type ResourceList struct {
 // NewResourceList initializes a ResourceList and sets up event handlers for resource changes.
 func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersionKind) *ResourceList {
 	r := &ResourceList{
-		resources:       make(map[string]*unstructured.Unstructured),
-		sparseResources: make(map[string]*unstructured.Unstructured),
+		Resources:       make(map[string]*unstructured.Unstructured),
+		SparseResources: make(map[string]*unstructured.Unstructured),
 		Changes:         make(chan struct{}, 1),
 		HasSynced:       informer.HasSynced,
 		gvk:             gvk,
@@ -59,7 +60,7 @@ func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersion
 func (r *ResourceList) GetResource(uid string) (unstructured.Unstructured, bool) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
-	resource, found := r.resources[uid]
+	resource, found := r.Resources[uid]
 	if !found {
 		return unstructured.Unstructured{}, false
 	}
@@ -68,26 +69,32 @@ func (r *ResourceList) GetResource(uid string) (unstructured.Unstructured, bool)
 }
 
 // GetResources returns a slice of the current resources.
-func (r *ResourceList) GetResources() []unstructured.Unstructured {
+func (r *ResourceList) GetResources(namespace string, namePartial string) []unstructured.Unstructured {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	resources := make([]unstructured.Unstructured, 0, len(r.resources))
-	for _, resource := range r.resources {
-		resources = append(resources, *resource)
+	resources := make([]unstructured.Unstructured, 0, len(r.Resources))
+	for _, resource := range r.Resources {
+		// Check if the resource matches the namespace and name filter
+		if r.isFilterMatch(resource, namespace, namePartial) {
+			resources = append(resources, *resource)
+		}
 	}
 
 	return resources
 }
 
 // GetSparseResources returns a slice of the current resources with only metadata and status fields.
-func (r *ResourceList) GetSparseResources() []unstructured.Unstructured {
+func (r *ResourceList) GetSparseResources(namespace string, namePartial string) []unstructured.Unstructured {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
-	resources := make([]unstructured.Unstructured, 0, len(r.sparseResources))
-	for _, resource := range r.sparseResources {
-		resources = append(resources, *resource)
+	resources := make([]unstructured.Unstructured, 0, len(r.SparseResources))
+	for _, resource := range r.SparseResources {
+		// Check if the resource matches the namespace and name filter
+		if r.isFilterMatch(resource, namespace, namePartial) {
+			resources = append(resources, *resource)
+		}
 	}
 
 	return resources
@@ -120,11 +127,11 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 	// Update the resource list based on the event type
 	switch eventType {
 	case Added, Modified:
-		r.resources[uid] = resource
-		r.sparseResources[uid] = sparseResource
+		r.Resources[uid] = resource
+		r.SparseResources[uid] = sparseResource
 	case Deleted:
-		delete(r.resources, uid)
-		delete(r.sparseResources, uid)
+		delete(r.Resources, uid)
+		delete(r.SparseResources, uid)
 	}
 
 	// Notify subscribers of the change
@@ -132,6 +139,19 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 	case r.Changes <- struct{}{}:
 	default:
 	}
+}
+
+// isFilterMatch checks if the resource matches the namespace and name filter
+func (r *ResourceList) isFilterMatch(resource *unstructured.Unstructured, namespace string, namePartial string) bool {
+	if namespace != "" && resource.GetNamespace() != namespace {
+		return false
+	}
+
+	if namePartial != "" && !strings.Contains(resource.GetName(), namePartial) {
+		return false
+	}
+
+	return true
 }
 
 // extractSparseObject creates a sparse representation of the given unstructured object
@@ -158,6 +178,13 @@ func (r *ResourceList) extractSparseObject(obj *unstructured.Unstructured) *unst
 	// Extract type if it exists
 	if typeStr, exists, _ := unstructured.NestedString(obj.Object, "type"); exists {
 		sparseObj.Object["type"] = typeStr
+	}
+
+	// Extract spec.nodeName if it exists
+	if nodeName, exists, _ := unstructured.NestedString(obj.Object, "spec", "nodeName"); exists {
+		sparseObj.Object["spec"] = map[string]interface{}{
+			"nodeName": nodeName,
+		}
 	}
 
 	// Extract data if it exists, but only preserve the keys

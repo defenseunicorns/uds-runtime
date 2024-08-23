@@ -5,6 +5,7 @@ import {
   AudioConsole,
   BareMetalServer,
   ChartCombo,
+  DataTableReference,
   Db2Database,
   KubernetesPod,
   Layers,
@@ -19,6 +20,12 @@ const baseRoutes: BaseRoute[] = [
   {
     name: 'Overview',
     icon: ChartCombo,
+    path: '/',
+  },
+  {
+    name: 'Applications',
+    icon: DataTableReference,
+    children: ['Packages', 'Endpoints'],
   },
   {
     name: 'Monitor',
@@ -75,9 +82,9 @@ const baseRoutes: BaseRoute[] = [
 const createPath = (name: string) => `/${name.replace(/\s+/g, '-').toLowerCase()}`
 
 // Convert the base routes to routes
-export const routes: Route[] = baseRoutes.map(({ name, children, ...rest }) => ({
+export const routes: Route[] = baseRoutes.map(({ name, children, path, ...rest }) => ({
   ...rest,
   name,
-  path: createPath(name),
+  path: path || createPath(name),
   children: children?.map((name) => ({ name, path: createPath(name) })),
 }))

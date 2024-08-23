@@ -1,3 +1,5 @@
+exclude: '^docs/swagger.*\.json$|^docs/swagger.*\.yaml$'
+
 repos:
   ### Global ###
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -11,11 +13,12 @@ repos:
           - "--allow-missing-credentials"
       - id: detect-private-key
       - id: end-of-file-fixer
+        exclude: .release-please-manifest.json
       - id: fix-byte-order-marker
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
   - repo: https://github.com/sirosen/texthooks
-    rev: 0.6.6
+    rev: 0.6.7
     hooks:
       - id: fix-smartquotes
 
@@ -25,7 +28,7 @@ repos:
     hooks:
       - id: go-imports
   - repo: https://github.com/golangci/golangci-lint
-    rev: v1.59.1
+    rev: v1.60.1
     hooks:
       - id: golangci-lint-full
         args: [--timeout=5m]

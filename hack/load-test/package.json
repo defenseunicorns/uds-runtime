@@ -1,0 +1,13 @@
+{
+  "name": "load-test",
+  "description": "Load tests for UDS Runtime",
+  "version": "1.0.0",
+  "main": "load.js",
+  "type": "module",
+  "dependencies": {
+    "kubernetes-fluent-client": "^3.0.0"
+  },
+  "scripts": {
+    "load": "node load.js"
+  }
+}

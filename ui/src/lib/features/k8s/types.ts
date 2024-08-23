@@ -11,7 +11,7 @@ export interface CommonRow {
   }
 }
 
-export type ColumnWrapper<T> = [name: keyof T, styles?: string][]
+export type ColumnWrapper<T> = [name: keyof T, styles?: string, modifier?: 'link-external' | 'link-internal'][]
 
 export enum SearchByType {
   ANYWHERE = 'Anywhere',
@@ -43,4 +43,8 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
   subscribe: (run: (value: ResourceWithTable<T, U>[]) => void) => () => void
   // Store for namespace
   namespace: Writable<string>
+  // Store for number of resources
+  numResources: Writable<number>
+  // The url for the EventSource
+  url: string
 }

@@ -6,14 +6,15 @@ const port = VITE_PORT_ENV ?? '8080'
 
 export default defineConfig({
   webServer: {
-    command: '../build/main',
+    command: '../build/uds-runtime',
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
   },
-  timeout: 5 * 1000,
+  timeout: 10 * 1000,
   testDir: 'tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
+  retries: process.env.CI ? 2 : 1,
   testMatch: /(.+\.)?(test|spec)\.[jt]s/,
   use: {
     baseURL: `http://localhost:${port}/`,

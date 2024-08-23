@@ -25,11 +25,12 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     status: r.status?.phase ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>('name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
 
   return {
     ...store,
-    start: () => store.start(url, transform),
+    start: store.start.bind(store),
+
     sortByKey: store.sortByKey.bind(store),
   }
 }

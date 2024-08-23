@@ -1,0 +1,18 @@
+tasks:
+  - name: generate
+    description: "Generate Swagger docs"
+    actions:
+      - cmd: swag init
+
+  - name: test
+    description: "Ensure no changes to Swagger docs"
+    actions:
+      - task: generate
+      - cmd: |
+          if [ -z "$(git status -s "docs")" ]; then
+              echo "Success!"
+          else
+              echo "Swagger docs changes found, please regenerate docs"
+              git status "docs"
+              exit 1
+          fi

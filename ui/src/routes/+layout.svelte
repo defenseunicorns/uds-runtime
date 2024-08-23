@@ -4,14 +4,15 @@
 <script lang="ts">
   import 'flowbite'
   import { initFlowbite } from 'flowbite'
-  import 'flowbite/dist/flowbite.css'
   import { onMount } from 'svelte'
 
   import { afterNavigate } from '$app/navigation'
-
-  import { Breadcrumb, isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
+  import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
+  import { ToastPanel } from '$features/toast'
   import '../app.postcss'
 
+  // These initiFlowbite calls help load the js necessary to target components which use flowbite js
+  // i.e. data-dropdown-toggle
   onMount(initFlowbite)
   afterNavigate(initFlowbite)
 </script>
@@ -25,10 +26,8 @@
     ? 'md:ml-64'
     : 'md:ml-16'}"
 >
-  <div class="p-5">
-    <Breadcrumb />
-  </div>
-  <div class="flex-grow overflow-hidden p-4 pt-0">
+  <div class="flex-grow overflow-hidden p-4 pt-6">
+    <ToastPanel />
     <slot />
   </div>
 </main>

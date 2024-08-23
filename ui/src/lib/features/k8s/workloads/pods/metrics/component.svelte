@@ -22,11 +22,14 @@
       {#each containers as container}
         <div class="mb-1 leading-loose">
           <h3 class="font-bold">{container.name}:</h3>
-          CPU: {formatCPU(parseCPU(container.usage.cpu))}<br />
+          CPU: {formatCPU(parseCPU(container.usage.cpu))}
+          <br />
           Mem: {formatMemory(parseMemory(container.usage.memory))}
           <br />
         </div>
       {/each}
     </div>
   </div>
+{:else}
+  <p class="text-gray-500 dark:text-gray-400">-</p>
 {/if}

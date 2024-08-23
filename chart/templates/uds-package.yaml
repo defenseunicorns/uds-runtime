@@ -1,0 +1,20 @@
+apiVersion: uds.dev/v1alpha1
+kind: Package
+metadata:
+  name: uds-runtime
+  namespace: {{ .Release.Namespace }}
+spec:
+  network:
+    expose:
+      - service: uds-runtime
+        selector:
+          app: uds-runtime
+        host: {{ .Values.package.host}}
+        gateway: {{ .Values.package.gateway }}
+        port: 8080
+        targetPort: 8080
+    allow:
+      - direction: Egress
+        selector:
+          app: uds-runtime
+        remoteGenerated: KubeAPI

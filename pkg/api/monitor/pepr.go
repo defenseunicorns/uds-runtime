@@ -14,10 +14,17 @@ import (
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
 	"github.com/defenseunicorns/uds-runtime/pkg/pepr"
 	"github.com/defenseunicorns/uds-runtime/pkg/stream"
-	"github.com/defenseunicorns/zarf/src/pkg/message"
 	"github.com/go-chi/chi/v5"
+	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
+// @Description Get Pepr data
+// @Tags monitor
+// @Accept  html
+// @Produce  text/event-stream
+// @Success 200
+// @Router /monitor/pepr/{stream} [get]
+// @Param stream path string false "stream type to filter on, all streams by default" Enums(AnyStream, PolicyStream, OperatorStream, AllowStream, DenyStream, MutateStream, FailureStream)
 func Pepr(w http.ResponseWriter, r *http.Request) {
 	streamFilter := chi.URLParam(r, "stream")
 

@@ -13,7 +13,7 @@
     <div class="flex flex-wrap items-center justify-between">
       <div class="flex items-center justify-start">
         <button
-          id="toggleSidebar"
+          id="toggle-sidebar"
           aria-expanded="true"
           aria-controls="sidebar"
           on:click={() => isSidebarExpanded.update((v) => !v)}
@@ -32,7 +32,7 @@
 
         <a href="/" class="mr-4 flex">
           <img src="/doug.svg" class="mr-3 h-8" alt="FlowBite Logo" />
-          <span class="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">UDS Platform</span>
+          <span class="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">UDS</span>
         </a>
       </div>
       <div class="flex items-center lg:order-2">

@@ -13,11 +13,12 @@ export function createStore(): ResourceStoreInterface<Resource, CommonRow> {
 
   const transform = transformResource<Resource, CommonRow>(() => ({}))
 
-  const store = new ResourceStore<Resource, CommonRow>('name')
+  const store = new ResourceStore<Resource, CommonRow>(url, transform, 'name')
 
   return {
     ...store,
-    start: () => store.start(url, transform),
+    start: store.start.bind(store),
+
     sortByKey: store.sortByKey.bind(store),
   }
 }

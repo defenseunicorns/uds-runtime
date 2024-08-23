@@ -11,16 +11,24 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+
 	"strings"
 
-	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
+	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/udsmiddleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
+// @title UDS Runtime API
+// @version 0.0.0
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @BasePath /api/v1
+// @schemes http https
 func Start(assets embed.FS) error {
 	r := chi.NewRouter()
 
@@ -34,111 +42,119 @@ func Start(assets embed.FS) error {
 		return fmt.Errorf("failed to create cache: %w", err)
 	}
 
+	// Add Swagger UI route
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Get("/monitor/pepr/", monitor.Pepr)
-		r.Get("/monitor/pepr/{stream}", monitor.Pepr)
+		r.Route("/monitor", func(r chi.Router) {
+			r.Get("/pepr/", monitor.Pepr)
+			r.Get("/pepr/{stream}", monitor.Pepr)
+			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(cache))
+		})
 
 		r.Route("/resources", func(r chi.Router) {
-			r.Get("/nodes", rest.Bind(cache.Nodes))
-			r.Get("/nodes/{uid}", rest.Bind(cache.Nodes))
+			r.Get("/nodes", getNodes(cache))
+			r.Get("/nodes/{uid}", getNode(cache))
 
-			r.Get("/events", rest.Bind(cache.Events))
-			r.Get("/events/{uid}", rest.Bind(cache.Events))
+			r.Get("/events", getEvents(cache))
+			r.Get("/events/{uid}", getEvent(cache))
 
-			r.Get("/namespaces", rest.Bind(cache.Namespaces))
-			r.Get("/namespaces/{uid}", rest.Bind(cache.Namespaces))
+			r.Get("/namespaces", getNamespaces(cache))
+			r.Get("/namespaces/{uid}", getNamespace(cache))
 
 			// Workload resources
 			r.Route("/workloads", func(r chi.Router) {
-				r.Get("/pods", rest.Bind(cache.Pods))
-				r.Get("/pods/{uid}", rest.Bind(cache.Pods))
+				r.Get("/pods", getPods(cache))
+				r.Get("/pods/{uid}", getPod(cache))
 
-				r.Get("/deployments", rest.Bind(cache.Deployments))
-				r.Get("/deployments/{uid}", rest.Bind(cache.Deployments))
+				r.Get("/deployments", getDeployments(cache))
+				r.Get("/deployments/{uid}", getDeployment(cache))
 
-				r.Get("/daemonsets", rest.Bind(cache.Daemonsets))
-				r.Get("/daemonsets/{uid}", rest.Bind(cache.Daemonsets))
+				r.Get("/daemonsets", getDaemonsets(cache))
+				r.Get("/daemonsets/{uid}", getDaemonset(cache))
 
-				r.Get("/statefulsets", rest.Bind(cache.Statefulsets))
-				r.Get("/statefulsets/{uid}", rest.Bind(cache.Statefulsets))
+				r.Get("/statefulsets", getStatefulsets(cache))
+				r.Get("/statefulsets/{uid}", getStatefulset(cache))
 
-				r.Get("/jobs", rest.Bind(cache.Jobs))
-				r.Get("/jobs/{uid}", rest.Bind(cache.Jobs))
+				r.Get("/jobs", getJobs(cache))
+				r.Get("/jobs/{uid}", getJob(cache))
 
-				r.Get("/cronjobs", rest.Bind(cache.CronJobs))
-				r.Get("/cronjobs/{uid}", rest.Bind(cache.CronJobs))
+				r.Get("/cronjobs", getCronJobs(cache))
+				r.Get("/cronjobs/{uid}", getCronJob(cache))
 
 				// Metrics have their own cache and change channel that updates every 30 seconds
 				// They do not support informers directly, so we need to poll the API
 				r.Get("/podmetrics", func(w http.ResponseWriter, r *http.Request) {
-					rest.SSEHandler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges, nil)
+					getPodMetrics(w, r, cache)
 				})
 			})
 
 			// Config resources
 			r.Route("/configs", func(r chi.Router) {
-				r.Get("/uds-packages", rest.Bind(cache.UDSPackages))
-				r.Get("/uds-packages/{uid}", rest.Bind(cache.UDSPackages))
+				r.Get("/uds-packages", getUDSPackages(cache))
+				r.Get("/uds-packages/{uid}", getUDSPackage(cache))
 
-				r.Get("/uds-exemptions", rest.Bind(cache.UDSExemptions))
-				r.Get("/uds-exemptions/{uid}", rest.Bind(cache.UDSExemptions))
+				r.Get("/uds-exemptions", getUDSExemptions(cache))
+				r.Get("/uds-exemptions/{uid}", getUDSExemption(cache))
 
-				r.Get("/configmaps", rest.Bind(cache.Configmaps))
-				r.Get("/configmaps/{uid}", rest.Bind(cache.Configmaps))
+				r.Get("/configmaps", getConfigMaps(cache))
+				r.Get("/configmaps/{uid}", getConfigMap(cache))
 
-				r.Get("/secrets", rest.Bind(cache.Secrets))
-				r.Get("/secrets/{uid}", rest.Bind(cache.Secrets))
+				r.Get("/secrets", getSecrets(cache))
+				r.Get("/secrets/{uid}", getSecret(cache))
 			})
 
 			// Cluster ops resources
 			r.Route("/cluster-ops", func(r chi.Router) {
-				r.Get("/mutatingwebhooks", rest.Bind(cache.MutatingWebhooks))
-				r.Get("/mutatingwebhooks/{uid}", rest.Bind(cache.MutatingWebhooks))
+				r.Get("/mutatingwebhooks", getMutatingWebhooks(cache))
+				r.Get("/mutatingwebhooks/{uid}", getMutatingWebhook(cache))
 
-				r.Get("/validatingwebhooks", rest.Bind(cache.ValidatingWebhooks))
-				r.Get("/validatingwebhooks/{uid}", rest.Bind(cache.ValidatingWebhooks))
+				r.Get("/validatingwebhooks", getValidatingWebhooks(cache))
+				r.Get("/validatingwebhooks/{uid}", getValidatingWebhook(cache))
 
-				r.Get("/hpas", rest.Bind(cache.HPAs))
-				r.Get("/hpas/{uid}", rest.Bind(cache.HPAs))
+				r.Get("/hpas", getHPAs(cache))
+				r.Get("/hpas/{uid}", getHPA(cache))
 
-				r.Get("/priority-classes", rest.Bind(cache.PriorityClasses))
-				r.Get("/priority-classes/{uid}", rest.Bind(cache.PriorityClasses))
+				r.Get("/priority-classes", getPriorityClasses(cache))
+				r.Get("/priority-classes/{uid}", getPriorityClass(cache))
 
-				r.Get("/runtime-classes", rest.Bind(cache.RuntimeClasses))
-				r.Get("/runtime-classes/{uid}", rest.Bind(cache.RuntimeClasses))
+				r.Get("/runtime-classes", getRuntimeClasses(cache))
+				r.Get("/runtime-classes/{uid}", getRuntimeClass(cache))
 
-				r.Get("/poddisruptionbudgets", rest.Bind(cache.PodDisruptionBudgets))
-				r.Get("/poddisruptionbudgets/{uid}", rest.Bind(cache.PodDisruptionBudgets))
+				r.Get("/poddisruptionbudgets", getPodDisruptionBudgets(cache))
+				r.Get("/poddisruptionbudgets/{uid}", getPodDisruptionBudget(cache))
 
-				r.Get("/limit-ranges", rest.Bind(cache.LimitRanges))
-				r.Get("/limit-ranges/{uid}", rest.Bind(cache.LimitRanges))
+				r.Get("/limit-ranges", getLimitRanges(cache))
+				r.Get("/limit-ranges/{uid}", getLimitRange(cache))
+
+				r.Get("/resource-quotas", getResourceQuotas(cache))
+				r.Get("/resource-quotas/{uid}", getResourceQuota(cache))
 			})
 
 			// Network resources
 			r.Route("/networks", func(r chi.Router) {
-				r.Get("/services", rest.Bind(cache.Services))
-				r.Get("/services/{uid}", rest.Bind(cache.Services))
+				r.Get("/services", getServices(cache))
+				r.Get("/services/{uid}", getService(cache))
 
-				r.Get("/networkpolicies", rest.Bind(cache.NetworkPolicies))
-				r.Get("/networkpolicies/{uid}", rest.Bind(cache.NetworkPolicies))
+				r.Get("/networkpolicies", getNetworkPolicies(cache))
+				r.Get("/networkpolicies/{uid}", getNetworkPolicy(cache))
 
-				r.Get("/endpoints", rest.Bind(cache.Endpoints))
-				r.Get("/endpoints/{uid}", rest.Bind(cache.Endpoints))
+				r.Get("/endpoints", getEndpoints(cache))
+				r.Get("/endpoints/{uid}", getEndpoint(cache))
 
-				r.Get("/virtualservices", rest.Bind(cache.VirtualServices))
-				r.Get("/virtualservices/{uid}", rest.Bind(cache.VirtualServices))
+				r.Get("/virtualservices", getVirtualServices(cache))
+				r.Get("/virtualservices/{uid}", getVirtualService(cache))
 			})
 
 			// Storage resources
 			r.Route("/storage", func(r chi.Router) {
-				r.Get("/persistentvolumes", rest.Bind(cache.PersistentVolumes))
-				r.Get("/persistentvolumes/{uid}", rest.Bind(cache.PersistentVolumes))
+				r.Get("/persistentvolumes", getPersistentVolumes(cache))
+				r.Get("/persistentvolumes/{uid}", getPersistentVolume(cache))
 
-				r.Get("/persistentvolumeclaims", rest.Bind(cache.PersistentVolumeClaims))
-				r.Get("/persistentvolumeclaims/{uid}", rest.Bind(cache.PersistentVolumeClaims))
+				r.Get("/persistentvolumeclaims", getPersistentVolumeClaims(cache))
+				r.Get("/persistentvolumeclaims/{uid}", getPersistentVolumeClaim(cache))
 
-				r.Get("/storageclasses", rest.Bind(cache.StorageClasses))
-				r.Get("/storageclasses/{uid}", rest.Bind(cache.StorageClasses))
+				r.Get("/storageclasses", getStorageClasses(cache))
+				r.Get("/storageclasses/{uid}", getStorageClass(cache))
 			})
 		})
 	})

@@ -4,8 +4,8 @@ tmp_dir = "build"
 
 [build]
   args_bin = []
-  bin = "./build/main"
-  cmd = "go build -o ./build/main main.go"
+  bin = "./build/uds-runtime"
+  cmd = "go build -o ./build/uds-runtime main.go"
   delay = 2000
   exclude_dir = ["assets", "build", "vendor", "testdata", "ui", "docs", "hack", "tasks"]
   exclude_file = []

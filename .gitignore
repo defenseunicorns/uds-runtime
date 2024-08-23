@@ -4,8 +4,7 @@ node_modules
 .output
 .vercel
 /ui/.svelte-kit
-/ui/build
-/build
+**/build/
 
 # OS
 .DS_Store
@@ -25,5 +24,9 @@ vite.config.ts.timestamp-*
 /ui/test-results
 
 # Dev
-/zarf-sbom
+zarf-sbom
 tmp/
+*.tar.zst
+
+*.pem
+.github/test-infra/**/.terraform*

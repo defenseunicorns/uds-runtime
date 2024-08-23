@@ -9,6 +9,7 @@ import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from 
 import ContainerStatus from './containers/component.svelte'
 import PodMetrics from './metrics/component.svelte'
 import { parseCPU } from './metrics/utils'
+import Status from './status/component.svelte'
 
 interface Row extends CommonRow {
   containers: {
@@ -19,9 +20,9 @@ interface Row extends CommonRow {
     }
   }
   restarts: number
-  controller: string
+  controlled_by: string
   node: string
-  status: string
+  status: { component: typeof Status; props: { status: string } }
   metrics: {
     component: typeof PodMetrics
     sort: number
@@ -80,13 +81,13 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       },
     },
     restarts: r.status?.containerStatuses?.reduce((acc, curr) => acc + curr.restartCount, 0) ?? 0,
-    controller: r.metadata?.ownerReferences?.at(0)?.kind ?? '',
-    status: r.status?.phase ?? '',
+    controlled_by: r.metadata?.ownerReferences?.at(0)?.kind ?? '',
+    status: { component: Status, props: { status: r.status?.phase ?? '' } },
     // @todo: This will not work due to using the default sparerResource stream
     node: r.spec?.nodeName ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>('name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
 
   // Close the EventSource when the store is stopped
   store.stopCallback = metricsEvents.close.bind(metricsEvents)
@@ -107,7 +108,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
 
   return {
     ...store,
-    start: () => store.start(url, transform),
+    start: store.start.bind(store),
     sortByKey: store.sortByKey.bind(store),
   }
 }
