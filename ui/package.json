@@ -56,8 +56,5 @@
     "vitest": "2.0.4",
     "yaml": "2.5.0"
   },
-  "type": "module",
-  "dependencies": {
-    "find-process": "^1.4.7"
-  }
+  "type": "module"
 }
