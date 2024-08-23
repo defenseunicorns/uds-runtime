@@ -12,6 +12,23 @@ let extractedToken: string | null = null
 
 test.beforeAll(async () => {
   // await killProcessOnPort(port.toString())
+  // Check what is running on port 8080
+  await new Promise<void>((resolve, reject) => {
+    exec('lsof -i :8080', (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error checking port 8080: ${error}`)
+        reject(error)
+        return
+      }
+      if (stdout) {
+        console.log(`Processes running on port 8080:\n${stdout}`)
+      } else {
+        console.log('Nothing is running on port 8080')
+      }
+      resolve()
+    })
+  })
+
   // Start the server
   await new Promise<void>((resolve, reject) => {
     serverProcess = exec('VITE_API_AUTH=true ../build/uds-runtime', (error) => {
