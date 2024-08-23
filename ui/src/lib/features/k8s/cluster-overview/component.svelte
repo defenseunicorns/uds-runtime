@@ -8,6 +8,8 @@
   import type { ApexOptions } from 'apexcharts'
   import * as echarts from 'echarts'
 
+  import './styles.postcss'
+
   type ClusterData = {
     totalPods: number
     totalNodes: number
