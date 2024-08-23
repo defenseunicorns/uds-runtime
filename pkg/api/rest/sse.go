@@ -12,16 +12,16 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-// WriteSSEHeaders sets the headers for an SSE connection
-func WriteSSEHeaders(w http.ResponseWriter) {
+// WriteHeaders sets the headers for an SSE connection
+func WriteHeaders(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 }
 
-// SSEHandler is a generic SSE handler that sends data to the client
-func SSEHandler(w http.ResponseWriter, r *http.Request, getData func(string, string) []unstructured.Unstructured, changes <-chan struct{}, fieldsList []string) {
-	WriteSSEHeaders(w)
+// Handler is a generic SSE handler that sends data to the client
+func Handler(w http.ResponseWriter, r *http.Request, getData func(string, string) []unstructured.Unstructured, changes <-chan struct{}, fieldsList []string) {
+	WriteHeaders(w)
 
 	// Ensure the ResponseWriter supports flushing
 	flusher, ok := w.(http.Flusher)

@@ -37,7 +37,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	// Set the headers for streaming
-	rest.WriteSSEHeaders(w)
+	rest.WriteHeaders(w)
 
 	// Create a new BufferWriter
 	bufferWriter := newBufferWriter(w)
