@@ -56,6 +56,7 @@ function extractToken(log: string) {
 
 function stripAnsiCodes(str: string): string {
   // This regex matches all ANSI escape codes
+  // eslint-disable-next-line no-control-regex
   const ansiRegex = /[\x1B\x9B][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
   return str.replace(ansiRegex, '')
 }
