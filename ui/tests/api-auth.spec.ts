@@ -4,7 +4,6 @@
 // Test file prefixed with "z-" to ensure it runs last since it stops the server and restarts it
 import { expect, test } from '@playwright/test'
 import { ChildProcess, exec } from 'child_process'
-import find from 'find-process'
 import { port } from '../playwright.config'
 
 let serverProcess: ChildProcess
@@ -45,16 +44,16 @@ test.afterAll(async () => {
   }
 })
 
-async function killProcessOnPort(port: string) {
-  const list = await find('port', port)
-  list.forEach((proc) => {
-    try {
-      process.kill(proc.pid)
-    } catch (e) {
-      console.error(`Failed to kill process ${proc.pid}: ${e.message}`)
-    }
-  })
-}
+// async function killProcessOnPort(port: string) {
+//   const list = await find('port', port)
+//   list.forEach((proc) => {
+//     try {
+//       process.kill(proc.pid)
+//     } catch (e) {
+//       console.error(`Failed to kill process ${proc.pid}: ${e.message}`)
+//     }
+//   })
+// }
 
 function extractToken(log: string) {
   const match = log.match(/auth\?token=([^&\s]+)/)

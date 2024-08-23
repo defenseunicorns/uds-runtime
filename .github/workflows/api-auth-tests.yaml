@@ -18,11 +18,6 @@ on:
 permissions:
   contents: read
 
-# Abort prior jobs in the same workflow / PR
-concurrency:
-  group: unit-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   tests:
     runs-on: ubuntu-latest

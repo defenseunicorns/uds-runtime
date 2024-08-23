@@ -15,7 +15,7 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   retries: process.env.CI ? 2 : 1,
-  testMatch: /(.+\.)?(test|spec)\.[jt]s/,
+  testMatch: /^(?!.*api-auth)(.+\.)?(test|spec)\.[jt]s$/,
   use: {
     baseURL: `http://localhost:${port}/`,
   },
