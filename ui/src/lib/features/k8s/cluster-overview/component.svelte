@@ -61,6 +61,14 @@
     return formatNumber(value) + ' GB'
   }
 
+  function formatTicks(tick: string | number) {
+    if (typeof tick === 'number') {
+      return tick.toFixed(2)
+    }
+
+    return tick
+  }
+
   const formatTime = (timestamp: string) => {
     let parts = new Date(timestamp).toISOString().split('T')
     parts.shift()
@@ -175,6 +183,12 @@
       },
     },
     scales: {
+      x: {
+        ticks: {
+          color: 'white',
+          maxTicksLimit: 20,
+        },
+      },
       y: {
         type: 'linear',
         display: true,
@@ -182,9 +196,14 @@
         title: {
           display: true,
           text: 'CPU Usage (cores)',
+          color: 'white',
+          padding: {
+            bottom: 20,
+          },
         },
         ticks: {
           color: 'white',
+          callback: (value) => `${formatTicks(value)} cores`,
         },
       },
       y1: {
@@ -194,9 +213,15 @@
         title: {
           display: true,
           text: 'Memory Usage (GB)',
+          color: 'white',
+          padding: {
+            bottom: 20,
+          },
         },
         ticks: {
           color: 'white',
+          callback: (value) => `${value} GB`,
+          precision: 2,
         },
       },
     },
@@ -285,6 +310,7 @@
         })
       }
 
+      // on each message manually update the grap
       myChart.data.labels = clusterData.historicalUsage.map((point) => [formatTime(point.Timestamp)])
       myChart.data.datasets[0].data = clusterData.historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
       myChart.data.datasets[1].data = clusterData.historicalUsage.map((point) => point.CPU / 1000)
