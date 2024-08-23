@@ -2,8 +2,7 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import { createStore } from '$features/k8s/namespaces/store'
-import { apiAuthEnabled } from '$lib/features/api-auth/store'
-import { get } from 'svelte/store'
+import { fetchConfig } from '$lib/utils/helpers'
 
 export const ssr = false
 
@@ -11,8 +10,11 @@ export const ssr = false
 export const load = async () => {
   const namespaces = createStore()
 
+  //Check if apiAuthEnabled
+  const envVars = await fetchConfig()
+  const apiAuthEnabled = envVars.VITE_API_AUTH?.toLowerCase() === 'true'
   // namespaces.start() called in auth page when apiAuthEnabled
-  if (!get(apiAuthEnabled)) {
+  if (!apiAuthEnabled) {
     namespaces.start()
   }
 
