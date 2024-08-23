@@ -36,8 +36,8 @@ test.beforeAll(async () => {
   })
 
   // Wait for the server to be ready
-  await new Promise((resolve) => setTimeout(resolve, 5000)) // Adjust the timeout as needed
-})
+  await new Promise((resolve) => setTimeout(resolve, 10000)) // Adjust the timeout as needed
+}, 30000)
 
 test.afterAll(async () => {
   // Stop the server
