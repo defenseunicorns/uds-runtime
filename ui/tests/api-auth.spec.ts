@@ -4,30 +4,39 @@
 // Test file prefixed with "z-" to ensure it runs last since it stops the server and restarts it
 import { expect, test } from '@playwright/test'
 import { ChildProcess, exec } from 'child_process'
+import * as net from 'net'
 import { port } from '../playwright.config'
 
 let serverProcess: ChildProcess
 const serverLogs: string[] = []
 let extractedToken: string | null = null
 
+function isPortInUse(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const server = net
+      .createServer()
+      .once('error', () => resolve(true))
+      .once('listening', () => {
+        server.close()
+        resolve(false)
+      })
+      .listen(port)
+  })
+}
+
 test.beforeAll(async () => {
   // await killProcessOnPort(port.toString())
   // Check what is running on port 8080
-  await new Promise<void>((resolve, reject) => {
-    exec('lsof -i :8080', (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error checking port 8080: ${error}`)
-        reject(error)
-        return
-      }
-      if (stdout) {
-        console.log(`Processes running on port 8080:\n${stdout}`)
-      } else {
-        console.log('Nothing is running on port 8080')
-      }
-      resolve()
-    })
-  })
+  try {
+    const inUse = await isPortInUse(8080)
+    if (inUse) {
+      console.log('Port 8080 is in use')
+    } else {
+      console.log('Port 8080 is not in use')
+    }
+  } catch (error) {
+    console.error(`Error checking port 8080: ${error}`)
+  }
 
   // Start the server
   await new Promise<void>((resolve, reject) => {
