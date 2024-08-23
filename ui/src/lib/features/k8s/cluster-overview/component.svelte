@@ -7,8 +7,7 @@
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
   import Chart from 'chart.js/auto'
-  import { type ChartOptions } from 'chart.js'
-  import { Line } from 'svelte-chartjs'
+  import { type ChartData, type ChartOptions } from 'chart.js'
 
   import './styles.postcss'
 
@@ -168,29 +167,6 @@
     },
   }
 
-  let chartjsData = [
-    {
-      label: 'CPU Usage',
-      data: clusterData.historicalUsage.map((point) => ({
-        x: new Date(point.Timestamp).getTime(),
-        y: point.CPU / 1000, // Convert millicores to cores
-      })),
-      borderColor: '#057FDD',
-      backgroundColor: '#057FDD',
-      yAxisID: 'y',
-    },
-    {
-      label: 'Memory Usage',
-      data: clusterData.historicalUsage.map((point) => ({
-        x: new Date(point.Timestamp).getTime(),
-        y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
-      })),
-      borderColor: '#00D39F',
-      backgroundColor: '#00D39F',
-      yAxisID: 'y1',
-    },
-  ]
-
   let chartjsOptions: ChartOptions<'line'> = {
     maintainAspectRatio: false,
     elements: {
@@ -269,7 +245,30 @@
     ],
   }
 
+  let onMessageCount = 0
+  let myChart: Chart
+  let chartjsData: ChartData<'line'> = {
+    labels: [],
+    datasets: [
+      {
+        label: 'Memory Usage',
+        data: [],
+        borderColor: '#00D39F',
+        backgroundColor: '#00D39F',
+        yAxisID: 'y1',
+      },
+      {
+        label: 'CPU Usage',
+        data: [],
+        borderColor: '#057FDD',
+        backgroundColor: '#057FDD',
+        yAxisID: 'y',
+      },
+    ],
+  }
+
   onMount(() => {
+    let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
     const overview = new EventSource(`/api/v1/monitor/cluster-overview`)
 
     overview.onmessage = (event) => {
@@ -277,12 +276,28 @@
 
       cpuPercentage = calculatePercentage(clusterData.currentUsage.CPU, clusterData.cpuCapacity)
       memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
+
+      if (onMessageCount === 0) {
+        myChart = new Chart(ctx, {
+          type: 'line',
+          data: chartjsData,
+          options: chartjsOptions,
+        })
+      }
+
+      myChart.data.labels = clusterData.historicalUsage.map((point) => [formatTime(point.Timestamp)])
+      myChart.data.datasets[0].data = clusterData.historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
+      myChart.data.datasets[1].data = clusterData.historicalUsage.map((point) => point.CPU / 1000)
+
+      myChart.update()
+      onMessageCount++
     }
 
     Chart.register({})
 
     return () => {
       overview.close()
+      myChart.destroy()
     }
   })
 
@@ -339,14 +354,7 @@
     </div>
 
     <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow" style:position="relative" style:margin="auto">
-      <Line
-        height={350}
-        data={{
-          labels: clusterData.historicalUsage.map((point) => [formatTime(point.Timestamp)]),
-          datasets: chartjsData,
-        }}
-        options={chartjsOptions}
-      />
+      <canvas id="chartjs-el" height={350} />
     </div>
   </div>
 </div>
