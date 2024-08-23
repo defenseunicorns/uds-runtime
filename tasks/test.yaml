@@ -2,6 +2,18 @@ includes:
   - setup: ./setup.yaml
 
 tasks:
+  - name: api-auth
+    description: "run end-to-end tests (assumes api server is running on port 8080)"
+    actions:
+      - task: setup:build-ui
+      - cmd: npm run test:install # install playwright
+        dir: ui
+      - task: setup:build-api
+      - cmd: |
+          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
+      - task: deploy-load
+      - cmd: npm run test:api-auth
+        dir: ui
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
