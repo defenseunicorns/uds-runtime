@@ -15,12 +15,14 @@ import (
 	"strings"
 
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
+	"github.com/defenseunicorns/uds-runtime/pkg/api/gpt"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/udsmiddleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
 // @title UDS Runtime API
@@ -41,6 +43,17 @@ func Start(assets embed.FS) error {
 	if err != nil {
 		return fmt.Errorf("failed to create cache: %w", err)
 	}
+
+	// ingest UDS docs
+	err = gpt.InitContext()
+	if err != nil {
+		message.Warnf("failed to initialize GPT context: %w", err)
+	}
+
+	// Add gpt route
+	r.Get("/api/v1/ai", func(w http.ResponseWriter, r *http.Request) {
+		gpt.HandleGPT(w, r)
+	})
 
 	// Add Swagger UI route
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
