@@ -11,7 +11,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "test:api-auth": "playwright test tests/api-auth.spec.ts",
+    "test:api-auth": "playwright test tests/api-auth.spec.ts --config=playwright.config.apiauth.ts",
     "test:integration": "playwright test",
     "test:install": "playwright install",
     "test:unit": "vitest run"

@@ -12,9 +12,8 @@ const serverLogs: string[] = []
 let extractedToken: string | null = null
 
 test.beforeAll(async () => {
-  await killProcessOnPort(port.toString())
+  // await killProcessOnPort(port.toString())
   // Start the server
-  console.log(process.cwd())
   await new Promise<void>((resolve, reject) => {
     serverProcess = exec('VITE_API_AUTH=true ../build/uds-runtime', (error) => {
       if (error) {
@@ -37,7 +36,7 @@ test.beforeAll(async () => {
 
   // Wait for the server to be ready
   await new Promise((resolve) => setTimeout(resolve, 10000)) // Adjust the timeout as needed
-}, 30000)
+})
 
 test.afterAll(async () => {
   // Stop the server
