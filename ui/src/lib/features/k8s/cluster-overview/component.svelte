@@ -9,6 +9,8 @@
   import Chart from 'chart.js/auto'
   import { Line } from 'svelte-chartjs'
 
+  import './styles.postcss'
+
   type ClusterData = {
     totalPods: number
     totalNodes: number
