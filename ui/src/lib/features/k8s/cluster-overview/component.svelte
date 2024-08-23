@@ -7,6 +7,7 @@
   import { chart } from 'svelte-apexcharts'
   import type { ApexOptions } from 'apexcharts'
   import Chart from 'chart.js/auto'
+  import { type ChartOptions } from 'chart.js'
   import { Line } from 'svelte-chartjs'
 
   import './styles.postcss'
@@ -167,6 +168,87 @@
     },
   }
 
+  let chartjsData = [
+    {
+      label: 'CPU Usage',
+      data: clusterData.historicalUsage.map((point) => ({
+        x: new Date(point.Timestamp).getTime(),
+        y: point.CPU / 1000, // Convert millicores to cores
+      })),
+      borderColor: '#057FDD',
+      backgroundColor: '#057FDD',
+      yAxisID: 'y',
+    },
+    {
+      label: 'Memory Usage',
+      data: clusterData.historicalUsage.map((point) => ({
+        x: new Date(point.Timestamp).getTime(),
+        y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
+      })),
+      borderColor: '#00D39F',
+      backgroundColor: '#00D39F',
+      yAxisID: 'y1',
+    },
+  ]
+
+  let chartjsOptions: ChartOptions<'line'> = {
+    maintainAspectRatio: false,
+    elements: {
+      point: {
+        radius: 0,
+      },
+    },
+    scales: {
+      y: {
+        type: 'linear',
+        display: true,
+        position: 'left',
+        title: {
+          display: true,
+          text: 'CPU Usage (cores)',
+        },
+        ticks: {
+          color: 'white',
+        },
+      },
+      y1: {
+        type: 'linear',
+        display: true,
+        position: 'right',
+        title: {
+          display: true,
+          text: 'Memory Usage (GB)',
+        },
+        ticks: {
+          color: 'white',
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: 'white',
+          boxHeight: 14,
+          boxWidth: 14,
+          useBorderRadius: true,
+          borderRadius: 7,
+        },
+      },
+      tooltip: {
+        enabled: true,
+        mode: 'index',
+        intersect: false,
+        backgroundColor: '#1F2937',
+        borderColor: 'white',
+        borderWidth: 1,
+      },
+    },
+    hover: {
+      intersect: true,
+    },
+  }
+
   $: options = {
     ...options,
     series: [
@@ -261,86 +343,9 @@
         height={350}
         data={{
           labels: clusterData.historicalUsage.map((point) => [formatTime(point.Timestamp)]),
-          datasets: [
-            {
-              label: 'CPU Usage',
-              data: clusterData.historicalUsage.map((point) => ({
-                x: new Date(point.Timestamp).getTime(),
-                y: point.CPU / 1000, // Convert millicores to cores
-              })),
-              borderColor: '#057FDD',
-              backgroundColor: '#057FDD',
-              yAxisID: 'y',
-            },
-            {
-              label: 'Memory Usage',
-              data: clusterData.historicalUsage.map((point) => ({
-                x: new Date(point.Timestamp).getTime(),
-                y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
-              })),
-              borderColor: '#00D39F',
-              backgroundColor: '#00D39F',
-              yAxisID: 'y1',
-            },
-          ],
+          datasets: chartjsData,
         }}
-        options={{
-          maintainAspectRatio: false,
-          elements: {
-            point: {
-              radius: 0,
-            },
-          },
-          scales: {
-            y: {
-              type: 'linear',
-              display: true,
-              position: 'left',
-              title: {
-                display: true,
-                text: 'CPU Usage (cores)',
-              },
-              ticks: {
-                color: 'white',
-              },
-            },
-            y1: {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              title: {
-                display: true,
-                text: 'Memory Usage (GB)',
-              },
-              ticks: {
-                color: 'white',
-              },
-            },
-          },
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: 'white',
-                boxHeight: 14,
-                boxWidth: 14,
-                useBorderRadius: true,
-                borderRadius: 7,
-              },
-            },
-            tooltip: {
-              enabled: true,
-              mode: 'index',
-              intersect: false,
-              backgroundColor: '#1F2937',
-              borderColor: 'white',
-              borderWidth: 1,
-            },
-          },
-          hover: {
-            intersect: true,
-          },
-        }}
+        options={chartjsOptions}
       />
     </div>
   </div>
