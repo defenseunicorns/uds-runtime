@@ -5,7 +5,6 @@
 import { expect, test } from '@playwright/test'
 import { ChildProcess, exec } from 'child_process'
 import * as net from 'net'
-import { port } from '../playwright.config'
 
 let serverProcess: ChildProcess
 const serverLogs: string[] = []
@@ -40,9 +39,12 @@ test.beforeAll(async () => {
 
   // Start the server
   await new Promise<void>((resolve, reject) => {
+    console.time('Server Start Time') // Start the timer
+
     serverProcess = exec('VITE_API_AUTH=true ../build/uds-runtime', (error) => {
       if (error) {
         console.error(`Error starting server: ${error}`)
+        console.timeEnd('Server Start Time')
         reject(error)
         return
       }
@@ -90,14 +92,14 @@ function extractToken(log: string) {
 
 test.describe.serial('Authentication Tests', () => {
   test('authenticated access', async ({ page }) => {
-    await page.goto(`http://localhost:${port}/auth?token=${extractedToken}`)
+    await page.goto(`/auth?token=${extractedToken}`)
     await page.getByRole('link', { name: 'Overview' }).click()
     const nodeCountEl = page.getByTestId(`node-count`)
     await expect(nodeCountEl).toHaveText('1')
   })
 
   test('pod view access', async ({ page }) => {
-    await page.goto(`http://localhost:${port}/auth?token=${extractedToken}`)
+    await page.goto(`/auth?token=${extractedToken}`)
     await page.getByRole('button', { name: 'Workloads' }).click()
     await page.getByRole('link', { name: 'Pods' }).click()
     const element = page.locator(`.emphasize:has-text("podinfo")`)
@@ -105,7 +107,7 @@ test.describe.serial('Authentication Tests', () => {
   })
 
   test('unauthenticated access', async ({ page }) => {
-    await page.goto(`http://localhost:${port}/auth?token=insecure`)
+    await page.goto(`/auth?token=insecure`)
     const unauthenticated = page.getByText('Could not authenticate')
     await expect(unauthenticated).toBeVisible()
   })

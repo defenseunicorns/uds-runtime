@@ -28,10 +28,10 @@ jobs:
       - name: Setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
         uses: ./.github/actions/setup
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
 
       - name: Run tests
         run: uds run test:api-auth
