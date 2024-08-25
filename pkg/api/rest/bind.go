@@ -15,12 +15,17 @@ import (
 func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.Request) {
 	// Return a function that sends the data to the client
 	return func(w http.ResponseWriter, r *http.Request) {
+		// If true, send full resource data
 		// By default, send the data as a sparse stream
-		once := r.URL.Query().Get("once") == "true"
 		dense := r.URL.Query().Get("dense") == "true"
+		// Get the UID from the URL if it exists
 		namespace := r.URL.Query().Get("namespace")
+		// Get the namePartial from the URL query
 		namePartial := r.URL.Query().Get("name")
-		fields := r.URL.Query().Get("fields") // Comma-separated list of fields to include
+		// If true, send data only once
+		once := r.URL.Query().Get("once") == "true"
+		// Get the fields from the URL query
+		fields := r.URL.Query().Get("fields")
 
 		var fieldsList []string
 		if fields != "" {

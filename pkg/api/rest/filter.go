@@ -6,11 +6,9 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/client-go/util/jsonpath"
 )
 
 // jsonMarshal marshals the payload to JSON and filters the fields if specified
@@ -48,42 +46,149 @@ func jsonMarshal(payload any, fieldsList []string) ([]byte, error) {
 }
 
 // filterItemsByFields filters the given items based on the specified field paths
+// - It takes a slice of unstructured.Unstructured and a slice of field paths.
+// - It returns a slice of maps, each representing a filtered item.
 func filterItemsByFields(items []unstructured.Unstructured, fieldPaths []string) []map[string]interface{} {
 	var filtered []map[string]interface{}
 
 	// Iterate over each item and filter the fields
 	for _, item := range items {
 		itemData := map[string]interface{}{}
-		for _, path := range fieldPaths {
-			// Create a new JSONPath parser for each field
-			jp := jsonpath.New("filter")
-			if err := jp.Parse("{" + path + "}"); err != nil {
-				continue // Skip if JSONPath parsing fails
-			}
-			// Find the results for this path in the item
-			results, err := jp.FindResults(item.Object)
-			if err != nil || len(results) == 0 {
-				continue // Skip if no results found
-			}
 
-			// Set the nested value in the filtered item data
-			setNestedValue(itemData, strings.Split(path, ".")[1:], results[0])
+		// Process each field path
+		for _, fieldPath := range fieldPaths {
+			// Remove the leading dot and split the path into keys
+			keys := strings.Split(strings.TrimPrefix(fieldPath, "."), ".")
+			// Get the value for this field path
+			value, found := getNestedValueFromUnstructured(item.Object, keys)
+			if found {
+				// If the value is found, set it in the filtered item data
+				setNestedValue(itemData, keys, value)
+			}
 		}
 
-		// Append the filtered item data to the result
+		// Delete managedFields from .metadata if it exists
+		delete(itemData["metadata"].(map[string]interface{}), "managedFields")
+
+		// Add the filtered item to the result
 		filtered = append(filtered, itemData)
 	}
 	return filtered
 }
 
-// setNestedValue recursively sets a value in a nested map structure
-// It handles both array and object nesting
-func setNestedValue(obj map[string]interface{}, keys []string, values []reflect.Value) {
+// getNestedValueFromUnstructured retrieves a nested value from unstructured data
+// - It takes a map[string]interface{} and a slice of keys representing the path to the desired value.
+// - It traverses the structure, handling both maps and arrays.
+// - It returns the found value and a boolean indicating success.
+//
+// Example usage of getNestedValueFromUnstructured:
+//
+//	data := map[string]interface{}{
+//	  "user": map[string]interface{}{
+//	    "addresses": []interface{}{
+//	      map[string]interface{}{"city": "New York"},
+//	      map[string]interface{}{"city": "Los Angeles"},
+//	    },
+//	  },
+//	}
+//	value, found := getNestedValueFromUnstructured(data, []string{"user", "addresses[]", "city"})
+//	// value will be []interface{}{"New York", "Los Angeles"}, found will be true
+func getNestedValueFromUnstructured(obj map[string]interface{}, keys []string) (interface{}, bool) {
+	current := obj
+
+	// Iterate over each key in the keys slice
+	for i, key := range keys {
+		// If the key ends with "[]", it represents an array
+		isArray := strings.HasSuffix(key, "[]")
+		if isArray {
+			// Remove the "[]" suffix to get the base key
+			key = strings.TrimSuffix(key, "[]")
+		}
+
+		// Get the value from the current map
+		value, exists := current[key]
+		if !exists {
+			// If the key doesn't exist, return nil and false
+			return nil, false
+		}
+
+		// If the key represents an array
+		if isArray {
+			// Check if the value is a slice of interfaces
+			if arr, ok := value.([]interface{}); ok {
+				// If this is the last key, return the entire array
+				if i == len(keys)-1 {
+					return arr, true
+				}
+
+				// If there are more keys, we need to process each array element
+				var results []interface{}
+				for _, elem := range arr {
+					// Check if the element is a map of strings to interfaces
+					if elemMap, ok := elem.(map[string]interface{}); ok {
+						// Recursively get the nested value for each array element
+						if nestedValue, found := getNestedValueFromUnstructured(elemMap, keys[i+1:]); found {
+							// Append the nested value to the results
+							results = append(results, nestedValue)
+						}
+					}
+				}
+
+				// Return nil if no results were found
+				if len(results) == 0 {
+					return nil, false
+				}
+
+				// Return the results if there are any
+				return results, true
+			}
+
+			// If the value is not a slice of interfaces, return nil and false
+			return nil, false
+		}
+
+		// If this is the last key, return the value
+		if i == len(keys)-1 {
+			return value, true
+		}
+
+		// Move to the next nested level
+		if nextMap, ok := value.(map[string]interface{}); ok {
+			current = nextMap
+		} else {
+			// If the value is not a map, return nil and false
+			return nil, false
+		}
+	}
+
+	// If the key doesn't exist, return nil and false
+	return nil, false
+}
+
+// setNestedValue sets a nested value in a map structure
+// - It takes a map[string]interface{}, a slice of keys for the path, and the value to set.
+// - It creates the necessary structure (maps or arrays) if it doesn't exist.
+// - It handles setting values in both maps and arrays.
+//
+// Example usage of setNestedValue:
+//
+//	data := map[string]interface{}{}
+//	setNestedValue(data, []string{"user", "addresses[]", "city"}, []interface{}{"San Francisco", "Chicago"})
+//	// data will become:
+//	// {
+//	//   "user": {
+//	//     "addresses": [
+//	//       {"city": "San Francisco"},
+//	//       {"city": "Chicago"}
+//	//     ]
+//	//   }
+//	// }
+func setNestedValue(obj map[string]interface{}, keys []string, value interface{}) {
 	if len(keys) == 0 {
 		return
 	}
 
-	// Check if the key is an array
+	// Get the first key and check if it represents an array
 	key := keys[0]
 	isArray := strings.HasSuffix(key, "[]")
 	if isArray {
@@ -92,16 +197,7 @@ func setNestedValue(obj map[string]interface{}, keys []string, values []reflect.
 
 	// If this is the last key, set the value directly
 	if len(keys) == 1 {
-		if isArray {
-			// Convert the values to an array
-			arr := make([]interface{}, len(values))
-			for i, v := range values {
-				arr[i] = v.Interface()
-			}
-			obj[key] = arr
-		} else if len(values) > 0 {
-			obj[key] = values[0].Interface()
-		}
+		obj[key] = value
 		return
 	}
 
@@ -114,23 +210,34 @@ func setNestedValue(obj map[string]interface{}, keys []string, values []reflect.
 		}
 	}
 
-	// Recursively set nested values
+	// If the key represents an array
 	if isArray {
-		arr := obj[key].([]interface{})
-		// Ensure the array is large enough to hold the values
-		for i := 0; i < len(values); i++ {
-			// Append a new map if the index is out of bounds
-			if i >= len(arr) {
-				arr = append(arr, map[string]interface{}{})
-			}
-
-			// Set the nested value in the array element
-			setNestedValue(arr[i].(map[string]interface{}), keys[1:], []reflect.Value{values[i]})
+		// Check if the value is a slice of interfaces
+		arr, ok := obj[key].([]interface{})
+		if !ok {
+			arr = []interface{}{}
 		}
 
-		// Update the array in the object
+		// Handle setting values in an array
+		if valueArr, ok := value.([]interface{}); ok {
+			// Iterate over each value in the value array
+			for i, v := range valueArr {
+				// Ensure the array is large enough
+				if i >= len(arr) {
+					arr = append(arr, map[string]interface{}{})
+				}
+
+				// Set the nested value for each array element
+				if mapElem, ok := arr[i].(map[string]interface{}); ok {
+					setNestedValue(mapElem, keys[1:], v)
+				}
+			}
+		}
+
+		// Set the value array back in the map
 		obj[key] = arr
 	} else {
-		setNestedValue(obj[key].(map[string]interface{}), keys[1:], values)
+		// Recursively set the value for nested objects
+		setNestedValue(obj[key].(map[string]interface{}), keys[1:], value)
 	}
 }
