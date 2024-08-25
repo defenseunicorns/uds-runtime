@@ -38,7 +38,7 @@
     "flowbite": "2.4.1",
     "globals": "15.8.0",
     "highlight.js": "11.10.0",
-    "jsdom": "24.1.1",
+    "jsdom": "25.0.0",
     "prettier": "3.3.3",
     "prettier-plugin-organize-imports": "4.0.0",
     "prettier-plugin-svelte": "3.2.6",
