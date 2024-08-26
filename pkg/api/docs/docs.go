@@ -10,10 +10,6 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {},
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -80,6 +76,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -112,6 +120,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -147,6 +167,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -179,6 +211,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -214,6 +258,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -246,6 +302,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -281,6 +349,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -313,6 +393,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -348,6 +440,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -380,6 +484,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -415,6 +531,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -447,6 +575,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -482,6 +622,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -514,6 +666,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -549,6 +713,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -581,6 +757,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -616,6 +804,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -648,6 +848,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -683,6 +895,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -715,6 +939,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -750,6 +986,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -782,6 +1030,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -817,6 +1077,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -849,6 +1121,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -884,6 +1168,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -916,6 +1212,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -951,6 +1259,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -983,6 +1303,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1018,6 +1350,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1050,6 +1394,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1085,6 +1441,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1117,6 +1485,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1152,6 +1532,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1184,6 +1576,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1219,6 +1623,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1251,6 +1667,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1286,6 +1714,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1318,6 +1758,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1353,6 +1805,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1385,6 +1849,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1420,6 +1896,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1452,6 +1940,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1487,6 +1987,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1519,6 +2031,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1554,6 +2078,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1586,6 +2122,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1621,6 +2169,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1653,6 +2213,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1688,6 +2260,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1720,6 +2304,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1755,6 +2351,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1787,6 +2395,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1841,6 +2461,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1873,6 +2505,18 @@ const docTemplate = `{
                         "type": "boolean",
                         "description": "Send the data in dense format",
                         "name": "dense",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],
@@ -1908,6 +2552,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1941,6 +2597,18 @@ const docTemplate = `{
                         "description": "Send the data in dense format",
                         "name": "dense",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by namespace",
+                        "name": "namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial match)",
+                        "name": "name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1955,11 +2623,11 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.0.0",
+	Version:          "",
 	Host:             "",
-	BasePath:         "/api/v1",
-	Schemes:          []string{"http", "https"},
-	Title:            "UDS Runtime API",
+	BasePath:         "",
+	Schemes:          []string{},
+	Title:            "",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
