@@ -16,7 +16,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/cluster-ops/poddisruptionbudgets?fields=.metadata,.status,.spec.minAvailable,.spec.maxUnavailable`
+  const url = `/api/v1/resources/cluster-ops/poddisruptionbudgets?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
     min_available: r.spec?.minAvailable ?? 'N/A',

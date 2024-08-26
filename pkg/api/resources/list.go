@@ -180,13 +180,6 @@ func (r *ResourceList) extractSparseObject(obj *unstructured.Unstructured) *unst
 		sparseObj.Object["type"] = typeStr
 	}
 
-	// Extract spec.nodeName if it exists
-	if nodeName, exists, _ := unstructured.NestedString(obj.Object, "spec", "nodeName"); exists {
-		sparseObj.Object["spec"] = map[string]interface{}{
-			"nodeName": nodeName,
-		}
-	}
-
 	// Extract data if it exists, but only preserve the keys
 	if data, exists, _ := unstructured.NestedFieldCopy(obj.Object, "data"); exists {
 		sparseObj.Object["data"] = map[string]interface{}{}

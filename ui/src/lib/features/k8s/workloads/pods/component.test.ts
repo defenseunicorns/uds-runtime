@@ -181,7 +181,7 @@ suite('PodTable Component', () => {
   expect(urlAssertionMock).toHaveBeenCalledWith(`/api/v1/resources/workloads/podmetrics`)
 
   const start = store.start as unknown as () => ResourceWithTable<V1Pod, any>[]
-  expect(store.url).toEqual('/api/v1/resources/workloads/pods')
+  expect(store.url).toEqual('/api/v1/resources/workloads/pods?fields=.metadata,.spec.nodeName,.status')
   // ignore creationTimestamp because age is not calculated at this point and added to the table
   expectEqualIgnoringFields(start()[0].table, expectedTable as unknown, [
     'creationTimestamp',
