@@ -12,7 +12,7 @@ export const load = async () => {
 
   //Check if apiAuthEnabled
   const envVars = await fetchConfig()
-  const apiAuthEnabled = envVars.VITE_API_AUTH?.toLowerCase() === 'true'
+  const apiAuthEnabled = envVars.API_AUTH_ENABLED?.toLowerCase() === 'true'
   // namespaces.start() called in auth page when apiAuthEnabled
   if (!apiAuthEnabled) {
     namespaces.start()
