@@ -184,12 +184,18 @@
     },
     scales: {
       x: {
+        grid: {
+          display: false,
+        },
         ticks: {
           color: 'white',
           maxTicksLimit: 20,
         },
       },
       y: {
+        grid: {
+          color: 'rgba(255, 255, 255, 0.2)',
+        },
         type: 'linear',
         display: true,
         position: 'left',
@@ -198,7 +204,7 @@
           text: 'CPU Usage (cores)',
           color: 'white',
           padding: {
-            bottom: 20,
+            bottom: 15,
           },
         },
         ticks: {
@@ -207,6 +213,9 @@
         },
       },
       y1: {
+        grid: {
+          display: false,
+        },
         type: 'linear',
         display: true,
         position: 'right',
@@ -215,13 +224,12 @@
           text: 'Memory Usage (GB)',
           color: 'white',
           padding: {
-            bottom: 20,
+            bottom: 10,
           },
         },
         ticks: {
           color: 'white',
-          callback: (value) => `${value} GB`,
-          precision: 2,
+          callback: (value) => `${formatTicks(value)} GB`,
         },
       },
     },
@@ -281,6 +289,7 @@
         borderColor: '#00D39F',
         backgroundColor: '#00D39F',
         yAxisID: 'y1',
+        tension: 0.4,
       },
       {
         label: 'CPU Usage',
@@ -288,6 +297,7 @@
         borderColor: '#057FDD',
         backgroundColor: '#057FDD',
         yAxisID: 'y',
+        tension: 0.4,
       },
     ],
   }
