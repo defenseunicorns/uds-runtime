@@ -46,7 +46,7 @@ Here are the recent logs from the UDS K8s Operator, these could provide valuable
 Based on all this information, please answer the following question: What's the state of the applications running in the "%s" namespace?
 Be brief in your response, don't forget about UDS Exemptions and Packages, and if something is broken, suggest a couple of actions
 
-Lastly, output your response in HTML format
+Lastly, output your response in HTML format ready to be rendered inside an existing div element.
 `, namespace, logs, namespace, strings.Join(events, "\n"), peprLogs, namespace)
 
 	messages := []openai.ChatCompletionMessage{
