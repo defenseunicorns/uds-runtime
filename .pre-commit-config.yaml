@@ -1,4 +1,4 @@
-exclude: '^docs/swagger.*\.json$|^docs/swagger.*\.yaml$'
+exclude: '^pkg/api/docs/swagger.*\.json$|^pkg/api/docs/swagger.*\.yaml$'
 
 repos:
   ### Global ###
