@@ -11,6 +11,7 @@ tasks:
   - name: build-all
     description: build all the CLI binaries and gen checksums
     actions:
+      - task: build-ui
       - task: build-api-linux-amd64
       - task: build-api-linux-arm64
       - task: build-api-darwin-amd64
