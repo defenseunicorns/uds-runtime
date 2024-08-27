@@ -18,7 +18,7 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 		// If true, send full resource data
 		// By default, send the data as a sparse stream
 		dense := r.URL.Query().Get("dense") == "true"
-		// Get the UID from the URL if it exists
+		// Get the namespace from the URL query
 		namespace := r.URL.Query().Get("namespace")
 		// Get the namePartial from the URL query
 		namePartial := r.URL.Query().Get("name")

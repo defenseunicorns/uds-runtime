@@ -9,15 +9,15 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: setup:build-api
-      - cmd: |
-          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
+      - task: k3d
       - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
-  - name: go
+
+  - name: go-unit
     description: "run api server unit tests"
     actions:
-      - cmd: go test -failfast -v -timeout 30m ./...
+      - cmd: go test -failfast -v -timeout 30m --tags=unit ./...
 
   - name: ui-unit
     description: "run frontend unit tests"
@@ -30,8 +30,17 @@ tasks:
     actions:
       - task: setup:build-ui
         description: "build ui since embedded in main.go"
-      - task: go
+      - task: go-unit
       - task: ui-unit
+
+  - name: api
+    description: "run api server tests"
+    actions:
+      - description: "build ui since embedded in main.go"
+        task: setup:build-ui
+      - task: k3d
+      - task: deploy-load
+      - cmd: go test -failfast -v -timeout 30m --tags=integration ./...
 
   - name: deploy-load
     description: "deploy some Zarf packages to test against"
@@ -52,3 +61,9 @@ tasks:
           helm repo add istio https://istio-release.storage.googleapis.com/charts
           helm install istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
         description: install Istio CRDs
+
+  - name: k3d
+    description: "start a k3d cluster"
+    actions:
+      - cmd: |
+          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
