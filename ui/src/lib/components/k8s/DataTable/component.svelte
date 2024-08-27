@@ -243,16 +243,19 @@
                 class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
                 class:cursor-pointer={!disableRowClick}
               >
-                {#each columns as [key, style, modifier]}
+                {#each columns as [key, style, modifier], idx}
                   <!-- Check object to avoid issues with `false` values -->
                   {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
-                  <td class={style || ''}>
+                  <td
+                    class={style || ''}
+                    data-testid={typeof value !== 'object' ? `${value}-testid-${idx + 1}` : `object-test-id-${idx + 1}`}
+                  >
                     {#if value.component}
                       <svelte:component this={value.component} {...value.props} />
                     {:else if value.list}
                       <ul class="mt-4 text-sm">
                         {#each value.list as item}
-                          <li>- {item}</li>
+                          <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
                         {/each}
                       </ul>
                     {:else if modifier === 'link-external'}

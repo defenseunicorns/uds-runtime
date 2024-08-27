@@ -9,8 +9,8 @@ test.describe('Sidebar', async () => {
   })
 
   test('should open and close sidebar', async ({ page }) => {
-    const sidebar = page.locator('#main-sidebar')
-    const sidebarToggle = page.locator('#toggle-sidebar')
+    const sidebar = page.getByTestId('main-sidebar-test-id')
+    const sidebarToggle = page.getByTestId('toggle-sidebar')
 
     await expect(sidebar).toBeVisible()
     await expect(sidebarToggle).toBeVisible()

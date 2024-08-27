@@ -46,6 +46,7 @@
 
 <aside
   id="main-sidebar"
+  data-testid="main-sidebar-test-id"
   class="fixed left-0 top-14 z-40 h-screen -translate-x-full transition-all duration-300 ease-in-out sm:translate-x-0 hover:w-64 {$isSidebarExpanded
     ? 'w-64'
     : 'w-16'}"

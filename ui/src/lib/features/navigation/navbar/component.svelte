@@ -13,7 +13,7 @@
     <div class="flex flex-wrap items-center justify-between">
       <div class="flex items-center justify-start">
         <button
-          id="toggle-sidebar"
+          data-testid="toggle-sidebar"
           aria-expanded="true"
           aria-controls="sidebar"
           on:click={() => isSidebarExpanded.update((v) => !v)}

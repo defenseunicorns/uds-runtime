@@ -158,7 +158,7 @@
                     <td>
                       <span class="pepr-event {item.event}">{item.event}</span>
                     </td>
-                    <td>{item._name}</td>
+                    <td data-testid={`pepr-resource-${item._name}`}>{item._name}</td>
                     <td class="flex flex-row items-center">
                       {#if item.details}
                         <svelte:component this={item.details.component} details={item.details} />
