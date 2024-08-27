@@ -34,7 +34,7 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 // @schemes http https
-func Start(assets embed.FS) error {
+func Setup(assets *embed.FS) (*chi.Mux, error) {
 	apiAuth := true
 	if strings.ToLower(os.Getenv("API_AUTH_DISABLED")) == "true" {
 		apiAuth = false
@@ -50,7 +50,7 @@ func Start(assets embed.FS) error {
 	if token == "" {
 		token, err = auth.RandomString(96)
 		if err != nil {
-			return fmt.Errorf("failed to generate random string: %w", err)
+			return nil, fmt.Errorf("failed to generate random string: %w", err)
 		}
 	}
 
@@ -63,7 +63,7 @@ func Start(assets embed.FS) error {
 	ctx := context.Background()
 	cache, err := resources.NewCache(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to create cache: %w", err)
+		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 
 	// Add Swagger UI route
@@ -199,27 +199,22 @@ func Start(assets embed.FS) error {
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {
-			return fmt.Errorf("failed to launch URL: %w", err)
+			return nil, fmt.Errorf("failed to launch URL: %w", err)
 		}
 	}
 
 	// Serve static files from embed.FS
-	staticFS, err := fs.Sub(assets, "ui/build")
-	if err != nil {
-		return fmt.Errorf("failed to create static file system: %w", err)
-	}
+	if assets != nil {
+		staticFS, err := fs.Sub(assets, "ui/build")
+		if err != nil {
+			return nil, fmt.Errorf("failed to create static file system: %w", err)
+		}
 
-	if err := fileServer(r, http.FS(staticFS)); err != nil {
-		return fmt.Errorf("failed to serve static files: %w", err)
+		if err := fileServer(r, http.FS(staticFS)); err != nil {
+			return nil, fmt.Errorf("failed to serve static files: %w", err)
+		}
 	}
-
-	log.Printf("Starting server on :%s", port)
-	//nolint:gosec
-	if err := http.ListenAndServe(":"+port, r); err != nil {
-		return fmt.Errorf("server failed to start: %w", err)
-	}
-
-	return nil
+	return r, nil
 }
 
 // fileServer is a custom file server handler for embedded files
