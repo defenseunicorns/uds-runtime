@@ -35,7 +35,10 @@ import (
 // @BasePath /api/v1
 // @schemes http https
 func Start(assets embed.FS) error {
-	apiAuth := os.Getenv("API_AUTH_ENABLED")
+	apiAuth := true
+	if strings.ToLower(os.Getenv("API_AUTH_DISABLED")) == "true" {
+		apiAuth = false
+	}
 	port := "8080"
 
 	ip := "127.0.0.1"
@@ -65,11 +68,11 @@ func Start(assets embed.FS) error {
 
 	// Add Swagger UI route
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	// expose API_AUTH_ENABLED env var to frontend via endpoint
+	// expose API_AUTH_DISABLED env var to frontend via endpoint
 	r.Get("/config", serveConfig)
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
-		if strings.EqualFold(apiAuth, "true") {
+		if apiAuth {
 			// If api auth is enabled, require a valid token for all routes under /api/v1
 			r.Use(auth.RequireSecret(token))
 			// Endpoint to test if connected with auth
@@ -189,7 +192,7 @@ func Start(assets embed.FS) error {
 		})
 	})
 
-	if strings.EqualFold(apiAuth, "true") {
+	if apiAuth {
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
 		url := fmt.Sprintf("http://%s:%s/auth?token=%s", ip, port, token)
@@ -264,7 +267,7 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 
 func serveConfig(w http.ResponseWriter, _ *http.Request) {
 	config := map[string]string{
-		"API_AUTH_ENABLED": os.Getenv("API_AUTH_ENABLED"),
+		"API_AUTH_DISABLED": os.Getenv("API_AUTH_DISABLED"),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

@@ -12,7 +12,8 @@ export const load = async () => {
 
   //Check if apiAuthEnabled
   const envVars = await fetchConfig()
-  const apiAuthEnabled = envVars.API_AUTH_ENABLED?.toLowerCase() === 'true'
+  // API Auth is only disabled when API_AUTH_DISABLED is set to 'true'
+  const apiAuthEnabled = envVars.API_AUTH_DISABLED?.toLowerCase() !== 'true'
   // namespaces.start() called in auth page when apiAuthEnabled
   if (!apiAuthEnabled) {
     namespaces.start()

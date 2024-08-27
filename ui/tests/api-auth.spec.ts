@@ -11,7 +11,7 @@ let extractedToken: string | null = null
 test.beforeAll(async () => {
   // Start the server
   return new Promise<void>((resolve, reject) => {
-    serverProcess = exec('API_AUTH_ENABLED=true ../build/uds-runtime', (error) => {
+    serverProcess = exec('../build/uds-runtime', (error) => {
       if (error) {
         console.error(`Error starting server: ${error}`)
       }
