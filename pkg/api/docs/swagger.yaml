@@ -50,6 +50,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -79,6 +83,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -111,6 +119,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -140,6 +152,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -172,6 +188,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -201,6 +221,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -233,6 +257,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -262,6 +290,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -294,6 +326,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -323,6 +359,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -355,6 +395,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -384,6 +428,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -416,6 +464,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -445,6 +497,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -477,6 +533,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -506,6 +566,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -538,6 +602,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -567,6 +635,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -599,6 +671,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -628,6 +704,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -660,6 +740,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -689,6 +773,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -721,6 +809,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -750,6 +842,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -782,6 +878,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -811,6 +911,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -843,6 +947,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -872,6 +980,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -904,6 +1016,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -933,6 +1049,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -965,6 +1085,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -994,6 +1118,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1026,6 +1154,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1055,6 +1187,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1087,6 +1223,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1116,6 +1256,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1148,6 +1292,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1177,6 +1325,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1209,6 +1361,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1238,6 +1394,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1270,6 +1430,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1299,6 +1463,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1331,6 +1499,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1360,6 +1532,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1392,6 +1568,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1421,6 +1601,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1453,6 +1637,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1482,6 +1670,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1514,6 +1706,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1543,6 +1739,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1575,6 +1775,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1604,6 +1808,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1648,6 +1856,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1677,6 +1889,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json
@@ -1709,6 +1925,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
       produces:
       - text/event-stream
       - application/json
@@ -1738,6 +1958,10 @@ paths:
       - description: Filter by name (partial match)
         in: query
         name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
         type: string
       produces:
       - application/json

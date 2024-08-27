@@ -88,6 +88,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -132,6 +138,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -179,6 +191,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -223,6 +241,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -270,6 +294,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -314,6 +344,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -361,6 +397,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -405,6 +447,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -452,6 +500,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -496,6 +550,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -543,6 +603,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -587,6 +653,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -634,6 +706,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -678,6 +756,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -725,6 +809,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -769,6 +859,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -816,6 +912,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -860,6 +962,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -907,6 +1015,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -951,6 +1065,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -998,6 +1118,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1042,6 +1168,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1089,6 +1221,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1133,6 +1271,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1180,6 +1324,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1224,6 +1374,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1271,6 +1427,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1315,6 +1477,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1362,6 +1530,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1406,6 +1580,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1453,6 +1633,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1497,6 +1683,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1544,6 +1736,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1588,6 +1786,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1635,6 +1839,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1679,6 +1889,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1726,6 +1942,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1770,6 +1992,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1817,6 +2045,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1861,6 +2095,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1908,6 +2148,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1952,6 +2198,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -1999,6 +2251,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2043,6 +2301,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -2090,6 +2354,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2134,6 +2404,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -2181,6 +2457,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2225,6 +2507,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -2272,6 +2560,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2316,6 +2610,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -2363,6 +2663,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2407,6 +2713,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -2473,6 +2785,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2517,6 +2835,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],
@@ -2564,6 +2888,12 @@ const docTemplate = `{
                         "description": "Filter by name (partial match)",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2608,6 +2938,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by name (partial match)",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
+                        "name": "fields",
                         "in": "query"
                     }
                 ],

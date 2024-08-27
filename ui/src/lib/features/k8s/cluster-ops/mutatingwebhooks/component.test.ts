@@ -78,7 +78,7 @@ suite('EventTable Component', () => {
 
   const store = createStore()
   const start = store.start as unknown as () => ResourceWithTable<V1MutatingWebhookConfiguration, any>[]
-  expect(store.url).toEqual(`/api/v1/resources/cluster-ops/mutatingwebhooks?dense=true`)
+  expect(store.url).toEqual(`/api/v1/resources/cluster-ops/mutatingwebhooks?fields=.metadata,.webhooks[].name`)
   // ignore creationTimestamp because age is not calculated at this point and added to the table
   expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

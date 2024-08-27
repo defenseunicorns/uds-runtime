@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-package sse
+package rest
 
 import (
-	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/go-chi/chi/v5"
@@ -15,11 +15,24 @@ import (
 func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.Request) {
 	// Return a function that sends the data to the client
 	return func(w http.ResponseWriter, r *http.Request) {
+		// If true, send full resource data
 		// By default, send the data as a sparse stream
-		once := r.URL.Query().Get("once") == "true"
 		dense := r.URL.Query().Get("dense") == "true"
+		// Get the UID from the URL if it exists
 		namespace := r.URL.Query().Get("namespace")
+		// Get the namePartial from the URL query
 		namePartial := r.URL.Query().Get("name")
+		// If true, send data only once
+		once := r.URL.Query().Get("once") == "true"
+		// Get the fields from the URL query
+		fields := r.URL.Query().Get("fields")
+
+		var fieldsList []string
+		if fields != "" {
+			fieldsList = strings.Split(fields, ",")
+			// If fields are specified, dense data retrieval is required
+			dense = true
+		}
 
 		// Get the UID from the URL if it exists
 		uid := chi.URLParam(r, "uid")
@@ -47,24 +60,26 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 			}
 
 			// Otherwise, write the data to the client
-			writeData(w, data)
+			writeData(w, data, fieldsList)
 			return
 		}
 
 		// If once is true, send the list data once and close the connection
 		if once {
-			writeData(w, getData(namespace, namePartial))
+			writeData(w, getData(namespace, namePartial), fieldsList)
 			return
 		}
 
 		// Otherwise, send the data as an SSE stream
-		Handler(w, r, getData, resource.Changes)
+		Handler(w, r, getData, resource.Changes, fieldsList)
 	}
 }
 
-func writeData(w http.ResponseWriter, payload any) {
-	// Convert the data to JSON
-	data, err := json.Marshal(payload)
+// writeData writes the payload to the http.ResponseWriter
+// It handles field filtering if specific fields are requested
+func writeData(w http.ResponseWriter, payload any, fieldsList []string) {
+	// Marshal the payload to JSON and filter the fields if specified
+	data, err := jsonMarshal(payload, fieldsList)
 	if err != nil {
 		http.Error(w, "Failed to marshal data", http.StatusInternalServerError)
 		return
