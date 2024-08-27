@@ -20,9 +20,9 @@ import (
 	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
+	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	"github.com/defenseunicorns/uds-runtime/pkg/api/udsmiddleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
@@ -56,7 +56,7 @@ func Start(assets embed.FS) error {
 
 	r := chi.NewRouter()
 
-	r.Use(udsmiddleware.ConditionalCompress)
+	r.Use(udsMiddleware.ConditionalCompress)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
