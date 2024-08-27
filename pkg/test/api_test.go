@@ -81,9 +81,9 @@ func TestQueryParams(t *testing.T) {
 
 			// Assert dense versus sparse
 			if tt.isDense {
-				require.NotNil(t, data[0]["spec"].(map[string]interface{})["containers"])
+				require.NotNil(t, data[0]["spec"])
 			} else {
-				require.Nil(t, data[0]["spec"].(map[string]interface{})["containers"])
+				require.Nil(t, data[0]["spec"])
 			}
 
 			// Assert namespace and name filtering
@@ -235,17 +235,18 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 		<-ctx.Done()
 		require.Equal(t, http.StatusOK, rr.Code)
 
-		if uidMap["uid"] != "" {
-			keyIndx := 0
-			var data map[string]interface{}
-			json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
-			require.Equal(t, tt.expectedKind, data["Object"].(map[string]interface{})["kind"])
-		} else {
+		// If uidMap is empty, then this is the first test case and we need to store the UID
+		if uidMap["uid"] == "" {
 			keyIndx := 5
 			var data []map[string]interface{}
 			json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
 			require.Equal(t, tt.expectedKind, data[0]["kind"])
 			uidMap["uid"] = data[0]["metadata"].(map[string]interface{})["uid"].(string)
+		} else {
+			keyIndx := 0
+			var data map[string]interface{}
+			json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
+			require.Equal(t, tt.expectedKind, data["Object"].(map[string]interface{})["kind"])
 		}
 	})
 }
