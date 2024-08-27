@@ -19,7 +19,7 @@ export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   // Using dense=true because most of the fields are stripped out in the default spareResource stream
-  let url = `/api/v1/resources/events?dense=true`
+  const url = `/api/v1/resources/events?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
     count: r.count ?? 0,
