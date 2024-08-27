@@ -15,7 +15,7 @@ export class HTTP {
     const token = sessionStorage.getItem('token') || ''
     const isApiAuthEnabled = get(apiAuthEnabled)
     if (!token && isApiAuthEnabled) {
-      this.invalidateAuth()
+      this.#invalidateAuth()
     }
   }
 
@@ -24,7 +24,7 @@ export class HTTP {
     sessionStorage.setItem('token', token)
   }
 
-  private invalidateAuth() {
+  #invalidateAuth() {
     sessionStorage.removeItem('token')
     if (location.pathname !== '/auth') {
       location.pathname = '/auth'
