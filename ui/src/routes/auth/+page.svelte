@@ -14,7 +14,6 @@
   let authFailure = false
 
   onMount(async () => {
-    authenticated.set(false)
     await updateApiAuthEnabled()
     if ($apiAuthEnabled) {
       const url = new URL(window.location.href)
