@@ -173,14 +173,14 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
 
     this.#initialized = true
 
-    if (!get(apiAuthEnabled)) {
-      this.#eventSource = new EventSource(this.url)
-    } else {
+   if (get(apiAuthEnabled)) {
       const apiToken: string = sessionStorage.getItem('token') ?? ''
       // Check if the URL already contains a '?' for urls with multiple search params
       const separator = this.url.includes('?') ? '&' : '?'
-      this.#eventSource = new EventSource(`${this.url}${separator}token=${apiToken}`)
+      this.url = `${this.url}${separator}token=${apiToken}`
     }
+    
+    this.#eventSource = new EventSource(this.url)
 
     this.#eventSource.onmessage = ({ data }) => {
       try {
