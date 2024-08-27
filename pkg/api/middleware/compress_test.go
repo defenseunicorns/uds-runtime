@@ -3,7 +3,7 @@
 
 //go:build unit
 
-package udsmiddleware
+package middleware
 
 import (
 	"compress/gzip"

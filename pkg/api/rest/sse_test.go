@@ -3,7 +3,7 @@
 
 //go:build unit
 
-package sse
+package rest
 
 import (
 	"encoding/json"
@@ -43,7 +43,7 @@ func TestHandler(t *testing.T) {
 
 	// Run the handler in a separate goroutine to simulate real-world usage
 	go func() {
-		Handler(rr, req, getData, changes)
+		Handler(rr, req, getData, changes, nil)
 	}()
 
 	// Simulate a change

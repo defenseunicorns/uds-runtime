@@ -2,7 +2,7 @@ tasks:
   - name: generate
     description: "Generate Swagger docs"
     actions:
-      - cmd: swag init
+      - cmd: swag init --o pkg/api/docs
 
   - name: test
     description: "Ensure no changes to Swagger docs"

@@ -3,7 +3,7 @@
 
 //go:build unit
 
-package sse
+package rest
 
 import (
 	"context"
@@ -127,7 +127,7 @@ func TestWriteData(t *testing.T) {
 	rr := httptest.NewRecorder()
 	payload := map[string]string{"key": "value"}
 
-	writeData(rr, payload)
+	writeData(rr, payload, nil)
 
 	// Check the status code
 	if status := rr.Code; status != http.StatusOK {
