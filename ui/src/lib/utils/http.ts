@@ -24,7 +24,7 @@ export class HTTP {
     sessionStorage.setItem('token', token)
   }
 
-  #invalidateAuth() {
+  private invalidateAuth() {
     sessionStorage.removeItem('token')
     if (location.pathname !== '/auth') {
       location.pathname = '/auth'

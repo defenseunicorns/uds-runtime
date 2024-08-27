@@ -2,6 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
+  import { goto } from '$app/navigation'
   import { ClusterOverview } from '$features/k8s'
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
@@ -14,7 +15,7 @@
 
   // Redirect to /auth if api auth is enabled and user is not authenticated
   $: if ($apiAuthEnabled && !$authenticated) {
-        goto('/auth')
+    goto('/auth')
   }
 </script>
 
