@@ -5,8 +5,6 @@ import type { CoreV1Event as Resource } from '@kubernetes/client-node'
 
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
-import { apiAuthEnabled } from '$lib/features/api-auth/store'
-import { get } from 'svelte/store'
 
 export interface Row extends CommonRow {
   count: number
@@ -22,11 +20,6 @@ export type Columns = ColumnWrapper<Row>
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   // Using dense=true because most of the fields are stripped out in the default spareResource stream
   let url = `/api/v1/resources/events?dense=true`
-
-  if (get(apiAuthEnabled)) {
-    // need to handle the multiple url search params
-    url = url + `&`
-  }
 
   const transform = transformResource<Resource, Row>((r) => ({
     count: r.count ?? 0,
