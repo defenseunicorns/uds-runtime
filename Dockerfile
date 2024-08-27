@@ -13,4 +13,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # run binary
-CMD ["./app/uds-runtime"]
+CMD ["API_AUTH_DISABLED=true ./app/uds-runtime"]
