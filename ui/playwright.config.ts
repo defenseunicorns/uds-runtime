@@ -6,7 +6,7 @@ const port = VITE_PORT_ENV ?? '8080'
 
 export default defineConfig({
   webServer: {
-    command: '../build/uds-runtime',
+    command: 'API_AUTH_DISABLED=true ../build/uds-runtime',
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
   },
