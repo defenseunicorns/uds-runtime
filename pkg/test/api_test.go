@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -19,9 +20,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestQueryParams(t *testing.T) {
+func setup() (*chi.Mux, error) {
+	os.Setenv("API_AUTH_DISABLED", "true")
 	r, err := api.Setup(nil)
+	return r, err
+}
+
+func teardown() {
+	os.Setenv("API_AUTH_DISABLED", "false")
+}
+
+func TestQueryParams(t *testing.T) {
+	r, err := setup()
 	require.NoError(t, err)
+
+	defer teardown()
 
 	tests := []struct {
 		name    string
@@ -103,8 +116,10 @@ type TestRoute struct {
 }
 
 func TestPodRoutes(t *testing.T) {
-	r, err := api.Setup(nil)
+	r, err := setup()
 	require.NoError(t, err)
+
+	defer teardown()
 
 	// Map so can mutate reference between tests
 	uidMap := map[string]string{"uid": ""}
@@ -128,8 +143,10 @@ func TestPodRoutes(t *testing.T) {
 }
 
 func TestPackageRoutes(t *testing.T) {
-	r, err := api.Setup(nil)
+	r, err := setup()
 	require.NoError(t, err)
+
+	defer teardown()
 
 	// Map so can mutate reference between tests
 	uidMap := map[string]string{"uid": ""}
@@ -153,8 +170,10 @@ func TestPackageRoutes(t *testing.T) {
 }
 
 func TestPeprRoutes(t *testing.T) {
-	r, err := api.Setup(nil)
+	r, err := setup()
 	require.NoError(t, err)
+
+	defer teardown()
 
 	peprTests := []TestRoute{
 		{
@@ -191,8 +210,10 @@ func TestPeprRoutes(t *testing.T) {
 }
 
 func TestClusterOverview(t *testing.T) {
-	r, err := api.Setup(nil)
+	r, err := setup()
 	require.NoError(t, err)
+
+	defer teardown()
 
 	t.Run("cluster-overview", func(t *testing.T) {
 		// Create a new context with a timeout -- increase to 2s to aggregate data
