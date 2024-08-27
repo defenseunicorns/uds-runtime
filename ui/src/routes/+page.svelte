@@ -14,7 +14,7 @@
 
   // Redirect to /auth if api auth is enabled and user is not authenticated
   $: if ($apiAuthEnabled && !$authenticated) {
-    window.location.href = '/auth'
+        goto('/auth')
   }
 </script>
 
