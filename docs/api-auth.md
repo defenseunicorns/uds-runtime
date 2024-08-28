@@ -5,7 +5,7 @@ API authentication is used to prevent unauthorized access to the API from other 
 How does the frontend authenticate?
 - Backend generates a token when it is started up and launches UDS Runtime in the browser.
     - i.e.(Runtime API connection: `http://127.0.0.1:8080/auth?token=r1hrQ9CcuZMKpY2egjsPrzmge3-YqfqOHjmlIOvdKrLGOLnHPgFWt3dzsdkHwzDdXQAfRRHiH~rbGEx7Jc7rTxTd4riCuqGH`)
-- Frontend hits the /config endpoint to see if API authentication is enabled.
+- Frontend hits the /auth-status endpoint to see if API authentication is enabled.
     - This is done so that the frontend can get the value of the `API_AUTH_DISABLED` environment variable at runtime.
 - The frontend passes the token as a query parameter in the URL to the backend to authenticate the user.
     - When authenticated, the token is stored in `sessionStorage` and is valid for the duration of the page session.

@@ -69,7 +69,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	// Add Swagger UI route
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	// expose API_AUTH_DISABLED env var to frontend via endpoint
-	r.Get("/config", serveConfig)
+	r.Get("/auth-status", serveAuthStatus)
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
 		if apiAuth {
@@ -260,7 +260,7 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	return nil
 }
 
-func serveConfig(w http.ResponseWriter, _ *http.Request) {
+func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
 	config := map[string]string{
 		"API_AUTH_DISABLED": os.Getenv("API_AUTH_DISABLED"),
 	}
