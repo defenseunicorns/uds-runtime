@@ -8,15 +8,35 @@ tasks:
       - cmd: go mod tidy
       - cmd: CGO_ENABLED=0 go build -o ./build/uds-runtime .
 
+  - name: build-all
+    description: build all the CLI binaries and gen checksums
+    actions:
+      - task: build-ui
+      - task: build-api-linux-amd64
+      - task: build-api-linux-arm64
+      - task: build-api-darwin-amd64
+      - task: build-api-darwin-arm64
+      - cmd: sha256sum build/* > build/checksums.txt
+
   - name: build-api-linux-amd64
     description: "build the go api server for linux amd64 (used for multi-arch container)"
     actions:
-      - cmd: CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o build/uds-runtime-amd64 .
+      - cmd: CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o build/uds-runtime-linux-amd64 .
 
   - name: build-api-linux-arm64
     description: "build the go api server for linux arm64 (used for multi-arch container)"
     actions:
-      - cmd: CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -o build/uds-runtime-arm64 .
+      - cmd: CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -o build/uds-runtime-linux-arm64 .
+
+  - name: build-api-darwin-amd64
+    description: "build the go api server for darwin amd64"
+    actions:
+      - cmd: CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -o build/uds-runtime-darwin-amd64 .
+
+  - name: build-api-darwin-arm64
+    description: "build the go api server for darwin arm64"
+    actions:
+      - cmd: CGO_ENABLED=0 GOARCH=arm64 GOOS=darwin go build -o build/uds-runtime-darwin-arm64 .
 
   - name: build-ui
     description: "build ui"

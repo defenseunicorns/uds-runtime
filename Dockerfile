@@ -8,7 +8,7 @@ ARG TARGETARCH
 USER 65532:65532
 
 # copy binary from local and expose port
-COPY --chown=65532:65532 build/uds-runtime-${TARGETARCH} /app/uds-runtime
+COPY --chown=65532:65532 build/uds-runtime-linux-${TARGETARCH} /app/uds-runtime
 ENV PORT=8080
 EXPOSE 8080
 
