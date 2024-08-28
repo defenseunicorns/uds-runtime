@@ -44,9 +44,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
 
-      await expect(page.getByTestId('admin-ingressgateway-65c568569f-qqxk2-testid-1')).toHaveText(
-        'admin-ingressgateway-65c568569f-qqxk2',
-      )
+      await expect(page.locator('aside[data-testid^="admin-ingressgateway"]')).toHaveText(/^admin-ingressgateway/)
     })
 
     test('Deployments page', async ({ page }) => {
