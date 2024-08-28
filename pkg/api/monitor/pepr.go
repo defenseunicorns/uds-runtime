@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/defenseunicorns/uds-runtime/pkg/api/sse"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
 	"github.com/defenseunicorns/uds-runtime/pkg/pepr"
 	"github.com/defenseunicorns/uds-runtime/pkg/stream"
 	"github.com/go-chi/chi/v5"
@@ -37,7 +37,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	// Set the headers for streaming
-	sse.WriteHeaders(w)
+	rest.WriteHeaders(w)
 
 	// Create a new BufferWriter
 	bufferWriter := newBufferWriter(w)

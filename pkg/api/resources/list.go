@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/tools/cache"
 )
@@ -121,6 +122,9 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 		return
 	}
 
+	// Always remove managedFields from the resource
+	delete(resource.Object["metadata"].(map[string]interface{}), "managedFields")
+
 	// Extract the sparse object
 	sparseResource := r.extractSparseObject(resource)
 
@@ -160,31 +164,24 @@ func (r *ResourceList) extractSparseObject(obj *unstructured.Unstructured) *unst
 		Object: map[string]interface{}{},
 	}
 
-	// Safely extract apiVersion
+	// Safely extract apiVersion (GetAPIVersion() may not work)
 	if apiVersion, exists := obj.Object["apiVersion"]; exists {
 		sparseObj.Object["apiVersion"] = apiVersion
 	}
 
-	// Safely extract kind
+	// Safely extract kind (GetKind() may not work)
 	if kind, exists := obj.Object["kind"]; exists {
 		sparseObj.Object["kind"] = kind
 	}
 
-	// Extract metadata
-	if metadata, exists := obj.Object["metadata"]; exists {
-		sparseObj.Object["metadata"] = metadata
+	// Extract metadata and deep copy it to avoid mutating the original object
+	if metadata, ok := obj.Object["metadata"].(map[string]interface{}); ok {
+		sparseObj.Object["metadata"] = runtime.DeepCopyJSON(metadata)
 	}
 
 	// Extract type if it exists
 	if typeStr, exists, _ := unstructured.NestedString(obj.Object, "type"); exists {
 		sparseObj.Object["type"] = typeStr
-	}
-
-	// Extract spec.nodeName if it exists
-	if nodeName, exists, _ := unstructured.NestedString(obj.Object, "spec", "nodeName"); exists {
-		sparseObj.Object["spec"] = map[string]interface{}{
-			"nodeName": nodeName,
-		}
 	}
 
 	// Extract data if it exists, but only preserve the keys
@@ -203,8 +200,8 @@ func (r *ResourceList) extractSparseObject(obj *unstructured.Unstructured) *unst
 		sparseObj.Object["status"] = nil
 	}
 
-	// Strip the metadata managed fields
-	delete(sparseObj.Object["metadata"].(map[string]interface{}), "managedFields")
+	// Strip the metadata annotations from the copy
+	delete(sparseObj.Object["metadata"].(map[string]interface{}), "annotations")
 
 	return sparseObj
 }

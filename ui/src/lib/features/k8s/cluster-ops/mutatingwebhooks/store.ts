@@ -13,7 +13,7 @@ export interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/cluster-ops/mutatingwebhooks?dense=true`
+  const url = `/api/v1/resources/cluster-ops/mutatingwebhooks?fields=.metadata,.webhooks[].name`
 
   const transform = transformResource<Resource, Row>((r) => ({
     webhooks:
