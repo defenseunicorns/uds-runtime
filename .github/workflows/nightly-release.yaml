@@ -50,7 +50,7 @@ jobs:
           # cleanup old release
           gh release delete nightly-unstable --cleanup-tag -y || true
           # generate new release
-          gh release create nightly-unstable ./build/* \
+          gh release create nightly-unstable ./build/* ../../build/*\
             -t "nightly-unstable" \
             --prerelease \
             -n 'Nightly unstable build'
