@@ -34,13 +34,13 @@ jobs:
       - name: Setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
         uses: ./.github/actions/setup
 
-      - name: Build binary artifacts
-        run: |
-          uds run setup:build-all
-
       - name: Publish
         run: |
           uds run build:publish-uds-runtime --set REF=nightly-unstable --set DIR=hack/nightly
+
+      - name: Build binary artifacts
+        run: |
+          uds run setup:build-all
 
       - name: Update nightly-unstable tag
         env:
