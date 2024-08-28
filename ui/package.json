@@ -38,7 +38,7 @@
     "flowbite": "2.4.1",
     "globals": "15.8.0",
     "highlight.js": "11.10.0",
-    "jsdom": "24.1.1",
+    "jsdom": "25.0.0",
     "prettier": "3.3.3",
     "prettier-plugin-organize-imports": "4.0.0",
     "prettier-plugin-svelte": "3.2.6",
@@ -49,7 +49,7 @@
     "tslib": "2.6.3",
     "typescript": "5.5.4",
     "typescript-eslint": "8.0.0-alpha.52",
-    "uds-core-types": "defenseunicorns/uds-core#5a34ce8",
+    "uds-core-types": "defenseunicorns/uds-core#c4dbdf8",
     "vite": "5.3.4",
     "vitest": "2.0.4",
     "yaml": "2.5.0"
