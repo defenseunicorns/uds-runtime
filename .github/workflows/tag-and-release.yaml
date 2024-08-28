@@ -43,10 +43,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build binary artifacts
-        run: |
-          uds run setup:build-all
-
       - name: Publish
         run: |
           uds run build:publish-uds-runtime
+
+      - name: Build binary artifacts
+        run: |
+          uds run setup:build-all
