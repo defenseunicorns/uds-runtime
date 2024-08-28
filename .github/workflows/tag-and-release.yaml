@@ -43,10 +43,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Publish
+        run: |
+          uds run build:publish-uds-runtime
+
       - name: Build binary artifacts
         run: |
           uds run setup:build-all
 
-      - name: Publish
-        run: |
-          uds run build:publish-uds-runtime
+      - name: Upload Release Artifact
+        if: ${{ needs.tag-new-version.outputs.release_created }}
+        run: gh release upload ${{ needs.tag-new-version.outputs.release_tag }} ./build/*
