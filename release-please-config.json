@@ -15,7 +15,7 @@
         "tasks.yaml",
         "tasks/build.yaml",
         "chart/values.yaml",
-        "build/*"
+        "build/**"
       ]
     }
   }
