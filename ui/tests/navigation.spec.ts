@@ -44,7 +44,8 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
 
-      await expect(page.locator('aside[data-testid^="admin-ingressgateway"]')).toHaveText(/^admin-ingressgateway/)
+      const element = page.locator(`.emphasize:has-text("podinfo")`)
+      await expect(element).toBeVisible()
     })
 
     test('Deployments page', async ({ page }) => {
