@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+//go:build unit
+
 // Package stream contains the logic for streaming logs from from UDS Core
 package stream
 
