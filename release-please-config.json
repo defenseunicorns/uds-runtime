@@ -14,8 +14,7 @@
         "zarf.yaml",
         "tasks.yaml",
         "tasks/build.yaml",
-        "chart/values.yaml",
-        "build/**"
+        "chart/values.yaml"
       ]
     }
   }
