@@ -8,7 +8,6 @@ package test
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -152,8 +151,6 @@ func TestFieldSelectors(t *testing.T) {
 
 			// wait for the context to be done
 			<-ctx.Done()
-
-			fmt.Println(rr.Body.String())
 
 			var data []map[string]interface{}
 			var resource map[string]interface{}
