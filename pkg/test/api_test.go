@@ -117,8 +117,6 @@ func TestQueryParams(t *testing.T) {
 	}
 }
 
-// TODO: Add case for no ns with UID
-
 func TestFieldSelectors(t *testing.T) {
 	r, err := setup()
 	require.NoError(t, err)
@@ -201,6 +199,31 @@ func TestFieldSelectors(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestUIDFail(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	t.Run("no_uid_with_query_params", func(t *testing.T) {
+		// Create a new context with a timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/api/v1/resources/workloads/pods/123?namespace=podinfo&name=podinfo", nil)
+
+		// Start serving the request for 1 second
+		go func(ctx context.Context) {
+			r.ServeHTTP(rr, req)
+		}(ctx)
+
+		// wait for the context to be done
+		<-ctx.Done()
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+	})
 }
 
 func TestPodRoutes(t *testing.T) {

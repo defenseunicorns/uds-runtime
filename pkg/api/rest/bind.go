@@ -47,8 +47,8 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 		// Streaming is not supported for single resources
 		if uid != "" {
 			// If a namespace is provided, return a 400
-			if namespace != "" {
-				http.Error(w, "Namespace and UID cannot be used together", http.StatusBadRequest)
+			if namespace != "" || namePartial != "" {
+				http.Error(w, "Namespace and Name cannot be used with UID", http.StatusBadRequest)
 				return
 			}
 
