@@ -332,10 +332,10 @@ func processResponseBody(body string) []byte {
 	// Find all matches
 	matches := re.FindAllStringIndex(body, -1)
 
-	// Check if there are at least two matches
-	if len(matches) >= 2 {
-		// Remove the second occurrence
+	// Loop to remove all occurrences after the first one
+	for len(matches) > 1 {
 		body = body[:matches[1][0]] + body[matches[1][1]:]
+		matches = re.FindAllStringIndex(body, -1)
 	}
 
 	// Convert the modified string back to a byte array
