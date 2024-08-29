@@ -4,6 +4,17 @@
 <script lang="ts">
   import { NotificationFilled } from 'carbon-icons-svelte'
   import { isSidebarExpanded } from '../store'
+  import { authenticated } from '$lib/features/api-auth/store'
+  import { apiAuthEnabled } from '$lib/features/api-auth/store'
+
+  // Don't expand sidebar if on api auth page
+  $: {
+    if ($apiAuthEnabled && !$authenticated) {
+      isSidebarExpanded.set(false)
+    } else {
+      isSidebarExpanded.set(true)
+    }
+  }
 </script>
 
 <div class="bg-gray-50 antialiased dark:bg-gray-900">
@@ -12,23 +23,26 @@
   >
     <div class="flex flex-wrap items-center justify-between">
       <div class="flex items-center justify-start">
-        <button
-          id="toggle-sidebar"
-          aria-expanded="true"
-          aria-controls="sidebar"
-          on:click={() => isSidebarExpanded.update((v) => !v)}
-          class="mr-3 hidden cursor-pointer rounded p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 lg:inline dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-        >
-          <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M1 1h14M1 6h14M1 11h7"
-            />
-          </svg>
-        </button>
+        <!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
+        {#if !$apiAuthEnabled || ($apiAuthEnabled && $authenticated)}
+          <button
+            id="toggle-sidebar"
+            aria-expanded="true"
+            aria-controls="sidebar"
+            on:click={() => isSidebarExpanded.update((v) => !v)}
+            class="mr-3 hidden cursor-pointer rounded p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 lg:inline dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+          >
+            <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 1h14M1 6h14M1 11h7"
+              />
+            </svg>
+          </button>
+        {/if}
 
         <a href="/" class="mr-4 flex">
           <img src="/doug.svg" class="mr-3 h-8" alt="FlowBite Logo" />

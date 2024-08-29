@@ -6,6 +6,8 @@ import { writable } from 'svelte/store'
 
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import { apiAuthEnabled } from '$lib/features/api-auth/store'
+import { get } from 'svelte/store'
 import ContainerStatus from './containers/component.svelte'
 import PodMetrics from './metrics/component.svelte'
 import { parseCPU } from './metrics/utils'
@@ -40,7 +42,16 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const metrics = new Map<string, PodMetric>()
   // Store to trigger updates
   const metricsStore = writable<number>()
-  const metricsEvents = new EventSource(`/api/v1/resources/workloads/podmetrics`)
+
+  let metricsEvents
+  const path: string = `/api/v1/resources/workloads/podmetrics`
+
+  if (get(apiAuthEnabled)) {
+    const apiToken: string = sessionStorage.getItem('token') ?? ''
+    metricsEvents = new EventSource(path + '?token=' + apiToken)
+  } else {
+    metricsEvents = new EventSource(path)
+  }
 
   // Listen for new metrics
   metricsEvents.onmessage = (event) => {
