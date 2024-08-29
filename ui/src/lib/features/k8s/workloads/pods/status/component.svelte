@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getColorAndStatus } from '$lib/features/k8s/helpers.ts'
+  import { getColorAndStatus } from '$lib/features/k8s/helpers'
   export let status: string
 
   $: statusClass = getColorAndStatus('Pod', status)
