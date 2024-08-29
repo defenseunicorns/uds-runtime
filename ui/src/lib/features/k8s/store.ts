@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+import { apiAuthEnabled } from '$lib/features/api-auth/store'
 import type { KubernetesObject } from '@kubernetes/client-node'
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
-import { derived, writable, type Writable } from 'svelte/store'
-
+import { derived, get, writable, type Writable } from 'svelte/store'
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> implements ResourceStoreInterface<T, U> {
@@ -167,12 +167,19 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
    * @returns A function to stop the EventSource
    */
   start() {
-    // If the store has already been initialized, return
     if (this.#initialized) {
       return () => {}
     }
 
     this.#initialized = true
+
+    if (get(apiAuthEnabled)) {
+      const apiToken: string = sessionStorage.getItem('token') ?? ''
+      // Check if the URL already contains a '?' for urls with multiple search params
+      const separator = this.url.includes('?') ? '&' : '?'
+      this.url = `${this.url}${separator}token=${apiToken}`
+    }
+
     this.#eventSource = new EventSource(this.url)
 
     this.#eventSource.onmessage = ({ data }) => {

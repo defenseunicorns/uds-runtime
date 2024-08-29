@@ -6,7 +6,7 @@ const port = VITE_PORT_ENV ?? '8080'
 
 export default defineConfig({
   webServer: {
-    command: '../build/uds-runtime',
+    command: 'API_AUTH_DISABLED=true ../build/uds-runtime',
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
   },
@@ -15,8 +15,10 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   retries: process.env.CI ? 2 : 1,
-  testMatch: /(.+\.)?(test|spec)\.[jt]s/,
+  testMatch: /^(?!.*api-auth)(.+\.)?(test|spec)\.[jt]s$/,
   use: {
     baseURL: `http://localhost:${port}/`,
   },
 })
+
+export { port }
