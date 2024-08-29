@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -113,7 +114,7 @@ func TestQueryParams(t *testing.T) {
 // TODO: Add case for no ns with UID
 
 func TestFieldSelectors(t *testing.T) {
-	r, err := api.Setup(nil)
+	r, err := setup()
 	require.NoError(t, err)
 
 	uid := ""
@@ -171,7 +172,8 @@ func TestFieldSelectors(t *testing.T) {
 			if strings.Contains(tt.url, uid) && uid != "" {
 				json.Unmarshal(rr.Body.Bytes()[keyIndx:], &resource)
 			} else {
-				json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
+				body := processResponseBody(rr.Body.String())
+				json.Unmarshal(body[keyIndx:], &data)
 				resource = data[0]
 			}
 
@@ -193,6 +195,23 @@ func TestFieldSelectors(t *testing.T) {
 			}
 		})
 	}
+}
+
+func processResponseBody(body string) []byte {
+	// Regular expression to match "data: [...]"
+	re := regexp.MustCompile(`data: \[.*?\]`)
+
+	// Find all matches
+	matches := re.FindAllStringIndex(body, -1)
+
+	// Check if there are at least two matches
+	if len(matches) >= 2 {
+		// Remove the second occurrence
+		body = body[:matches[1][0]] + body[matches[1][1]:]
+	}
+
+	// Convert the modified string back to a byte array
+	return []byte(body)
 }
 
 type TestRoute struct {
