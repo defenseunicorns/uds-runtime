@@ -21,6 +21,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type TestRoute struct {
+	name         string
+	url          string
+	expectedKind string
+}
+
 func setup() (*chi.Mux, error) {
 	os.Setenv("API_AUTH_DISABLED", "true")
 	r, err := api.Setup(nil)
@@ -90,7 +96,7 @@ func TestQueryParams(t *testing.T) {
 			require.Equal(t, http.StatusOK, rr.Code)
 
 			var data []map[string]interface{}
-			err = json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
+			err = json.Unmarshal(processResponseBody(rr.Body.String())[keyIndx:], &data)
 			require.NoError(t, err)
 			require.GreaterOrEqual(t, len(data), 1)
 
@@ -120,18 +126,16 @@ func TestFieldSelectors(t *testing.T) {
 	uid := ""
 
 	tests := []struct {
-		name    string
-		url     string
-		isDense bool
+		name string
+		url  string
 	}{
 		{
 			name: "once=true",
 			url:  "/api/v1/resources/workloads/pods?once=true&fields=.metadata.name,.metadata.uid,spec.nodeName",
 		},
 		{
-			name:    "sse",
-			url:     "/api/v1/resources/workloads/pods?fields=metadata.name,metadata.uid,spec.nodeName",
-			isDense: true,
+			name: "sse",
+			url:  "/api/v1/resources/workloads/pods?fields=metadata.name,metadata.uid,spec.nodeName",
 		},
 		{
 			name: "sse namespace & name",
@@ -155,6 +159,7 @@ func TestFieldSelectors(t *testing.T) {
 			defer cancel()
 
 			rr := httptest.NewRecorder()
+			// Replace the UID in the URL if it exists; depends on at least 1 previous test case
 			tt.url = strings.Replace(tt.url, "{uid}", uid, 1)
 			req := httptest.NewRequest("GET", tt.url, nil)
 
@@ -169,10 +174,11 @@ func TestFieldSelectors(t *testing.T) {
 			var data []map[string]interface{}
 			var resource map[string]interface{}
 
+			body := processResponseBody(rr.Body.String())
+
 			if strings.Contains(tt.url, uid) && uid != "" {
-				json.Unmarshal(rr.Body.Bytes()[keyIndx:], &resource)
+				json.Unmarshal(body[keyIndx:], &resource)
 			} else {
-				body := processResponseBody(rr.Body.String())
 				json.Unmarshal(body[keyIndx:], &data)
 				resource = data[0]
 			}
@@ -195,29 +201,6 @@ func TestFieldSelectors(t *testing.T) {
 			}
 		})
 	}
-}
-
-func processResponseBody(body string) []byte {
-	// Regular expression to match "data: [...]"
-	re := regexp.MustCompile(`data: \[.*?\]`)
-
-	// Find all matches
-	matches := re.FindAllStringIndex(body, -1)
-
-	// Check if there are at least two matches
-	if len(matches) >= 2 {
-		// Remove the second occurrence
-		body = body[:matches[1][0]] + body[matches[1][1]:]
-	}
-
-	// Convert the modified string back to a byte array
-	return []byte(body)
-}
-
-type TestRoute struct {
-	name         string
-	url          string
-	expectedKind string
 }
 
 func TestPodRoutes(t *testing.T) {
@@ -340,6 +323,25 @@ func TestClusterOverview(t *testing.T) {
 	})
 }
 
+// processResponseBody removes potential second occurrence of "data: [...]" from the response body when making SSE calls
+// these occurrences are intermittent and happen most likely because of network latency allowing a second sendData() event
+func processResponseBody(body string) []byte {
+	// Regular expression to match "data: [...]"
+	re := regexp.MustCompile(`data: \[.*?\]`)
+
+	// Find all matches
+	matches := re.FindAllStringIndex(body, -1)
+
+	// Check if there are at least two matches
+	if len(matches) >= 2 {
+		// Remove the second occurrence
+		body = body[:matches[1][0]] + body[matches[1][1]:]
+	}
+
+	// Convert the modified string back to a byte array
+	return []byte(body)
+}
+
 // testRoutesHelper handles logic for testing getResources and getResource routes (e.g. /pods and /pods/{uid})
 func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *chi.Mux) {
 	t.Run(tt.name, func(t *testing.T) {
@@ -361,17 +363,19 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 		<-ctx.Done()
 		require.Equal(t, http.StatusOK, rr.Code)
 
+		body := processResponseBody(rr.Body.String())
+
 		// If uidMap is empty, then this is the first test case and we need to store the UID
 		if uidMap["uid"] == "" {
 			keyIndx := 5
 			var data []map[string]interface{}
-			json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
+			json.Unmarshal(body[keyIndx:], &data)
 			require.Equal(t, tt.expectedKind, data[0]["kind"])
 			uidMap["uid"] = data[0]["metadata"].(map[string]interface{})["uid"].(string)
 		} else {
 			keyIndx := 0
 			var data map[string]interface{}
-			json.Unmarshal(rr.Body.Bytes()[keyIndx:], &data)
+			json.Unmarshal(body[keyIndx:], &data)
 			require.Equal(t, tt.expectedKind, data["Object"].(map[string]interface{})["kind"])
 		}
 	})
