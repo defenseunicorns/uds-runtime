@@ -48,3 +48,31 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
   // The url for the EventSource
   url: string
 }
+
+// Define specific status types for each resource
+type PodStatus = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown' | 'Completed'
+type DeploymentStatus = 'Available' | 'Progressing' | 'Unavailable'
+type ServiceStatus = 'Pending' | 'Active' | 'Terminating'
+type PVCStatus = 'Pending' | 'Bound' | 'Lost'
+type NodeStatus = 'Ready' | 'NotReady' | 'SchedulingDisabled'
+type JobStatus = 'Complete' | 'Failed' | 'Running'
+type CronJobStatus = 'Active' | 'Suspended'
+type ConfigMapStatus = 'Active'
+type SecretStatus = 'Active'
+type NamespaceStatus = 'Active' | 'Terminating'
+
+// Define a type for the k8StatusMapping
+export type K8StatusMapping = {
+  Pod: Record<PodStatus, { color: string }>
+  Deployments: Record<DeploymentStatus, { color: string }>
+  ReplicaSets: Record<DeploymentStatus, { color: string }>
+  StatefulSets: Record<DeploymentStatus, { color: string }>
+  Services: Record<ServiceStatus, { color: string }>
+  PersistentVolumeClaims: Record<PVCStatus, { color: string }>
+  Nodes: Record<NodeStatus, { color: string }>
+  Jobs: Record<JobStatus, { color: string }>
+  CronJobs: Record<CronJobStatus, { color: string }>
+  ConfigMaps: Record<ConfigMapStatus, { color: string }>
+  Secrets: Record<SecretStatus, { color: string }>
+  Namespaces: Record<NamespaceStatus, { color: string }>
+}
