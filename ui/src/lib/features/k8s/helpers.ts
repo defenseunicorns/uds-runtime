@@ -1,20 +1,12 @@
 import type { K8StatusMapping } from './types'
 
-export type StatusColorMapping = {
-  success: string
-  info: string
-  warning: string
-  error: string
-  disabled: string
-}
-
-const statusColors: StatusColorMapping = {
+const statusColors = {
   success: 'text-green-400',
   info: 'text-blue-400',
   warning: 'text-orange-300',
   error: 'text-red-400',
   disabled: 'text-grey-400',
-}
+} as const
 
 // Mapping between sections, statuses, and colors
 const k8StatusMapping: K8StatusMapping = {
