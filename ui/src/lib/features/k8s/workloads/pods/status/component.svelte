@@ -1,13 +1,9 @@
 <script lang="ts">
-  export let status: string
+  import { type PodStatus } from '$features/k8s/types'
+  import { getColorAndStatus } from '$lib/features/k8s/helpers'
+  export let status: PodStatus
 
-  const statusClasses = {
-    Running: 'text-green-400',
-    Stopped: 'text-red-400',
-    Pending: 'text-orange-300',
-  }
-
-  $: statusClass = statusClasses[status as keyof typeof statusClasses]
+  $: statusClass = getColorAndStatus('Pod', status)
 </script>
 
 {#if status}

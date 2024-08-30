@@ -10,16 +10,24 @@
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
   import '../app.postcss'
+  import { authenticated } from '$lib/features/api-auth/store'
+  import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
-  onMount(initFlowbite)
+  onMount(() => {
+    initFlowbite()
+  })
+
   afterNavigate(initFlowbite)
 </script>
 
 <Navbar />
 
-<Sidebar />
+<!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
+{#if !$apiAuthEnabled || ($apiAuthEnabled && $authenticated)}
+  <Sidebar />
+{/if}
 
 <main
   class="flex h-screen flex-col pt-16 transition-all duration-300 ease-in-out {$isSidebarExpanded

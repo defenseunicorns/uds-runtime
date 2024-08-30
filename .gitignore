@@ -13,6 +13,7 @@ Thumbs.db
 # Env
 .env
 .env.*
+.env*
 !.env.example
 !.env.test
 
@@ -27,6 +28,7 @@ vite.config.ts.timestamp-*
 zarf-sbom
 tmp/
 *.tar.zst
+.vscode/
 
 *.pem
 .github/test-infra/**/.terraform*

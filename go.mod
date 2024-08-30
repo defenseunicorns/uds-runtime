@@ -26,6 +26,8 @@ require (
 	github.com/charmbracelet/x/ansi v0.1.4 // indirect
 	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/defenseunicorns/pkg/exec v0.0.1
+	github.com/defenseunicorns/pkg/helpers v1.1.1 // indirect
 	github.com/defenseunicorns/pkg/helpers/v2 v2.0.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/evanphx/json-patch v5.7.0+incompatible // indirect
