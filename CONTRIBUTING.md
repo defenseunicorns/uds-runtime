@@ -88,6 +88,8 @@ A list of runnable tasks from `uds run --list-all`
 | swagger:generate            | Generate Swagger docs                                                                                          |
 | swagger:test                | Ensure no changes to Swagger docs                                                                              |
 
+API authentication is enabled by default. To disable it, you can set the `API_AUTH_DISABLED` environment variable to true when running the backend. When running the backend and frontend locally with API auth enabled, when you start the backend, it will print a URL to the console with the api token query parameter as well as launch the app in your browser. If you are also running the frontend locally (via `npm run dev`), you will want to grab the token and update the url in your browser to use port `:5173` which is used by default. Example: `http://localhost:5173/auth?token=your-token-here`. More information on API authentication can be found in the [API Auth docs](./docs/api-auth.md).
+
 ### Pre-Commit Hooks and Linting
 
 In this repo you can optionally use [pre-commit](https://pre-commit.com/) hooks for automated validation and linting, but if not CI will run these checks for you
