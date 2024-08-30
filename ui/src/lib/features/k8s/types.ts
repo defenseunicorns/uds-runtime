@@ -61,18 +61,20 @@ export type ConfigMapStatus = 'Active'
 export type SecretStatus = 'Active'
 export type NamespaceStatus = 'Active' | 'Terminating'
 
+type K8TypeFields = { color: string }
+
 // Define a type for the k8StatusMapping
 export type K8StatusMapping = {
-  Pod: Record<PodStatus, { color: string }>
-  Deployments: Record<DeploymentStatus, { color: string }>
-  ReplicaSets: Record<DeploymentStatus, { color: string }>
-  StatefulSets: Record<DeploymentStatus, { color: string }>
-  Services: Record<ServiceStatus, { color: string }>
-  PersistentVolumeClaims: Record<PVCStatus, { color: string }>
-  Nodes: Record<NodeStatus, { color: string }>
-  Jobs: Record<JobStatus, { color: string }>
-  CronJobs: Record<CronJobStatus, { color: string }>
-  ConfigMaps: Record<ConfigMapStatus, { color: string }>
-  Secrets: Record<SecretStatus, { color: string }>
-  Namespaces: Record<NamespaceStatus, { color: string }>
+  Pod: Record<PodStatus, K8TypeFields>
+  Deployments: Record<DeploymentStatus, K8TypeFields>
+  ReplicaSets: Record<DeploymentStatus, K8TypeFields>
+  StatefulSets: Record<DeploymentStatus, K8TypeFields>
+  Services: Record<ServiceStatus, K8TypeFields>
+  PersistentVolumeClaims: Record<PVCStatus, K8TypeFields>
+  Nodes: Record<NodeStatus, K8TypeFields>
+  Jobs: Record<JobStatus, K8TypeFields>
+  CronJobs: Record<CronJobStatus, K8TypeFields>
+  ConfigMaps: Record<ConfigMapStatus, K8TypeFields>
+  Secrets: Record<SecretStatus, K8TypeFields>
+  Namespaces: Record<NamespaceStatus, K8TypeFields>
 }
