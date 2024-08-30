@@ -10,8 +10,9 @@ USER 65532:65532
 # copy binary from local and expose port
 COPY --chown=65532:65532 build/uds-runtime-linux-${TARGETARCH} /app/uds-runtime
 ENV PORT=8080
+ENV API_AUTH_DISABLED=true
 EXPOSE 8080
 
 # run binary
 # Disable API auth when running UDS Runtime in-cluster
-CMD ["API_AUTH_DISABLED=true ./app/uds-runtime"]
+CMD ["./app/uds-runtime"]
