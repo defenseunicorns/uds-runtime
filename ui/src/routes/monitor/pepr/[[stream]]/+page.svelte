@@ -5,6 +5,7 @@
   import { Export } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
+  import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
@@ -36,7 +37,14 @@
     peprStream.set([])
     streamFilter = params.stream || ''
 
-    eventSource = new EventSource(`/api/v1/monitor/pepr/${streamFilter}`)
+    const path: string = `/api/v1/monitor/pepr/${streamFilter}`
+
+    if ($apiAuthEnabled) {
+      let apiToken: string = sessionStorage.getItem('token') ?? ''
+      eventSource = new EventSource(path + '?token=' + apiToken)
+    } else {
+      eventSource = new EventSource(path)
+    }
 
     // Set the loaded flag when the connection is established
     eventSource.onopen = () => {
@@ -158,7 +166,7 @@
                     <td>
                       <span class="pepr-event {item.event}">{item.event}</span>
                     </td>
-                    <td>{item._name}</td>
+                    <td data-testid={`pepr-resource-${item._name}`}>{item._name}</td>
                     <td class="flex flex-row items-center">
                       {#if item.details}
                         <svelte:component this={item.details.component} details={item.details} />
