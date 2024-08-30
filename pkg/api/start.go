@@ -261,12 +261,12 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 }
 
 func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
-	config := map[string]string{
+	authStatus := map[string]string{
 		"API_AUTH_DISABLED": os.Getenv("API_AUTH_DISABLED"),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(config)
+	err := json.NewEncoder(w).Encode(authStatus)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
