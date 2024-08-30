@@ -166,11 +166,6 @@
             {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(resource), { language: 'yaml' }).value)}
           </code>
         </div>
-      {:else if activeTab === 'events'}
-        <!-- Events tab -->
-        <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
-          <p>Events tab content</p>
-        </div>
       {/if}
     </div>
   </div>
