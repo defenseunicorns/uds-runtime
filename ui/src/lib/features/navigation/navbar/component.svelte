@@ -26,7 +26,7 @@
         <!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
         {#if !$apiAuthEnabled || ($apiAuthEnabled && $authenticated)}
           <button
-            id="toggle-sidebar"
+            data-testid="toggle-sidebar"
             aria-expanded="true"
             aria-controls="sidebar"
             on:click={() => isSidebarExpanded.update((v) => !v)}
