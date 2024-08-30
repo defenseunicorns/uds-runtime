@@ -82,5 +82,5 @@ export const getColorAndStatus = <T extends keyof K8StatusMapping>(
   type: T,
   status: keyof K8StatusMapping[T],
 ): string => {
-  return (k8StatusMapping[type][status] as { color: string }).color || 'Unknown'
+  return ((k8StatusMapping[type][status] as { color: string }).color as string) || 'Unknown'
 }

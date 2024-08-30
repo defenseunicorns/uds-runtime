@@ -50,16 +50,16 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
 }
 
 // Define specific status types for each resource
-type PodStatus = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown' | 'Completed'
-type DeploymentStatus = 'Available' | 'Progressing' | 'Unavailable'
-type ServiceStatus = 'Pending' | 'Active' | 'Terminating'
-type PVCStatus = 'Pending' | 'Bound' | 'Lost'
-type NodeStatus = 'Ready' | 'NotReady' | 'SchedulingDisabled'
-type JobStatus = 'Complete' | 'Failed' | 'Running'
-type CronJobStatus = 'Active' | 'Suspended'
-type ConfigMapStatus = 'Active'
-type SecretStatus = 'Active'
-type NamespaceStatus = 'Active' | 'Terminating'
+export type PodStatus = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown' | 'Completed'
+export type DeploymentStatus = 'Available' | 'Progressing' | 'Unavailable'
+export type ServiceStatus = 'Pending' | 'Active' | 'Terminating'
+export type PVCStatus = 'Pending' | 'Bound' | 'Lost'
+export type NodeStatus = 'Ready' | 'NotReady' | 'SchedulingDisabled'
+export type JobStatus = 'Complete' | 'Failed' | 'Running'
+export type CronJobStatus = 'Active' | 'Suspended'
+export type ConfigMapStatus = 'Active'
+export type SecretStatus = 'Active'
+export type NamespaceStatus = 'Active' | 'Terminating'
 
 // Define a type for the k8StatusMapping
 export type K8StatusMapping = {
