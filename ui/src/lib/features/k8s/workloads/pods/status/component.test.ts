@@ -10,7 +10,7 @@ describe('Status component', () => {
     const { container } = render(Status, { props: { status: 'Failed' } })
     expect(container.firstChild).toHaveClass('text-red-400')
   })
-  test('renders text-yellow-500 for Pending', () => {
+  test('renders text-orange-300 for Pending', () => {
     const { container } = render(Status, { props: { status: 'Pending' } })
     expect(container.firstChild).toHaveClass('text-orange-300')
   })
