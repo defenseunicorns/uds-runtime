@@ -9,10 +9,16 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"net/http"
+	"os"
 
 	"strings"
 
+	"encoding/json"
+
+	"github.com/defenseunicorns/pkg/exec"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
@@ -29,6 +35,25 @@ import (
 // @BasePath /api/v1
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, error) {
+	apiAuth := true
+	if strings.ToLower(os.Getenv("API_AUTH_DISABLED")) == "true" {
+		apiAuth = false
+	}
+	port := "8080"
+
+	ip := "127.0.0.1"
+
+	// If the env variable API_TOKEN is set, use that for the API secret
+	token := os.Getenv("API_TOKEN")
+	var err error
+	// Otherwise, generate a random secret
+	if token == "" {
+		token, err = auth.RandomString(96)
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate random string: %w", err)
+		}
+	}
+
 	r := chi.NewRouter()
 
 	r.Use(udsMiddleware.ConditionalCompress)
@@ -43,7 +68,16 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 
 	// Add Swagger UI route
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
+	// expose API_AUTH_DISABLED env var to frontend via endpoint
+	r.Get("/auth-status", serveAuthStatus)
 	r.Route("/api/v1", func(r chi.Router) {
+		// Require a valid token for API calls
+		if apiAuth {
+			// If api auth is enabled, require a valid token for all routes under /api/v1
+			r.Use(auth.RequireSecret(token))
+			// Endpoint to test if connected with auth
+			r.Head("/", auth.Connect)
+		}
 		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
@@ -158,6 +192,17 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		})
 	})
 
+	if apiAuth {
+		colorYellow := "\033[33m"
+		colorReset := "\033[0m"
+		url := fmt.Sprintf("http://%s:%s/auth?token=%s", ip, port, token)
+		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
+		err := exec.LaunchURL(url)
+		if err != nil {
+			return nil, fmt.Errorf("failed to launch URL: %w", err)
+		}
+	}
+
 	// Serve static files from embed.FS
 	if assets != nil {
 		staticFS, err := fs.Sub(assets, "ui/build")
@@ -169,7 +214,6 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 			return nil, fmt.Errorf("failed to serve static files: %w", err)
 		}
 	}
-
 	return r, nil
 }
 
@@ -214,4 +258,16 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	})
 
 	return nil
+}
+
+func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
+	config := map[string]string{
+		"API_AUTH_DISABLED": os.Getenv("API_AUTH_DISABLED"),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(config)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
