@@ -14,7 +14,6 @@ import {
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { V1PersistentVolumeClaim } from '@kubernetes/client-node'
-import { SvelteComponent } from 'svelte'
 import { vi } from 'vitest'
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -82,14 +81,15 @@ suite('PersistentVolumeClaim Component', () => {
       namespace: 'loki',
       storage_class: 'local-path',
       capacity: '10Gi',
-      pods: [],
-      status: { component: SvelteComponent, props: { status: 'Bound' } },
+      status: { component: Component, props: { status: 'Bound' } },
     },
   ]
 
   const store = createStore()
   const start = store.start as unknown as () => ResourceWithTable<V1PersistentVolumeClaim, any>[]
   expect(store.url).toEqual(`/api/v1/resources/storage/persistentvolumeclaims?dense=true`)
-  // ignore creationTimestamp because age is not calculated at this point and added to the table
-  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp', 'pods'])
+
+  // ignore creationTimestamp and pods because neither are calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp', 'status.component'])
+  vi.unstubAllGlobals()
 })

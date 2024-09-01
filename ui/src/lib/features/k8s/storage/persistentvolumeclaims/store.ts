@@ -4,10 +4,10 @@
 import type { V1PersistentVolumeClaim as Resource, V1Pod } from '@kubernetes/client-node'
 
 import { apiAuthEnabled } from '$features/api-auth/store'
-import Status from '$features/k8s/storage/persistentvolumeclaims/status/component.svelte'
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 import { get, writable } from 'svelte/store'
+import Status from './status/component.svelte'
 
 interface Row extends CommonRow {
   storage_class: string
@@ -62,7 +62,6 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const transform = transformResource<Resource, Row>((r) => ({
     storage_class: r.spec?.storageClassName ?? '',
     capacity: r.spec?.resources?.requests?.storage ?? '',
-    pods: [],
     status: { component: Status, props: { status: r.status?.phase ?? '' } },
   }))
 
