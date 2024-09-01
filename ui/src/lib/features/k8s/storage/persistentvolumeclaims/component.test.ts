@@ -6,6 +6,7 @@ import '@testing-library/jest-dom'
 
 import {
   expectEqualIgnoringFields,
+  MockEventSource,
   MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
@@ -13,6 +14,8 @@ import {
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { V1PersistentVolumeClaim } from '@kubernetes/client-node'
+import { SvelteComponent } from 'svelte'
+import { vi } from 'vitest'
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -26,12 +29,24 @@ suite('PersistentVolumeClaim Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['namespace'], ['storage_class'], ['capacity'], ['age'], ['status']],
+    columns: [['name', 'emphasize'], ['namespace'], ['storage_class'], ['capacity'], ['pods'], ['age'], ['status']],
     name,
     description,
   })
 
   testK8sTableWithCustomColumns(Component, { createStore, name, description })
+
+  const urlAssertionMock = vi.fn().mockImplementation((url: string) => {
+    console.log(url)
+  })
+
+  vi.stubGlobal(
+    'EventSource',
+    vi
+      .fn()
+      // metrics EventSource is created first in createStore()
+      .mockImplementationOnce((url: string) => new MockEventSource(url, urlAssertionMock)),
+  )
 
   vi.mock('../../store.ts', async (importOriginal) => {
     const mockData = [
@@ -67,7 +82,8 @@ suite('PersistentVolumeClaim Component', () => {
       namespace: 'loki',
       storage_class: 'local-path',
       capacity: '10Gi',
-      status: 'Bound',
+      pods: [],
+      status: { component: SvelteComponent, props: { status: 'Bound' } },
     },
   ]
 
@@ -75,5 +91,5 @@ suite('PersistentVolumeClaim Component', () => {
   const start = store.start as unknown as () => ResourceWithTable<V1PersistentVolumeClaim, any>[]
   expect(store.url).toEqual(`/api/v1/resources/storage/persistentvolumeclaims?dense=true`)
   // ignore creationTimestamp because age is not calculated at this point and added to the table
-  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp', 'pods'])
 })
