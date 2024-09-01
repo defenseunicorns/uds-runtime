@@ -75,7 +75,7 @@ tasks:
         description: install Istio CRDs
       - cmd: |
           helm repo add minio https://charts.min.io/
-          helm upgrade -i -n uds-dev-stack minio minio/minio --create-namespace --set replicas=1 --set mode=standalone -set persistence.size=1Gi
+          helm upgrade -i -n uds-dev-stack minio minio/minio --create-namespace --set replicas=1 --set mode=standalone --set persistence.size=1Gi
         description: deploy minio to test PVCs
 
   - name: k3d

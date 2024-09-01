@@ -70,7 +70,8 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
-	r.Get("/swagger/*", httpSwagger.WrapHandler) // expose API_AUTH_DISABLED env var to frontend via endpoint
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
+	// expose API_AUTH_DISABLED env var to frontend via endpoint
 	r.Get("/auth-status", serveAuthStatus)
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
