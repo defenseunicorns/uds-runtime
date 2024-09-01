@@ -3,9 +3,10 @@
 
 import type { V1PersistentVolumeClaim as Resource, V1Pod } from '@kubernetes/client-node'
 
+import { apiAuthEnabled } from '$features/api-auth/store'
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
-import { writable } from 'svelte/store'
+import { get, writable } from 'svelte/store'
 
 interface Row extends CommonRow {
   storage_class: string
@@ -19,10 +20,19 @@ export type Columns = ColumnWrapper<Row>
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/storage/persistentvolumeclaims?dense=true`
 
+  // correlate pods with pvcs
   const pods = new Map<string, string[]>() // map of pvc name -> pod names
   const podStore = writable<number>()
   const jsonPathFields = 'metadata.name,spec.volumes,status.phase'
-  const podEvents = new EventSource(`/api/v1/resources/workloads/pods?fields=${jsonPathFields}`)
+  let podEvents: EventSource
+  const podEventsPath = `/api/v1/resources/workloads/pods?fields=${jsonPathFields}`
+
+  if (get(apiAuthEnabled)) {
+    const apiToken: string = sessionStorage.getItem('token') ?? ''
+    podEvents = new EventSource(`${podEventsPath}&token=${apiToken}`)
+  } else {
+    podEvents = new EventSource(podEventsPath)
+  }
 
   podEvents.onmessage = (event) => {
     const data = JSON.parse(event.data) as V1Pod[]
@@ -55,7 +65,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     status: r.status?.phase ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'name', true, [podStore])
   store.stopCallback = podEvents.close.bind(podEvents)
   store.filterCallback = (data) => {
     return data.map((d) => {

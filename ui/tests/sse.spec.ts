@@ -7,13 +7,13 @@ import { expect, test } from '@playwright/test'
 // Annotate entire file as serial.
 test.describe.configure({ mode: 'serial' })
 
-async function deletePod(namespace: string, podName: string) {
+async function deletePod(namespace: string, podName: string, force: boolean = true) {
   try {
     const kc = new k8s.KubeConfig()
     kc.loadFromDefault() // Load the kubeconfig file from default location
 
     const k8sApi = kc.makeApiClient(k8s.CoreV1Api)
-    await k8sApi.deleteNamespacedPod({ name: podName, namespace: namespace, gracePeriodSeconds: 0 })
+    await k8sApi.deleteNamespacedPod({ name: podName, namespace: namespace, gracePeriodSeconds: force ? 0 : undefined })
     console.log(`Pod ${podName} deleted successfully`)
   } catch (err) {
     console.error(`Failed to delete pod ${podName}:`, err)
@@ -47,7 +47,7 @@ test.describe('SSE and reactivity', async () => {
     expect(originalPVCPodName).not.toBeNull()
 
     // delete pod attached to PVC and wait for it to disappear
-    await deletePod('uds-dev-stack', originalPVCPodName ?? '')
+    await deletePod('uds-dev-stack', originalPVCPodName ?? '', false)
     await expect(page.getByRole('cell', { name: originalPVCPodName ?? '' })).toBeHidden()
 
     // get new pod attached to PVC
