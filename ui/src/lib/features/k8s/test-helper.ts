@@ -57,7 +57,7 @@ export function testK8sTableWithCustomColumns(Component: ComponentType, props: R
 // Helper function to compare two objects while ignoring certain fields; can ignore nested fields (eg 'metadata.creationTimestamp')
 export function expectEqualIgnoringFields<T>(actual: T, expected: T, fieldsToIgnore: string[]) {
   const removeFields = (obj: T, fields: string[]) => {
-    const result = _.cloneDeep(obj) // todo: refactor using structuredClone and get rid of lodash
+    const result = _.cloneDeep(obj)
     fields.forEach((field) => _.unset(result, field))
     return result
   }
