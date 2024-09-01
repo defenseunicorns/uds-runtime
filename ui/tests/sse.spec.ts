@@ -46,12 +46,19 @@ test.describe('SSE and reactivity', async () => {
     // get pod attached to pvc's name
     expect(originalPVCPodName).not.toBeNull()
 
-    // delete pod attached to PVC and wait for it to disappear
-    await deletePod('uds-dev-stack', originalPVCPodName ?? '', false)
-    await expect(page.getByRole('cell', { name: originalPVCPodName ?? '' })).toBeHidden()
+    // delete pod attached to PVC
+    await deletePod('uds-dev-stack', originalPVCPodName ?? '')
+
+    // force deleting pod causes list to render, so we look for the original pod name + ',' to indicate a list
+    await expect(page.getByRole('cell', { name: `${originalPVCPodName},` })).toBeVisible()
 
     // get new pod attached to PVC
-    const newPVCPodName = await page.getByRole('cell', { name: 'minio-' }).first().textContent()
+    const podList = await page.getByRole('cell', { name: 'minio-' }).textContent()
+    expect(podList?.length).toBeGreaterThan(1)
+    const newPVCPodName = podList!.split(',')[1]
+
+    console.log('newPVCPodName:', newPVCPodName)
+    console.log('originalPVCPodName:', originalPVCPodName)
 
     expect(newPVCPodName).not.toBeNull()
     expect(newPVCPodName).not.toEqual(originalPVCPodName)
