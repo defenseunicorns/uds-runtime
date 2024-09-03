@@ -78,6 +78,7 @@ test.describe.serial('Authentication Tests', () => {
     await expect(element).toBeVisible()
 
     // Check details view
+    await page.getByRole('cell', { name: 'podinfo-' }).click()
     const drawerEl = page.getByTestId('drawer')
     await expect(drawerEl).toBeVisible()
     await expect(drawerEl.getByText('Created')).toBeVisible()

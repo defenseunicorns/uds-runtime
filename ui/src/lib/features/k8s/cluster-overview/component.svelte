@@ -5,7 +5,6 @@
   import { onMount } from 'svelte'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
-  import { apiAuthEnabled } from '$lib/features/api-auth/store'
   import { createEventSource } from '$lib/utils/helpers'
 
   import './styles.postcss'

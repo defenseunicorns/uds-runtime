@@ -5,7 +5,6 @@
   import { Export } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
-  import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
