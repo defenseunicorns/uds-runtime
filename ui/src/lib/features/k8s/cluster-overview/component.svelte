@@ -5,7 +5,7 @@
   import { onMount } from 'svelte'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
-  import { apiAuthEnabled } from '$lib/features/api-auth/store'
+  import { createEventSource } from '$lib/utils/helpers'
 
   import './styles.postcss'
 
@@ -191,15 +191,8 @@
   }
 
   onMount(() => {
-    let overview
     const path: string = `/api/v1/monitor/cluster-overview`
-
-    if ($apiAuthEnabled) {
-      let apiToken: string = sessionStorage.getItem('token') ?? ''
-      overview = new EventSource(path + '?token=' + apiToken)
-    } else {
-      overview = new EventSource(path)
-    }
+    const overview = createEventSource(path)
 
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData

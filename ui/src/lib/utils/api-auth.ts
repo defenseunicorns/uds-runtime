@@ -10,7 +10,7 @@ const headers = new Headers({
   'Content-Type': 'application/json',
 })
 
-export class HTTP {
+export class APIAuth {
   constructor() {
     const token = sessionStorage.getItem('token') || ''
     const isApiAuthEnabled = get(apiAuthEnabled)
@@ -49,7 +49,7 @@ export class HTTP {
   }
 }
 
-const http = new HTTP()
+const http = new APIAuth()
 const Auth = {
   connect: async (token: string) => {
     if (!token) {
