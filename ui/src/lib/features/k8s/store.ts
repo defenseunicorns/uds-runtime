@@ -50,8 +50,15 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
    * @param tableCallback The callback to create the table from the resources
    * @param sortBy The initial key to sort the table by
    * @param sortAsc The initial sort direction
+   * @param additionalStores
    */
-  constructor(url: string, tableCallback: (data: T[]) => ResourceWithTable<T, U>[], sortBy: keyof U, sortAsc = true) {
+  constructor(
+    url: string,
+    tableCallback: (data: T[]) => ResourceWithTable<T, U>[],
+    sortBy: keyof U,
+    sortAsc = true,
+    additionalStores: Writable<unknown>[] = [],
+  ) {
     this.url = url
     this.#tableCallback = tableCallback
 
@@ -65,6 +72,9 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
     this.sortAsc = writable<boolean>(sortAsc)
     this.namespace = writable<string>('')
     this.numResources = writable<number>(0)
+
+    // assign additional stores (expected to be init'd before constructor)
+    this.additionalStores = additionalStores
 
     // Create a derived store that combines all the filtering and sorting logic
     const filteredAndSortedResources = derived(
