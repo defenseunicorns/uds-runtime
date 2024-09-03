@@ -4,9 +4,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { ClusterOverview } from '$features/k8s'
-  import { authenticated } from '$lib/features/api-auth/store'
-  import { apiAuthEnabled } from '$lib/features/api-auth/store'
-  import { updateApiAuthEnabled } from '$lib/utils/http'
+  import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
+  import { updateApiAuthEnabled } from '$lib/utils/api-auth'
   import { onMount } from 'svelte'
 
   onMount(async () => {
