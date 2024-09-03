@@ -13,6 +13,7 @@
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
+  import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -66,7 +67,12 @@
         const [apiPath] = rows.url.split('?')
 
         // Fetch the resource data
-        const results = await fetch(`${apiPath}/${uid}`)
+        let results
+        if (!apiAuthEnabled) {
+          results = await fetch(`${apiPath}/${uid}`)
+        } else {
+          results = await fetch(`${apiPath}/${uid}?token=${sessionStorage.getItem('token')}`)
+        }
 
         // If the fetch is successful, set the resource data
         if (results.ok) {

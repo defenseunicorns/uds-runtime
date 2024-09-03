@@ -12,6 +12,7 @@
   import { type PeprEvent } from '$lib/types'
   import './page.postcss'
   import { getDetails } from './helpers'
+  import { createEventSource } from '$lib/utils/helpers'
 
   let loaded = false
   let streamFilter = ''
@@ -38,13 +39,7 @@
     streamFilter = params.stream || ''
 
     const path: string = `/api/v1/monitor/pepr/${streamFilter}`
-
-    if ($apiAuthEnabled) {
-      let apiToken: string = sessionStorage.getItem('token') ?? ''
-      eventSource = new EventSource(path + '?token=' + apiToken)
-    } else {
-      eventSource = new EventSource(path)
-    }
+    eventSource = createEventSource(path)
 
     // Set the loaded flag when the connection is established
     eventSource.onopen = () => {
