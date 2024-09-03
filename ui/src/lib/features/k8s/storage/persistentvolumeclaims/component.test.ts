@@ -43,7 +43,7 @@ suite('PersistentVolumeClaim Component', () => {
     'EventSource',
     vi
       .fn()
-      // metrics EventSource is created first in createStore()
+      // pods EventSource is created first in createStore()
       .mockImplementationOnce((url: string) => new MockEventSource(url, urlAssertionMock)),
   )
 
