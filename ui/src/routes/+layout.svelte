@@ -5,25 +5,20 @@
   import 'flowbite'
   import { initFlowbite } from 'flowbite'
   import { onMount } from 'svelte'
-
   import { afterNavigate, goto } from '$app/navigation'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
   import '../app.postcss'
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
+  import Unauthenticated from '$components/Auth/unauthenticated.svelte'
 
+  let path = ''
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
   onMount(() => {
     initFlowbite()
-    const unsubscribe = authenticated.subscribe((value) => {
-      if (!value && window.location.pathname !== '/auth') {
-        goto('/auth')
-      }
-    })
-
-    return unsubscribe
+    path = window.location.pathname
   })
 
   afterNavigate(initFlowbite)
@@ -43,16 +38,10 @@
 >
   <div class="flex-grow overflow-hidden p-4 pt-6">
     <ToastPanel />
-    {#if !$apiAuthEnabled || ($apiAuthEnabled && $authenticated)}
-      <slot />
+    {#if $apiAuthEnabled && !$authenticated && path !== '/auth'}
+      <Unauthenticated />
     {:else}
-      <div class="flex flex-col items-center justify-start min-h-screen">
-        <h2 class="text-xl mb-4 p-4 dark:text-white pt-0">
-          <strong>Could not authenticate</strong>
-          : Please make sure you are using the complete link with api token provided by UDS Runtime to connect.
-        </h2>
-        <img src="/doug.svg" alt="Authentication Failed" class="mx-auto mt-4" style="width: 250px; height: 250px;" />
-      </div>
+      <slot />
     {/if}
   </div>
 </main>

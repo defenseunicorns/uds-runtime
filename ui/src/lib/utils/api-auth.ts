@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 import { apiAuthEnabled } from '$lib/features/api-auth/store'
-import { fetechAPIAuthStatus } from '$lib/utils/helpers'
 import { get } from 'svelte/store'
 
 const BASE_URL = '/api/v1'
@@ -58,12 +57,6 @@ const Auth = {
     http.updateToken(token)
     return await http.request()
   },
-}
-
-export async function updateApiAuthEnabled() {
-  const envVars = await fetechAPIAuthStatus()
-  // API Auth is only disabled when API_AUTH_DISABLED is set to 'true'
-  apiAuthEnabled.set(envVars.API_AUTH_DISABLED?.toLowerCase() !== 'true')
 }
 
 export { Auth }

@@ -4,9 +4,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
-  import { Auth, updateApiAuthEnabled } from '$lib/utils/api-auth'
+  import { Auth } from '$lib/utils/api-auth'
+  import { updateApiAuthEnabled } from '$lib/utils/helpers'
   import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
-
+  import Unauthenticated from '$components/Auth/unauthenticated.svelte'
   export let data
 
   onMount(async () => {
@@ -26,3 +27,7 @@
     }
   })
 </script>
+
+{#if $apiAuthEnabled && !$authenticated}
+  <Unauthenticated />
+{/if}
