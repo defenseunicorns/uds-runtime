@@ -9,8 +9,6 @@
 
   export let data
 
-  let authFailure = false
-
   onMount(async () => {
     await updateApiAuthEnabled()
     if ($apiAuthEnabled) {
@@ -21,7 +19,6 @@
         goto('/')
       } else {
         authenticated.set(false) // Update the store
-        authFailure = true
       }
 
       //set namespaces
