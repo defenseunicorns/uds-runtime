@@ -33,6 +33,5 @@ export async function updateApiAuthEnabled() {
     const envVars = await fetchAPIAuthStatus()
     // API Auth is only disabled when API_AUTH_DISABLED is set to 'true'
     apiAuthEnabled.set(envVars.API_AUTH_DISABLED?.toLowerCase() !== 'true')
-    console.log('API Auth Enabled CALLED:', get(apiAuthEnabled))
   }
 }
