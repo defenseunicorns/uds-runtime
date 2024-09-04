@@ -12,6 +12,7 @@
   import '../app.postcss'
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
+  import { toast } from '$features/toast/store'
 
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
@@ -20,6 +21,19 @@
   })
 
   afterNavigate(initFlowbite)
+
+  $: if (!$apiAuthEnabled || ($apiAuthEnabled && $authenticated)) {
+    const healthCheck = new EventSource('/health')
+    healthCheck.onerror = () => {
+      toast.add({
+        type: 'error',
+        message: 'Health check failed. Please check the logs for more information.',
+      })
+    }
+    healthCheck.onmessage = () => {
+      console.log('Health check passed')
+    }
+  }
 </script>
 
 <Navbar />
