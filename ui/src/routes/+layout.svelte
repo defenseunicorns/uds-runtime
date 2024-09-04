@@ -6,7 +6,7 @@
   import { initFlowbite } from 'flowbite'
   import { onMount } from 'svelte'
 
-  import { afterNavigate } from '$app/navigation'
+  import { afterNavigate, goto } from '$app/navigation'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
   import '../app.postcss'
@@ -17,6 +17,13 @@
   // i.e. data-dropdown-toggle
   onMount(() => {
     initFlowbite()
+    const unsubscribe = authenticated.subscribe((value) => {
+      if (!value && window.location.pathname !== '/auth') {
+        goto('/auth')
+      }
+    })
+
+    return unsubscribe
   })
 
   afterNavigate(initFlowbite)
@@ -36,6 +43,16 @@
 >
   <div class="flex-grow overflow-hidden p-4 pt-6">
     <ToastPanel />
-    <slot />
+    {#if !$apiAuthEnabled || ($apiAuthEnabled && $authenticated)}
+      <slot />
+    {:else}
+      <div class="flex flex-col items-center justify-start min-h-screen">
+        <h2 class="text-xl mb-4 p-4 dark:text-white pt-0">
+          <strong>Could not authenticate</strong>
+          : Please make sure you are using the complete link with api token provided by UDS Runtime to connect.
+        </h2>
+        <img src="/doug.svg" alt="Authentication Failed" class="mx-auto mt-4" style="width: 250px; height: 250px;" />
+      </div>
+    {/if}
   </div>
 </main>

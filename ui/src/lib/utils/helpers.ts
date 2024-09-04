@@ -6,7 +6,7 @@ import { get } from 'svelte/store'
 
 export const stringToSnakeCase = (name: string) => name.split(' ').join('-').toLocaleLowerCase()
 
-export async function fetchConfig(): Promise<Record<string, string>> {
+export async function fetechAPIAuthStatus(): Promise<Record<string, string>> {
   const response = await fetch('/auth-status')
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)
