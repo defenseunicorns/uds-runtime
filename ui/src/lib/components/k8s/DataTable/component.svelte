@@ -259,7 +259,7 @@
                     {#if value.component}
                       <svelte:component this={value.component} {...value.props} />
                     {:else if value.list}
-                      <ul class="mt-4 text-sm">
+                      <ul class="line-clamp-4 mt-4 text-sm">
                         {#each value.list as item}
                           <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
                         {/each}
