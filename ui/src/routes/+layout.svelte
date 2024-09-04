@@ -5,7 +5,7 @@
   import 'flowbite'
   import { initFlowbite } from 'flowbite'
   import { onMount } from 'svelte'
-  import { afterNavigate, goto } from '$app/navigation'
+  import { afterNavigate } from '$app/navigation'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
   import '../app.postcss'
