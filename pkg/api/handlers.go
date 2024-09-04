@@ -1,11 +1,14 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
+	"time"
 
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
 )
 
 // @Description Get Nodes
@@ -856,4 +859,58 @@ func getStorageClasses(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return rest.Bind(cache.StorageClasses)
+}
+
+// @Description Get StorageClass by UID
+// @Tags cluster-health
+// @Produce  json
+// @Success 200
+// @Router /health [get]
+func serveHealth(k8s *k8s.Clients) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Set headers to keep connection alive
+		rest.WriteHeaders(w)
+
+		// Create a ticker that ticks every 30 seconds
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+
+		checkCluster := func() {
+			versionInfo, err := k8s.Clientset.ServerVersion()
+			response := map[string]string{}
+
+			if err != nil {
+				response["error"] = err.Error()
+				w.WriteHeader(http.StatusInternalServerError)
+			} else {
+				response["version"] = versionInfo.String()
+				w.WriteHeader(http.StatusOK)
+			}
+
+			err = json.NewEncoder(w).Encode(response)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			// Flush the response to ensure it is sent to the client
+			if flusher, ok := w.(http.Flusher); ok {
+				flusher.Flush()
+			}
+		}
+
+		// Check the cluster immediately
+		checkCluster()
+
+		for {
+			select {
+			case <-ticker.C:
+				checkCluster()
+
+			case <-r.Context().Done():
+				// Client closed the connection
+				return
+			}
+		}
+	}
 }

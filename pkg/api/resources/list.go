@@ -232,7 +232,7 @@ func (r *ResourceList) CustomWatchErrorHandler(_ *cache.Reflector, err error) {
 		klog.V(1).Infof("%s: Watch for %v closed with unexpected EOF: %v", r.gvk.Kind, r.gvk.String(), err)
 
 	default:
-		if strings.Contains(err.Error(), "connect: connection refused") {
+		if strings.Contains(err.Error(), "connection") {
 			message.WarnErr(err, "cluster disconnected")
 		}
 

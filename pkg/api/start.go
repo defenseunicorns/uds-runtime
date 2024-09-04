@@ -23,6 +23,7 @@ import (
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
@@ -61,7 +62,12 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Use(middleware.Recoverer)
 
 	ctx := context.Background()
-	cache, err := resources.NewCache(ctx)
+	k8s, err := k8s.NewClient()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create k8s client: %w", err)
+	}
+
+	cache, err := resources.NewCache(ctx, k8s)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
@@ -70,6 +76,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	// expose API_AUTH_DISABLED env var to frontend via endpoint
 	r.Get("/auth-status", serveAuthStatus)
+	r.Get("/health", serveHealth(k8s))
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
 		if apiAuth {

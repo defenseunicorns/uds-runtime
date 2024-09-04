@@ -72,4 +72,4 @@ tasks:
     description: "Create and deploy metrics server from cloned core"
     actions:
       - cmd: uds zarf package create .github/uds-core/src/metrics-server --confirm --flavor upstream -o build/
-      - cmd: uds zarf package deploy build/zarf-package-uds-core-metrics-server*.tar.zst --confirm
+      - cmd: uds zarf package deploy build/zarf-package-uds-core-metrics-server*.tar.zst --components=metrics-server --confirm
