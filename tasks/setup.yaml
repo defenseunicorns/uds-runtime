@@ -5,7 +5,6 @@ tasks:
   - name: build-api
     description: "build the go api server for the local platform"
     actions:
-      - cmd: go mod tidy
       - cmd: CGO_ENABLED=0 go build -o ./build/uds-runtime .
 
   - name: build-all

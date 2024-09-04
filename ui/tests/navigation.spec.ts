@@ -182,6 +182,7 @@ test.describe('Navigation', async () => {
     test('Persistent Volume Claims page', async ({ page }) => {
       await page.getByRole('button', { name: 'Storage' }).click()
       await page.getByRole('link', { name: 'Persistent Volume Claims' }).click()
+      await expect(page.getByText('minio-')).toBeVisible() // ensure pods have rendered
     })
 
     test('Storage Classes page', async ({ page }) => {

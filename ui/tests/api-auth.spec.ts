@@ -76,6 +76,15 @@ test.describe.serial('Authentication Tests', () => {
     await page.getByRole('link', { name: 'Pods' }).click()
     const element = page.locator(`.emphasize:has-text("podinfo")`)
     await expect(element).toBeVisible()
+
+    // Check details view
+    await page.getByRole('cell', { name: 'podinfo-' }).click()
+    const drawerEl = page.getByTestId('drawer')
+    await expect(drawerEl).toBeVisible()
+    await expect(drawerEl.getByText('Created')).toBeVisible()
+    await expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
+    await expect(drawerEl.getByText('Annotations')).toBeVisible()
+    await expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
   })
 
   test('unauthenticated access', async ({ page }) => {

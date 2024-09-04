@@ -64,6 +64,7 @@ tasks:
   - name: deploy-min-core
     description: install min resources for UDS Core
     actions:
+      # todo: refactor this with UDS functional layers: https://github.com/defenseunicorns/uds-runtime/issues/172
       - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
         description: clone UDS Core
       - cmd: npm ci && npx pepr deploy --confirm
@@ -71,8 +72,13 @@ tasks:
         dir: tmp/uds-core
       - cmd: |
           helm repo add istio https://istio-release.storage.googleapis.com/charts
-          helm install istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
+          helm upgrade -i istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
         description: install Istio CRDs
+      - cmd: |
+          helm repo add minio https://charts.min.io/
+          helm upgrade -i -n uds-dev-stack minio minio/minio --create-namespace --set replicas=1 --set mode=standalone --set persistence.size=1Gi \
+            --set resources.requests.memory=256Mi --set resources.requests.cpu=100m
+        description: deploy minio to test PVCs
 
   - name: k3d
     description: "start a k3d cluster"

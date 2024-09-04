@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { apiAuthEnabled } from '$lib/features/api-auth/store'
+import { createEventSource } from '$lib/utils/helpers'
 import type { KubernetesObject } from '@kubernetes/client-node'
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
-import { derived, get, writable, type Writable } from 'svelte/store'
+import { derived, writable, type Writable } from 'svelte/store'
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> implements ResourceStoreInterface<T, U> {
@@ -50,8 +50,15 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
    * @param tableCallback The callback to create the table from the resources
    * @param sortBy The initial key to sort the table by
    * @param sortAsc The initial sort direction
+   * @param additionalStores
    */
-  constructor(url: string, tableCallback: (data: T[]) => ResourceWithTable<T, U>[], sortBy: keyof U, sortAsc = true) {
+  constructor(
+    url: string,
+    tableCallback: (data: T[]) => ResourceWithTable<T, U>[],
+    sortBy: keyof U,
+    sortAsc = true,
+    additionalStores: Writable<unknown>[] = [],
+  ) {
     this.url = url
     this.#tableCallback = tableCallback
 
@@ -65,6 +72,9 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
     this.sortAsc = writable<boolean>(sortAsc)
     this.namespace = writable<string>('')
     this.numResources = writable<number>(0)
+
+    // assign additional stores (expected to be init'd before constructor)
+    this.additionalStores = additionalStores
 
     // Create a derived store that combines all the filtering and sorting logic
     const filteredAndSortedResources = derived(
@@ -173,14 +183,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
 
     this.#initialized = true
 
-    if (get(apiAuthEnabled)) {
-      const apiToken: string = sessionStorage.getItem('token') ?? ''
-      // Check if the URL already contains a '?' for urls with multiple search params
-      const separator = this.url.includes('?') ? '&' : '?'
-      this.url = `${this.url}${separator}token=${apiToken}`
-    }
-
-    this.#eventSource = new EventSource(this.url)
+    this.#eventSource = createEventSource(this.url)
 
     this.#eventSource.onmessage = ({ data }) => {
       try {

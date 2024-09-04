@@ -4,10 +4,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
-  import { Auth } from '$lib/utils/http'
-  import { authenticated } from '$lib/features/api-auth/store'
-  import { apiAuthEnabled } from '$lib/features/api-auth/store'
-  import { updateApiAuthEnabled } from '$lib/utils/http'
+  import { Auth, updateApiAuthEnabled } from '$lib/utils/api-auth'
+  import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
 
   export let data
 

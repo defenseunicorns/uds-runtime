@@ -72,7 +72,10 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 
-	// Add Swagger UI route
+	// Add Swagger UI routes
+	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
+	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	// expose API_AUTH_DISABLED env var to frontend via endpoint
 	r.Get("/auth-status", serveAuthStatus)
