@@ -17,9 +17,13 @@
       let token = url.searchParams.get('token') || ''
       if (await Auth.connect(token)) {
         authenticated.set(true)
+        sessionStorage.setItem('apiAuthEnabled', JSON.stringify(true))
+        sessionStorage.setItem('authenticated', JSON.stringify(true))
         goto('/')
       } else {
         authenticated.set(false) // Update the store
+        sessionStorage.setItem('apiAuthEnabled', JSON.stringify(false))
+        sessionStorage.setItem('authenticated', JSON.stringify(false))
       }
 
       //set namespaces
