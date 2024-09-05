@@ -9,7 +9,6 @@ import (
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
-	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
 )
 
 // @Description Get Nodes
@@ -862,12 +861,12 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 	return rest.Bind(cache.StorageClasses)
 }
 
-// @Description Get StorageClass by UID
+// @Description Get Cluster Connection Health
 // @Tags cluster-health
 // @Produce  json
 // @Success 200
 // @Router /health [get]
-func serveHealth(k8s *k8s.Clients) http.HandlerFunc {
+func checkHealth(k8sResources *K8sResources, disconnected chan error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Set headers to keep connection alive
 		rest.WriteHeaders(w)
@@ -877,12 +876,13 @@ func serveHealth(k8s *k8s.Clients) http.HandlerFunc {
 		defer ticker.Stop()
 
 		checkCluster := func() {
-			versionInfo, err := k8s.Clientset.ServerVersion()
+			versionInfo, err := k8sResources.Client.Clientset.ServerVersion()
 			response := map[string]string{}
 
 			if err != nil {
 				response["error"] = err.Error()
 				w.WriteHeader(http.StatusInternalServerError)
+				disconnected <- err
 			} else {
 				response["version"] = versionInfo.String()
 				w.WriteHeader(http.StatusOK)

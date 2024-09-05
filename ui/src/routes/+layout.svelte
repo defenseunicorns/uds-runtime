@@ -27,7 +27,7 @@
     healthCheck.onerror = () => {
       addToast({
         type: 'error',
-        message: 'Health check failed. Please check the logs for more information.',
+        message: 'Cluster health check failed: no connection',
         timeoutSecs: 10,
       })
     }
@@ -36,7 +36,7 @@
       if (data['error']) {
         addToast({
           type: 'error',
-          message: 'Health check failed. Please check the logs for more information.',
+          message: 'Cluster health check failed: no connection',
           timeoutSecs: 10,
         })
       }
