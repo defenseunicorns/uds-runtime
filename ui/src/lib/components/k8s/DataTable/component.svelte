@@ -9,7 +9,7 @@
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { Drawer, Link } from '$components'
+  import { Drawer, Link, Tooltip } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
@@ -145,7 +145,7 @@
   <div class="table-container">
     <div class="table-content">
       <div class="table-header">
-        <span class="dark:text-white" data-testid="table-header">{name}</span>
+        <span class="dark:text-white overflow-visible" data-testid="table-header">{name}</span>
         {#if isFiltering}
           <span class="dark:text-gray-500 pl-2" data-testid="table-header-results">
             (showing {$rows.length} of {$numResources})
@@ -253,7 +253,7 @@
                   <!-- Check object to avoid issues with `false` values -->
                   {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
                   <td
-                    class={style || ''}
+                    class={`${style} overflow-visible` || ''}
                     data-testid={typeof value !== 'object' ? `${value}-testid-${idx + 1}` : `object-test-id-${idx + 1}`}
                   >
                     {#if value.component}
@@ -275,6 +275,8 @@
                       >
                         {value}
                       </button>
+                    {:else if style?.includes('truncate')}
+                      <Tooltip text={value} />
                     {:else}
                       {value.text || (value === 0 ? '0' : value) || '-'}
                     {/if}
