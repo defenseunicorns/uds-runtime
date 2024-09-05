@@ -43,23 +43,9 @@ type K8sResources struct {
 // @BasePath /api/v1
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, error) {
-	apiAuth := true
-	if strings.ToLower(os.Getenv("API_AUTH_DISABLED")) == "true" {
-		apiAuth = false
-	}
-	port := "8080"
-
-	ip := "127.0.0.1"
-
-	// If the env variable API_TOKEN is set, use that for the API secret
-	token := os.Getenv("API_TOKEN")
-	var err error
-	// Otherwise, generate a random secret
-	if token == "" {
-		token, err = auth.RandomString(96)
-		if err != nil {
-			return nil, fmt.Errorf("failed to generate random string: %w", err)
-		}
+	apiAuth, token, err := setAuth()
+	if err != nil {
+		return nil, fmt.Errorf("failed to set auth: %w", err)
 	}
 
 	r := chi.NewRouter()
@@ -89,37 +75,8 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		Cancel: cancel,
 	}
 
-	// Goroutine to handle retries on disconnection
-	go func() {
-		for {
-			select {
-			case err := <-disconnected:
-				fmt.Printf("Disconnected error received: %v\n", err)
-				for {
-					time.Sleep(5 * time.Second) // Retry interval
-					k8sClient, err := k8s.NewClient()
-					if err != nil {
-						fmt.Printf("Retrying to create k8s client: %v\n", err)
-						continue
-					}
-					// Cancel the previous context and create a new one
-					k8sResources.Cancel()
-					ctx, cancel := context.WithCancel(context.Background())
-					cache, err = resources.NewCache(ctx, k8sClient)
-					if err != nil {
-						fmt.Printf("Retrying to create cache: %v\n", err)
-						continue
-					}
-					// Update the references in the K8sResources struct
-					k8sResources.Client = k8sClient
-					k8sResources.Cache = cache
-					k8sResources.Cancel = cancel
-					fmt.Println("Successfully reconnected to k8s and recreated cache")
-					break
-				}
-			}
-		}
-	}()
+	// Start the reconnection goroutine
+	go handleReconnection(disconnected, k8sResources)
 
 	// Add Swagger UI routes
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
@@ -144,34 +101,34 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		})
 
 		r.Route("/resources", func(r chi.Router) {
-			r.Get("/nodes", getNodes(k8sResources.Cache))
-			r.Get("/nodes/{uid}", getNode(k8sResources.Cache))
+			r.Get("/nodes", withLatestCache(k8sResources, getNodes))
+			r.Get("/nodes/{uid}", withLatestCache(k8sResources, getNode))
 
-			r.Get("/events", getEvents(k8sResources.Cache))
-			r.Get("/events/{uid}", getEvent(k8sResources.Cache))
+			r.Get("/events", withLatestCache(k8sResources, getEvents))
+			r.Get("/events/{uid}", withLatestCache(k8sResources, getEvent))
 
-			r.Get("/namespaces", getNamespaces(k8sResources.Cache))
-			r.Get("/namespaces/{uid}", getNamespace(k8sResources.Cache))
+			r.Get("/namespaces", withLatestCache(k8sResources, getNamespaces))
+			r.Get("/namespaces/{uid}", withLatestCache(k8sResources, getNamespace))
 
 			// Workload resources
 			r.Route("/workloads", func(r chi.Router) {
-				r.Get("/pods", func(w http.ResponseWriter, r *http.Request) { getPods(k8sResources.Cache)(w, r) })
-				r.Get("/pods/{uid}", getPod(k8sResources.Cache))
+				r.Get("/pods", withLatestCache(k8sResources, getPods))
+				r.Get("/pods/{uid}", withLatestCache(k8sResources, getPod))
 
-				r.Get("/deployments", getDeployments(k8sResources.Cache))
-				r.Get("/deployments/{uid}", getDeployment(k8sResources.Cache))
+				r.Get("/deployments", withLatestCache(k8sResources, getDeployments))
+				r.Get("/deployments/{uid}", withLatestCache(k8sResources, getDeployment))
 
-				r.Get("/daemonsets", getDaemonsets(k8sResources.Cache))
-				r.Get("/daemonsets/{uid}", getDaemonset(k8sResources.Cache))
+				r.Get("/daemonsets", withLatestCache(k8sResources, getDaemonsets))
+				r.Get("/daemonsets/{uid}", withLatestCache(k8sResources, getStatefulset))
 
-				r.Get("/statefulsets", getStatefulsets(k8sResources.Cache))
+				r.Get("/statefulsets", withLatestCache(k8sResources, getStatefulsets))
 				r.Get("/statefulsets/{uid}", getStatefulset(k8sResources.Cache))
 
-				r.Get("/jobs", getJobs(k8sResources.Cache))
-				r.Get("/jobs/{uid}", getJob(k8sResources.Cache))
+				r.Get("/jobs", withLatestCache(k8sResources, getJobs))
+				r.Get("/jobs/{uid}", withLatestCache(k8sResources, getJob))
 
-				r.Get("/cronjobs", getCronJobs(k8sResources.Cache))
-				r.Get("/cronjobs/{uid}", getCronJob(k8sResources.Cache))
+				r.Get("/cronjobs", withLatestCache(k8sResources, getCronJobs))
+				r.Get("/cronjobs/{uid}", withLatestCache(k8sResources, getCronJob))
 
 				// Metrics have their own cache and change channel that updates every 30 seconds
 				// They do not support informers directly, so we need to poll the API
@@ -182,76 +139,78 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 
 			// Config resources
 			r.Route("/configs", func(r chi.Router) {
-				r.Get("/uds-packages", getUDSPackages(k8sResources.Cache))
-				r.Get("/uds-packages/{uid}", getUDSPackage(k8sResources.Cache))
+				r.Get("/uds-packages", withLatestCache(k8sResources, getUDSPackages))
+				r.Get("/uds-packages/{uid}", withLatestCache(k8sResources, getUDSPackage))
 
-				r.Get("/uds-exemptions", getUDSExemptions(k8sResources.Cache))
-				r.Get("/uds-exemptions/{uid}", getUDSExemption(k8sResources.Cache))
+				r.Get("/uds-exemptions", withLatestCache(k8sResources, getUDSExemptions))
+				r.Get("/uds-exemptions/{uid}", withLatestCache(k8sResources, getUDSExemption))
 
-				r.Get("/configmaps", getConfigMaps(k8sResources.Cache))
-				r.Get("/configmaps/{uid}", getConfigMap(k8sResources.Cache))
+				r.Get("/configmaps", withLatestCache(k8sResources, getConfigMaps))
+				r.Get("/configmaps/{uid}", withLatestCache(k8sResources, getConfigMap))
 
-				r.Get("/secrets", getSecrets(k8sResources.Cache))
-				r.Get("/secrets/{uid}", getSecret(k8sResources.Cache))
+				r.Get("/secrets", withLatestCache(k8sResources, getSecrets))
+				r.Get("/secrets/{uid}", withLatestCache(k8sResources, getSecret))
 			})
 
 			// Cluster ops resources
 			r.Route("/cluster-ops", func(r chi.Router) {
-				r.Get("/mutatingwebhooks", getMutatingWebhooks(k8sResources.Cache))
-				r.Get("/mutatingwebhooks/{uid}", getMutatingWebhook(k8sResources.Cache))
+				r.Get("/mutatingwebhooks", withLatestCache(k8sResources, getMutatingWebhooks))
+				r.Get("/mutatingwebhooks/{uid}", withLatestCache(k8sResources, getMutatingWebhook))
 
-				r.Get("/validatingwebhooks", getValidatingWebhooks(k8sResources.Cache))
-				r.Get("/validatingwebhooks/{uid}", getValidatingWebhook(k8sResources.Cache))
+				r.Get("/validatingwebhooks", withLatestCache(k8sResources, getValidatingWebhooks))
+				r.Get("/validatingwebhooks/{uid}", withLatestCache(k8sResources, getValidatingWebhook))
 
-				r.Get("/hpas", getHPAs(k8sResources.Cache))
-				r.Get("/hpas/{uid}", getHPA(k8sResources.Cache))
+				r.Get("/hpas", withLatestCache(k8sResources, getHPAs))
+				r.Get("/hpas/{uid}", withLatestCache(k8sResources, getHPA))
 
-				r.Get("/priority-classes", getPriorityClasses(k8sResources.Cache))
-				r.Get("/priority-classes/{uid}", getPriorityClass(k8sResources.Cache))
+				r.Get("/priority-classes", withLatestCache(k8sResources, getPriorityClasses))
+				r.Get("/priority-classes/{uid}", withLatestCache(k8sResources, getPriorityClass))
 
-				r.Get("/runtime-classes", getRuntimeClasses(k8sResources.Cache))
-				r.Get("/runtime-classes/{uid}", getRuntimeClass(k8sResources.Cache))
+				r.Get("/runtime-classes", withLatestCache(k8sResources, getRuntimeClasses))
+				r.Get("/runtime-classes/{uid}", withLatestCache(k8sResources, getRuntimeClass))
 
-				r.Get("/poddisruptionbudgets", getPodDisruptionBudgets(k8sResources.Cache))
-				r.Get("/poddisruptionbudgets/{uid}", getPodDisruptionBudget(k8sResources.Cache))
+				r.Get("/poddisruptionbudgets", withLatestCache(k8sResources, getPodDisruptionBudgets))
+				r.Get("/poddisruptionbudgets/{uid}", withLatestCache(k8sResources, getPodDisruptionBudget))
 
-				r.Get("/limit-ranges", getLimitRanges(k8sResources.Cache))
-				r.Get("/limit-ranges/{uid}", getLimitRange(k8sResources.Cache))
+				r.Get("/limit-ranges", withLatestCache(k8sResources, getLimitRanges))
+				r.Get("/limit-ranges/{uid}", withLatestCache(k8sResources, getLimitRange))
 
-				r.Get("/resource-quotas", getResourceQuotas(k8sResources.Cache))
-				r.Get("/resource-quotas/{uid}", getResourceQuota(k8sResources.Cache))
+				r.Get("/resource-quotas", withLatestCache(k8sResources, getResourceQuotas))
+				r.Get("/resource-quotas/{uid}", withLatestCache(k8sResources, getResourceQuota))
 			})
 
 			// Network resources
 			r.Route("/networks", func(r chi.Router) {
-				r.Get("/services", getServices(k8sResources.Cache))
-				r.Get("/services/{uid}", getService(k8sResources.Cache))
+				r.Get("/services", withLatestCache(k8sResources, getServices))
+				r.Get("/services/{uid}", withLatestCache(k8sResources, getService))
 
-				r.Get("/networkpolicies", getNetworkPolicies(k8sResources.Cache))
-				r.Get("/networkpolicies/{uid}", getNetworkPolicy(k8sResources.Cache))
+				r.Get("/networkpolicies", withLatestCache(k8sResources, getNetworkPolicies))
+				r.Get("/networkpolicies/{uid}", withLatestCache(k8sResources, getNetworkPolicy))
 
-				r.Get("/endpoints", getEndpoints(k8sResources.Cache))
-				r.Get("/endpoints/{uid}", getEndpoint(k8sResources.Cache))
+				r.Get("/endpoints", withLatestCache(k8sResources, getEndpoints))
+				r.Get("/endpoints/{uid}", withLatestCache(k8sResources, getEndpoint))
 
-				r.Get("/virtualservices", getVirtualServices(k8sResources.Cache))
-				r.Get("/virtualservices/{uid}", getVirtualService(k8sResources.Cache))
+				r.Get("/virtualservices", withLatestCache(k8sResources, getVirtualServices))
+				r.Get("/virtualservices/{uid}", withLatestCache(k8sResources, getVirtualService))
 			})
 
 			// Storage resources
 			r.Route("/storage", func(r chi.Router) {
-				r.Get("/persistentvolumes", getPersistentVolumes(k8sResources.Cache))
-				r.Get("/persistentvolumes/{uid}", getPersistentVolume(k8sResources.Cache))
+				r.Get("/persistentvolumes", withLatestCache(k8sResources, getPersistentVolumes))
+				r.Get("/persistentvolumes/{uid}", withLatestCache(k8sResources, getPersistentVolume))
 
-				r.Get("/persistentvolumeclaims", getPersistentVolumeClaims(k8sResources.Cache))
-				r.Get("/persistentvolumeclaims/{uid}", getPersistentVolumeClaim(k8sResources.Cache))
+				r.Get("/persistentvolumeclaims", withLatestCache(k8sResources, getPersistentVolumeClaims))
+				r.Get("/persistentvolumeclaims/{uid}", withLatestCache(k8sResources, getPersistentVolumeClaim))
 
-				r.Get("/storageclasses", getStorageClasses(k8sResources.Cache))
-				r.Get("/storageclasses/{uid}", getStorageClass(k8sResources.Cache))
+				r.Get("/storageclasses", withLatestCache(k8sResources, getStorageClasses))
+				r.Get("/storageclasses/{uid}", withLatestCache(k8sResources, getStorageClass))
 			})
 		})
 	})
 
 	if apiAuth {
+		port := "8080"
+		ip := "127.0.0.1"
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
 		url := fmt.Sprintf("http://%s:%s/auth?token=%s", ip, port, token)
@@ -319,6 +278,26 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	return nil
 }
 
+func setAuth() (bool, string, error) {
+	apiAuth := true
+	if strings.ToLower(os.Getenv("API_AUTH_DISABLED")) == "true" {
+		apiAuth = false
+	}
+
+	// If the env variable API_TOKEN is set, use that for the API secret
+	token := os.Getenv("API_TOKEN")
+	var err error
+	// Otherwise, generate a random secret
+	if token == "" {
+		token, err = auth.RandomString(96)
+		if err != nil {
+			return true, "", fmt.Errorf("failed to generate random string: %w", err)
+		}
+	}
+
+	return apiAuth, token, nil
+}
+
 func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
 	authStatus := map[string]string{
 		"API_AUTH_DISABLED": os.Getenv("API_AUTH_DISABLED"),
@@ -328,5 +307,43 @@ func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
 	err := json.NewEncoder(w).Encode(authStatus)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// withLatestCache returns a wrapper lambda function, creating a closure that can dynamically access the latest cache
+func withLatestCache(k8sResources *K8sResources, handler func(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handler(k8sResources.Cache)(w, r)
+	}
+}
+
+func handleReconnection(disconnected chan error, k8sResources *K8sResources) {
+	for {
+		select {
+		case err := <-disconnected:
+			fmt.Printf("Disconnected error received: %v\n", err)
+			for {
+				time.Sleep(5 * time.Second) // Retry interval
+				k8sClient, err := k8s.NewClient()
+				if err != nil {
+					fmt.Printf("Retrying to create k8s client: %v\n", err)
+					continue
+				}
+				// Cancel the previous context and create a new one
+				k8sResources.Cancel()
+				ctx, cancel := context.WithCancel(context.Background())
+				cache, err := resources.NewCache(ctx, k8sClient)
+				if err != nil {
+					fmt.Printf("Retrying to create cache: %v\n", err)
+					continue
+				}
+				// Update the references in the K8sResources struct
+				k8sResources.Client = k8sClient
+				k8sResources.Cache = cache
+				k8sResources.Cancel = cancel
+				fmt.Println("Successfully reconnected to k8s and recreated cache")
+				break
+			}
+		}
 	}
 }
