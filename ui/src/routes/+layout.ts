@@ -10,7 +10,7 @@ export const ssr = false
 
 // Provide shared access to the cluster namespace store
 export const load = async ({ url }) => {
-  updateApiAuthEnabled()
+  await updateApiAuthEnabled()
 
   const namespaces = createStore()
   const isInitialAPIAuthentication = url.pathname.includes('/auth')
