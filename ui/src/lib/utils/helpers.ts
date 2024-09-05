@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { apiAuthEnabled } from '$features/api-auth/store'
+import { apiAuthEnabled, authenticated } from '$features/api-auth/store'
 import { get } from 'svelte/store'
 
 export const stringToSnakeCase = (name: string) => name.split(' ').join('-').toLocaleLowerCase()
@@ -29,6 +29,12 @@ export function createEventSource(path: string): EventSource {
 // Can't live in api-auth.ts because of sessionStorage usage in file, preventing this function
 // from being used in load functions
 export async function updateApiAuthEnabled() {
+  const isAuthEnabled = JSON.parse(sessionStorage.getItem('apiAuthEnabled')!)
+  const isAuthenticated = JSON.parse(sessionStorage.getItem('authenticated')!)
+
+  apiAuthEnabled.set(isAuthEnabled)
+  authenticated.set(isAuthenticated)
+
   if (get(apiAuthEnabled) == null) {
     const envVars = await fetchAPIAuthStatus()
     // API Auth is only disabled when API_AUTH_DISABLED is set to 'true'
