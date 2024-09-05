@@ -12,7 +12,7 @@ export const ssr = false
 export const load = async ({ url }) => {
   updateApiAuthEnabled()
 
-  let namespaces = createStore()
+  const namespaces = createStore()
   const isInitialAPIAuthentication = url.pathname.includes('/auth')
 
   // start namespaces store if API auth is disabled or if doing a a reload
