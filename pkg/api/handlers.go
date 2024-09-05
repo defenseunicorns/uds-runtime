@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -872,7 +873,7 @@ func serveHealth(k8s *k8s.Clients) http.HandlerFunc {
 		rest.WriteHeaders(w)
 
 		// Create a ticker that ticks every 30 seconds
-		ticker := time.NewTicker(30 * time.Second)
+		ticker := time.NewTicker(5 * time.Second)
 		defer ticker.Stop()
 
 		checkCluster := func() {
@@ -882,16 +883,20 @@ func serveHealth(k8s *k8s.Clients) http.HandlerFunc {
 			if err != nil {
 				response["error"] = err.Error()
 				w.WriteHeader(http.StatusInternalServerError)
+
 			} else {
 				response["version"] = versionInfo.String()
 				w.WriteHeader(http.StatusOK)
 			}
 
-			err = json.NewEncoder(w).Encode(response)
+			data, err := json.Marshal(response)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
 				return
 			}
+
+			// Write the data to the response
+			fmt.Fprintf(w, "data: %s\n\n", data)
 
 			// Flush the response to ensure it is sent to the client
 			if flusher, ok := w.(http.Flusher); ok {
