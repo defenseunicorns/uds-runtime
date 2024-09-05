@@ -4,19 +4,13 @@
 package resources
 
 import (
-	"fmt"
-	"io"
 	"strings"
 	"sync"
 
-	"github.com/zarf-dev/zarf/src/pkg/message"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/tools/cache"
-	"k8s.io/klog/v2"
 )
 
 const (
@@ -59,12 +53,6 @@ func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersion
 			r.notifyChange(obj, Deleted)
 		},
 	})
-
-	err := informer.SetWatchErrorHandler(r.CustomWatchErrorHandler)
-	if err != nil {
-		// need to talk about bubbling these things up
-		message.WarnErr(err, "failed to set watch error handler")
-	}
 
 	return r
 }
@@ -216,35 +204,4 @@ func (r *ResourceList) extractSparseObject(obj *unstructured.Unstructured) *unst
 	delete(sparseObj.Object["metadata"].(map[string]interface{}), "annotations")
 
 	return sparseObj
-}
-
-// CustomWatchErrorHandler is a custom implementation of cache.WatchErrorHandler
-func (r *ResourceList) CustomWatchErrorHandler(_ *cache.Reflector, err error) {
-	switch {
-	case isExpiredError(err):
-		// Don't set LastSyncResourceVersionUnavailable - LIST call with ResourceVersion=RV already
-		// has a semantic that it returns data at least as fresh as provided RV.
-		// So first try to LIST with setting RV to resource version of last observed object.
-		klog.V(4).Infof("%s: watch of %v closed with: %v", r.gvk.Kind, r.gvk.String(), err)
-	case err == io.EOF:
-		// watch closed normally
-	case err == io.ErrUnexpectedEOF:
-		klog.V(1).Infof("%s: Watch for %v closed with unexpected EOF: %v", r.gvk.Kind, r.gvk.String(), err)
-
-	default:
-		if strings.Contains(err.Error(), "connection") {
-			message.WarnErr(err, "cluster disconnected")
-		}
-
-		utilruntime.HandleError(fmt.Errorf("%s: Failed to watch %v: %v", r.gvk.Kind, r.gvk.String(), err))
-	}
-}
-
-// re-implementation of private method isExpiredError from "k8s.io/client-go/tools/cache/reflector.go"
-func isExpiredError(err error) bool {
-	// In Kubernetes 1.17 and earlier, the api server returns both apierrors.StatusReasonExpired and
-	// apierrors.StatusReasonGone for HTTP 410 (Gone) status code responses. In 1.18 the kube server is more consistent
-	// and always returns apierrors.StatusReasonExpired. For backward compatibility we can only remove the apierrors.IsGone
-	// check when we fully drop support for Kubernetes 1.17 servers from reflectors.
-	return apierrors.IsResourceExpired(err) || apierrors.IsGone(err)
 }

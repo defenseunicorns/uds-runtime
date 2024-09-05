@@ -57,11 +57,13 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	k8sClient, err := k8s.NewClient()
 	if err != nil {
+		cancel()
 		return nil, fmt.Errorf("failed to create k8s client: %w", err)
 	}
 
 	cache, err := resources.NewCache(ctx, k8sClient)
 	if err != nil {
+		cancel()
 		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 
@@ -119,10 +121,10 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 				r.Get("/deployments/{uid}", withLatestCache(k8sResources, getDeployment))
 
 				r.Get("/daemonsets", withLatestCache(k8sResources, getDaemonsets))
-				r.Get("/daemonsets/{uid}", withLatestCache(k8sResources, getStatefulset))
+				r.Get("/daemonsets/{uid}", withLatestCache(k8sResources, getDaemonset))
 
 				r.Get("/statefulsets", withLatestCache(k8sResources, getStatefulsets))
-				r.Get("/statefulsets/{uid}", getStatefulset(k8sResources.Cache))
+				r.Get("/statefulsets/{uid}", withLatestCache(k8sResources, getStatefulset))
 
 				r.Get("/jobs", withLatestCache(k8sResources, getJobs))
 				r.Get("/jobs/{uid}", withLatestCache(k8sResources, getJob))
@@ -317,33 +319,31 @@ func withLatestCache(k8sResources *K8sResources, handler func(cache *resources.C
 	}
 }
 
+// handleReconnection is a goroutine that handles reconnection to the k8s API
 func handleReconnection(disconnected chan error, k8sResources *K8sResources) {
-	for {
-		select {
-		case err := <-disconnected:
-			fmt.Printf("Disconnected error received: %v\n", err)
-			for {
-				time.Sleep(5 * time.Second) // Retry interval
-				k8sClient, err := k8s.NewClient()
-				if err != nil {
-					fmt.Printf("Retrying to create k8s client: %v\n", err)
-					continue
-				}
-				// Cancel the previous context and create a new one
-				k8sResources.Cancel()
-				ctx, cancel := context.WithCancel(context.Background())
-				cache, err := resources.NewCache(ctx, k8sClient)
-				if err != nil {
-					fmt.Printf("Retrying to create cache: %v\n", err)
-					continue
-				}
-				// Update the references in the K8sResources struct
-				k8sResources.Client = k8sClient
-				k8sResources.Cache = cache
-				k8sResources.Cancel = cancel
-				fmt.Println("Successfully reconnected to k8s and recreated cache")
-				break
+	for err := range disconnected {
+		fmt.Printf("Disconnected error received: %v\n", err)
+		for {
+			k8sResources.Cancel()
+			time.Sleep(5 * time.Second) // Retry interval
+			k8sClient, err := k8s.NewClient()
+			if err != nil {
+				fmt.Printf("Retrying to create k8s client: %v\n", err)
+				continue
 			}
+			// Cancel the previous context and create a new one
+			ctx, cancel := context.WithCancel(context.Background())
+			cache, err := resources.NewCache(ctx, k8sClient)
+			if err != nil {
+				fmt.Printf("Retrying to create cache: %v\n", err)
+				continue
+			}
+			// Update the references in the K8sResources struct
+			k8sResources.Client = k8sClient
+			k8sResources.Cache = cache
+			k8sResources.Cancel = cancel
+			fmt.Println("Successfully reconnected to k8s and recreated cache")
+			break
 		}
 	}
 }
