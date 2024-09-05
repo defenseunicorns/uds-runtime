@@ -3,6 +3,8 @@
 
 import type { V1Namespace as Resource } from '@kubernetes/client-node'
 
+import { apiAuthEnabled, authenticated } from '$features/api-auth/store'
+import { get } from 'svelte/store'
 import { ResourceStore, transformResource } from '../store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '../types'
 
@@ -20,10 +22,16 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   }))
 
   const store = new ResourceStore<Resource, Row>(url, transform, 'name')
-
-  return {
+  const resourceStoreInterface: ResourceStoreInterface<Resource, Row> = {
     ...store,
-    start: store.start.bind(store),
+    start: () => {
+      return () => {}
+    },
     sortByKey: store.sortByKey.bind(store),
   }
+  // If api auth is enabled we don't want to start the store until we are authenticated
+  if (get(apiAuthEnabled) === false || (get(apiAuthEnabled) && get(authenticated))) {
+    resourceStoreInterface.start = store.start.bind(store)
+  }
+  return resourceStoreInterface
 }

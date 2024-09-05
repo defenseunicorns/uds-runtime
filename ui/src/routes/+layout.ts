@@ -10,12 +10,13 @@ export const ssr = false
 
 // Provide shared access to the cluster namespace store
 export const load = async ({ url }) => {
-  const namespaces = createStore()
-
-  const isAuthRoute = url.pathname.includes('/auth')
   updateApiAuthEnabled()
 
-  if (!get(apiAuthEnabled) || !isAuthRoute) {
+  let namespaces = createStore()
+  const isInitialAPIAuthentication = url.pathname.includes('/auth')
+
+  // start namespaces store if API auth is disabled or if doing a a reload
+  if (!get(apiAuthEnabled) || !isInitialAPIAuthentication) {
     namespaces.start()
   }
   return {
