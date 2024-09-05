@@ -26,7 +26,6 @@ vi.mock('$app/stores', () => {
 })
 
 vi.mock('svelte/store', () => {
-  const originalModule = vi.importActual('svelte/store')
   return {
     writable: vi.fn().mockImplementation(<T>(initialValue: T) => {
       return {
