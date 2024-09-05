@@ -9,12 +9,13 @@ import { get } from 'svelte/store'
 export const ssr = false
 
 // Provide shared access to the cluster namespace store
-export const load = async () => {
+export const load = async ({ url }) => {
   const namespaces = createStore()
 
+  const isAuthRoute = url.pathname.includes('/auth')
   updateApiAuthEnabled()
 
-  if (!get(apiAuthEnabled)) {
+  if (!get(apiAuthEnabled) || !isAuthRoute) {
     namespaces.start()
   }
   return {
