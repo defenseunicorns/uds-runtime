@@ -11,7 +11,7 @@
   import '../app.postcss'
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
-  import Unauthenticated from '$components/Auth/unauthenticated.svelte'
+  import Unauthenticated from '$components/Auth/component.svelte'
 
   let path = ''
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js

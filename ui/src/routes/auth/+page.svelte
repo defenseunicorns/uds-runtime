@@ -7,7 +7,7 @@
   import { Auth } from '$lib/utils/api-auth'
   import { updateApiAuthEnabled } from '$lib/utils/helpers'
   import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
-  import Unauthenticated from '$components/Auth/unauthenticated.svelte'
+  import Unauthenticated from '$components/Auth/component.svelte'
   export let data
 
   onMount(async () => {
