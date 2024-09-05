@@ -11,7 +11,7 @@
   import '../app.postcss'
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
-  import { addToast } from '$features/toast/store'
+  import { addToast, getIdByMessage, removeToast, toast } from '$features/toast/store'
   import Unauthenticated from '$components/Auth/component.svelte'
 
   let path = ''
@@ -24,22 +24,39 @@
 
   afterNavigate(initFlowbite)
 
+  const disconnectedMsg = 'Cluster health check failed: no connection'
+
   $: if (!$apiAuthEnabled || ($apiAuthEnabled && $authenticated)) {
     const healthCheck = new EventSource('/health')
+    // handle inial connection error
     healthCheck.onerror = () => {
       addToast({
         type: 'error',
-        message: 'Cluster health check failed: no connection',
-        timeoutSecs: 10,
+        message: disconnectedMsg,
+        timeoutSecs: 500,
       })
+      healthCheck.close()
     }
+
+    // handle cluster disconnection and reconnection events
     healthCheck.onmessage = (msg) => {
-      const data = JSON.parse(msg.data) as Record<'version' | 'error', string>
-      if (data['error']) {
+      const data = JSON.parse(msg.data) as Record<'version' | 'error' | 'reconnected', string>
+      const errToast = getIdByMessage(disconnectedMsg)
+
+      if (errToast && data['reconnected']) {
+        removeToast(errToast)
+        addToast({
+          type: 'success',
+          message: 'Cluster connection restored',
+          timeoutSecs: 10,
+        })
+      }
+
+      if (!errToast && data['error']) {
         addToast({
           type: 'error',
-          message: 'Cluster health check failed: no connection',
-          timeoutSecs: 10,
+          message: disconnectedMsg,
+          timeoutSecs: 500,
         })
       }
     }
