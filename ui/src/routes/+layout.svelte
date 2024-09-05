@@ -12,7 +12,7 @@
   import '../app.postcss'
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
-  import { addToast, toast } from '$features/toast/store'
+  import { addToast } from '$features/toast/store'
 
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle

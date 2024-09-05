@@ -883,7 +883,6 @@ func serveHealth(k8s *k8s.Clients) http.HandlerFunc {
 			if err != nil {
 				response["error"] = err.Error()
 				w.WriteHeader(http.StatusInternalServerError)
-
 			} else {
 				response["version"] = versionInfo.String()
 				w.WriteHeader(http.StatusOK)
