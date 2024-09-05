@@ -872,7 +872,7 @@ func checkHealth(k8sResources *K8sResources, disconnected chan error) http.Handl
 		rest.WriteHeaders(w)
 
 		// Create a ticker that ticks every 30 seconds
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 
 		checkCluster := func() {

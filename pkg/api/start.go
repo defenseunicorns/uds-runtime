@@ -33,6 +33,7 @@ import (
 type K8sResources struct {
 	Client *k8s.Clients
 	Cache  *resources.Cache
+	Cancel context.CancelFunc
 }
 
 // @title UDS Runtime API
@@ -67,7 +68,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
 	k8sClient, err := k8s.NewClient()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create k8s client: %w", err)
@@ -85,6 +86,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	k8sResources := &K8sResources{
 		Client: k8sClient,
 		Cache:  cache,
+		Cancel: cancel,
 	}
 
 	// Goroutine to handle retries on disconnection
@@ -100,6 +102,9 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 						fmt.Printf("Retrying to create k8s client: %v\n", err)
 						continue
 					}
+					// Cancel the previous context and create a new one
+					k8sResources.Cancel()
+					ctx, cancel := context.WithCancel(context.Background())
 					cache, err = resources.NewCache(ctx, k8sClient)
 					if err != nil {
 						fmt.Printf("Retrying to create cache: %v\n", err)
@@ -108,6 +113,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 					// Update the references in the K8sResources struct
 					k8sResources.Client = k8sClient
 					k8sResources.Cache = cache
+					k8sResources.Cancel = cancel
 					fmt.Println("Successfully reconnected to k8s and recreated cache")
 					break
 				}
@@ -149,7 +155,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 
 			// Workload resources
 			r.Route("/workloads", func(r chi.Router) {
-				r.Get("/pods", getPods(k8sResources.Cache))
+				r.Get("/pods", func(w http.ResponseWriter, r *http.Request) { getPods(k8sResources.Cache)(w, r) })
 				r.Get("/pods/{uid}", getPod(k8sResources.Cache))
 
 				r.Get("/deployments", getDeployments(k8sResources.Cache))
