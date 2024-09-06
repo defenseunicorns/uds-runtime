@@ -20,20 +20,7 @@
     path = window.location.pathname
   })
 
-  afterNavigate(() => {
-    initFlowbite()
-
-    const isAuthEnabled = JSON.parse(sessionStorage.getItem('apiAuthEnabled')!)
-    const isAuthenticated = JSON.parse(sessionStorage.getItem('authenticated')!)
-
-    if (isAuthEnabled) {
-      apiAuthEnabled.set(true)
-    }
-
-    if (isAuthenticated) {
-      authenticated.set(true)
-    }
-  })
+  afterNavigate(initFlowbite)
 </script>
 
 <Navbar />
