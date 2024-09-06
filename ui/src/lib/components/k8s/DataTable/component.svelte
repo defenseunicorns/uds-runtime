@@ -145,7 +145,7 @@
   <div class="table-container">
     <div class="table-content">
       <div class="table-header">
-        <span class="dark:text-white overflow-visible" data-testid="table-header">{name}</span>
+        <span class="dark:text-white" data-testid="table-header">{name}</span>
         {#if isFiltering}
           <span class="dark:text-gray-500 pl-2" data-testid="table-header-results">
             (showing {$rows.length} of {$numResources})
@@ -253,7 +253,7 @@
                   <!-- Check object to avoid issues with `false` values -->
                   {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
                   <td
-                    class={`${style} overflow-visible` || ''}
+                    class={style || ''}
                     data-testid={typeof value !== 'object' ? `${value}-testid-${idx + 1}` : `object-test-id-${idx + 1}`}
                   >
                     {#if value.component}
@@ -276,7 +276,11 @@
                         {value}
                       </button>
                     {:else if style?.includes('truncate')}
-                      <Tooltip text={value} />
+                      <Tooltip title={value}>
+                        <div class={`w-full ${style}`}>
+                          {value}
+                        </div>
+                      </Tooltip>
                     {:else}
                       {value.text || (value === 0 ? '0' : value) || '-'}
                     {/if}
