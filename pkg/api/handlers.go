@@ -871,20 +871,28 @@ func checkHealth(k8sResources *K8sResources, disconnected chan error) http.Handl
 		// Set headers to keep connection alive
 		rest.WriteHeaders(w)
 
-		// Create a ticker that ticks every 30 seconds
-		ticker := time.NewTicker(10 * time.Second)
+		ticker := time.NewTicker(30 * time.Second)
 		defer ticker.Stop()
+
+		recovering := false
 
 		checkCluster := func() {
 			versionInfo, err := k8sResources.Client.Clientset.ServerVersion()
 			response := map[string]string{}
 
+			// if err then connection is lost
 			if err != nil {
 				response["error"] = err.Error()
 				w.WriteHeader(http.StatusInternalServerError)
 				disconnected <- err
+				// indicate that the reconnection handler should have been triggered by the disconnected channel
+				recovering = true
+			} else if recovering {
+				// if errors are resolved, send a reconnected message
+				response["reconnected"] = versionInfo.String()
+				recovering = false
 			} else {
-				response["version"] = versionInfo.String()
+				response["success"] = versionInfo.String()
 				w.WriteHeader(http.StatusOK)
 			}
 

@@ -324,6 +324,7 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources) {
 	for err := range disconnected {
 		fmt.Printf("Disconnected error received: %v\n", err)
 		for {
+			// Cancel the previous context
 			k8sResources.Cancel()
 			time.Sleep(5 * time.Second) // Retry interval
 			k8sClient, err := k8s.NewClient()
@@ -331,14 +332,15 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources) {
 				fmt.Printf("Retrying to create k8s client: %v\n", err)
 				continue
 			}
-			// Cancel the previous context and create a new one
+
+			// Ccreate a new context and cache
 			ctx, cancel := context.WithCancel(context.Background())
 			cache, err := resources.NewCache(ctx, k8sClient)
 			if err != nil {
 				fmt.Printf("Retrying to create cache: %v\n", err)
 				continue
 			}
-			// Update the references in the K8sResources struct
+
 			k8sResources.Client = k8sClient
 			k8sResources.Cache = cache
 			k8sResources.Cancel = cancel
