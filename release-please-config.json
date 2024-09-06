@@ -5,6 +5,7 @@
       "bump-minor-pre-major": true,
       "draft": false,
       "changelog-path": "CHANGELOG.md",
+      "release-as": "0.3.0",
       "changelog-sections": [
         { "type": "feat", "section": "Features", "hidden": false },
         { "type": "fix", "section": "Bug Fixes", "hidden": false },
