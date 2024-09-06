@@ -5,7 +5,7 @@
   import { goto } from '$app/navigation'
   import { ClusterOverview } from '$features/k8s'
   import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
-  import { updateApiAuthEnabled } from '$lib/utils/helpers'
+  import { updateApiAuthEnabled } from '$lib/utils/api-auth'
   import { onMount } from 'svelte'
 
   onMount(async () => {

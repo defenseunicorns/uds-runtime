@@ -4,11 +4,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
-  import { Auth } from '$lib/utils/api-auth'
-  import { updateApiAuthEnabled } from '$lib/utils/helpers'
+  import { Auth, updateApiAuthEnabled } from '$lib/utils/api-auth'
   import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
-  import Unauthenticated from '$components/Auth/component.svelte'
+
   export let data
+
+  let authFailure = false
 
   onMount(async () => {
     await updateApiAuthEnabled()
@@ -20,6 +21,7 @@
         goto('/')
       } else {
         authenticated.set(false) // Update the store
+        authFailure = true
       }
 
       //set namespaces
@@ -28,6 +30,14 @@
   })
 </script>
 
-{#if $apiAuthEnabled && !$authenticated}
-  <Unauthenticated />
+{#if apiAuthEnabled}
+  {#if authFailure}
+    <div class="flex flex-col items-center justify-start min-h-screen">
+      <h2 class="text-xl mb-4 p-4 dark:text-white pt-0">
+        <strong>Could not authenticate</strong>
+        : Please make sure you are using the complete link with api token provided by UDS Runtime to connect.
+      </h2>
+      <img src="/doug.svg" alt="Authentication Failed" class="mx-auto mt-4" style="width: 250px; height: 250px;" />
+    </div>
+  {/if}
 {/if}

@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { apiAuthEnabled } from '$features/api-auth/store'
 import { createStore } from '$features/k8s/namespaces/store'
-import { updateApiAuthEnabled } from '$lib/utils/helpers'
-import { get } from 'svelte/store'
+import { fetchConfig } from '$lib/utils/helpers'
 
 export const ssr = false
 
@@ -12,11 +10,15 @@ export const ssr = false
 export const load = async () => {
   const namespaces = createStore()
 
-  updateApiAuthEnabled()
-
-  if (!get(apiAuthEnabled)) {
+  //Check if apiAuthEnabled
+  const envVars = await fetchConfig()
+  // API Auth is only disabled when API_AUTH_DISABLED is set to 'true'
+  const apiAuthEnabled = envVars.API_AUTH_DISABLED?.toLowerCase() !== 'true'
+  // namespaces.start() called in auth page when apiAuthEnabled
+  if (!apiAuthEnabled) {
     namespaces.start()
   }
+
   return {
     namespaces,
   }
