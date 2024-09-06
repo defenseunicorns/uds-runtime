@@ -1,5 +1,53 @@
 # Changelog
 
+## [0.3.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.2.0...v0.3.0) (2024-09-06)
+
+
+### Features
+
+* adding adr for data-test ids ([#200](https://github.com/defenseunicorns/uds-runtime/issues/200)) ([4936722](https://github.com/defenseunicorns/uds-runtime/commit/4936722b96202d97294049c4bc839f3a2231d083))
+* adds pods to pvc view, make swagger more discoverable ([#271](https://github.com/defenseunicorns/uds-runtime/issues/271)) ([d6e5eba](https://github.com/defenseunicorns/uds-runtime/commit/d6e5eba45e4cb5649977cfdbed78cf65c3c1eb23))
+* **api:** add fields query parameter for fine-grained data filtering ([#94](https://github.com/defenseunicorns/uds-runtime/issues/94)) ([0021790](https://github.com/defenseunicorns/uds-runtime/commit/002179074a4b2ba90eb3e7b62f1e355c6c0717f4))
+* **api:** strip annotations from sparse resources ([#250](https://github.com/defenseunicorns/uds-runtime/issues/250)) ([f43533a](https://github.com/defenseunicorns/uds-runtime/commit/f43533aa75c1f2c8b697b87bab8feaa8147b9f14))
+* local mode token protection ([#245](https://github.com/defenseunicorns/uds-runtime/issues/245)) ([d356940](https://github.com/defenseunicorns/uds-runtime/commit/d356940af5e63244381ab408eca854d0ea669761))
+* **ui:** adding status color mapping for k8s ([#264](https://github.com/defenseunicorns/uds-runtime/issues/264)) ([15fc75f](https://github.com/defenseunicorns/uds-runtime/commit/15fc75f35c529c70ffd3cd0e53a22802ac1691e8))
+
+
+### Bug Fixes
+
+* api token auth details view ([#276](https://github.com/defenseunicorns/uds-runtime/issues/276)) ([871cdf5](https://github.com/defenseunicorns/uds-runtime/commit/871cdf5f9561f1241a77f4b6271d94cb0dfabc7b))
+* **api:** dockerfile for releasing go binaries ([#258](https://github.com/defenseunicorns/uds-runtime/issues/258)) ([e35987c](https://github.com/defenseunicorns/uds-runtime/commit/e35987c01acc82fbab2023e691483a281e1673ac))
+* **ci:** swag init task output directory ([#248](https://github.com/defenseunicorns/uds-runtime/issues/248)) ([0d65c2e](https://github.com/defenseunicorns/uds-runtime/commit/0d65c2e97c8202729bdae9519892e47455e66ddf))
+* docker container run failure ([#267](https://github.com/defenseunicorns/uds-runtime/issues/267)) ([573a605](https://github.com/defenseunicorns/uds-runtime/commit/573a6053820cc8f1ff55589e38b45c44f59788ab))
+* fixing FOUC issue ([#236](https://github.com/defenseunicorns/uds-runtime/issues/236)) ([99886ea](https://github.com/defenseunicorns/uds-runtime/commit/99886eab9806faed4c269f3bea4d99ca67248d36))
+* fixing issue with chart not being destroyed onDestroy ([#243](https://github.com/defenseunicorns/uds-runtime/issues/243)) ([4bd9baf](https://github.com/defenseunicorns/uds-runtime/commit/4bd9bafc67cd39570aa94b1dccf9072933cb360e))
+* give ssm-user more permissions ([#228](https://github.com/defenseunicorns/uds-runtime/issues/228)) ([a55626c](https://github.com/defenseunicorns/uds-runtime/commit/a55626c7a0645de7bd3c6743c27f6113cad49343))
+* nightly release ([#260](https://github.com/defenseunicorns/uds-runtime/issues/260)) ([a99bc23](https://github.com/defenseunicorns/uds-runtime/commit/a99bc23473a31ee7b4761bf50b0b162c388eed51))
+* nightly release artifact fix ([#259](https://github.com/defenseunicorns/uds-runtime/issues/259)) ([648600d](https://github.com/defenseunicorns/uds-runtime/commit/648600dcf811ef2cf060389b9682a8ee8ff82dbc))
+* removes empty docs page, adds favicon ([#234](https://github.com/defenseunicorns/uds-runtime/issues/234)) ([db3212c](https://github.com/defenseunicorns/uds-runtime/commit/db3212c9ad0a33df1576ec9866917eba20b0ccf4))
+* **ui:** fixing issue with graph menu color ([#195](https://github.com/defenseunicorns/uds-runtime/issues/195)) ([b10f95f](https://github.com/defenseunicorns/uds-runtime/commit/b10f95f5595a4341b93356f671dca6b818abc31b))
+
+
+### Miscellaneous
+
+* add go binaries as artifacts of releases ([#240](https://github.com/defenseunicorns/uds-runtime/issues/240)) ([422deea](https://github.com/defenseunicorns/uds-runtime/commit/422deea7ef61f48e228c397aeb4489d5026c09df))
+* adding contributing instructions for front end testing locators ([#242](https://github.com/defenseunicorns/uds-runtime/issues/242)) ([4a253cf](https://github.com/defenseunicorns/uds-runtime/commit/4a253cf78039cc0ce450eb5a00baa6e31e1723b0))
+* api token auth documentation ([#269](https://github.com/defenseunicorns/uds-runtime/issues/269)) ([20cbd02](https://github.com/defenseunicorns/uds-runtime/commit/20cbd0265f56b5dbb17c1ca3538cf9f13f1a4987))
+* **api:** add api tests ([#231](https://github.com/defenseunicorns/uds-runtime/issues/231)) ([3f9eb2c](https://github.com/defenseunicorns/uds-runtime/commit/3f9eb2caa6cbca61bd7b99b73c482868cb061a20))
+* **api:** add field selector api tests ([#262](https://github.com/defenseunicorns/uds-runtime/issues/262)) ([6ee6720](https://github.com/defenseunicorns/uds-runtime/commit/6ee672046101cd965da57111c091d8233489c6ee))
+* **deps:** update dependency jsdom to v25 ([#247](https://github.com/defenseunicorns/uds-runtime/issues/247)) ([772930b](https://github.com/defenseunicorns/uds-runtime/commit/772930ba4677fcee0f4b242c9f0f4a9f66960a66))
+* **deps:** update dependency kubernetes-fluent-client to v3.0.2 ([#256](https://github.com/defenseunicorns/uds-runtime/issues/256)) ([4c075a8](https://github.com/defenseunicorns/uds-runtime/commit/4c075a8e108c71c31b0e0354a04272dbd1efd6e2))
+* **deps:** update github actions ([#213](https://github.com/defenseunicorns/uds-runtime/issues/213)) ([b51692f](https://github.com/defenseunicorns/uds-runtime/commit/b51692fff7c6f9f7f423ac0e3fbf8188cedd51bd))
+* **deps:** update github actions ([#227](https://github.com/defenseunicorns/uds-runtime/issues/227)) ([22b18b0](https://github.com/defenseunicorns/uds-runtime/commit/22b18b0c0d1a42e3f30d5d12849cdc478b500482))
+* **deps:** update github actions ([#257](https://github.com/defenseunicorns/uds-runtime/issues/257)) ([6c366cc](https://github.com/defenseunicorns/uds-runtime/commit/6c366ccbe0264a0c95362051ec072c59320c489e))
+* **deps:** update kubernetes packages to v0.31.0 ([#215](https://github.com/defenseunicorns/uds-runtime/issues/215)) ([9875e62](https://github.com/defenseunicorns/uds-runtime/commit/9875e62315d17814c861888f55c4d2f88ce0d92a))
+* **deps:** update module github.com/charmbracelet/lipgloss to v0.13.0 ([#232](https://github.com/defenseunicorns/uds-runtime/issues/232)) ([1cf315a](https://github.com/defenseunicorns/uds-runtime/commit/1cf315af910c026469f331fb338a03a012270716))
+* **deps:** update module github.com/zarf-dev/zarf to v0.38.3 ([#244](https://github.com/defenseunicorns/uds-runtime/issues/244)) ([adf6d82](https://github.com/defenseunicorns/uds-runtime/commit/adf6d82d175e139f84ec93f7e77f824a2537df5f))
+* **deps:** update module github.com/zarf-dev/zarf to v0.39.0 ([#283](https://github.com/defenseunicorns/uds-runtime/issues/283)) ([e3719a2](https://github.com/defenseunicorns/uds-runtime/commit/e3719a2721fe48fe1f6bf208cecf996da6ca6cd4))
+* tag uds cli install for renovate ([#226](https://github.com/defenseunicorns/uds-runtime/issues/226)) ([e3f5f71](https://github.com/defenseunicorns/uds-runtime/commit/e3f5f71c36a1c7fb3d1823e359ab93e0169d7c91))
+* **ui:** redirect to auth page when unauthenticated ([#278](https://github.com/defenseunicorns/uds-runtime/issues/278)) ([432002f](https://github.com/defenseunicorns/uds-runtime/commit/432002f19d041e371170d886d1124ae6bb4c2c7b))
+* update test iac ([#223](https://github.com/defenseunicorns/uds-runtime/issues/223)) ([9f21f91](https://github.com/defenseunicorns/uds-runtime/commit/9f21f91b5bd8691efa6a9824c5a3c13eacd625e9))
+
 ## [0.2.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.1.0...v0.2.0) (2024-08-19)
 
 
