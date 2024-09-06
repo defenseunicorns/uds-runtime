@@ -12,7 +12,7 @@
   import { authenticated } from '$lib/features/api-auth/store'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
   import Unauthenticated from '$components/Auth/component.svelte'
-  import { checkClusterConnection } from '$lib/utils/cluster-check'
+  import { checkClusterConnection } from '$lib/utils/cluster-check/cluster-check'
 
   let path = ''
   let clusterCheck: EventSource
@@ -25,7 +25,7 @@
   })
 
   onDestroy(() => {
-    clusterCheck && clusterCheck.close()
+    if (clusterCheck) clusterCheck.close()
   })
 
   afterNavigate(initFlowbite)
