@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"strings"
@@ -78,7 +79,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	}
 
 	// Start the reconnection goroutine
-	go handleReconnection(disconnected, k8sResources)
+	go handleReconnection(disconnected, k8sResources, k8s.NewClient, resources.NewCache)
 
 	// Add Swagger UI routes
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
@@ -319,25 +320,42 @@ func withLatestCache(k8sResources *K8sResources, handler func(cache *resources.C
 	}
 }
 
+type createClient func() (*k8s.Clients, error)
+type createCache func(ctx context.Context, client *k8s.Clients) (*resources.Cache, error)
+
+func getRetryInterval() time.Duration {
+	if interval, exists := os.LookupEnv("RETRY_INTERVAL_MS"); exists {
+		parsed, err := strconv.Atoi(interval)
+		if err == nil {
+			return time.Duration(parsed) * time.Millisecond
+		}
+	}
+	return 5 * time.Second // Default to 5 seconds if not set
+}
+
 // handleReconnection is a goroutine that handles reconnection to the k8s API
-func handleReconnection(disconnected chan error, k8sResources *K8sResources) {
+// passing createClient and createCache for testing purposes
+func handleReconnection(disconnected chan error, k8sResources *K8sResources, createClient createClient,
+	createCache createCache) {
 	for err := range disconnected {
 		fmt.Printf("Disconnected error received: %v\n", err)
 		for {
 			// Cancel the previous context
 			k8sResources.Cancel()
-			time.Sleep(5 * time.Second) // Retry interval
-			k8sClient, err := k8s.NewClient()
+			time.Sleep(getRetryInterval()) // Retry interval
+			k8sClient, err := createClient()
 			if err != nil {
 				fmt.Printf("Retrying to create k8s client: %v\n", err)
+				k8sResources.Client = nil
 				continue
 			}
 
 			// Ccreate a new context and cache
 			ctx, cancel := context.WithCancel(context.Background())
-			cache, err := resources.NewCache(ctx, k8sClient)
+			cache, err := createCache(ctx, k8sClient)
 			if err != nil {
 				fmt.Printf("Retrying to create cache: %v\n", err)
+				k8sResources.Cache = nil
 				continue
 			}
 
