@@ -16,6 +16,7 @@ import (
 	"testing"
 	"time"
 
+	"atomicgo.dev/assert"
 	"github.com/defenseunicorns/uds-runtime/pkg/api"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
@@ -401,5 +402,31 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 			json.Unmarshal(body[keyIndx:], &data)
 			require.Equal(t, tt.expectedKind, data["Object"].(map[string]interface{})["kind"])
 		}
+	})
+}
+
+func TestClusterHealth(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	t.Run("cluster connected", func(t *testing.T) {
+		// Create a new context with a timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/health", nil)
+
+		// Start serving the request for 1 second
+		go func(ctx context.Context) {
+			r.ServeHTTP(rr, req)
+		}(ctx)
+
+		// wait for the context to be done
+		<-ctx.Done()
+		require.Equal(t, http.StatusOK, rr.Code)
+		assert.Contains(t, rr.Body.String(), "success")
 	})
 }

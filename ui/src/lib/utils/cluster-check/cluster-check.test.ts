@@ -3,6 +3,8 @@ import { get } from 'svelte/store'
 import type { Mock } from 'vitest'
 import { checkClusterConnection } from './cluster-check'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // Vitest type redeclared cause it's not exported from vitest
 type Procedure = (...args: any[]) => any
 
@@ -25,19 +27,23 @@ class ClusterCheckEventSource {
 
     const msg = triggers && triggers?.msg
 
+    // Trigger onerror
     setTimeout(() => {
       if (triggers && triggers.onError) this.onerror!(new Event('error'))
     }, triggers?.onError)
 
+    // Trigger onmessage with success
     setTimeout(() => {
       if (msg && msg.success)
         this.onmessage!(new MessageEvent('message', { data: JSON.stringify({ success: 'success' }) }))
     }, msg?.success)
 
+    // Trigger onmessage with error
     setTimeout(() => {
       if (msg && msg.error) this.onmessage!(new MessageEvent('message', { data: JSON.stringify({ error: 'error' }) }))
     }, msg?.error)
 
+    // Trigger onmessage with reconnected
     setTimeout(() => {
       if (msg && msg.reconnected)
         this.onmessage!(new MessageEvent('message', { data: JSON.stringify({ reconnected: 'reconnected' }) }))
@@ -53,9 +59,6 @@ describe('cluster check', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals()
-  })
-
-  afterAll(() => {
     vi.useRealTimers()
   })
 
