@@ -16,7 +16,6 @@ import (
 	"testing"
 	"time"
 
-	"atomicgo.dev/assert"
 	"github.com/defenseunicorns/uds-runtime/pkg/api"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
@@ -427,6 +426,6 @@ func TestClusterHealth(t *testing.T) {
 		// wait for the context to be done
 		<-ctx.Done()
 		require.Equal(t, http.StatusOK, rr.Code)
-		assert.Contains(t, rr.Body.String(), "success")
+		require.Contains(t, rr.Body.String(), "success")
 	})
 }
