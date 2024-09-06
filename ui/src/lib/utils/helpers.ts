@@ -34,10 +34,12 @@ export async function updateApiAuthEnabled() {
 
   const isReload: boolean = isAuthEnabled !== null && isAuthenticated !== null
 
-  if (!isReload) {
+  if (!isReload && get(apiAuthEnabled) === null) {
     const envVars = await fetchAPIAuthStatus()
     // API Auth is only disabled when API_AUTH_DISABLED is set to 'true'
-    apiAuthEnabled.set(envVars.API_AUTH_DISABLED?.toLowerCase() !== 'true')
+    const auth: boolean = envVars.API_AUTH_DISABLED?.toLowerCase() !== 'true'
+    apiAuthEnabled.set(auth)
+    sessionStorage.setItem('apiAuthEnabled', JSON.stringify(auth))
   } else {
     apiAuthEnabled.set(isAuthEnabled)
     authenticated.set(isAuthenticated)

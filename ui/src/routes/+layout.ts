@@ -9,14 +9,17 @@ import { get } from 'svelte/store'
 export const ssr = false
 
 // Provide shared access to the cluster namespace store
-export const load = async ({ url }) => {
+export const load = async () => {
+  const namespaces = createStore()
+
   await updateApiAuthEnabled()
 
-  const namespaces = createStore()
-  const isInitialAPIAuthentication = url.pathname.includes('/auth')
+  const isAuthEnabled = JSON.parse(sessionStorage.getItem('apiAuthEnabled')!)
+  const isAuthenticated = JSON.parse(sessionStorage.getItem('authenticated')!)
+  const isReload: boolean = isAuthEnabled !== null && isAuthenticated !== null
 
-  // start namespaces store if API auth is disabled or if doing a reload
-  if (!get(apiAuthEnabled) || !isInitialAPIAuthentication) {
+  // start namespaces store if API auth is disabled or if doing a a reload
+  if (!get(apiAuthEnabled) || isReload) {
     namespaces.start()
   }
   return {
