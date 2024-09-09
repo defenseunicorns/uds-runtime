@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { Export, Information, Search } from 'carbon-icons-svelte'
+  import { ChevronUp, Export, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
 
@@ -19,6 +19,7 @@
   let unsubscribePage: Unsubscriber
 
   const peprStream = writable<PeprEvent[]>([])
+  export let columns = ['event', 'resource', 'details', 'count', 'timestamp']
 
   // Initialize the stores
   let rows = writable<PeprEvent[]>([])
@@ -26,24 +27,44 @@
   let sortBy = writable<string>('timestamp')
   let sortAsc = writable<boolean>(true)
 
-  $: $rows = $peprStream.filter((item) => {
-    if ($search === '') {
-      return item
-    }
-    const searchValue = $search.toLowerCase()
-    return (
-      item._name.toLowerCase().includes(searchValue) ||
-      item.event.toLowerCase().includes(searchValue) ||
-      item.header.toLowerCase().includes(searchValue) ||
-      item.msg.toLowerCase().includes(searchValue)
-    )
-  })
-
   // check for filtering
   let isFiltering = false
   $: {
-    isFiltering = !!$search
+    isFiltering = !!$search || !!$sortBy
   }
+
+  // re-render rows based on filter
+  $: $rows = $peprStream
+    .filter((item) => {
+      if (!isFiltering) {
+        return true
+      }
+      const searchValue = $search.toLowerCase()
+      return (
+        item._name.toLowerCase().includes(searchValue) ||
+        item.event.toLowerCase().includes(searchValue) ||
+        item.header.toLowerCase().includes(searchValue) ||
+        item.msg.toLowerCase().includes(searchValue)
+      )
+    })
+    .sort((a, b) => {
+      const sort = $sortAsc ? 1 : -1
+      if ($sortBy === 'timestamp') {
+        // Use ts if available, otherwise fall back to epoch
+        const aTime = a.ts ? new Date(a.ts).getTime() : a.epoch
+        const bTime = b.ts ? new Date(b.ts).getTime() : b.epoch
+        return (aTime - bTime) * sort
+      } else if ($sortBy === 'count') {
+        const aValue = Number(a[$sortBy as keyof typeof a]) || 0
+        const bValue = Number(b[$sortBy as keyof typeof b]) || 0
+        return (aValue - bValue) * sort
+      } else {
+        // Default case: treat $sortBy as a string key of the item
+        const aValue = String(a[$sortBy as keyof typeof a] || '').toLowerCase()
+        const bValue = String(b[$sortBy as keyof typeof b] || '').toLowerCase()
+        return aValue.localeCompare(bValue) * sort
+      }
+    })
 
   onDestroy(() => {
     unsubscribePage()
@@ -197,11 +218,23 @@
         <table>
           <thead>
             <tr>
-              <th class="w-2/12">Event</th>
-              <th class="w-3/12">Resource</th>
-              <th class="w-1/12">Details</th>
-              <th class="w-1/12">Count</th>
-              <th class="w-5/12">Timestamp</th>
+              {#each columns as header}
+                <th>
+                  <button
+                    on:click={() => {
+                      $sortBy = header === 'resource' ? '_name' : header
+                      $sortAsc = !$sortAsc
+                    }}
+                  >
+                    {header.replaceAll('_', ' ')}
+                    <ChevronUp
+                      class="sort
+                      {$sortAsc ? 'rotate-180' : ''}
+                      {$sortBy === header ? 'opacity-100' : 'opacity-0'}"
+                    />
+                  </button>
+                </th>
+              {/each}
             </tr>
           </thead>
           {#if loaded}
