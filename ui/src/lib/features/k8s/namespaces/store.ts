@@ -20,7 +20,6 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   }))
 
   const store = new ResourceStore<Resource, Row>(url, transform, 'name')
-
   return {
     ...store,
     start: store.start.bind(store),

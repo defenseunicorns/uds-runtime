@@ -25,6 +25,27 @@ vi.mock('$app/stores', () => {
   }
 })
 
+vi.mock('svelte/store', () => {
+  return {
+    writable: vi.fn().mockImplementation(<T>(initialValue: T) => {
+      return {
+        subscribe: (callback: (value: T) => void) => {
+          callback(initialValue)
+          return () => {}
+        },
+        set: vi.fn(),
+        update: vi.fn(),
+      }
+    }),
+    get: vi.fn((key) => {
+      if (key === 'apiAuthEnabled') {
+        return false
+      }
+      return true // Default return value for other keys
+    }),
+  }
+})
+
 suite('NamespaceTable Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()

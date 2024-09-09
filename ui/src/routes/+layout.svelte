@@ -9,8 +9,7 @@
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
   import '../app.postcss'
-  import { authenticated } from '$lib/features/api-auth/store'
-  import { apiAuthEnabled } from '$lib/features/api-auth/store'
+  import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
   import Unauthenticated from '$components/Auth/component.svelte'
 
   let path = ''
