@@ -12,9 +12,17 @@ export const ssr = false
 export const load = async () => {
   const namespaces = createStore()
 
-  updateApiAuthEnabled()
+  await updateApiAuthEnabled()
 
-  if (!get(apiAuthEnabled)) {
+  // check session storage for auth status
+  const isAuthEnabled = JSON.parse(sessionStorage.getItem('apiAuthEnabled')!)
+  const isAuthenticated = JSON.parse(sessionStorage.getItem('authenticated')!)
+
+  // use auth status to determine if this is a page reload vs initial load
+  const isReload: boolean = isAuthEnabled !== null && isAuthenticated !== null
+
+  // start namespaces store if API auth is disabled or if doing a a reload
+  if (!get(apiAuthEnabled) || isReload) {
     namespaces.start()
   }
   return {

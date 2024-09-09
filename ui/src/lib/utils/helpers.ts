@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { apiAuthEnabled } from '$features/api-auth/store'
+import { apiAuthEnabled, authenticated } from '$features/api-auth/store'
 import { get } from 'svelte/store'
 
 export const stringToSnakeCase = (name: string) => name.split(' ').join('-').toLocaleLowerCase()
@@ -29,9 +29,23 @@ export function createEventSource(path: string): EventSource {
 // Can't live in api-auth.ts because of sessionStorage usage in file, preventing this function
 // from being used in load functions
 export async function updateApiAuthEnabled() {
-  if (get(apiAuthEnabled) == null) {
+  // check session storage for auth status
+  const isAuthEnabled = JSON.parse(sessionStorage.getItem('apiAuthEnabled')!)
+  const isAuthenticated = JSON.parse(sessionStorage.getItem('authenticated')!)
+
+  const isReload: boolean = isAuthEnabled !== null && isAuthenticated !== null
+
+  // if this is not a page reload and we haven't checked the API auth status yet, fetch it
+  if (!isReload && get(apiAuthEnabled) === null) {
     const envVars = await fetchAPIAuthStatus()
     // API Auth is only disabled when API_AUTH_DISABLED is set to 'true'
-    apiAuthEnabled.set(envVars.API_AUTH_DISABLED?.toLowerCase() !== 'true')
+    const auth: boolean = envVars.API_AUTH_DISABLED?.toLowerCase() !== 'true'
+    // set store and session storage with value representing if auth is enabled or disabled
+    apiAuthEnabled.set(auth)
+    sessionStorage.setItem('apiAuthEnabled', JSON.stringify(auth))
+  } else {
+    // set the store values with the values grabbed from the session storage
+    apiAuthEnabled.set(isAuthEnabled)
+    authenticated.set(isAuthenticated)
   }
 }
