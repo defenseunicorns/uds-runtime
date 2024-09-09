@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { Export } from 'carbon-icons-svelte'
+  import { Export, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
 
@@ -19,6 +19,31 @@
   let unsubscribePage: Unsubscriber
 
   const peprStream = writable<PeprEvent[]>([])
+
+  // Initialize the stores
+  let rows = writable<PeprEvent[]>([])
+  let search = writable<string>('')
+  let sortBy = writable<string>('timestamp')
+  let sortAsc = writable<boolean>(true)
+
+  $: $rows = $peprStream.filter((item) => {
+    if ($search === '') {
+      return item
+    }
+    const searchValue = $search.toLowerCase()
+    return (
+      item._name.toLowerCase().includes(searchValue) ||
+      item.event.toLowerCase().includes(searchValue) ||
+      item.header.toLowerCase().includes(searchValue) ||
+      item.msg.toLowerCase().includes(searchValue)
+    )
+  })
+
+  // check for filtering
+  let isFiltering = false
+  $: {
+    isFiltering = !!$search
+  }
 
   onDestroy(() => {
     unsubscribePage()
@@ -78,7 +103,7 @@
   })
 
   const exportPeprStream = () => {
-    const data = $peprStream.map((item) => ({
+    const data = $rows.map((item) => ({
       event: item.event,
       resource: item._name,
       count: item.count,
@@ -112,7 +137,38 @@
 <section class="table-section">
   <div class="table-container">
     <div class="table-content">
+      <div class="table-header">
+        <span class="dark:text-white" data-testid="table-header">{'Pepr Events'}</span>
+        {#if isFiltering}
+          <span class="dark:text-gray-500 pl-2" data-testid="table-header-results">
+            (showing {$rows.length} of {$peprStream.length})
+          </span>
+        {:else}
+          <span class="dark:text-gray-500 pl-2" data-testid="table-header-results">({$peprStream.length})</span>
+        {/if}
+        <div class="relative group">
+          <Information class="ml-2 w-4 h-4 text-gray-400" />
+          <div class="tooltip tooltip-right min-w-72">
+            <div class="whitespace-normal">{'Hello description'}</div>
+          </div>
+        </div>
+      </div>
       <div class="table-filter-section">
+        <div class="relative lg:w-96">
+          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <Search class="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            name="input-search"
+            autocomplete="off"
+            class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 pl-9 text-gray-900 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+            placeholder="Search"
+            data-testid="datatable-search"
+            bind:value={$search}
+          />
+        </div>
+
         <div class="grid w-full grid-cols-1 md:grid-cols-4 md:gap-4 lg:w-2/3">
           <div class="w-full">
             <select id="stream" bind:value={streamFilter} on:change={handleStreamChange}>
@@ -150,12 +206,12 @@
           </thead>
           {#if loaded}
             <tbody>
-              {#if $peprStream.length === 0}
+              {#if $rows.length === 0}
                 <tr>
                   <td colspan="4" class="text-center">No matching entries found</td>
                 </tr>
               {:else}
-                {#each $peprStream as item}
+                {#each $rows as item}
                   <tr>
                     <td>
                       <span class="pepr-event {item.event}">{item.event}</span>
