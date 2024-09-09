@@ -240,23 +240,6 @@
             </div>
           </div>
         </div>
-
-        <!--        <div class="grid w-full grid-cols-1 md:grid-cols-4 md:gap-4 lg:w-2/3">-->
-        <!--          <div class="flex items-center w-full">-->
-        <!--            <Filter class="mr-2 h-4 w-4 text-gray-400" />-->
-        <!--            <select id="stream" bind:value={streamFilter} on:change={handleStreamChange}>-->
-        <!--              <option value="">All Data</option>-->
-        <!--              <hr />-->
-        <!--              <option value="policies">UDS Policies</option>-->
-        <!--              <option value="allowed">Allowed</option>-->
-        <!--              <option value="denied">Denied</option>-->
-        <!--              <option value="mutated">Mutated</option>-->
-        <!--              <hr />-->
-        <!--              <option value="operator">UDS Operator</option>-->
-        <!--              <option value="failed">Errors and Denials</option>-->
-        <!--            </select>-->
-        <!--          </div>-->
-        <!--        </div>-->
         <div
           class="flex flex-shrink-0 flex-col space-y-3 md:flex-row md:items-center md:space-x-3 md:space-y-0 lg:justify-end"
         >
