@@ -18,8 +18,8 @@
   let eventSource: EventSource | null = null
   let unsubscribePage: Unsubscriber
 
-  const streamOptions = [
-    { value: '', label: 'All Data' },
+  const streamSelectOptions = [
+    { value: '', label: 'All Pepr Events' },
     { value: 'policies', label: 'All UDS Policies' },
     { value: 'allowed', label: 'UDS Policies: Allowed' },
     { value: 'denied', label: 'UDS Policies: Denied' },
@@ -211,13 +211,13 @@
               data-testid="datatable-filter-dropdown"
             >
               <Filter class="mr-2 h-4 w-4 text-gray-400" />
-              {streamFilter ? streamOptions.find((option) => option.value === streamFilter)?.label : 'All Data'}
+              {streamFilter ? streamSelectOptions.find((option) => option.value === streamFilter)?.label : 'All Data'}
               <ChevronDown class="ml-2 h-4 w-4 text-gray-400" />
             </button>
             <div id="filterDropdown" class="z-10 hidden w-48 rounded-lg bg-white p-3 shadow dark:bg-gray-700">
               <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Filter By</h6>
               <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
-                {#each streamOptions as option}
+                {#each streamSelectOptions as option}
                   <li class="flex items-center">
                     <input
                       id={option.value || 'all'}
