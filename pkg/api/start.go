@@ -55,28 +55,27 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	ctx, cancel := context.WithCancel(context.Background())
 	k8sClient, err := k8s.NewClient()
 	if err != nil {
-		cancel()
 		return nil, fmt.Errorf("failed to create k8s client: %w", err)
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
 	cache, err := resources.NewCache(ctx, k8sClient)
 	if err != nil {
 		cancel()
 		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 
-	// Create the disconnected channel
-	disconnected := make(chan error)
-
-	// Create a K8sResources struct to hold the references
+	// K8sResources struct to hold references
 	k8sResources := &K8sResources{
 		Client: k8sClient,
 		Cache:  cache,
 		Cancel: cancel,
 	}
+
+	// Create the disconnected channel
+	disconnected := make(chan error)
 
 	// Start the reconnection goroutine
 	go handleReconnection(disconnected, k8sResources, k8s.NewClient, resources.NewCache)
@@ -342,7 +341,7 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 		for {
 			// Cancel the previous context
 			k8sResources.Cancel()
-			time.Sleep(getRetryInterval()) // Retry interval
+			time.Sleep(getRetryInterval())
 			k8sClient, err := createClient()
 			if err != nil {
 				fmt.Printf("Retrying to create k8s client: %v\n", err)
