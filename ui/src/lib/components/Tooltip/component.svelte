@@ -19,8 +19,6 @@
       isWider = false
     }
 
-    console.log(event.currentTarget.getClientRects())
-    console.log(document.getElementById('container')?.parentElement?.getClientRects())
     isHovered = true
     xOffset = event.pageX
     yOffset = event.pageY
@@ -78,17 +76,9 @@
 
 {#if isHovered && isWider}
   <div
-    class="tooltip-2 bg-gray-900 text-white opacity-90 text-xs focus:border-gray-200 focus:outline-none focus:ring-0 dark:border-gray-700"
+    class="absolute bg-gray-900 text-white opacity-90 text-xs focus:border-gray-200 focus:outline-none focus:ring-0 dark:border-gray-700 p-4 rounded-[4px]"
     style="top: {yOffset}px; left: {xOffset}px; padding: 10px"
   >
     {title}
   </div>
 {/if}
-
-<style lang="css">
-  .tooltip-2 {
-    border-radius: 4px;
-    padding: 4px;
-    position: absolute;
-  }
-</style>
