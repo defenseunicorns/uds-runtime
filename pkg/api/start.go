@@ -350,7 +350,7 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 				continue
 			}
 
-			// Ccreate a new context and cache
+			// Create a new context and cache
 			ctx, cancel := context.WithCancel(context.Background())
 			cache, err := createCache(ctx, k8sClient)
 			if err != nil {
