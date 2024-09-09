@@ -4,7 +4,7 @@
 <script lang="ts">
   import { ChevronDown, ChevronUp, Export, Filter, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
-  import { writable, type Unsubscriber } from 'svelte/store'
+  import { writable, type Unsubscriber, derived } from 'svelte/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
@@ -32,7 +32,6 @@
   export let columns = ['event', 'resource', 'details', 'count', 'timestamp']
 
   // Initialize the stores
-  let rows = writable<PeprEvent[]>([])
   let search = writable<string>('')
   let sortBy = writable<string>('timestamp')
   let sortAsc = writable<boolean>(true)
@@ -43,38 +42,43 @@
     isFiltering = !!$search || !!$sortBy
   }
 
-  // re-render rows based on filter
-  $: $rows = $peprStream
-    .filter((item) => {
-      if (!isFiltering) {
-        return true
-      }
-      const searchValue = $search.toLowerCase()
-      return (
+  function filterEvents(events: PeprEvent[], searchTerm: string): PeprEvent[] {
+    // filter events by the search term if one exists
+    if (!searchTerm) return events
+    const searchValue = searchTerm.toLowerCase()
+    return events.filter(
+      (item) =>
         item._name.toLowerCase().includes(searchValue) ||
         item.event.toLowerCase().includes(searchValue) ||
         item.header.toLowerCase().includes(searchValue) ||
-        item.msg.toLowerCase().includes(searchValue)
-      )
-    })
-    .sort((a, b) => {
-      const sort = $sortAsc ? 1 : -1
-      if ($sortBy === 'timestamp') {
-        // Use ts if available, otherwise fall back to epoch
+        item.msg.toLowerCase().includes(searchValue),
+    )
+  }
+
+  function sortEvents(events: PeprEvent[], sortKey: string, isAscending: boolean): PeprEvent[] {
+    const sortDirection = isAscending ? 1 : -1 // sort events in ascending order by default
+    // sort events based on the sort key
+    return events.sort((a, b) => {
+      if (sortKey === 'timestamp') {
         const aTime = a.ts ? new Date(a.ts).getTime() : a.epoch
         const bTime = b.ts ? new Date(b.ts).getTime() : b.epoch
-        return (aTime - bTime) * sort
-      } else if ($sortBy === 'count') {
-        const aValue = Number(a[$sortBy as keyof typeof a]) || 0
-        const bValue = Number(b[$sortBy as keyof typeof b]) || 0
-        return (aValue - bValue) * sort
+        return (aTime - bTime) * sortDirection
+      } else if (sortKey === 'count') {
+        const aValue = Number(a[sortKey as keyof typeof a]) || 0
+        const bValue = Number(b[sortKey as keyof typeof b]) || 0
+        return (aValue - bValue) * sortDirection
       } else {
-        // Default case: treat $sortBy as a string key of the item
-        const aValue = String(a[$sortBy as keyof typeof a] || '').toLowerCase()
-        const bValue = String(b[$sortBy as keyof typeof b] || '').toLowerCase()
-        return aValue.localeCompare(bValue) * sort
+        const aValue = String(a[sortKey as keyof typeof a] || '').toLowerCase()
+        const bValue = String(b[sortKey as keyof typeof b] || '').toLowerCase()
+        return aValue.localeCompare(bValue) * sortDirection
       }
     })
+  }
+
+  export const rows = derived([peprStream, search, sortBy, sortAsc], () => {
+    const filteredEvents = filterEvents($peprStream, $search)
+    return sortEvents(filteredEvents, $sortBy, $sortAsc)
+  })
 
   onDestroy(() => {
     unsubscribePage()
