@@ -35,7 +35,7 @@ We will poll the cluster with a server health check. Currently initiating this h
 
 ### Frontend Implementation:
 
-When a user lands on the application, triggering the main `src/routes/layout.svelte`, an EventSource is created for `/health` that will now continuously receive updates from the server on cluster connection health. If an error is received, a toast with an extremely long timeout will be displayed to the user. Only a single toast will be added regardless of subsequent error messages. When the connection is restored, the toast is updated to indicate reconnection and then removed.
+When a user lands on the application, triggering the main `src/routes/layout.svelte`, an EventSource is created for `/health` that will now continuously receive updates from the server on cluster connection health. If an error is received, a toast will be displayed to the user. This error toast should remain on the screen (regardless of user navigation) until a reconnected message is received. Only a single toast will be added regardless of subsequent error messages. When the connection is restored, the toast is updated to indicate reconnection and then removed.
 
 ## Changes to Existing Systems:
 
