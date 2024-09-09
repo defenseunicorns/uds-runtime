@@ -7,7 +7,7 @@ Ticket: https://github.com/defenseunicorns/uds-runtime/issues/10
 
 ## Problem Statement
 
-It is important for real-time monitoring and maintaining of a kubernetes cluster, that users are made aware when their connection to the cluster is no longer healthy. This is especially important given that Runtime uses a cache (built from kubernetes informers), which continues to serve potentially outdated information upon cluster disconnection. This design aims to solve this problem by implementing a system that detects cluster disconnection and automatically attempts to reconnect, while providing feedback to users.
+It is important for real-time monitoring and maintaining of a kubernetes cluster, that users are made aware when their connection to the cluster is no longer healthy. This is especially important given that Runtime uses a cache (built from kubernetes informers), which continues to serve potentially outdated information upon cluster disconnection. This design aims to solve this problem for local (out of cluster) deployments of Runtime by implementing a system that detects cluster disconnection and automatically attempts to reconnect, while providing feedback to users.
 
 ## Proposal
 
@@ -35,7 +35,7 @@ We will poll the cluster with a server version check. Currently initiating this 
 
 ### Frontend Implementation:
 
-When a user lands on the application, triggering the main `src/routes/layout.svelte`, an EventSource is created for `/health` that will now continuously receive updates from the server on cluster connection health. If an error is received, a toast with an extremely long timeout will be displayed to the user. Only a single toast will be added regardless of subsequent error messages. When the connection is restored, the toast is updated to indicate reconnection.
+When a user lands on the application, triggering the main `src/routes/layout.svelte`, an EventSource is created for `/health` that will now continuously receive updates from the server on cluster connection health. If an error is received, a toast with an extremely long timeout will be displayed to the user. Only a single toast will be added regardless of subsequent error messages. When the connection is restored, the toast is updated to indicate reconnection and then removed.
 
 ## Changes to Existing Systems:
 
@@ -49,12 +49,13 @@ When a user lands on the application, triggering the main `src/routes/layout.sve
 
 1. If the connection check interval is too low, there is potential for unnecessarily initiating reconnection attempts. This occurs when an error kicks off reconnection handling, the reconnection is successful, but the check occurs with the old clientset before the new one can be set and therefore sends another error to the disconnected error channel.
 
-1. If the user is on a route showing resource data (eg. pods, CRs, services etc...) and the connection is restored, that page EventSource is still "connected" to the old cache / informers. To begin seeing cluster events and new data, the user has to refresh or navigate away and back to trigger a new EventSource connection.
+1. If the user is on a route showing resource data (eg. pods, CRs, services etc...) and the connection is restored, that page EventSource is still "connected" to the old cache / informers. To begin seeing cluster events and new data, the user has to refresh or navigate away and back to trigger a new EventSource connection. (Discussed with design team and will be working on a possible fix that "reloads" (preferably no page reload) the data by re-creating the store.)
+
+1. Are there any side-effects of this running in-cluster?
 
 ## Non-Goals
 
-This solution does not include handling other Kubernetes API failures unrelated to cluster disconnections.
-It does not provide full error recovery for all possible API failures.
+This solution does not include handling other Kubernetes API failures unrelated to cluster disconnections. It does not provide full error recovery for all possible API failures.
 
 ## Future Improvements
 
@@ -68,4 +69,4 @@ E0909 09:36:59.759711 2545122 reflector.go:158] "Unhandled Error" err="pkg/mod/k
 
 ## Other Considerations
 
-The impact of reconnection attempts on system performance should be monitored, particularly in environments with high traffic.
+- The impact of reconnection attempts on system performance should be monitored, particularly in environments with high traffic.
