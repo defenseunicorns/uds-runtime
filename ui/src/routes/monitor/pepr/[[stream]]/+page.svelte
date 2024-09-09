@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { ChevronUp, Export, Information, Search } from 'carbon-icons-svelte'
+  import { ChevronDown, ChevronUp, Export, Filter, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
 
@@ -17,6 +17,16 @@
   let streamFilter = ''
   let eventSource: EventSource | null = null
   let unsubscribePage: Unsubscriber
+
+  const streamOptions = [
+    { value: '', label: 'All Data' },
+    { value: 'policies', label: 'All UDS Policies' },
+    { value: 'allowed', label: 'UDS Policies: Allowed' },
+    { value: 'denied', label: 'UDS Policies: Denied' },
+    { value: 'mutated', label: 'UDS Policies: Mutated' },
+    { value: 'operator', label: 'UDS Operator' },
+    { value: 'failed', label: 'Errors and Denials' },
+  ]
 
   const peprStream = writable<PeprEvent[]>([])
   export let columns = ['event', 'resource', 'details', 'count', 'timestamp']
@@ -170,7 +180,9 @@
         <div class="relative group">
           <Information class="ml-2 w-4 h-4 text-gray-400" />
           <div class="tooltip tooltip-right min-w-72">
-            <div class="whitespace-normal">{'Hello description'}</div>
+            <div class="whitespace-normal">
+              {'These are UDS Operator logs scraped from Pepr running in the cluster'}
+            </div>
           </div>
         </div>
       </div>
@@ -189,22 +201,62 @@
             bind:value={$search}
           />
         </div>
-
         <div class="grid w-full grid-cols-1 md:grid-cols-4 md:gap-4 lg:w-2/3">
-          <div class="w-full">
-            <select id="stream" bind:value={streamFilter} on:change={handleStreamChange}>
-              <option value="">All Data</option>
-              <hr />
-              <option value="policies">UDS Policies</option>
-              <option value="allowed">UDS Policies: Allowed</option>
-              <option value="denied">UDS Policies: Denied</option>
-              <option value="mutated">UDS Policies: Mutated</option>
-              <hr />
-              <option value="operator">UDS Operator</option>
-              <option value="failed">Errors and Denials</option>
-            </select>
+          <div class="flex items-center w-full">
+            <button
+              id="filterDropdownButton"
+              data-dropdown-toggle="filterDropdown"
+              class="hover:text-primary-700 flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 md:w-auto dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+              type="button"
+              data-testid="datatable-filter-dropdown"
+            >
+              <Filter class="mr-2 h-4 w-4 text-gray-400" />
+              {streamFilter ? streamOptions.find((option) => option.value === streamFilter)?.label : 'All Data'}
+              <ChevronDown class="ml-2 h-4 w-4 text-gray-400" />
+            </button>
+            <div id="filterDropdown" class="z-10 hidden w-48 rounded-lg bg-white p-3 shadow dark:bg-gray-700">
+              <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Filter By</h6>
+              <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
+                {#each streamOptions as option}
+                  <li class="flex items-center">
+                    <input
+                      id={option.value || 'all'}
+                      type="radio"
+                      name="streamFilter"
+                      value={option.value}
+                      class="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:focus:bg-blue-600 dark:focus:ring-blue-600"
+                      bind:group={streamFilter}
+                      on:change={handleStreamChange}
+                    />
+                    <label
+                      for={option.value || 'all'}
+                      class="ms-2 block text-sm font-medium text-gray-900 dark:text-gray-300"
+                    >
+                      {option.label}
+                    </label>
+                  </li>
+                {/each}
+              </ul>
+            </div>
           </div>
         </div>
+
+        <!--        <div class="grid w-full grid-cols-1 md:grid-cols-4 md:gap-4 lg:w-2/3">-->
+        <!--          <div class="flex items-center w-full">-->
+        <!--            <Filter class="mr-2 h-4 w-4 text-gray-400" />-->
+        <!--            <select id="stream" bind:value={streamFilter} on:change={handleStreamChange}>-->
+        <!--              <option value="">All Data</option>-->
+        <!--              <hr />-->
+        <!--              <option value="policies">UDS Policies</option>-->
+        <!--              <option value="allowed">Allowed</option>-->
+        <!--              <option value="denied">Denied</option>-->
+        <!--              <option value="mutated">Mutated</option>-->
+        <!--              <hr />-->
+        <!--              <option value="operator">UDS Operator</option>-->
+        <!--              <option value="failed">Errors and Denials</option>-->
+        <!--            </select>-->
+        <!--          </div>-->
+        <!--        </div>-->
         <div
           class="flex flex-shrink-0 flex-col space-y-3 md:flex-row md:items-center md:space-x-3 md:space-y-0 lg:justify-end"
         >
