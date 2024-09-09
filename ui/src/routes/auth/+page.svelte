@@ -16,10 +16,16 @@
       const url = new URL(window.location.href)
       let token = url.searchParams.get('token') || ''
       if (await Auth.connect(token)) {
+        // Update the store
         authenticated.set(true)
+        // Update the session storage
+        sessionStorage.setItem('authenticated', JSON.stringify(true))
         goto('/')
       } else {
-        authenticated.set(false) // Update the store
+        // Update the store
+        authenticated.set(false)
+        // Update the session storage
+        sessionStorage.setItem('authenticated', JSON.stringify(false))
       }
 
       //set namespaces

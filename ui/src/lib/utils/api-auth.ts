@@ -25,6 +25,9 @@ export class APIAuth {
 
   #invalidateAuth() {
     sessionStorage.removeItem('token')
+    sessionStorage.removeItem('apiAuthEnabled')
+    sessionStorage.removeItem('authenticated')
+
     if (location.pathname !== '/auth') {
       location.pathname = '/auth'
     }
