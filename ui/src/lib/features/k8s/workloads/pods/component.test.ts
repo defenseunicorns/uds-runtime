@@ -37,7 +37,7 @@ suite('PodTable Component', () => {
       ['restarts', 'w-1/12'],
       ['metrics', 'w-1/12'],
       ['node', 'w-1/12 truncate'],
-      ['age', 'w-1/12']
+      ['age', 'w-1/12'],
     ],
     name,
     description,
