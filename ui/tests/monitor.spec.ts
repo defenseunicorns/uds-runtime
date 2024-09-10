@@ -24,8 +24,8 @@ test.describe('Monitor', async () => {
 
   test('searching while using filter dropdown', async ({ page }) => {
     await page.getByTestId('datatable-search').fill('podinfo/podinfo')
-    await page.getByTestId('datatable-filter-dropdown').click()
-    await page.getByText('UDS Policies: Allowed').click()
+    await page.getByTestId('table-filter-stream-select').click()
+    await page.selectOption('select#stream', 'UDS Policies: Allowed')
 
     // wait for data to load
     await page.waitForSelector('.pepr-event.ALLOWED')
