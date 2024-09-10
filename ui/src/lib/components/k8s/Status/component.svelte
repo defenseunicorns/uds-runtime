@@ -2,11 +2,12 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { type PVCStatus } from '$features/k8s/types'
   import { getColorAndStatus } from '$lib/features/k8s/helpers'
-  export let status: PVCStatus
 
-  $: statusClass = getColorAndStatus('PersistentVolumeClaims', status)
+  export let type
+  export let status
+
+  $: statusClass = getColorAndStatus(type, status)
 </script>
 
 {#if status}
