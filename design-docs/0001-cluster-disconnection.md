@@ -11,15 +11,15 @@ It is important for real-time monitoring and maintaining of a kubernetes cluster
 
 ## Proposal
 
-The solution involves creating a mechanism that constantly monitors the health of the cluster connection. If the connection is lost, it will trigger a reconnection attempt in the background and notify the user via toast notifications in the frontend. Upon reconnection, a success message will be shown to the user, and the system will continue normal operations.
+The solution involves creating a mechanism that constantly monitors the health of the cluster connection. If the connection is lost, it will trigger a reconnection attempt in the background and notify the user via toast notifications in the frontend. Upon reconnection, a success message will be shown to the user, the current view will be updated, and the system will continue normal operations.
 
 ## Scope and Requirements
 
-- Detect disconnection from the Kubernetes cluster.
-- Automatically attempt to reconnect when a disconnection is detected.
-- Notify users of both disconnection and successful reconnection via the frontend UI.
-- Ensure the system can handle reconnection attempts without causing a complete failure or downtime.
-- Keep monitoring the cluster connection state at regular intervals.
+- Detect disconnection from the cluster
+- Automatically attempt to reconnect when a disconnection is detected
+- Notify users of both disconnection and successful reconnection via the frontend UI
+- Ensure the system can handle reconnection attempts without causing a complete failure or downtime
+- Keep monitoring the cluster connection state at regular intervals
 
 ## Implementation Details
 
@@ -31,25 +31,28 @@ The implementation will consist of the following components:
 The ideal approach would be to use the [watch error handler](https://github.com/kubernetes/client-go/blob/v0.20.5/tools/cache/shared_informer.go#L169-L182) that every informer already implements to detect disconnection. By doing so, we would not need to poll the cluster with a separate endpoint. The issue found in testing this is that when informers connect successfully they don't detect disconnection errors immediately. It seems as though they don't get the error until some timeout is hit, likely closing the TCP connection. An attempt at setting the timeout for TCP connections to a lower value, did not make a difference.
 
 **Alternative**
-We will poll the cluster with a server health check. Currently initiating this health check requires the frontend to make a request to `/health` (should this change?). If an error is encountered, the system will emit a disconnection event, triggering the reconnection process in a separate go routine. The reconnection handler will cancel the current cache context (officially stopping the informers), attempt to recreate the Kubernetes client, and reinitialize the cache. This loop will continue until the connection is restored or the application is stopped.
+We will poll the cluster with a server health check. Currently initiating this health check requires the frontend to make a request to `/health`. If an error is encountered, the system will emit a disconnection event, triggering the reconnection process in a separate go routine. The reconnection handler will cancel the current cache context (officially stopping the informers), attempt to recreate the Kubernetes client, and reinitialize the cache. This loop will continue until the connection is restored or the application is stopped.
+
+**The client and cache must be recreated for the originally connected cluster. We will not automatically "fail-over" to another cluster in the kubecontext.**
 
 ### Frontend Implementation:
 
 When a user lands on the application, triggering the main `src/routes/layout.svelte`, an EventSource is created for `/health` that will now continuously receive updates from the server on cluster connection health. If an error is received, a toast will be displayed to the user. This error toast should remain on the screen (regardless of user navigation) until a reconnected message is received. Only a single toast will be added regardless of subsequent error messages. When the connection is restored, the toast is updated to indicate reconnection and then removed.
+
+After the reconnection event is received, a custom event will be dispatched to trigger an event listener on the `Datatable` component. This event handler will then restart the table store, which re-fires the eventSource call and gets data from the new cache.
 
 ## Changes to Existing Systems:
 
 - Add a new health check route (/health) to monitor the cluster's connection status.
 - Introduce reconnection handling logic in the backend to manage the lifecycle of Kubernetes clients and caches.
 - Wrap route handlers so they dynamically get the latest cache
+- Add event listeners and dispatchers in UI and make stores from createStore(), in Datatable, reactive
 
 ## Current Problems and Questions
 
 1. By intiating the health check via the frontend call to `/health`, this creates a poll per client. Could this cause strain on the server? Could all these potential error events (for the same cluster disconnection) cause unnecessary reconnection attempts?
 
 1. If the connection check interval is too low, there is potential for unnecessarily initiating reconnection attempts. This occurs when an error kicks off reconnection handling, the reconnection is successful, but the check occurs with the old clientset before the new one can be set and therefore sends another error to the disconnected error channel.
-
-1. If the user is on a route showing resource data (eg. pods, CRs, services etc...) and the connection is restored, that page EventSource is still "connected" to the old cache / informers. To begin seeing cluster events and new data, the user has to refresh or navigate away and back to trigger a new EventSource connection. (Discussed with design team and will be working on a possible fix that "reloads" (preferably no page reload) the data by re-creating the store.)
 
 1. Are there any side-effects of this running in-cluster?
 
