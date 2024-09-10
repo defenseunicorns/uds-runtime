@@ -32,9 +32,11 @@ import (
 )
 
 type K8sResources struct {
-	Client *k8s.Clients
-	Cache  *resources.Cache
-	Cancel context.CancelFunc
+	Client          *k8s.Clients
+	Cache           *resources.Cache
+	OriginalCtx     string
+	OriginalCluster string
+	Cancel          context.CancelFunc
 }
 
 // @title UDS Runtime API
@@ -55,23 +57,10 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	k8sClient, err := k8s.NewClient()
+	// Setup k8s resources
+	k8sResources, err := setupK8sResources()
 	if err != nil {
-		return nil, fmt.Errorf("failed to create k8s client: %w", err)
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	cache, err := resources.NewCache(ctx, k8sClient)
-	if err != nil {
-		cancel()
-		return nil, fmt.Errorf("failed to create cache: %w", err)
-	}
-
-	// K8sResources struct to hold references
-	k8sResources := &K8sResources{
-		Client: k8sClient,
-		Cache:  cache,
-		Cancel: cancel,
+		return nil, fmt.Errorf("failed to setup k8s resources: %w", err)
 	}
 
 	// Create the disconnected channel
@@ -237,6 +226,37 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	return r, nil
 }
 
+func setupK8sResources() (*K8sResources, error) {
+	k8sClient, err := k8s.NewClient()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create k8s client: %w", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cache, err := resources.NewCache(ctx, k8sClient)
+	if err != nil {
+		cancel()
+		return nil, fmt.Errorf("failed to create cache: %w", err)
+	}
+
+	currentCtx, currentCluster, err := k8s.GetCurrentContext()
+	if err != nil {
+		cancel()
+		return nil, fmt.Errorf("failed to get current context: %w", err)
+	}
+
+	// K8sResources struct to hold references
+	k8sResources := &K8sResources{
+		Client:          k8sClient,
+		Cache:           cache,
+		OriginalCtx:     currentCtx,
+		OriginalCluster: currentCluster,
+		Cancel:          cancel,
+	}
+
+	return k8sResources, nil
+}
+
 // fileServer is a custom file server handler for embedded files
 func fileServer(r chi.Router, root http.FileSystem) error {
 	// Load index.html content and modification time at startup
@@ -333,7 +353,7 @@ func getRetryInterval() time.Duration {
 }
 
 // handleReconnection is a goroutine that handles reconnection to the k8s API
-// passing createClient and createCache for testing purposes
+// passing createClient and createCache instead of callings k8s.NewClient and resources.NewCache for testing purposes
 func handleReconnection(disconnected chan error, k8sResources *K8sResources, createClient createClient,
 	createCache createCache) {
 	for err := range disconnected {
@@ -342,10 +362,22 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 			// Cancel the previous context
 			k8sResources.Cancel()
 			time.Sleep(getRetryInterval())
+
+			currentCtx, currentCluster, err := k8s.GetCurrentContext()
+			if err != nil {
+				fmt.Printf("Error fetching current context: %v\n", err)
+				continue
+			}
+
+			// If the current context or cluster is different from the original, skip reconnection
+			if currentCtx != k8sResources.OriginalCtx || currentCluster != k8sResources.OriginalCluster {
+				fmt.Println("Current context has changed. Skipping reconnection.")
+				continue
+			}
+
 			k8sClient, err := createClient()
 			if err != nil {
 				fmt.Printf("Retrying to create k8s client: %v\n", err)
-				k8sResources.Client = nil
 				continue
 			}
 
@@ -354,7 +386,6 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 			cache, err := createCache(ctx, k8sClient)
 			if err != nil {
 				fmt.Printf("Retrying to create cache: %v\n", err)
-				k8sResources.Cache = nil
 				continue
 			}
 
