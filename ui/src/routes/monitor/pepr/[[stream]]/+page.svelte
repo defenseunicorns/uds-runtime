@@ -39,7 +39,7 @@
   // check for filtering
   let isFiltering = false
   $: {
-    isFiltering = !!$search || !!$sortBy
+    isFiltering = !!$search
   }
 
   function filterEvents(events: PeprEvent[], searchTerm: string): PeprEvent[] {
