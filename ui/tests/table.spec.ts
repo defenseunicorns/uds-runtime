@@ -40,7 +40,7 @@ test.describe('DataTable', async () => {
     expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 8)')
   })
 
-  test('filters rows when enterting search values with "Metadata" selected', async ({ page }) => {
+  test('filters rows when entering search values with "Metadata" selected', async ({ page }) => {
     await page.getByTestId('datatable-filter-dropdown').click()
     await page.getByLabel('Metadata').click()
 
@@ -49,7 +49,7 @@ test.describe('DataTable', async () => {
     expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 4 of 8)')
   })
 
-  test('filters rows when enterting search values with "Name" selected', async ({ page }) => {
+  test('filters rows when entering search values with "Name" selected', async ({ page }) => {
     await page.getByTestId('datatable-filter-dropdown').click()
     await page.getByLabel('Name').click()
 
