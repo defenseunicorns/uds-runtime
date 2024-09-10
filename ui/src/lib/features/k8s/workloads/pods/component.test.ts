@@ -171,7 +171,7 @@ suite('PodTable Component', () => {
     },
     restarts: 1,
     controlled_by: 'DaemonSet',
-    status: { component: SvelteComponent, props: { status: 'Running' } },
+    status: { component: SvelteComponent, props: { type: 'Pod', status: 'Running' } },
     node: '',
   }
 
