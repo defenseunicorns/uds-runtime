@@ -29,7 +29,13 @@
   ]
 
   const peprStream = writable<PeprEvent[]>([])
-  export let columns = ['event', 'resource', 'details', 'count', 'timestamp']
+  export let columns = [
+    { name: 'event', style: 'w-2/12' },
+    { name: 'resource', style: 'w-3/12' },
+    { name: 'details', style: 'w-1/12' },
+    { name: 'count', style: 'w-1/12' },
+    { name: 'timestamp', style: 'w-5/12' },
+  ]
 
   // Initialize the stores
   let search = writable<string>('')
@@ -233,19 +239,19 @@
         <table>
           <thead>
             <tr>
-              {#each columns as header}
-                <th>
+              {#each columns as col}
+                <th class={col.style}>
                   <button
                     on:click={() => {
-                      $sortBy = header === 'resource' ? '_name' : header
+                      $sortBy = col.name === 'resource' ? '_name' : col.name
                       $sortAsc = !$sortAsc
                     }}
                   >
-                    {header.replaceAll('_', ' ')}
+                    {col.name.replaceAll('_', ' ')}
                     <ChevronUp
                       class="sort
                       {$sortAsc ? 'rotate-180' : ''}
-                      {$sortBy === header ? 'opacity-100' : 'opacity-0'}"
+                      {$sortBy === col.name ? 'opacity-100' : 'opacity-0'}"
                     />
                   </button>
                 </th>
@@ -282,19 +288,19 @@
             <tbody class="animate-pulse">
               {#each skeletonRows as w}
                 <tr class="border-b border-gray-700">
-                  <td class="w-2/12">
+                  <td class={columns[0].style}>
                     <div class="h-6 rounded bg-gray-600 w-20"></div>
                   </td>
-                  <td class="w-3/12">
+                  <td class={columns[1].style}>
                     <div class="h-6 bg-gray-500 rounded {w}"></div>
                   </td>
-                  <td class="w-1/12">
+                  <td class={columns[2].style}>
                     <div class="h-6 bg-gray-600 rounded w-20"></div>
                   </td>
-                  <td class="w-1/12">
+                  <td class={columns[3].style}>
                     <div class="h-6 bg-gray-600 rounded w-8"></div>
                   </td>
-                  <td class="w-5/12">
+                  <td class={columns[4].style}>
                     <div class="h-6 bg-gray-600 rounded w-1/2"></div>
                   </td>
                 </tr>
