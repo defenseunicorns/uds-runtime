@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { ChevronDown, ChevronUp, Export, Filter, Information, Search } from 'carbon-icons-svelte'
+  import { ChevronUp, Export, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber, derived } from 'svelte/store'
 
