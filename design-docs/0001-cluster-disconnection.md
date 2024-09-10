@@ -2,7 +2,7 @@
 
 Author(s): Runtime Team
 Date Created: Sept. 9, 2024
-Status: DRAFT
+Status: Implemented
 Ticket: https://github.com/defenseunicorns/uds-runtime/issues/10
 
 ## Problem Statement
@@ -27,13 +27,23 @@ The implementation will consist of the following components:
 
 ### Backend Implementation:
 
-**Ideal**:
-The ideal approach would be to use the [watch error handler](https://github.com/kubernetes/client-go/blob/v0.20.5/tools/cache/shared_informer.go#L169-L182) that every informer already implements to detect disconnection. By doing so, we would not need to poll the cluster with a separate endpoint. The issue found in testing this is that when informers connect successfully they don't detect disconnection errors immediately. It seems as though they don't get the error until some timeout is hit, likely closing the TCP connection. An attempt at setting the timeout for TCP connections to a lower value, did not make a difference.
+#### Detection:
 
-**Alternative**
-We will poll the cluster with a server health check. Currently initiating this health check requires the frontend to make a request to `/health`. If an error is encountered, the system will emit a disconnection event, triggering the reconnection process in a separate go routine. The reconnection handler will cancel the current cache context (officially stopping the informers), attempt to recreate the Kubernetes client, and reinitialize the cache. This loop will continue until the connection is restored or the application is stopped.
+Option 1: Use Informers
 
-**The client and cache must be recreated for the originally connected cluster. We will not automatically "fail-over" to another cluster in the kubecontext.**
+This approach uses the [watch error handler](https://github.com/kubernetes/client-go/blob/v0.20.5/tools/cache/shared_informer.go#L169-L182) that every informer already implements to detect disconnection. By doing so, we would not need to poll the cluster with a separate endpoint. We could then, upon disconnection, implement reconnection logic. The issue found in testing this option is that when informers connect successfully they don't then detect disconnection errors immediately. It seems as though they don't get the error until some timeout is hit, likely closing the TCP connection. An attempt at setting the timeout for TCP connections to a lower value, did not make a difference.
+
+Option 2: Poll
+
+We poll the cluster with a server health check. Initiating this health check requires the frontend to make a request to `/health`. If an error is encountered, the system will emit a disconnection event, triggering the reconnection process in a separate go routine.
+
+**Solution**
+
+Due to complications mentioned in option 1, we have chosen to implement option 2.
+
+#### Reconnecting
+
+When triggered by an update to the disconnected error channel, the reconnection handler will cancel the current cache context (officially stopping the informers), attempt to recreate the Kubernetes client, and reinitialize the cache. This loop will continue until the connection is restored or the application is stopped. **Note:** reconnection attempts will only be made to the originally connected cluster based on the original current-context and cluster name.
 
 ### Frontend Implementation:
 
@@ -45,7 +55,7 @@ After the reconnection event is received, a custom event will be dispatched to t
 
 - Add a new health check route (/health) to monitor the cluster's connection status.
 - Introduce reconnection handling logic in the backend to manage the lifecycle of Kubernetes clients and caches.
-- Wrap route handlers so they dynamically get the latest cache
+- Wrap route handlers so they dynamically get the latest cache. Otherwise, routes will always maintain the cache reference they were initialized with and therefore never return data from the new informers.
 - Add event listeners and dispatchers in UI and make stores from createStore(), in Datatable, reactive
 
 ## Current Problems and Questions
