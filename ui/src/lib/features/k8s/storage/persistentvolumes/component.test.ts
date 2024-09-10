@@ -66,7 +66,7 @@ suite('PersistentVolume Component', () => {
       storage_class: 'local-path',
       capacity: '10Gi',
       claim: 'data-loki-backend-0',
-      status: 'Bound',
+      status: { component: Component, props: { type: 'PersistentVolumeClaims', status: 'Bound' } },
     },
   ]
 
