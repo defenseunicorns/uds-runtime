@@ -141,11 +141,11 @@
         <table>
           <thead>
             <tr>
-              <th>Event</th>
-              <th>Resource</th>
-              <th>Details</th>
-              <th>Count</th>
-              <th>Timestamp</th>
+              <th class="w-2/12">Event</th>
+              <th class="w-3/12">Resource</th>
+              <th class="w-1/12">Details</th>
+              <th class="w-1/12">Count</th>
+              <th class="w-5/12">Timestamp</th>
             </tr>
           </thead>
           {#if loaded}
@@ -178,17 +178,20 @@
             <tbody class="animate-pulse">
               {#each skeletonRows as w}
                 <tr class="border-b border-gray-700">
-                  <td class="py-2 px-4 w-36">
-                    <div class="h-6 rounded px-2 py-0.5 bg-gray-600"></div>
+                  <td class="w-2/12">
+                    <div class="h-6 rounded bg-gray-600 w-20"></div>
                   </td>
-                  <td class="py-2 px-4">
+                  <td class="w-3/12">
                     <div class="h-6 bg-gray-500 rounded {w}"></div>
                   </td>
-                  <td class="py-2 px-4 w-24">
+                  <td class="w-1/12">
+                    <div class="h-6 bg-gray-600 rounded w-20"></div>
+                  </td>
+                  <td class="w-1/12">
                     <div class="h-6 bg-gray-600 rounded w-8"></div>
                   </td>
-                  <td class="py-2 px-4 w-64">
-                    <div class="h-6 bg-gray-600 rounded w-full"></div>
+                  <td class="w-5/12">
+                    <div class="h-6 bg-gray-600 rounded w-1/2"></div>
                   </td>
                 </tr>
               {/each}
