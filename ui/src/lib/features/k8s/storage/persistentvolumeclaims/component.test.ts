@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
+import StatusComponent from '$components/k8s/Status/component.svelte'
 import {
   expectEqualIgnoringFields,
   MockEventSource,
@@ -81,7 +82,7 @@ suite('PersistentVolumeClaim Component', () => {
       namespace: 'loki',
       storage_class: 'local-path',
       capacity: '10Gi',
-      status: { component: Component, props: { type: 'PersistentVolumeClaims', status: 'Bound' } },
+      status: { component: StatusComponent, props: { type: 'PersistentVolumeClaims', status: 'Bound' } },
     },
   ]
 

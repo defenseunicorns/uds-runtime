@@ -5,6 +5,7 @@
 import '@testing-library/jest-dom'
 import { writable } from 'svelte/store'
 
+import StatusComponent from '$components/k8s/Status/component.svelte'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { V1Namespace } from '@kubernetes/client-node'
 import {
@@ -98,7 +99,7 @@ suite('NamespaceTable Component', () => {
   const expectedTables = [
     {
       name: 'promtail',
-      status: { component: Component, props: { type: 'Namespaces', status: 'Active' } },
+      status: { component: StatusComponent, props: { type: 'Namespaces', status: 'Active' } },
       namespace: '',
     },
   ]
