@@ -29,6 +29,14 @@ export function checkClusterConnection() {
         message: 'Cluster connection restored',
         timeoutSecs: 10,
       })
+
+      // Dispatch custom event for reconnection
+      // use window instead of svelte createEventDispatcher
+      // because event doesn't bubble
+      const event = new CustomEvent('clusterReconnected', {
+        detail: { message: 'Cluster connection restored' },
+      })
+      window.dispatchEvent(event)
     }
 
     // only show error toast once and make timeout really long

@@ -31,8 +31,9 @@
   export let name = ''
   export let description = 'No description available'
 
-  const rows = createStore()
-  const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
+  let rows = createStore()
+
+  $: ({ namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows)
 
   // check for filtering
   let isFiltering = false
@@ -127,7 +128,14 @@
 
     // Bind the keyboard navigation event
     window.addEventListener('keydown', keyboardNavigate)
-    const stop = rows.start()
+    let stop = rows.start()
+
+    window.addEventListener('clusterReconnected', () => {
+      console.log('Cluster reconnected, restarting store')
+      stop()
+      rows = createStore()
+      stop = rows.start()
+    })
 
     // Clean up the event listener when the component is destroyed
     return () => {
