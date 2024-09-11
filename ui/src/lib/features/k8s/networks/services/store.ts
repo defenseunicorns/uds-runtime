@@ -34,7 +34,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       r.spec?.ports
         ?.map((p) => (p.nodePort ? `${p.port}:${p.nodePort}/${p.protocol}` : `${p.port}/${p.protocol}`))
         .join(', ') ?? '',
-    status: { component: Status, props: { type: 'Services', status: isInSuccessState(r) ? 'Succeeded' : 'Pending' } },
+    status: { component: Status, props: { type: 'Services', status: isInSuccessState(r) ? 'Active' : 'Pending' } },
   }))
 
   const store = new ResourceStore<Resource, Row>(url, transform, 'name')
