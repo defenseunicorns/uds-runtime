@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
+import StatusComponent from '$components/k8s/Status/component.svelte'
 import {
   expectEqualIgnoringFields,
   MockResourceStore,
@@ -151,7 +152,7 @@ suite('ServiceTable Component', () => {
       name: 'zarf-docker-registry',
       namespace: 'zarf',
       ports: '5000:31999/TCP',
-      status: 'Succeeded',
+      status: { component: StatusComponent, props: { type: 'Services', status: 'Succeeded' } },
       type: 'NodePort',
     },
   ]

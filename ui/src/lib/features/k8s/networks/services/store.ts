@@ -4,14 +4,21 @@
 import type { V1Service as Resource } from '@kubernetes/client-node'
 
 import { ResourceStore, transformResource } from '$features/k8s/store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import {
+  type ColumnWrapper,
+  type CommonRow,
+  type K8StatusMapping,
+  type ResourceStoreInterface,
+} from '$features/k8s/types'
+
+import Status from '$components/k8s/Status/component.svelte'
 
 interface Row extends CommonRow {
   type: string
   cluster_ip: string
   external_ip: string
   ports: string
-  status: string
+  status: { component: typeof Status; props: { type: keyof K8StatusMapping; status: string } }
 }
 
 export type Columns = ColumnWrapper<Row>
@@ -27,7 +34,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       r.spec?.ports
         ?.map((p) => (p.nodePort ? `${p.port}:${p.nodePort}/${p.protocol}` : `${p.port}/${p.protocol}`))
         .join(', ') ?? '',
-    status: isInSuccessState(r) ? 'Succeeded' : 'Pending',
+    status: { component: Status, props: { type: 'Services', status: isInSuccessState(r) ? 'Succeeded' : 'Pending' } },
   }))
 
   const store = new ResourceStore<Resource, Row>(url, transform, 'name')

@@ -98,7 +98,7 @@ suite('NamespaceTable Component', () => {
   const expectedTables = [
     {
       name: 'promtail',
-      status: 'Active',
+      status: { component: Component, props: { type: 'Namespaces', status: 'Active' } },
       namespace: '',
     },
   ]
