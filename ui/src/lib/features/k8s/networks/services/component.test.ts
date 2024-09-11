@@ -134,7 +134,7 @@ suite('ServiceTable Component', () => {
       name: 'kube-prometheus-stack-kube-state-metrics',
       namespace: 'monitoring',
       ports: '8080/TCP',
-      status: 'Succeeded',
+      status: { component: StatusComponent, props: { type: 'Services', status: 'Succeeded' } },
       type: 'ClusterIP',
     },
     {
@@ -143,7 +143,7 @@ suite('ServiceTable Component', () => {
       name: 'passthrough-ingressgateway',
       namespace: 'istio-passthrough-gateway',
       ports: '15021:31801/TCP, 80:31907/TCP, 443:31576/TCP',
-      status: 'Succeeded',
+      status: { component: StatusComponent, props: { type: 'Services', status: 'Succeeded' } },
       type: 'LoadBalancer',
     },
     {
