@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+import { derived, writable, type Writable } from 'svelte/store'
+
 import type { KubernetesObject } from '@kubernetes/client-node'
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
-import { derived, writable, type Writable } from 'svelte/store'
 
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 

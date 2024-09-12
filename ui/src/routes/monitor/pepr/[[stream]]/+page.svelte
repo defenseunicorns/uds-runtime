@@ -2,14 +2,16 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { Export } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
   import { writable, type Unsubscriber } from 'svelte/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import { type PeprEvent } from '$lib/types'
+  import { Export } from 'carbon-icons-svelte'
+
   import './page.postcss'
+
   import { getDetails } from './helpers'
 
   let loaded = false

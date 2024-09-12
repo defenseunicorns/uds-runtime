@@ -3,12 +3,14 @@
 
 <script lang="ts">
   import 'flowbite'
-  import { initFlowbite } from 'flowbite'
+
   import { onMount } from 'svelte'
 
   import { afterNavigate } from '$app/navigation'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
+  import { initFlowbite } from 'flowbite'
+
   import '../app.postcss'
 
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js

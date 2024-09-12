@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { beforeEach, vi } from 'vitest'
-
 import {
   expectEqualIgnoringFields,
   MockResourceStore,
@@ -13,6 +11,8 @@ import {
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { Package } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
+import { beforeEach, vi } from 'vitest'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 

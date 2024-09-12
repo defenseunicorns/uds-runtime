@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { VirtualService as Resource } from 'uds-core-types/src/pepr/operator/crd/generated/istio/virtualservice-v1beta1'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import type { VirtualService as Resource } from 'uds-core-types/src/pepr/operator/crd/generated/istio/virtualservice-v1beta1'
 
 interface Row extends CommonRow {
   gateways: string

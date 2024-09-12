@@ -3,12 +3,12 @@
 
 <script lang="ts">
   import type { KubernetesObject } from '@kubernetes/client-node'
-
   import { page } from '$app/stores'
   import { DataTable } from '$components'
   import type { ResourceStoreInterface } from '$features/k8s/types'
-  import { type Columns, type Row } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
+
+  import { type Columns, type Row } from './store'
 
   export let columns: Columns = [['name', 'emphasize'], ['status'], ['age']]
 

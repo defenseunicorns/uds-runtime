@@ -2,8 +2,7 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { beforeEach, vi } from 'vitest'
-
+import type { V1StatefulSet } from '@kubernetes/client-node'
 import {
   expectEqualIgnoringFields,
   MockResourceStore,
@@ -12,7 +11,8 @@ import {
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
-import type { V1StatefulSet } from '@kubernetes/client-node'
+import { beforeEach, vi } from 'vitest'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 

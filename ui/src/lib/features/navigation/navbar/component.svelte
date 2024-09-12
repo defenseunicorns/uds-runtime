@@ -3,6 +3,7 @@
 
 <script lang="ts">
   import { NotificationFilled } from 'carbon-icons-svelte'
+
   import { isSidebarExpanded } from '../store'
 </script>
 

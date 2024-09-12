@@ -1,13 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type {
-  ExemptionElement,
-  Matcher,
-  Policy,
-  Exemption as Resource,
-} from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
-
 import { ResourceStore } from '$features/k8s/store'
 import {
   type ColumnWrapper,
@@ -15,6 +8,13 @@ import {
   type ResourceStoreInterface,
   type ResourceWithTable,
 } from '$features/k8s/types'
+import type {
+  ExemptionElement,
+  Matcher,
+  Policy,
+  Exemption as Resource,
+} from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
+
 import ExemptionDetails from './exemption-details/component.svelte'
 import ExemptionMatcher from './exemption-matcher/component.svelte'
 

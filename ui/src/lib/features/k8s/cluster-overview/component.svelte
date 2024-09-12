@@ -3,6 +3,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
 

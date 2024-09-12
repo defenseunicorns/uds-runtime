@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { render } from '@testing-library/svelte'
-
-import * as components from '$components'
-import type { KubernetesObject } from '@kubernetes/client-node'
 import type { ComponentType } from 'svelte'
+
+import type { KubernetesObject } from '@kubernetes/client-node'
+import { render } from '@testing-library/svelte'
+import * as components from '$components'
 import type { Mock } from 'vitest'
+
 import type { CommonRow, ResourceWithTable } from './types'
 
 // Vitest type redeclared cause it's not exported from vitest
