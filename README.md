@@ -21,7 +21,7 @@ If building locally:
 Assumes a K8s cluster is running and the appropriate K8s context has been selected
 
 ```bash
-uds deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:<tag> --confirm
+uds zarf deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:<tag> --confirm
 ```
 
 **See [all tags](https://github.com/defenseunicorns/uds-runtime/pkgs/container/packages%2Fuds%2Fuds-runtime)*
@@ -69,7 +69,7 @@ npm run dev
 UDS Runtime publishes a canary release of latest changes every night tagged `nightly-unstable`
 
 ```bash
-uds deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable
+uds zarf deploy ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable
 ```
 
 ## Tech Stack
