@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { createEventSource } from '$lib/utils/helpers'
-import type { KubernetesObject } from '@kubernetes/client-node'
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
+
+import type { KubernetesObject } from '@kubernetes/client-node'
+import { createEventSource } from '$lib/utils/helpers'
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
+
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> implements ResourceStoreInterface<T, U> {

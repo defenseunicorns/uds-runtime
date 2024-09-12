@@ -2,15 +2,16 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
+  import { onMount } from 'svelte'
+
   import type { KubernetesObject } from '@kubernetes/client-node'
+  import { goto } from '$app/navigation'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
   import yaml from 'highlight.js/lib/languages/yaml'
-  import { onMount } from 'svelte'
   import * as YAML from 'yaml'
 
-  import { goto } from '$app/navigation'
   import './styles.postcss'
 
   export let resource: KubernetesObject

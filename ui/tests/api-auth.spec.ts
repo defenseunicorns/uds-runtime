@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { expect, test } from '@playwright/test'
 import { ChildProcess, exec } from 'child_process'
+
+import { expect, test } from '@playwright/test'
 
 let serverProcess: ChildProcess
 const serverLogs: string[] = []

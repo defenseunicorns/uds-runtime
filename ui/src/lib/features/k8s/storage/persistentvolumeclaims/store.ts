@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { V1PersistentVolumeClaim as Resource, V1Pod } from '@kubernetes/client-node'
+import { writable } from 'svelte/store'
 
+import type { V1PersistentVolumeClaim as Resource, V1Pod } from '@kubernetes/client-node'
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 import { createEventSource } from '$lib/utils/helpers'
-import { writable } from 'svelte/store'
+
 import Status from './status/component.svelte'
 
 interface Row extends CommonRow {
