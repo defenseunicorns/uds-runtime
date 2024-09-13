@@ -7,7 +7,6 @@
   import type { ApexOptions } from 'apexcharts'
   import { goto } from '$app/navigation'
   import { createEventSource } from '$lib/utils/helpers'
-  import { Card } from '$components'
 
   import './styles.postcss'
 
