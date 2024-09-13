@@ -13,7 +13,7 @@ export function createStore(): ResourceStoreInterface<Resource, CommonRow> {
 
   const transform = transformResource<Resource, CommonRow>(() => ({}))
 
-  const store = new ResourceStore<Resource, CommonRow>(url, transform, 'name')
+  const store = new ResourceStore<Resource, CommonRow>(url, transform, 'namespace')
 
   return {
     ...store,

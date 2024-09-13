@@ -25,7 +25,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     status: r.status?.phase ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,
