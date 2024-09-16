@@ -3,19 +3,20 @@
 
 <script lang="ts">
   import { DataTable } from '$components'
-  import { createStore, type Columns } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
+  import { createStore, type Columns } from './store'
+
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['controlled_by'],
-    ['containers'],
-    ['status'],
-    ['restarts'],
-    ['metrics'],
-    ['node'],
-    ['age'],
+    ['name', 'emphasize w-3/12 truncate'],
+    ['namespace', 'w-2/12'],
+    ['controlled_by', 'w-1/12'],
+    ['containers', '1/12'],
+    ['status', 'w-1/12'],
+    ['restarts', 'w-1/12'],
+    ['metrics', 'w-1/12'],
+    ['node', 'w-1/12 truncate'],
+    ['age', 'w-1/12'],
   ]
   const name = 'Pods'
   const description = resourceDescriptions[name]

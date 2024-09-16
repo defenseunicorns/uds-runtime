@@ -1,5 +1,7 @@
-import type { PatchOperation, PeprDetails, PeprEvent } from '$lib/types'
 import type { SvelteComponent } from 'svelte'
+
+import type { PatchOperation, PeprDetails, PeprEvent } from '$lib/types'
+
 import DeniedDetails from './(details)/denied-details/DeniedDetails.svelte'
 import MutatedDetails from './(details)/mutated-details/MutatedDetails.svelte'
 

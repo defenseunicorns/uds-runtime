@@ -2,8 +2,10 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import { get } from 'svelte/store'
+
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest'
-import { addToast, getIdByMessage, removeToast, toast, type Toast } from './store'
+
+import { addToast, removeToast, toast, type Toast } from './store'
 
 describe('Toast Store', () => {
   beforeEach(() => {

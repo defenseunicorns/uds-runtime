@@ -1,5 +1,6 @@
 <script lang="ts">
   import { CheckmarkOutline, Close, Information, Warning } from 'carbon-icons-svelte'
+
   import { removeToast, toast } from './store'
 </script>
 

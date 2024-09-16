@@ -1,6 +1,8 @@
-import { toast } from '$features/toast/store'
 import { get } from 'svelte/store'
+
+import { toast } from '$features/toast/store'
 import type { Mock } from 'vitest'
+
 import { checkClusterConnection } from './cluster-check'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

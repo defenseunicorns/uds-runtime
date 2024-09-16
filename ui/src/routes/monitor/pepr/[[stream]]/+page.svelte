@@ -2,16 +2,19 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { ChevronUp, Export, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy } from 'svelte'
-  import { writable, type Unsubscriber, derived } from 'svelte/store'
+  import { derived, writable, type Unsubscriber } from 'svelte/store'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import { type PeprEvent } from '$lib/types'
+  import { ChevronUp, Export, Information, Search } from 'carbon-icons-svelte'
+
   import './page.postcss'
-  import { getDetails } from './helpers'
+
   import { createEventSource } from '$lib/utils/helpers'
+
+  import { getDetails } from './helpers'
 
   let loaded = false
   let streamFilter = ''

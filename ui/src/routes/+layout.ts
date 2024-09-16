@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
+import { get } from 'svelte/store'
+
 import { apiAuthEnabled } from '$features/api-auth/store'
 import { createStore } from '$features/k8s/namespaces/store'
 import { updateApiAuthEnabled } from '$lib/utils/helpers'
-import { get } from 'svelte/store'
 
 export const ssr = false
 
