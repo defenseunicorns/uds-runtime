@@ -8,6 +8,7 @@
     "kubernetes-fluent-client": "^3.0.0"
   },
   "scripts": {
-    "load": "node load.js"
+    "load": "node load.js",
+    "load:api": "node load-api.js"
   }
 }
