@@ -238,9 +238,15 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
   transformer: (r: T, c?: CommonRow) => Partial<U>,
 ) {
   // Return a function to transform KubernetesObject resources
-  return (resources: T[]) =>
+
+  return (resources: T[]) => {
+    // If we don't have resoure return empty array to avoid 'Cannot read properties of null (reading 'map')' error
+    if (!resources) {
+      return []
+    }
+
     // Map the resources to the common table format
-    resources.map<ResourceWithTable<T, U>>((r) => {
+    return resources.map<ResourceWithTable<T, U>>((r) => {
       // Convert common KubernetesObject rows
       const commonRows = {
         name: r.metadata?.name ?? '',
@@ -260,6 +266,7 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
         } as U,
       }
     })
+  }
 }
 
 function formatDetailedAge(timestamp: Date) {
