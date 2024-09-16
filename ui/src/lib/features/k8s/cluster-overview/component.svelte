@@ -3,10 +3,11 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
-  import ApexCharts from 'apexcharts'
-  import type { ApexOptions } from 'apexcharts'
+
   import { goto } from '$app/navigation'
   import { createEventSource } from '$lib/utils/helpers'
+  import ApexCharts from 'apexcharts'
+  import type { ApexOptions } from 'apexcharts'
 
   import './styles.postcss'
 

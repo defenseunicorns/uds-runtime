@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
+import type { V1PersistentVolume } from '@kubernetes/client-node'
 import StatusComponent from '$components/k8s/Status/component.svelte'
 import {
   expectEqualIgnoringFields,
@@ -13,7 +14,7 @@ import {
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
-import type { V1PersistentVolume } from '@kubernetes/client-node'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 

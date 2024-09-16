@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1Namespace as Resource } from '@kubernetes/client-node'
-
 import Status from '$components/k8s/Status/component.svelte'
 import {
   type ColumnWrapper,
@@ -10,6 +9,7 @@ import {
   type K8StatusMapping,
   type ResourceStoreInterface,
 } from '$features/k8s/types'
+
 import { ResourceStore, transformResource } from '../store'
 
 export interface Row extends CommonRow {

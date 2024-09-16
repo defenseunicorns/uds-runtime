@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1PersistentVolume as Resource } from '@kubernetes/client-node'
-
 import Status from '$components/k8s/Status/component.svelte'
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import {

@@ -3,8 +3,9 @@
 
 <script lang="ts">
   import { DataTable } from '$components'
-  import { createStore, type Columns } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
+
+  import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
     ['name', 'emphasize w-3/12 truncate'],

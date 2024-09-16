@@ -2,11 +2,10 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import type { KubernetesObject } from '@kubernetes/client-node'
-  import { ChevronDown, ChevronUp, Filter, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy, onMount } from 'svelte'
   import { type Unsubscriber } from 'svelte/store'
 
+  import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import { Drawer, Link, Tooltip } from '$components'
@@ -14,6 +13,7 @@
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
+  import { ChevronDown, ChevronUp, Filter, Information, Search } from 'carbon-icons-svelte'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
