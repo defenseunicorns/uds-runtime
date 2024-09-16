@@ -57,7 +57,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       // Remove duplicate URLs
       .filter((e, i, a) => a.findIndex((x) => x.table.url.sort === e.table.url.sort) === i)
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'url')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

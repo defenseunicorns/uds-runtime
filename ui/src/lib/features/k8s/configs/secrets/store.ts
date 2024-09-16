@@ -21,7 +21,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     type: r.type ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name', true)
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace', true)
 
   return {
     ...store,
