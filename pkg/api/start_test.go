@@ -11,7 +11,7 @@ import (
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -32,8 +32,8 @@ func TestHandleReconnection(t *testing.T) {
 		OriginalCluster: "original-cluster",
 	}
 
-	assert.Nil(t, k8sResources.Client.Clientset)
-	assert.Nil(t, k8sResources.Cache.Pods)
+	require.Nil(t, k8sResources.Client.Clientset)
+	require.Nil(t, k8sResources.Cache.Pods)
 
 	createClientMock := func() (*k8s.Clients, error) {
 		return &k8s.Clients{Clientset: &kubernetes.Clientset{}}, nil
@@ -54,8 +54,8 @@ func TestHandleReconnection(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources struct was updated
-	assert.NotNil(t, k8sResources.Client.Clientset)
-	assert.NotNil(t, k8sResources.Cache.Pods)
+	require.NotNil(t, k8sResources.Client.Clientset)
+	require.NotNil(t, k8sResources.Cache.Pods)
 
 	close(disconnected)
 }
@@ -96,8 +96,8 @@ func TestHandleReconnectionCreateClientError(t *testing.T) {
 	// Wait for the reconnection logic to attempt creating the client
 	time.Sleep(200 * time.Millisecond)
 
-	assert.Nil(t, k8sResources.Client.Clientset)
-	assert.Nil(t, k8sResources.Cache.Pods)
+	require.Nil(t, k8sResources.Client.Clientset)
+	require.Nil(t, k8sResources.Cache.Pods)
 
 	close(disconnected)
 }
@@ -139,8 +139,8 @@ func TestHandleReconnectionCreateCacheError(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources cache was not updated since cache creation failed
-	assert.Nil(t, k8sResources.Client.Clientset)
-	assert.Nil(t, k8sResources.Cache.Pods)
+	require.Nil(t, k8sResources.Client.Clientset)
+	require.Nil(t, k8sResources.Cache.Pods)
 
 	close(disconnected)
 }
@@ -182,8 +182,8 @@ func TestHandleReconnectionContextChanged(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources struct was not updated since the context/cluster has changed
-	assert.Nil(t, k8sResources.Client.Clientset)
-	assert.Nil(t, k8sResources.Cache.Pods)
+	require.Nil(t, k8sResources.Client.Clientset)
+	require.Nil(t, k8sResources.Cache.Pods)
 
 	close(disconnected)
 }
