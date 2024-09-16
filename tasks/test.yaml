@@ -52,6 +52,10 @@ tasks:
         task: setup:build-ui
       - task: k3d
       - task: deploy-load
+      - cmd: npm ci && npm run load:api
+        dir: hack/load-test
+      - cmd: uds zarf tools kubectl apply -f hack/load-test/rc.yaml
+        description: apply runtime class manually cause KFC is silly
       - cmd: go test -failfast -v -timeout 30m --tags=integration ./...
 
   - name: deploy-load
