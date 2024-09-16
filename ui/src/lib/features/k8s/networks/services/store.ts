@@ -36,29 +36,3 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     sortByKey: store.sortByKey.bind(store),
   }
 }
-
-/**
- * Success state of a Service depends on the type of service
- * https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
- * ClusterIP:     ClusterIP is defined
- * NodePort:      ClusterIP is defined
- * LoadBalancer:  ClusterIP is defined __and__ external endpoints exist
- * ExternalName:  true
- */
-function isInSuccessState(resource: Resource): boolean {
-  const resourceType = resource.spec?.type
-  switch (resourceType) {
-    case 'ExternalName':
-      return true
-    case 'LoadBalancer':
-      if (resource.status?.loadBalancer?.ingress?.length === 0) {
-        return false
-      }
-      break
-    case 'ClusterIP':
-    case 'NodePort':
-    default:
-      break
-  }
-  return resource.spec?.clusterIPs?.length ? resource.spec?.clusterIPs?.length > 0 : false
-}
