@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1LimitRange as Resource } from '@kubernetes/client-node'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
@@ -13,7 +12,7 @@ export function createStore(): ResourceStoreInterface<Resource, CommonRow> {
 
   const transform = transformResource<Resource, CommonRow>(() => ({}))
 
-  const store = new ResourceStore<Resource, CommonRow>(url, transform, 'name')
+  const store = new ResourceStore<Resource, CommonRow>(url, transform, 'namespace')
 
   return {
     ...store,

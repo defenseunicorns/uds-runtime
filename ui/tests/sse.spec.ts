@@ -23,14 +23,15 @@ async function deletePod(namespace: string, podName: string, force: boolean = tr
 test.describe('SSE and reactivity', async () => {
   test('Pods are updated', async ({ page }) => {
     await page.goto('/workloads/pods')
-    const originalPodName = await page.getByRole('cell', { name: 'podinfo-' }).first().textContent()
+    let originalPodName = await page.getByRole('cell', { name: 'podinfo-' }).first().textContent()
+    originalPodName = originalPodName ? originalPodName.trim() : ''
 
     // get pod name
     expect(originalPodName).not.toBeNull()
 
     // delete pod and wait for it to disappear
-    await deletePod('podinfo', originalPodName ?? '')
-    await expect(page.getByRole('cell', { name: originalPodName ?? '' })).toBeHidden()
+    await deletePod('podinfo', originalPodName)
+    await expect(page.getByRole('cell', { name: originalPodName })).toBeHidden()
 
     // get new pod
     const newPodName = await page.getByRole('cell', { name: 'podinfo' }).first().textContent()

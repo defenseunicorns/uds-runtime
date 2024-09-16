@@ -1,6 +1,7 @@
+import type { SvelteComponent } from 'svelte'
+
 import { render } from '@testing-library/svelte'
 
-import type { SvelteComponent } from 'svelte'
 import DeniedDetails from './DeniedDetails.svelte'
 
 // Mock the carbon-icons-svelte module
