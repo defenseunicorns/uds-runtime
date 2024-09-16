@@ -241,53 +241,65 @@
             </tr>
           </thead>
           <tbody>
-            {#each $rows as row}
-              <tr
-                id={row.resource.metadata?.uid}
-                on:click={() =>
-                  !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
-                class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
-                class:cursor-pointer={!disableRowClick}
-              >
-                {#each columns as [key, style, modifier], idx}
-                  <!-- Check object to avoid issues with `false` values -->
-                  {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
-                  <td
-                    class={style || ''}
-                    data-testid={typeof value !== 'object' ? `${value}-testid-${idx + 1}` : `object-test-id-${idx + 1}`}
-                  >
-                    {#if value.component}
-                      <svelte:component this={value.component} {...value.props} />
-                    {:else if value.list}
-                      <ul class="line-clamp-4 mt-4 text-sm">
-                        {#each value.list as item}
-                          <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
-                        {/each}
-                      </ul>
-                    {:else if modifier === 'link-external'}
-                      <Link href={value.href || ''} text={value.text || ''} target={'_blank'} />
-                    {:else if modifier === 'link-internal'}
-                      <Link href={value.href || ''} text={value.text || ''} target={''} />
-                    {:else if key === 'namespace'}
-                      <button
-                        on:click|stopPropagation={() => namespace.set(value)}
-                        class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left"
-                      >
-                        {value}
-                      </button>
-                    {:else if style?.includes('truncate')}
-                      <Tooltip title={value}>
-                        <div class={`w-full ${style}`}>
-                          {value}
-                        </div>
-                      </Tooltip>
-                    {:else}
-                      {value.text || (value === 0 ? '0' : value) || '-'}
-                    {/if}
-                  </td>
-                {/each}
+            {#if $rows.length === 0 && isFiltering}
+              <tr class="!pointer-events-none !border-b-0">
+                <td class="text-center" colspan="9">No matching entries found</td>
               </tr>
-            {/each}
+            {:else if $rows.length === 0}
+              <tr class="!pointer-events-none !border-b-0">
+                <td class="text-center" colspan="9">No resources found</td>
+              </tr>
+            {:else}
+              {#each $rows as row}
+                <tr
+                  id={row.resource.metadata?.uid}
+                  on:click={() =>
+                    !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
+                  class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
+                  class:cursor-pointer={!disableRowClick}
+                >
+                  {#each columns as [key, style, modifier], idx}
+                    <!-- Check object to avoid issues with `false` values -->
+                    {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
+                    <td
+                      class={style || ''}
+                      data-testid={typeof value !== 'object'
+                        ? `${value}-testid-${idx + 1}`
+                        : `object-test-id-${idx + 1}`}
+                    >
+                      {#if value.component}
+                        <svelte:component this={value.component} {...value.props} />
+                      {:else if value.list}
+                        <ul class="line-clamp-4 mt-4 text-sm">
+                          {#each value.list as item}
+                            <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
+                          {/each}
+                        </ul>
+                      {:else if modifier === 'link-external'}
+                        <Link href={value.href || ''} text={value.text || ''} target={'_blank'} />
+                      {:else if modifier === 'link-internal'}
+                        <Link href={value.href || ''} text={value.text || ''} target={''} />
+                      {:else if key === 'namespace'}
+                        <button
+                          on:click|stopPropagation={() => namespace.set(value)}
+                          class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left"
+                        >
+                          {value}
+                        </button>
+                      {:else if style?.includes('truncate')}
+                        <Tooltip title={value}>
+                          <div class={`w-full ${style}`}>
+                            {value}
+                          </div>
+                        </Tooltip>
+                      {:else}
+                        {value.text || (value === 0 ? '0' : value) || '-'}
+                      {/if}
+                    </td>
+                  {/each}
+                </tr>
+              {/each}
+            {/if}
           </tbody>
         </table>
       </div>
