@@ -26,7 +26,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     last_scheduled: r.status?.lastScheduleTime ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

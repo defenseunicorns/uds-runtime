@@ -89,7 +89,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     node: r.spec?.nodeName ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   // Close the EventSource when the store is stopped
   store.stopCallback = metricsEvents.close.bind(metricsEvents)
