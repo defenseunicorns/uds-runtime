@@ -4,14 +4,19 @@
 import { writable } from 'svelte/store'
 
 import type { ContainerMetric, PodMetric, V1Pod as Resource, V1ContainerStatus } from '@kubernetes/client-node'
+import Status from '$components/k8s/Status/component.svelte'
 import { ResourceStore, transformResource } from '$features/k8s/store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import {
+  type ColumnWrapper,
+  type CommonRow,
+  type K8StatusMapping,
+  type ResourceStoreInterface,
+} from '$features/k8s/types'
 import { createEventSource } from '$lib/utils/helpers'
 
 import ContainerStatus from './containers/component.svelte'
 import PodMetrics from './metrics/component.svelte'
 import { parseCPU } from './metrics/utils'
-import Status from './status/component.svelte'
 
 interface Row extends CommonRow {
   containers: {
@@ -24,7 +29,7 @@ interface Row extends CommonRow {
   restarts: number
   controlled_by: string
   node: string
-  status: { component: typeof Status; props: { status: string } }
+  status: { component: typeof Status; props: { type: keyof K8StatusMapping; status: string } }
   metrics: {
     component: typeof PodMetrics
     sort: number
@@ -86,7 +91,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     },
     restarts: r.status?.containerStatuses?.reduce((acc, curr) => acc + curr.restartCount, 0) ?? 0,
     controlled_by: r.metadata?.ownerReferences?.at(0)?.kind ?? '',
-    status: { component: Status, props: { status: r.status?.phase ?? '' } },
+    status: { component: Status, props: { type: 'Pod', status: r.status?.phase ?? '' } },
     node: r.spec?.nodeName ?? '',
   }))
 

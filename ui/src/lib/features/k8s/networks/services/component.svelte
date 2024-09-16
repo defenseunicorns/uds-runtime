@@ -15,7 +15,6 @@
     ['external_ip'],
     ['ports'],
     ['age'],
-    ['status'],
   ]
 
   const name = 'Services'
