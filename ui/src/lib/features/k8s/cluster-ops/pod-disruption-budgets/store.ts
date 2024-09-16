@@ -24,7 +24,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     current_healthy: r.status?.currentHealthy ?? 0,
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

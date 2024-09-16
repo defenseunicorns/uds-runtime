@@ -29,7 +29,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     status: isInSuccessState(r) ? 'Succeeded' : 'Pending',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

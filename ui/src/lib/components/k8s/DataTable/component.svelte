@@ -8,7 +8,7 @@
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { Drawer, Link } from '$components'
+  import { Drawer, Link, Tooltip } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
@@ -259,7 +259,7 @@
                     {#if value.component}
                       <svelte:component this={value.component} {...value.props} />
                     {:else if value.list}
-                      <ul class="mt-4 text-sm">
+                      <ul class="line-clamp-4 mt-4 text-sm">
                         {#each value.list as item}
                           <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
                         {/each}
@@ -275,6 +275,12 @@
                       >
                         {value}
                       </button>
+                    {:else if style?.includes('truncate')}
+                      <Tooltip title={value}>
+                        <div class={`w-full ${style}`}>
+                          {value}
+                        </div>
+                      </Tooltip>
                     {:else}
                       {value.text || (value === 0 ? '0' : value) || '-'}
                     {/if}
