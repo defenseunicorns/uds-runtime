@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeEach, vi } from 'vitest'
 
+import StatusComponent from '$components/k8s/Status/component.svelte'
 import {
   expectEqualIgnoringFields,
   MockEventSource,
@@ -171,7 +172,7 @@ suite('PodTable Component', () => {
     },
     restarts: 1,
     controlled_by: 'DaemonSet',
-    status: { component: SvelteComponent, props: { status: 'Running' } },
+    status: { component: StatusComponent, props: { type: 'Pod', status: 'Running' } },
     node: '',
   }
 
