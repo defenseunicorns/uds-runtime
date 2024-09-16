@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { KubernetesObject } from '@kubernetes/client-node'
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
+
+import type { KubernetesObject } from '@kubernetes/client-node'
+import { createEventSource } from '$lib/utils/helpers'
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 
@@ -50,8 +52,15 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
    * @param tableCallback The callback to create the table from the resources
    * @param sortBy The initial key to sort the table by
    * @param sortAsc The initial sort direction
+   * @param additionalStores
    */
-  constructor(url: string, tableCallback: (data: T[]) => ResourceWithTable<T, U>[], sortBy: keyof U, sortAsc = true) {
+  constructor(
+    url: string,
+    tableCallback: (data: T[]) => ResourceWithTable<T, U>[],
+    sortBy: keyof U,
+    sortAsc = true,
+    additionalStores: Writable<unknown>[] = [],
+  ) {
     this.url = url
     this.#tableCallback = tableCallback
 
@@ -65,6 +74,9 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
     this.sortAsc = writable<boolean>(sortAsc)
     this.namespace = writable<string>('')
     this.numResources = writable<number>(0)
+
+    // assign additional stores (expected to be init'd before constructor)
+    this.additionalStores = additionalStores
 
     // Create a derived store that combines all the filtering and sorting logic
     const filteredAndSortedResources = derived(
@@ -167,13 +179,13 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
    * @returns A function to stop the EventSource
    */
   start() {
-    // If the store has already been initialized, return
     if (this.#initialized) {
       return () => {}
     }
 
     this.#initialized = true
-    this.#eventSource = new EventSource(this.url)
+
+    this.#eventSource = createEventSource(this.url)
 
     this.#eventSource.onmessage = ({ data }) => {
       try {
@@ -226,9 +238,15 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
   transformer: (r: T, c?: CommonRow) => Partial<U>,
 ) {
   // Return a function to transform KubernetesObject resources
-  return (resources: T[]) =>
+
+  return (resources: T[]) => {
+    // If we don't have resoure return empty array to avoid 'Cannot read properties of null (reading 'map')' error
+    if (!resources) {
+      return []
+    }
+
     // Map the resources to the common table format
-    resources.map<ResourceWithTable<T, U>>((r) => {
+    return resources.map<ResourceWithTable<T, U>>((r) => {
       // Convert common KubernetesObject rows
       const commonRows = {
         name: r.metadata?.name ?? '',
@@ -248,6 +266,7 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
         } as U,
       }
     })
+  }
 }
 
 function formatDetailedAge(timestamp: Date) {

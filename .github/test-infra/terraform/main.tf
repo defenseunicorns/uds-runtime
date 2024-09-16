@@ -1,10 +1,22 @@
 provider "aws" {
   region = var.region
+
+  default_tags {
+    tags  = {
+    Name         = "runtime-ephemeral-${random_id.unique_id.hex}"
+    ManagedBy   = "Terraform"
+    CreationDate = time_static.creation_time.rfc3339
+    nuke = "DO-NOT-DELETE"
+    PermissionsBoundary = "${var.permissions_boundary_name}"
+    }
+  }
 }
 
 resource "random_id" "unique_id" {
   byte_length = 4
 }
+
+data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
@@ -19,25 +31,16 @@ data "aws_ami" "latest_runtime_ephemeral_ami" {
   owners = ["${data.aws_caller_identity.current.account_id}"]
 }
 
-locals {
-  suffix = random_id.unique_id.hex
-  tags = tomap({
-    "Name"         = "runtime-ephemeral-${local.suffix}"
-    "ManagedBy"    = "Terraform"
-    "CreationDate" = time_static.creation_time.rfc3339
-    "nuke" : "DO-NOT-DELETE"
-    "PermissionsBoundary" = "${var.permissions_boundary_name}"
-  })
-}
-
 resource "time_static" "creation_time" {}
 
+#
+# EC2 INSTANCE
+#
 resource "aws_instance" "runtime" {
   ami                  = data.aws_ami.latest_runtime_ephemeral_ami.image_id
   instance_type        = "m5.2xlarge"
   iam_instance_profile = aws_iam_instance_profile.runtime_profile.name
   key_name             = var.enable_ssh ? aws_key_pair.ssh[0].key_name : null
-  tags                 = local.tags
 
   vpc_security_group_ids = [aws_security_group.security_group.id]
   user_data              = file("setup.sh")
@@ -48,7 +51,9 @@ resource "aws_instance" "runtime" {
   }
 }
 
-// Get EIP ID
+#
+# EIP ASSOCIATION
+#
 data "aws_eip" "runtime_eip" {
   filter {
     name   = "tag:Name"
@@ -56,18 +61,51 @@ data "aws_eip" "runtime_eip" {
   }
 }
 
-// Attach EIP to Instance
-resource "aws_eip_association" "runtime" {
+resource "aws_eip_association" "runtime_eip_association" {
   instance_id   = aws_instance.runtime.id
   allocation_id = data.aws_eip.runtime_eip.id
+}
+
+#
+# IAM ROLE
+#
+resource "aws_iam_role" "runtime_role" {
+  name = "runtime-ephemeral-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+  permissions_boundary = var.permissions_boundary_arn
 }
 
 resource "aws_iam_instance_profile" "runtime_profile" {
   name = "runtime-ephemeral-EC2InstanceProfile"
   role = aws_iam_role.runtime_role.name
-  tags          = local.tags
 }
 
+#
+# SSM POLICY
+#
+data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
+  arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_policy" {
+  role       = aws_iam_role.runtime_role.name
+  policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
+}
+
+#
+# SECRETS MANAGER POLICY
+#
 resource "aws_iam_policy" "secrets_manager_policy" {
   name        = "runtime-ephemeral-SecretsManagerPolicy"
   description = "Allows access to specific secrets"
@@ -89,34 +127,14 @@ resource "aws_iam_policy" "secrets_manager_policy" {
   })
 }
 
-resource "aws_iam_role" "runtime_role" {
-  name = "runtime-ephemeral-role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-  permissions_boundary = var.permissions_boundary_arn
-  tags = local.tags
-}
-
-resource "aws_iam_role_policy_attachment" "ssm_policy" {
-  role       = aws_iam_role.runtime_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
 resource "aws_iam_role_policy_attachment" "secrets_manager_policy_attachment" {
   role       = aws_iam_role.runtime_role.name
   policy_arn = aws_iam_policy.secrets_manager_policy.arn
 }
 
+#
+# SECURITY GROUP
+#
 resource "aws_security_group" "security_group" {
   name = "runtime-ephemeral-sg-${random_id.unique_id.hex}"
   ingress {
@@ -151,8 +169,6 @@ resource "aws_security_group" "security_group" {
       cidr_blocks = ["${var.ssh_ip}/32"]
     }
   }
-
-  tags = local.tags
 }
 
 #

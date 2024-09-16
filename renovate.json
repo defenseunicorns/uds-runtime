@@ -7,6 +7,9 @@
     ":semanticCommits",
     ":semanticCommitTypeAll(chore)"
   ],
+  "postUpdateOptions": [
+    "gomodTidy"
+  ],
   "packageRules": [
      {
       "matchDepTypes": ["devDependencies"],

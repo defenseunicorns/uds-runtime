@@ -46,3 +46,13 @@ jobs:
       - name: Publish
         run: |
           uds run build:publish-uds-runtime
+
+      - name: Build binary artifacts
+        run: |
+          uds run setup:build-all
+
+      - name: Upload Release Artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        if: ${{ needs.tag-new-version.outputs.release_created }}
+        run: gh release upload v${{ needs.tag-new-version.outputs.release_tag }} ./build/*

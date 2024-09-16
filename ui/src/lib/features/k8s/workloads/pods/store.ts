@@ -1,15 +1,22 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { ContainerMetric, PodMetric, V1Pod as Resource, V1ContainerStatus } from '@kubernetes/client-node'
 import { writable } from 'svelte/store'
 
+import type { ContainerMetric, PodMetric, V1Pod as Resource, V1ContainerStatus } from '@kubernetes/client-node'
+import Status from '$components/k8s/Status/component.svelte'
 import { ResourceStore, transformResource } from '$features/k8s/store'
-import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import {
+  type ColumnWrapper,
+  type CommonRow,
+  type K8StatusMapping,
+  type ResourceStoreInterface,
+} from '$features/k8s/types'
+import { createEventSource } from '$lib/utils/helpers'
+
 import ContainerStatus from './containers/component.svelte'
 import PodMetrics from './metrics/component.svelte'
 import { parseCPU } from './metrics/utils'
-import Status from './status/component.svelte'
 
 interface Row extends CommonRow {
   containers: {
@@ -22,7 +29,7 @@ interface Row extends CommonRow {
   restarts: number
   controlled_by: string
   node: string
-  status: { component: typeof Status; props: { status: string } }
+  status: { component: typeof Status; props: { type: keyof K8StatusMapping; status: string } }
   metrics: {
     component: typeof PodMetrics
     sort: number
@@ -35,12 +42,14 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/workloads/pods`
+  const url = `/api/v1/resources/workloads/pods?fields=.metadata,.spec.nodeName,.status`
 
   const metrics = new Map<string, PodMetric>()
   // Store to trigger updates
   const metricsStore = writable<number>()
-  const metricsEvents = new EventSource(`/api/v1/resources/workloads/podmetrics`)
+
+  const path: string = `/api/v1/resources/workloads/podmetrics`
+  const metricsEvents = createEventSource(path)
 
   // Listen for new metrics
   metricsEvents.onmessage = (event) => {
@@ -82,12 +91,11 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     },
     restarts: r.status?.containerStatuses?.reduce((acc, curr) => acc + curr.restartCount, 0) ?? 0,
     controlled_by: r.metadata?.ownerReferences?.at(0)?.kind ?? '',
-    status: { component: Status, props: { status: r.status?.phase ?? '' } },
-    // @todo: This will not work due to using the default sparerResource stream
+    status: { component: Status, props: { type: 'Pod', status: r.status?.phase ?? '' } },
     node: r.spec?.nodeName ?? '',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   // Close the EventSource when the store is stopped
   store.stopCallback = metricsEvents.close.bind(metricsEvents)

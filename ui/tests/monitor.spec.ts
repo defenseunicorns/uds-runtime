@@ -1,13 +1,67 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { expect, test } from '@playwright/test'
 import * as fs from 'node:fs'
+
+import { expect, test } from '@playwright/test'
 
 test.describe('Monitor', async () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/monitor/pepr')
+
+    // wait for data to load
+    await page.waitForSelector('.pepr-event.ALLOWED')
   })
+
+  test('searching with "All Pepr Events selected', async ({ page }) => {
+    await page.getByTestId('datatable-search').fill('podinfo/podinfo')
+
+    const results = await page.getByTestId('table-header-results').textContent()
+    expect(results).toBeTruthy()
+
+    const numbers = results!.match(/\d+/g)!.map(Number)
+    expect(numbers![0]).toBeLessThan(numbers![1])
+  })
+
+  test('searching while using filter dropdown', async ({ page }) => {
+    await page.getByTestId('datatable-search').fill('podinfo/podinfo')
+    await page.getByTestId('table-filter-stream-select').click()
+    await page.selectOption('select#stream', 'UDS Policies: Allowed')
+
+    // wait for data to load
+    await page.waitForSelector('.pepr-event.ALLOWED')
+
+    const results = await page.getByTestId('table-header-results').textContent()
+    expect(results).toBeTruthy()
+
+    const numbers = results!.match(/\d+/g)!.map(Number)
+    expect(numbers![0]).toBeLessThan(numbers![1])
+  })
+
+  test('sorting by count', async ({ page }) => {
+    // get first row
+    let rows = await page.$$('table tr:first-child')
+    let firstRow = await rows[1].textContent() // index 0 is the table header
+    expect(firstRow).toBeTruthy()
+    let match = firstRow!.match(/\s(\d+)\s/)
+    expect(match).toBeTruthy()
+    const originalCount = parseInt(match![1])
+
+    // click "count" to sort
+    await page.getByText('count').click()
+
+    // get first row after sorting
+    rows = await page.$$('table tr:first-child')
+    firstRow = await rows[1].textContent() // index 0 is the table header
+    expect(firstRow).toBeTruthy()
+    match = firstRow!.match(/\s(\d+)\s/)
+    expect(match).toBeTruthy()
+    const newCount = parseInt(match![1])
+
+    // sorted 'count' value should be greater than the original
+    expect(newCount).toBeGreaterThan(originalCount)
+  })
+
   test('Exports logs', async ({ page }) => {
     // wait for pepr data to load
     await page.waitForSelector('.pepr-event.ALLOWED')

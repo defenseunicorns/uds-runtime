@@ -2,10 +2,9 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1Job as Resource } from '@kubernetes/client-node'
-import { formatDistance } from 'date-fns'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import { formatDistance } from 'date-fns'
 
 interface Row extends CommonRow {
   completions: string
@@ -22,7 +21,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     durations: formatDistance(r.status?.startTime ?? new Date(), r.status?.completionTime ?? new Date()),
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

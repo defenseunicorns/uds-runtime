@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { fireEvent, render, screen } from '@testing-library/svelte'
 import { get } from 'svelte/store'
+
+import { fireEvent, render, screen } from '@testing-library/svelte'
 import { beforeEach, describe, expect, vi } from 'vitest'
+
 import ToastComponent from './component.svelte'
 import { addToast, toast } from './store'
 

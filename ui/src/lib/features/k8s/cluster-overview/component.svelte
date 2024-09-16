@@ -3,9 +3,13 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
-  // @ts-expect-error types don't exist for svelte-apexcharts
-  import { chart } from 'svelte-apexcharts'
+
+  import { goto } from '$app/navigation'
+  import { createEventSource } from '$lib/utils/helpers'
+  import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
+
+  import './styles.postcss'
 
   type ClusterData = {
     totalPods: number
@@ -157,38 +161,58 @@
     },
   }
 
-  $: options = {
-    ...options,
-    series: [
-      {
-        name: 'CPU Usage',
-        data: clusterData.historicalUsage.map((point) => ({
-          x: new Date(point.Timestamp).getTime(),
-          y: point.CPU / 1000, // Convert millicores to cores
-        })),
-      },
-      {
-        name: 'Memory Usage',
-        data: clusterData.historicalUsage.map((point) => ({
-          x: new Date(point.Timestamp).getTime(),
-          y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
-        })),
-      },
-    ],
+  let onMessageCount = 0
+  let el: HTMLDivElement | undefined = undefined
+  let apexChart: ApexCharts
+
+  $: {
+    options = updateClusterData(clusterData)
+    apexChart?.updateOptions(options)
+  }
+
+  function updateClusterData(clusterData: ClusterData): ApexOptions {
+    return {
+      ...options,
+      series: [
+        {
+          name: 'CPU Usage',
+          data: clusterData.historicalUsage.map((point) => ({
+            x: new Date(point.Timestamp).getTime(),
+            y: point.CPU / 1000, // Convert millicores to cores
+          })),
+        },
+        {
+          name: 'Memory Usage',
+          data: clusterData.historicalUsage.map((point) => ({
+            x: new Date(point.Timestamp).getTime(),
+            y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
+          })),
+        },
+      ],
+    }
   }
 
   onMount(() => {
-    const overview = new EventSource(`/api/v1/monitor/cluster-overview`)
+    const path: string = `/api/v1/monitor/cluster-overview`
+    const overview = createEventSource(path)
 
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData
 
       cpuPercentage = calculatePercentage(clusterData.currentUsage.CPU, clusterData.cpuCapacity)
       memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
+
+      if (onMessageCount === 0) {
+        onMessageCount++
+        apexChart = new ApexCharts(el, updateClusterData(clusterData))
+        apexChart?.render()
+      }
     }
 
     return () => {
+      onMessageCount = 0
       overview.close()
+      apexChart?.destroy()
     }
   })
 </script>
@@ -196,22 +220,30 @@
 <div class="p-4 dark:text-white pt-0">
   <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-      <div class="px-4 py-5 sm:p-6">
+    <button
+      class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg hover:dark:bg-gray-700 flex"
+      on:click={() => goto('/workloads/pods')}
+    >
+      <div class="px-4 py-5 sm:p-6 flex flex-col items-start">
         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Pods</dt>
         <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
           {clusterData.totalPods}
         </dd>
       </div>
-    </div>
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-      <div class="px-4 py-5 sm:p-6">
+    </button>
+
+    <button
+      class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg hover:dark:bg-gray-700 flex"
+      on:click={() => goto('/nodes')}
+    >
+      <div class="px-4 py-5 sm:p-6 flex flex-col items-start">
         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Nodes</dt>
         <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white" data-testid="node-count">
           {clusterData.totalNodes}
         </dd>
       </div>
-    </div>
+    </button>
+
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
       <div class="px-4 py-5 sm:p-6">
         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">CPU Usage</dt>
@@ -223,6 +255,7 @@
         </div>
       </div>
     </div>
+
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
       <div class="px-4 py-5 sm:p-6">
         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Memory Usage</dt>
@@ -238,7 +271,7 @@
   <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
     <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow">
-      <div use:chart={options} />
+      <div bind:this={el} />
     </div>
   </div>
 </div>

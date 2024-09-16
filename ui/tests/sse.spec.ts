@@ -7,13 +7,13 @@ import { expect, test } from '@playwright/test'
 // Annotate entire file as serial.
 test.describe.configure({ mode: 'serial' })
 
-async function deletePod(namespace: string, podName: string) {
+async function deletePod(namespace: string, podName: string, force: boolean = true) {
   try {
     const kc = new k8s.KubeConfig()
     kc.loadFromDefault() // Load the kubeconfig file from default location
 
     const k8sApi = kc.makeApiClient(k8s.CoreV1Api)
-    await k8sApi.deleteNamespacedPod({ name: podName, namespace: namespace, gracePeriodSeconds: 0 })
+    await k8sApi.deleteNamespacedPod({ name: podName, namespace: namespace, gracePeriodSeconds: force ? 0 : undefined })
     console.log(`Pod ${podName} deleted successfully`)
   } catch (err) {
     console.error(`Failed to delete pod ${podName}:`, err)
@@ -23,14 +23,15 @@ async function deletePod(namespace: string, podName: string) {
 test.describe('SSE and reactivity', async () => {
   test('Pods are updated', async ({ page }) => {
     await page.goto('/workloads/pods')
-    const originalPodName = await page.getByRole('cell', { name: 'podinfo-' }).first().textContent()
+    let originalPodName = await page.getByRole('cell', { name: 'podinfo-' }).first().textContent()
+    originalPodName = originalPodName ? originalPodName.trim() : ''
 
     // get pod name
     expect(originalPodName).not.toBeNull()
 
     // delete pod and wait for it to disappear
-    await deletePod('podinfo', originalPodName ?? '')
-    await expect(page.getByRole('cell', { name: originalPodName ?? '' })).toBeHidden()
+    await deletePod('podinfo', originalPodName)
+    await expect(page.getByRole('cell', { name: originalPodName })).toBeHidden()
 
     // get new pod
     const newPodName = await page.getByRole('cell', { name: 'podinfo' }).first().textContent()

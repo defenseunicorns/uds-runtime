@@ -13,6 +13,7 @@ import {
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { VirtualService } from 'uds-core-types/src/pepr/operator/crd/generated/istio/virtualservice-v1beta1'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 

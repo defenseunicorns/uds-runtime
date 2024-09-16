@@ -2,15 +2,16 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
+  import { onMount } from 'svelte'
+
   import type { KubernetesObject } from '@kubernetes/client-node'
+  import { goto } from '$app/navigation'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
   import yaml from 'highlight.js/lib/languages/yaml'
-  import { onMount } from 'svelte'
   import * as YAML from 'yaml'
 
-  import { goto } from '$app/navigation'
   import './styles.postcss'
 
   export let resource: KubernetesObject
@@ -119,7 +120,7 @@
 
     <!-- Content -->
 
-    <div class="flex-grow overflow-y-auto dark:text-gray-300">
+    <div class="flex-grow overflow-y-auto dark:text-gray-300 pb-20">
       {#if activeTab === 'metadata'}
         <!-- Metadata tab -->
         <div class="bg-gray-800 text-gray-200 p-6 rounded-lg">
@@ -160,16 +161,11 @@
         </div>
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
-        <div class="text-gray-200 p-4 pb-20">
+        <div class="text-gray-200 p-4">
           <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre w-full block">
             <!-- We turned off svelte/no-at-html-tags eslint rule because we are using DOMPurify to sanitize -->
             {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(resource), { language: 'yaml' }).value)}
           </code>
-        </div>
-      {:else if activeTab === 'events'}
-        <!-- Events tab -->
-        <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
-          <p>Events tab content</p>
         </div>
       {/if}
     </div>
