@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { Package as Resource } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import type { Package as Resource } from 'uds-core-types/src/pepr/operator/crd/generated/package-v1alpha1'
+
 import EndpointLinks from './links/component.svelte'
 
 interface Row extends CommonRow {
@@ -30,7 +30,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     retryAttempts: r.status?.retryAttempt ?? 0,
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

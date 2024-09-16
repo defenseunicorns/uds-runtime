@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import { expect, suite, test } from 'vitest'
+
 import { formatCPU, formatMemory, parseCPU, parseMemory } from './utils'
 
 suite('CPU and Memory Utility Functions', () => {

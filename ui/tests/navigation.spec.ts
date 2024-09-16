@@ -5,6 +5,11 @@ import { expect, test } from '@playwright/test'
 
 test.describe('Navigation', async () => {
   test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({
+      width: 3024,
+      height: 1964,
+    })
+
     await page.goto('/')
   })
 
@@ -44,7 +49,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
 
-      const element = page.locator(`.emphasize:has-text("podinfo")`)
+      const element = page.locator(`.emphasize:has-text("podinfo")`).first()
       await expect(element).toBeVisible()
     })
 

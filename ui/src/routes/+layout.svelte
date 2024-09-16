@@ -3,14 +3,18 @@
 
 <script lang="ts">
   import 'flowbite'
-  import { initFlowbite } from 'flowbite'
+
   import { onMount } from 'svelte'
+
   import { afterNavigate } from '$app/navigation'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
+  import { initFlowbite } from 'flowbite'
+
   import '../app.postcss'
-  import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
+
   import Unauthenticated from '$components/Auth/component.svelte'
+  import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
 
   let path = ''
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
