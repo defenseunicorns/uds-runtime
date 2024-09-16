@@ -241,9 +241,13 @@
             </tr>
           </thead>
           <tbody>
-            {#if $rows.length === 0}
+            {#if $rows.length === 0 && isFiltering}
               <tr>
                 <td class="text-center" colspan="9">No matching entries found</td>
+              </tr>
+            {:else if $rows.length === 0}
+              <tr>
+                <td class="text-center" colspan="9">No resources found</td>
               </tr>
             {:else}
               {#each $rows as row}
