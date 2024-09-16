@@ -357,7 +357,7 @@ func getRetryInterval() time.Duration {
 func handleReconnection(disconnected chan error, k8sResources *K8sResources, createClient createClient,
 	createCache createCache) {
 	for err := range disconnected {
-		fmt.Printf("Disconnected error received: %v\n", err)
+		log.Printf("Disconnected error received: %v\n", err)
 		for {
 			// Cancel the previous context
 			k8sResources.Cancel()
@@ -365,19 +365,19 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 
 			currentCtx, currentCluster, err := k8s.GetCurrentContext()
 			if err != nil {
-				fmt.Printf("Error fetching current context: %v\n", err)
+				log.Printf("Error fetching current context: %v\n", err)
 				continue
 			}
 
 			// If the current context or cluster is different from the original, skip reconnection
 			if currentCtx != k8sResources.OriginalCtx || currentCluster != k8sResources.OriginalCluster {
-				fmt.Println("Current context has changed. Skipping reconnection.")
+				log.Println("Current context has changed. Skipping reconnection.")
 				continue
 			}
 
 			k8sClient, err := createClient()
 			if err != nil {
-				fmt.Printf("Retrying to create k8s client: %v\n", err)
+				log.Printf("Retrying to create k8s client: %v\n", err)
 				continue
 			}
 
@@ -385,14 +385,14 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 			ctx, cancel := context.WithCancel(context.Background())
 			cache, err := createCache(ctx, k8sClient)
 			if err != nil {
-				fmt.Printf("Retrying to create cache: %v\n", err)
+				log.Printf("Retrying to create cache: %v\n", err)
 				continue
 			}
 
 			k8sResources.Client = k8sClient
 			k8sResources.Cache = cache
 			k8sResources.Cancel = cancel
-			fmt.Println("Successfully reconnected to k8s and recreated cache")
+			log.Println("Successfully reconnected to k8s and recreated cache")
 			break
 		}
 	}
