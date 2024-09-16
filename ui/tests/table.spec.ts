@@ -9,7 +9,7 @@ test.describe('DataTable', async () => {
   })
 
   test('filters rows when we click the namespace link in a row', async ({ page }) => {
-    await page.getByRole('button', { name: 'podinfo' }).click()
+    await page.getByRole('button', { name: 'podinfo' }).last().click()
 
     expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 8)')
 
