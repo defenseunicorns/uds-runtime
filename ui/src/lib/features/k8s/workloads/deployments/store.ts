@@ -23,7 +23,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     available: r.status?.availableReplicas ?? 0,
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,
