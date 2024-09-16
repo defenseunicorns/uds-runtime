@@ -22,7 +22,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     durations: formatDistance(r.status?.startTime ?? new Date(), r.status?.completionTime ?? new Date()),
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

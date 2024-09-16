@@ -37,7 +37,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     status: { component: Status, props: { type: 'Services', status: isInSuccessState(r) ? 'Active' : 'Pending' } },
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

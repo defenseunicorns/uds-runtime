@@ -74,7 +74,7 @@ test.describe.serial('Authentication Tests', () => {
     await page.goto(`/auth?token=${extractedToken}`)
     await page.getByRole('button', { name: 'Workloads' }).click()
     await page.getByRole('link', { name: 'Pods' }).click()
-    const element = page.locator(`.emphasize:has-text("podinfo")`)
+    const element = page.locator(`.emphasize:has-text("podinfo")`).first()
     await expect(element).toBeVisible()
 
     // Check details view
