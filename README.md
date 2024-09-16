@@ -1,13 +1,43 @@
-# UDS Runtime
+# UDS Runtime - providing views and insights into your UDS cluster
 
-[![Tests](https://github.com/defenseunicorns/uds-runtime/actions/workflows/pr-tests.yaml/badge.svg)](https://github.com/defenseunicorns/uds-runtime/actions/workflows/pr-tests.yaml)
-[![lint](https://github.com/defenseunicorns/uds-runtime/actions/workflows/scan-lint.yaml/badge.svg)](https://github.com/defenseunicorns/uds-runtime/actions/workflows/scan-lint.yaml)
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <div>
+  <div>
+    <a href="https://github.com/defenseunicorns/uds-runtime/releases">
+      <img src="https://img.shields.io/github/v/release/defenseunicorns/uds-runtime" alt="Latest Release">
+    </a>
+    <a href="https://go.dev/">
+      <img src="https://img.shields.io/github/go-mod/go-version/defenseunicorns/uds-runtime?filename=go.mod" alt="Go version">
+    </a>
+    <a href="https://github.com/defenseunicorns/uds-runtime/actions/workflows/tag-and-release.yaml">
+      <img src="https://img.shields.io/github/actions/workflow/status/defenseunicorns/uds-runtime/tag-and-release.yaml" alt="Build Status">
+    </a>
+    </div>
+    <a href="https://goreportcard.com/report/github.com/defenseunicorns/uds-runtime">
+      <img src="https://goreportcard.com/badge/github.com/defenseunicorns/uds-runtime" alt="Go Report Card">
+    </a>
+    <a href="https://scorecard.dev/viewer/?uri=github.com/defenseunicorns/uds-runtime">
+      <img src="https://api.scorecard.dev/projects/github.com/defenseunicorns/uds-runtime/badge" alt="OpenSSF Scorecard">
+    </a>
+    <a href="https://uds.defenseunicorns.com/docs/">
+      <img src="https://img.shields.io/badge/docs-uds.defenseunicorns.com-775ba1" alt="UDS Documentation">
+    </a>
+  </div>
+  <div>
+    <img src="ui/static/doug.svg" alt="zarf logo" height="256">
+  </div>
+</div>
 
+<!-- <img align="right"  alt="zarf logo" src="ui/static/doug.svg"  height="256" />
+
+[![Latest Release](https://img.shields.io/github/v/release/defenseunicorns/uds-runtime)](https://github.com/defenseunicorns/uds-runtime/releases)
+[![Go version](https://img.shields.io/github/go-mod/go-version/defenseunicorns/uds-runtime?filename=go.mod)](https://go.dev/)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/defenseunicorns/uds-runtime/tag-and-release.yaml)](https://github.com/defenseunicorns/uds-runtime/actions/workflows/tag-and-release.yaml)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/defenseunicorns/uds-runtime)](https://goreportcard.com/report/github.com/defenseunicorns/uds-runtime)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/defenseunicorns/uds-runtime/badge)](https://scorecard.dev/viewer/?uri=github.com/defenseunicorns/uds-runtime)
 
-UDS Runtime is the frontend for all things UDS, providing views and insights into your UDS cluster.
+[![UDS Documentation](https://img.shields.io/badge/docs-uds.defenseunicorns.com-775ba1)](https://uds.defenseunicorns.com/docs/) -->
 
 ## Quickstart Deploy
 
@@ -17,11 +47,13 @@ UDS Runtime is the frontend for all things UDS, providing views and insights int
 ### Pre-requisites
 
 Recommended:
-* [UDS-CLI](https://github.com/defenseunicorns/UDS-CLI#install)
+
+- [UDS-CLI](https://github.com/defenseunicorns/UDS-CLI#install)
 
 If building locally:
-* `Go >= 1.22.0`
-* `Node >= v21.1.0`
+
+- `Go >= 1.22.0`
+- `Node >= v21.1.0`
 
 ### In Cluster
 
@@ -31,7 +63,7 @@ Assumes a K8s cluster is running and the appropriate K8s context has been select
 uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime:<tag> --confirm
 ```
 
-**See [all tags](https://github.com/defenseunicorns/uds-runtime/pkgs/container/packages%2Fuds%2Fuds-runtime)*
+\*_See [all tags](https://github.com/defenseunicorns/uds-runtime/pkgs/container/packages%2Fuds%2Fuds-runtime)_
 
 ### Locally (Out of Cluster)
 
@@ -46,11 +78,13 @@ For a full guide on developing for UDS Runtime, please read the [CONTRIBUTING.md
 ### To start the backend development server, run the following command:
 
 **With UDS-CLI**
+
 ```bash
 uds run dev-server
 ```
 
 **Without UDS-CLI**
+
 ```bash
 air
 ```
@@ -60,11 +94,13 @@ air
 ### To start the frontend server, run the following command:
 
 **With UDS-CLI**
+
 ```bash
 uds run dev-ui
 ```
 
 **Wihtout UDS-CLI**
+
 ```bash
 cd ui
 npm ci
