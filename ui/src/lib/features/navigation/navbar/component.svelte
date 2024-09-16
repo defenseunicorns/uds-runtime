@@ -2,10 +2,10 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
+  import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
   import { NotificationFilled } from 'carbon-icons-svelte'
+
   import { isSidebarExpanded } from '../store'
-  import { authenticated } from '$lib/features/api-auth/store'
-  import { apiAuthEnabled } from '$lib/features/api-auth/store'
 
   // Don't expand sidebar if on api auth page
   $: {

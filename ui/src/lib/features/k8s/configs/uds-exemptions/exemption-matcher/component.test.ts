@@ -1,5 +1,6 @@
 import { render } from '@testing-library/svelte'
 import type { Matcher } from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'
+
 import ExemptionMatcher from './component.svelte'
 
 describe('Matcher', () => {

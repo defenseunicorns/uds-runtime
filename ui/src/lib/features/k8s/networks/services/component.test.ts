@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
+import type { V1Service } from '@kubernetes/client-node'
 import {
   expectEqualIgnoringFields,
   MockResourceStore,
@@ -12,7 +13,7 @@ import {
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
-import type { V1Service } from '@kubernetes/client-node'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -26,16 +27,7 @@ suite('ServiceTable Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [
-      ['name', 'emphasize'],
-      ['namespace'],
-      ['type'],
-      ['cluster_ip'],
-      ['external_ip'],
-      ['ports'],
-      ['age'],
-      ['status'],
-    ],
+    columns: [['name', 'emphasize'], ['namespace'], ['type'], ['cluster_ip'], ['external_ip'], ['ports'], ['age']],
     name,
     description,
   })
@@ -133,7 +125,6 @@ suite('ServiceTable Component', () => {
       name: 'kube-prometheus-stack-kube-state-metrics',
       namespace: 'monitoring',
       ports: '8080/TCP',
-      status: 'Succeeded',
       type: 'ClusterIP',
     },
     {
@@ -142,7 +133,6 @@ suite('ServiceTable Component', () => {
       name: 'passthrough-ingressgateway',
       namespace: 'istio-passthrough-gateway',
       ports: '15021:31801/TCP, 80:31907/TCP, 443:31576/TCP',
-      status: 'Succeeded',
       type: 'LoadBalancer',
     },
     {
@@ -151,7 +141,6 @@ suite('ServiceTable Component', () => {
       name: 'zarf-docker-registry',
       namespace: 'zarf',
       ports: '5000:31999/TCP',
-      status: 'Succeeded',
       type: 'NodePort',
     },
   ]

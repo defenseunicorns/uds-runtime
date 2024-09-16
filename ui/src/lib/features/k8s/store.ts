@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { createEventSource } from '$lib/utils/helpers'
-import type { KubernetesObject } from '@kubernetes/client-node'
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 import { derived, writable, type Writable } from 'svelte/store'
+
+import type { KubernetesObject } from '@kubernetes/client-node'
+import { createEventSource } from '$lib/utils/helpers'
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
+
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
 
 export class ResourceStore<T extends KubernetesObject, U extends CommonRow> implements ResourceStoreInterface<T, U> {
@@ -236,9 +238,15 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
   transformer: (r: T, c?: CommonRow) => Partial<U>,
 ) {
   // Return a function to transform KubernetesObject resources
-  return (resources: T[]) =>
+
+  return (resources: T[]) => {
+    // If we don't have resoure return empty array to avoid 'Cannot read properties of null (reading 'map')' error
+    if (!resources) {
+      return []
+    }
+
     // Map the resources to the common table format
-    resources.map<ResourceWithTable<T, U>>((r) => {
+    return resources.map<ResourceWithTable<T, U>>((r) => {
       // Convert common KubernetesObject rows
       const commonRows = {
         name: r.metadata?.name ?? '',
@@ -258,6 +266,7 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
         } as U,
       }
     })
+  }
 }
 
 function formatDetailedAge(timestamp: Date) {

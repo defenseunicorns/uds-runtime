@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { beforeEach, vi } from 'vitest'
-
 import type { ZarfPackage } from '$features/k8s/applications/packages/types'
 import {
   expectEqualIgnoringFields,
@@ -12,6 +10,8 @@ import {
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
+import { beforeEach, vi } from 'vitest'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 

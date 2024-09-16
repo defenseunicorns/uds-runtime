@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { expect, test } from '@playwright/test'
 import { ChildProcess, exec } from 'child_process'
+
+import { expect, test } from '@playwright/test'
 
 let serverProcess: ChildProcess
 const serverLogs: string[] = []
@@ -74,7 +75,7 @@ test.describe.serial('Authentication Tests', () => {
     await page.goto(`/auth?token=${extractedToken}`)
     await page.getByRole('button', { name: 'Workloads' }).click()
     await page.getByRole('link', { name: 'Pods' }).click()
-    const element = page.locator(`.emphasize:has-text("podinfo")`)
+    const element = page.locator(`.emphasize:has-text("podinfo")`).first()
     await expect(element).toBeVisible()
 
     // Check details view

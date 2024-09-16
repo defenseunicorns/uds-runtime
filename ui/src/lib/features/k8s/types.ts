@@ -1,5 +1,6 @@
-import type { KubernetesObject } from '@kubernetes/client-node'
 import { type Writable } from 'svelte/store'
+
+import type { KubernetesObject } from '@kubernetes/client-node'
 
 export interface CommonRow {
   name: string

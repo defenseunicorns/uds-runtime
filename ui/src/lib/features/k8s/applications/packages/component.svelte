@@ -3,6 +3,7 @@
 
 <script lang="ts">
   import { DataTable } from '$components'
+
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
