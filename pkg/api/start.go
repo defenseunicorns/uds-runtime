@@ -353,7 +353,7 @@ func getRetryInterval() time.Duration {
 }
 
 // handleReconnection is a goroutine that handles reconnection to the k8s API
-// passing createClient and createCache instead of callings k8s.NewClient and resources.NewCache for testing purposes
+// passing createClient and createCache instead of calling k8s.NewClient and resources.NewCache for testing purposes
 func handleReconnection(disconnected chan error, k8sResources *K8sResources, createClient createClient,
 	createCache createCache) {
 	for err := range disconnected {
