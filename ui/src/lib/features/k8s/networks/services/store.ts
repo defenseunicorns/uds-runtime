@@ -11,7 +11,6 @@ interface Row extends CommonRow {
   cluster_ip: string
   external_ip: string
   ports: string
-  status: string
 }
 
 export type Columns = ColumnWrapper<Row>
@@ -27,7 +26,6 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       r.spec?.ports
         ?.map((p) => (p.nodePort ? `${p.port}:${p.nodePort}/${p.protocol}` : `${p.port}/${p.protocol}`))
         .join(', ') ?? '',
-    status: isInSuccessState(r) ? 'Succeeded' : 'Pending',
   }))
 
   const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
@@ -37,30 +35,4 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     start: store.start.bind(store),
     sortByKey: store.sortByKey.bind(store),
   }
-}
-
-/**
- * Success state of a Service depends on the type of service
- * https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
- * ClusterIP:     ClusterIP is defined
- * NodePort:      ClusterIP is defined
- * LoadBalancer:  ClusterIP is defined __and__ external endpoints exist
- * ExternalName:  true
- */
-function isInSuccessState(resource: Resource): boolean {
-  const resourceType = resource.spec?.type
-  switch (resourceType) {
-    case 'ExternalName':
-      return true
-    case 'LoadBalancer':
-      if (resource.status?.loadBalancer?.ingress?.length === 0) {
-        return false
-      }
-      break
-    case 'ClusterIP':
-    case 'NodePort':
-    default:
-      break
-  }
-  return resource.spec?.clusterIPs?.length ? resource.spec?.clusterIPs?.length > 0 : false
 }
