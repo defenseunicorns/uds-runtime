@@ -8,6 +8,11 @@
   {#each $toast as toast}
     <div
       class="flex items-center justify-between shadow-gray-900 w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-lg dark:text-gray-400 dark:bg-gray-800 mb-4"
+      class:border-red-500={toast.type === 'error'}
+      class:border-yellow-500={toast.type === 'warning'}
+      class:border-blue-500={toast.type === 'info'}
+      class:border-green-500={toast.type === 'success'}
+      class:border-2={'true'}
     >
       <div class="flex items-center space-x-4">
         <div class="flex-shrink-0 w-8 h-8 rounded-lg">

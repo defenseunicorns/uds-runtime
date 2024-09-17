@@ -347,6 +347,32 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 	})
 }
 
+func TestClusterHealth(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	t.Run("cluster connected", func(t *testing.T) {
+		// Create a new context with a timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/health", nil)
+
+		// Start serving the request for 1 second
+		go func(ctx context.Context) {
+			r.ServeHTTP(rr, req)
+		}(ctx)
+
+		// wait for the context to be done
+		<-ctx.Done()
+		require.Equal(t, http.StatusOK, rr.Code)
+		require.Contains(t, rr.Body.String(), "success")
+	})
+}
+
 func TestTopLevelResourceRoutes(t *testing.T) {
 	r, err := setup()
 	require.NoError(t, err)
