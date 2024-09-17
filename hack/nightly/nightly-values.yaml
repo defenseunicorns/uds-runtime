@@ -4,3 +4,7 @@ image:
 package:
   gateway: tenant
   host: runtime-canary
+
+# no sso for runtime-canary
+sso:
+  enabled: false
