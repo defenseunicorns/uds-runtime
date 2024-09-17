@@ -4,6 +4,8 @@
 package k8s
 
 import (
+	"fmt"
+
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -42,4 +44,20 @@ func NewClient() (*Clients, error) {
 		MetricsClient: metricsClient,
 		Config:        config,
 	}, nil
+}
+
+// Declare GetCurrentContext as a variable so it can be mocked
+var GetCurrentContext = func() (string, string, error) {
+	// Actual implementation of GetCurrentContext
+	rules := clientcmd.NewDefaultClientConfigLoadingRules()
+	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(rules, &clientcmd.ConfigOverrides{}).RawConfig()
+	if err != nil {
+		return "", "", err
+	}
+	contextName := config.CurrentContext
+	context := config.Contexts[contextName]
+	if context == nil {
+		return "", "", fmt.Errorf("context not found")
+	}
+	return contextName, context.Cluster, nil
 }
