@@ -1,34 +1,6 @@
 # UDS Runtime - providing views and insights into your UDS cluster
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
-  <div>
-  <div>
-    <a href="https://github.com/defenseunicorns/uds-runtime/releases">
-      <img src="https://img.shields.io/github/v/release/defenseunicorns/uds-runtime" alt="Latest Release">
-    </a>
-    <a href="https://go.dev/">
-      <img src="https://img.shields.io/github/go-mod/go-version/defenseunicorns/uds-runtime?filename=go.mod" alt="Go version">
-    </a>
-    <a href="https://github.com/defenseunicorns/uds-runtime/actions/workflows/tag-and-release.yaml">
-      <img src="https://img.shields.io/github/actions/workflow/status/defenseunicorns/uds-runtime/tag-and-release.yaml" alt="Build Status">
-    </a>
-    </div>
-    <a href="https://goreportcard.com/report/github.com/defenseunicorns/uds-runtime">
-      <img src="https://goreportcard.com/badge/github.com/defenseunicorns/uds-runtime" alt="Go Report Card">
-    </a>
-    <a href="https://scorecard.dev/viewer/?uri=github.com/defenseunicorns/uds-runtime">
-      <img src="https://api.scorecard.dev/projects/github.com/defenseunicorns/uds-runtime/badge" alt="OpenSSF Scorecard">
-    </a>
-    <a href="https://uds.defenseunicorns.com/docs/">
-      <img src="https://img.shields.io/badge/docs-uds.defenseunicorns.com-775ba1" alt="UDS Documentation">
-    </a>
-  </div>
-  <div>
-    <img src="ui/static/doug.svg" alt="zarf logo" height="256">
-  </div>
-</div>
-
-<!-- <img align="right"  alt="zarf logo" src="ui/static/doug.svg"  height="256" />
+<img align="right"  alt="zarf logo" src="ui/static/doug.svg"  height="256" />
 
 [![Latest Release](https://img.shields.io/github/v/release/defenseunicorns/uds-runtime)](https://github.com/defenseunicorns/uds-runtime/releases)
 [![Go version](https://img.shields.io/github/go-mod/go-version/defenseunicorns/uds-runtime?filename=go.mod)](https://go.dev/)
@@ -37,7 +9,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/defenseunicorns/uds-runtime)](https://goreportcard.com/report/github.com/defenseunicorns/uds-runtime)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/defenseunicorns/uds-runtime/badge)](https://scorecard.dev/viewer/?uri=github.com/defenseunicorns/uds-runtime)
 
-[![UDS Documentation](https://img.shields.io/badge/docs-uds.defenseunicorns.com-775ba1)](https://uds.defenseunicorns.com/docs/) -->
+[![UDS Documentation](https://img.shields.io/badge/docs-uds.defenseunicorns.com-775ba1)](https://uds.defenseunicorns.com/docs/)
 
 ## Quickstart Deploy
 
