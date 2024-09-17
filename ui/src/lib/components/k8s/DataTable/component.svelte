@@ -31,8 +31,8 @@
   export let name = ''
   export let description = 'No description available'
 
-  const rows = createStore()
-  const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
+  let rows = createStore()
+  $: ({ namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows)
 
   // check for filtering
   let isFiltering = false
@@ -102,6 +102,8 @@
   })
 
   onMount(() => {
+    let stop = rows.start()
+
     // Function to navigate using the keyboard
     const keyboardNavigate = (e: KeyboardEvent) => {
       if (uid) {
@@ -125,13 +127,24 @@
       }
     }
 
+    // Function to restart the store on cluster reconnection
+    const handleClusterReconnected = () => {
+      console.log('Cluster reconnected, restarting store')
+      // stop current store first
+      stop()
+      // recreate rows to trigger re-render
+      rows = createStore()
+      stop = rows.start()
+    }
+
     // Bind the keyboard navigation event
     window.addEventListener('keydown', keyboardNavigate)
-    const stop = rows.start()
+    window.addEventListener('cluster-reconnected', handleClusterReconnected)
 
     // Clean up the event listener when the component is destroyed
     return () => {
       window.removeEventListener('keydown', keyboardNavigate)
+      window.removeEventListener('cluster-reconnected', handleClusterReconnected)
       stop()
     }
   })
