@@ -4,7 +4,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { goto } from '$app/navigation'
   import { Card, LinkCard, ProgressBar } from '$components'
   import { createEventSource } from '$lib/utils/helpers'
   import ApexCharts from 'apexcharts'
