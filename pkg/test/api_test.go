@@ -348,6 +348,11 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 }
 
 func TestClusterHealth(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
 	t.Run("cluster connected", func(t *testing.T) {
 		// Create a new context with a timeout
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
