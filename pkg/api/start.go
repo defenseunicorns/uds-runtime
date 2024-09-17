@@ -29,6 +29,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"k8s.io/client-go/rest"
 )
 
 type K8sResources struct {
@@ -66,8 +67,19 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	// Create the disconnected channel
 	disconnected := make(chan error)
 
-	// Start the reconnection goroutine
-	go handleReconnection(disconnected, k8sResources, k8s.NewClient, resources.NewCache)
+	// Get current k8s context and start the reconnection goroutine if NOT in cluster
+	if !isRunningInCluster() {
+		currentCtx, currentCluster, err := k8s.GetCurrentContext()
+		if err != nil {
+			k8sResources.Cancel()
+			return nil, fmt.Errorf("failed to get current context: %w", err)
+		}
+
+		k8sResources.OriginalCtx = currentCtx
+		k8sResources.OriginalCluster = currentCluster
+
+		go handleReconnection(disconnected, k8sResources, k8s.NewClient, resources.NewCache)
+	}
 
 	// Add Swagger UI routes
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
@@ -239,19 +251,11 @@ func setupK8sResources() (*K8sResources, error) {
 		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 
-	currentCtx, currentCluster, err := k8s.GetCurrentContext()
-	if err != nil {
-		cancel()
-		return nil, fmt.Errorf("failed to get current context: %w", err)
-	}
-
 	// K8sResources struct to hold references
 	k8sResources := &K8sResources{
-		Client:          k8sClient,
-		Cache:           cache,
-		OriginalCtx:     currentCtx,
-		OriginalCluster: currentCluster,
-		Cancel:          cancel,
+		Client: k8sClient,
+		Cache:  cache,
+		Cancel: cancel,
 	}
 
 	return k8sResources, nil
@@ -350,6 +354,12 @@ func getRetryInterval() time.Duration {
 		}
 	}
 	return 5 * time.Second // Default to 5 seconds if not set
+}
+
+// isRunningInCluster checks if the application is running inside cluster
+func isRunningInCluster() bool {
+	_, err := rest.InClusterConfig()
+	return err == nil
 }
 
 // handleReconnection is a goroutine that handles reconnection to the k8s API

@@ -911,13 +911,34 @@ func checkHealth(k8sResources *K8sResources, disconnected chan error) http.Handl
 			}
 		}
 
+		inClusterCheck := func() {
+			response := map[string]string{
+				"success": "in-cluster",
+			}
+			data, _ := json.Marshal(response)
+			// Write the data to the response
+			fmt.Fprintf(w, "data: %s\n\n", data)
+
+			// Flush the response to ensure it is sent to the client
+			if flusher, ok := w.(http.Flusher); ok {
+				flusher.Flush()
+			}
+		}
+
+		checkFunc := checkCluster
+
+		// If running in cluster don't check for version and send error or reconnected events
+		if isRunningInCluster() {
+			checkFunc = inClusterCheck
+		}
+
 		// Check the cluster immediately
-		checkCluster()
+		checkFunc()
 
 		for {
 			select {
 			case <-ticker.C:
-				checkCluster()
+				checkFunc()
 
 			case <-r.Context().Done():
 				// Client closed the connection
