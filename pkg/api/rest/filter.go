@@ -68,7 +68,9 @@ func filterItemsByFields(items []unstructured.Unstructured, fieldPaths []string)
 		}
 
 		// Delete managedFields from .metadata if it exists
-		delete(itemData["metadata"].(map[string]interface{}), "managedFields")
+		if itemData["metadata"] != nil {
+			delete(itemData["metadata"].(map[string]interface{}), "managedFields")
+		}
 
 		// Add the filtered item to the result
 		filtered = append(filtered, itemData)
