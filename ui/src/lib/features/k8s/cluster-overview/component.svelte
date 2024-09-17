@@ -5,9 +5,12 @@
   import { onMount } from 'svelte'
 
   import { goto } from '$app/navigation'
+  import { ProgressBar } from '$components'
   import { createEventSource } from '$lib/utils/helpers'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
+
+  import { memibytesToGigabytes, millicoresToCores } from '../helpers'
 
   import './styles.postcss'
 
@@ -43,6 +46,10 @@
 
   let cpuPercentage = 0
   let memoryPercentage = 0
+  let gbUsed = 0
+  let gbCapacity = 0
+  let cpuUsed = 0
+  let cpuCapacity = 0
 
   function calculatePercentage(usage: number, capacity: number): number {
     if (capacity <= 0) return 0
@@ -178,14 +185,14 @@
           name: 'CPU Usage',
           data: clusterData.historicalUsage.map((point) => ({
             x: new Date(point.Timestamp).getTime(),
-            y: point.CPU / 1000, // Convert millicores to cores
+            y: millicoresToCores(point.CPU), // Convert millicores to cores
           })),
         },
         {
           name: 'Memory Usage',
           data: clusterData.historicalUsage.map((point) => ({
             x: new Date(point.Timestamp).getTime(),
-            y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
+            y: memibytesToGigabytes(point.Memory), // Convert bytes to GB
           })),
         },
       ],
@@ -201,6 +208,10 @@
 
       cpuPercentage = calculatePercentage(clusterData.currentUsage.CPU, clusterData.cpuCapacity)
       memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
+      gbUsed = memibytesToGigabytes(clusterData.currentUsage.Memory)
+      gbCapacity = memibytesToGigabytes(clusterData.memoryCapacity)
+      cpuUsed = millicoresToCores(clusterData.currentUsage.CPU)
+      cpuCapacity = millicoresToCores(clusterData.cpuCapacity)
 
       if (onMessageCount === 0) {
         onMessageCount++
@@ -250,9 +261,8 @@
         <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
           {cpuPercentage.toFixed(2)}%
         </dd>
-        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
-          <div class="bg-blue-600 h-2.5 rounded-full" style="width: {cpuPercentage}%"></div>
-        </div>
+
+        <ProgressBar size="md" progress={cpuUsed} capacity={cpuCapacity} unit="Cores" />
       </div>
     </div>
 
@@ -262,9 +272,8 @@
         <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
           {memoryPercentage.toFixed(2)}%
         </dd>
-        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
-          <div class="bg-green-600 h-2.5 rounded-full" style="width: {memoryPercentage}%"></div>
-        </div>
+
+        <ProgressBar size="md" progress={gbUsed} capacity={gbCapacity} unit="GB" />
       </div>
     </div>
   </div>
