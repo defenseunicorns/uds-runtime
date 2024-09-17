@@ -19,7 +19,7 @@
     calculatedWidth = percentage < 2 ? 2 : percentage
   }
 
-  const generateSubtext = () => `${fixedProgress} ${unit} of ${fixedCapacity} ${unit} used`
+  $: progressText = `${fixedProgress} ${unit} of ${fixedCapacity} ${unit} used`
 
   const sizeMapping = {
     sm: 'h-1.5',
@@ -35,6 +35,6 @@
   </div>
 
   <span class="text-xs mt-1 font-normal text-gray-500 dark:text-gray-400 truncate overflow-ellipsis">
-    {generateSubtext()}
+    {progressText}
   </span>
 </div>
