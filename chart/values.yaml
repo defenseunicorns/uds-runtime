@@ -5,6 +5,8 @@ image:
   tag: 0.2.0
   # x-release-please-end
   pullPolicy: IfNotPresent
+
 package:
   gateway: admin
   host: runtime
+  domain: "###ZARF_VAR_DOMAIN###"

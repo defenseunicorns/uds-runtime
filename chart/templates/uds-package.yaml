@@ -9,7 +9,7 @@ spec:
       - service: uds-runtime
         selector:
           app: uds-runtime
-        host: {{ .Values.package.host}}
+        host: {{ .Values.package.host }}
         gateway: {{ .Values.package.gateway }}
         port: 8080
         targetPort: 8080
@@ -18,3 +18,10 @@ spec:
         selector:
           app: uds-runtime
         remoteGenerated: KubeAPI
+  sso:
+    - name: uds-runtime
+      clientId: runtime
+      redirectUris:
+        - "https://{{ .Values.package.host}}.{{ .Values.package.gateway }}.{{ .Values.package.domain }}"
+      enableAuthserviceSelector:
+        app: uds-runtime
