@@ -3,10 +3,13 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
+
 import { writable } from 'svelte/store'
 
-import { resourceDescriptions } from '$lib/utils/descriptions'
 import type { V1Namespace } from '@kubernetes/client-node'
+import StatusComponent from '$components/k8s/Status/component.svelte'
+import { resourceDescriptions } from '$lib/utils/descriptions'
+
 import {
   expectEqualIgnoringFields,
   MockResourceStore,
@@ -22,6 +25,27 @@ vi.mock('$app/stores', () => {
 
   return {
     page: writable({ data: { namespaces } }),
+  }
+})
+
+vi.mock('svelte/store', () => {
+  return {
+    writable: vi.fn().mockImplementation(<T>(initialValue: T) => {
+      return {
+        subscribe: (callback: (value: T) => void) => {
+          callback(initialValue)
+          return () => {}
+        },
+        set: vi.fn(),
+        update: vi.fn(),
+      }
+    }),
+    get: vi.fn((key) => {
+      if (key === 'apiAuthEnabled') {
+        return false
+      }
+      return true // Default return value for other keys
+    }),
   }
 })
 
@@ -77,7 +101,7 @@ suite('NamespaceTable Component', () => {
   const expectedTables = [
     {
       name: 'promtail',
-      status: 'Active',
+      status: { component: StatusComponent, props: { type: 'Namespaces', status: 'Active' } },
       namespace: '',
     },
   ]

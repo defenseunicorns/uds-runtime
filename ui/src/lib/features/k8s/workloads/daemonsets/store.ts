@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1DaemonSet as Resource } from '@kubernetes/client-node'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
@@ -18,8 +17,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  // Using dense=true due to node_selector being defined in the spec vs status
-  const url = `/api/v1/resources/workloads/daemonsets?dense=true`
+  const url = `/api/v1/resources/workloads/daemonsets?fields=.metadata,.status,.spec.template.spec.nodeSelector`
 
   const transform = transformResource<Resource, Row>((r) => ({
     desired: r.status?.desiredNumberScheduled ?? 0,
@@ -34,7 +32,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       : '-',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

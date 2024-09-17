@@ -1,5 +1,6 @@
-import type { KubernetesObject } from '@kubernetes/client-node'
 import { type Writable } from 'svelte/store'
+
+import type { KubernetesObject } from '@kubernetes/client-node'
 
 export interface CommonRow {
   name: string
@@ -47,4 +48,34 @@ export interface ResourceStoreInterface<T extends KubernetesObject, U extends Co
   numResources: Writable<number>
   // The url for the EventSource
   url: string
+}
+
+// Define specific status types for each resource
+export type PodStatus = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown' | 'Completed'
+export type DeploymentStatus = 'Available' | 'Progressing' | 'Unavailable'
+export type ServiceStatus = 'Pending' | 'Active' | 'Terminating'
+export type PVCStatus = 'Pending' | 'Bound' | 'Lost'
+export type NodeStatus = 'Ready' | 'NotReady' | 'SchedulingDisabled'
+export type JobStatus = 'Complete' | 'Failed' | 'Running'
+export type CronJobStatus = 'Active' | 'Suspended'
+export type ConfigMapStatus = 'Active'
+export type SecretStatus = 'Active'
+export type NamespaceStatus = 'Active' | 'Terminating'
+
+type K8TypeFields = { color: string }
+
+// Define a type for the k8StatusMapping
+export type K8StatusMapping = {
+  Pod: Record<PodStatus, K8TypeFields>
+  Deployments: Record<DeploymentStatus, K8TypeFields>
+  ReplicaSets: Record<DeploymentStatus, K8TypeFields>
+  StatefulSets: Record<DeploymentStatus, K8TypeFields>
+  Services: Record<ServiceStatus, K8TypeFields>
+  PersistentVolumeClaims: Record<PVCStatus, K8TypeFields>
+  Nodes: Record<NodeStatus, K8TypeFields>
+  Jobs: Record<JobStatus, K8TypeFields>
+  CronJobs: Record<CronJobStatus, K8TypeFields>
+  ConfigMaps: Record<ConfigMapStatus, K8TypeFields>
+  Secrets: Record<SecretStatus, K8TypeFields>
+  Namespaces: Record<NamespaceStatus, K8TypeFields>
 }

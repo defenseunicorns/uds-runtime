@@ -2,7 +2,7 @@ includes:
   - setup: ./setup.yaml
 
 tasks:
-  - name: e2e
+  - name: api-auth
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
       - task: setup:build-ui
@@ -12,12 +12,24 @@ tasks:
       - cmd: |
           k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
       - task: deploy-load
+      - cmd: npm run test:api-auth
+        dir: ui
+  - name: e2e
+    description: "run end-to-end tests (assumes api server is running on port 8080)"
+    actions:
+      - task: setup:build-ui
+      - cmd: npm run test:install # install playwright
+        dir: ui
+      - task: setup:build-api
+      - task: k3d
+      - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
-  - name: go
+
+  - name: go-unit
     description: "run api server unit tests"
     actions:
-      - cmd: go test -failfast -v -timeout 30m ./...
+      - cmd: go test -failfast -v -timeout 30m --tags=unit ./...
 
   - name: ui-unit
     description: "run frontend unit tests"
@@ -30,8 +42,21 @@ tasks:
     actions:
       - task: setup:build-ui
         description: "build ui since embedded in main.go"
-      - task: go
+      - task: go-unit
       - task: ui-unit
+
+  - name: api
+    description: "run api server tests"
+    actions:
+      - description: "build ui since embedded in main.go"
+        task: setup:build-ui
+      - task: k3d
+      - task: deploy-load
+      - cmd: npm ci && npm run load:api
+        dir: hack/load-test
+      - cmd: uds zarf tools kubectl apply -f hack/load-test/rc.yaml
+        description: apply runtime class manually cause KFC is silly
+      - cmd: go test -failfast -v -timeout 30m --tags=integration ./...
 
   - name: deploy-load
     description: "deploy some Zarf packages to test against"
@@ -43,6 +68,7 @@ tasks:
   - name: deploy-min-core
     description: install min resources for UDS Core
     actions:
+      # todo: refactor this with UDS functional layers: https://github.com/defenseunicorns/uds-runtime/issues/172
       - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
         description: clone UDS Core
       - cmd: npm ci && npx pepr deploy --confirm
@@ -50,5 +76,16 @@ tasks:
         dir: tmp/uds-core
       - cmd: |
           helm repo add istio https://istio-release.storage.googleapis.com/charts
-          helm install istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
+          helm upgrade -i istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
         description: install Istio CRDs
+      - cmd: |
+          helm repo add minio https://charts.min.io/
+          helm upgrade -i -n uds-dev-stack minio minio/minio --create-namespace --set replicas=1 --set mode=standalone --set persistence.size=1Gi \
+            --set resources.requests.memory=256Mi --set resources.requests.cpu=100m
+        description: deploy minio to test PVCs
+
+  - name: k3d
+    description: "start a k3d cluster"
+    actions:
+      - cmd: |
+          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"

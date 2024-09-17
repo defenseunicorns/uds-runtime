@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1NetworkPolicy as Resource } from '@kubernetes/client-node'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
@@ -16,6 +15,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
+  // Using dense=true due to use of .spec
   const url = `/api/v1/resources/networks/networkpolicies?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
@@ -49,7 +49,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
         .join(', ') ?? '-',
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

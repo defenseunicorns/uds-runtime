@@ -3,6 +3,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import Convert from 'ansi-to-html'
 
   const convert = new Convert({

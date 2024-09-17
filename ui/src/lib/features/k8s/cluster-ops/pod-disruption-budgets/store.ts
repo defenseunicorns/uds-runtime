@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1PodDisruptionBudget as Resource } from '@kubernetes/client-node'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
@@ -16,7 +15,6 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  // needs dense=true to get the min_available and max_unavailable fields from spec
   const url = `/api/v1/resources/cluster-ops/poddisruptionbudgets?dense=true`
 
   const transform = transformResource<Resource, Row>((r) => ({
@@ -26,7 +24,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     current_healthy: r.status?.currentHealthy ?? 0,
   }))
 
-  const store = new ResourceStore<Resource, Row>(url, transform, 'name')
+  const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
     ...store,

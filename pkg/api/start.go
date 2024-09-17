@@ -11,13 +11,18 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 
 	"strings"
 
+	"encoding/json"
+
+	"github.com/defenseunicorns/pkg/exec"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
+	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	"github.com/defenseunicorns/uds-runtime/pkg/api/udsmiddleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
@@ -29,22 +34,53 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 // @schemes http https
-func Start(assets embed.FS) error {
+func Setup(assets *embed.FS) (*chi.Mux, error) {
+	apiAuth := true
+	if strings.ToLower(os.Getenv("API_AUTH_DISABLED")) == "true" {
+		apiAuth = false
+	}
+	port := "8080"
+
+	ip := "127.0.0.1"
+
+	// If the env variable API_TOKEN is set, use that for the API secret
+	token := os.Getenv("API_TOKEN")
+	var err error
+	// Otherwise, generate a random secret
+	if token == "" {
+		token, err = auth.RandomString(96)
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate random string: %w", err)
+		}
+	}
+
 	r := chi.NewRouter()
 
-	r.Use(udsmiddleware.ConditionalCompress)
+	r.Use(udsMiddleware.ConditionalCompress)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
 	ctx := context.Background()
 	cache, err := resources.NewCache(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to create cache: %w", err)
+		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 
-	// Add Swagger UI route
+	// Add Swagger UI routes
+	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
+	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
+	// expose API_AUTH_DISABLED env var to frontend via endpoint
+	r.Get("/auth-status", serveAuthStatus)
 	r.Route("/api/v1", func(r chi.Router) {
+		// Require a valid token for API calls
+		if apiAuth {
+			// If api auth is enabled, require a valid token for all routes under /api/v1
+			r.Use(auth.RequireSecret(token))
+			// Endpoint to test if connected with auth
+			r.Head("/", auth.Connect)
+		}
 		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
@@ -159,23 +195,29 @@ func Start(assets embed.FS) error {
 		})
 	})
 
+	if apiAuth {
+		colorYellow := "\033[33m"
+		colorReset := "\033[0m"
+		url := fmt.Sprintf("http://%s:%s/auth?token=%s", ip, port, token)
+		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
+		err := exec.LaunchURL(url)
+		if err != nil {
+			return nil, fmt.Errorf("failed to launch URL: %w", err)
+		}
+	}
+
 	// Serve static files from embed.FS
-	staticFS, err := fs.Sub(assets, "ui/build")
-	if err != nil {
-		return fmt.Errorf("failed to create static file system: %w", err)
-	}
+	if assets != nil {
+		staticFS, err := fs.Sub(assets, "ui/build")
+		if err != nil {
+			return nil, fmt.Errorf("failed to create static file system: %w", err)
+		}
 
-	if err := fileServer(r, http.FS(staticFS)); err != nil {
-		return fmt.Errorf("failed to serve static files: %w", err)
+		if err := fileServer(r, http.FS(staticFS)); err != nil {
+			return nil, fmt.Errorf("failed to serve static files: %w", err)
+		}
 	}
-
-	log.Println("Starting server on :8080")
-	//nolint:gosec
-	if err := http.ListenAndServe(":8080", r); err != nil {
-		return fmt.Errorf("server failed to start: %w", err)
-	}
-
-	return nil
+	return r, nil
 }
 
 // fileServer is a custom file server handler for embedded files
@@ -219,4 +261,16 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	})
 
 	return nil
+}
+
+func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
+	authStatus := map[string]string{
+		"API_AUTH_DISABLED": os.Getenv("API_AUTH_DISABLED"),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(authStatus)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

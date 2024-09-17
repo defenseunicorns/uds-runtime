@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	"github.com/defenseunicorns/uds-runtime/pkg/api/sse"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
@@ -28,7 +28,7 @@ type ClusterData struct {
 func BindClusterOverviewHandler(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	// Return a function that sends the data to the client
 	return func(w http.ResponseWriter, r *http.Request) {
-		sse.WriteHeaders(w)
+		rest.WriteHeaders(w)
 		// Ensure the ResponseWriter supports flushing
 		flusher, ok := w.(http.Flusher)
 		if !ok {
