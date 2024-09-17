@@ -1,4 +1,5 @@
 import { render } from '@testing-library/svelte'
+
 import Status from './component.svelte'
 
 describe('Status component', () => {

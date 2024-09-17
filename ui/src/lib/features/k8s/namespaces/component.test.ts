@@ -3,11 +3,13 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
+
 import { writable } from 'svelte/store'
 
+import type { V1Namespace } from '@kubernetes/client-node'
 import StatusComponent from '$components/k8s/Status/component.svelte'
 import { resourceDescriptions } from '$lib/utils/descriptions'
-import type { V1Namespace } from '@kubernetes/client-node'
+
 import {
   expectEqualIgnoringFields,
   MockResourceStore,

@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1ResourceQuota as Resource } from '@kubernetes/client-node'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 

@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -226,60 +225,6 @@ func TestUIDFail(t *testing.T) {
 	})
 }
 
-func TestPodRoutes(t *testing.T) {
-	r, err := setup()
-	require.NoError(t, err)
-
-	defer teardown()
-
-	// Map so can mutate reference between tests
-	uidMap := map[string]string{"uid": ""}
-
-	podTests := []TestRoute{
-		{
-			name:         "pods",
-			url:          "/api/v1/resources/workloads/pods",
-			expectedKind: "Pod",
-		},
-		{
-			name:         "pods/{uid}",
-			url:          "/api/v1/resources/workloads/pods/{uid}",
-			expectedKind: "Pod",
-		},
-	}
-
-	for _, tt := range podTests {
-		testRoutesHelper(t, tt, uidMap, r)
-	}
-}
-
-func TestPackageRoutes(t *testing.T) {
-	r, err := setup()
-	require.NoError(t, err)
-
-	defer teardown()
-
-	// Map so can mutate reference between tests
-	uidMap := map[string]string{"uid": ""}
-
-	packageTests := []TestRoute{
-		{
-			name:         "uds-packages",
-			url:          "/api/v1/resources/configs/uds-packages",
-			expectedKind: "Package",
-		},
-		{
-			name:         "uds-packages/{uid}",
-			url:          "/api/v1/resources/configs/uds-packages/{uid}",
-			expectedKind: "Package",
-		},
-	}
-
-	for _, tt := range packageTests {
-		testRoutesHelper(t, tt, uidMap, r)
-	}
-}
-
 func TestPeprRoutes(t *testing.T) {
 	r, err := setup()
 	require.NoError(t, err)
@@ -349,20 +294,17 @@ func TestClusterOverview(t *testing.T) {
 // processResponseBody removes potential second occurrence of "data: [...]" from the response body when making SSE calls
 // these occurrences are intermittent and happen most likely because of network latency allowing a second sendData() event
 func processResponseBody(body string) []byte {
-	// Regular expression to match "data: [...]"
-	re := regexp.MustCompile(`data: \[.*?\]`)
-
-	// Find all matches
-	matches := re.FindAllStringIndex(body, -1)
-
-	// Loop to remove all occurrences after the first one
-	for len(matches) > 1 {
-		body = body[:matches[1][0]] + body[matches[1][1]:]
-		matches = re.FindAllStringIndex(body, -1)
+	// Check if "data:" exists in the body
+	if !strings.Contains(body, "data:") {
+		// If no "data:" is detected, return the body as is
+		return []byte(body)
 	}
 
-	// Convert the modified string back to a byte array
-	return []byte(body)
+	// Split the body by newlines
+	lines := strings.Split(body, "\n")
+
+	// return the first data:[] event
+	return []byte(lines[0])
 }
 
 // testRoutesHelper handles logic for testing getResources and getResource routes (e.g. /pods and /pods/{uid})
@@ -374,7 +316,7 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 
 		rr := httptest.NewRecorder()
 
-		tt.url = strings.Replace(tt.url, "{uid}", uidMap["uid"], 1)
+		tt.url = strings.Replace(tt.url, "{uid}", uidMap[tt.expectedKind], 1)
 		req := httptest.NewRequest("GET", tt.url, nil)
 
 		// Start serving the request for 1 second
@@ -384,17 +326,18 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 
 		// wait for the context to be done
 		<-ctx.Done()
+
 		require.Equal(t, http.StatusOK, rr.Code)
 
 		body := processResponseBody(rr.Body.String())
 
-		// If uidMap is empty, then this is the first test case and we need to store the UID
-		if uidMap["uid"] == "" {
+		// If uidMap.expectedKind is empty (eg. {Pod: ""}), then we need to store a UID for this kind
+		if uidMap[tt.expectedKind] == "" {
 			keyIndx := 5
 			var data []map[string]interface{}
 			json.Unmarshal(body[keyIndx:], &data)
 			require.Equal(t, tt.expectedKind, data[0]["kind"])
-			uidMap["uid"] = data[0]["metadata"].(map[string]interface{})["uid"].(string)
+			uidMap[tt.expectedKind] = data[0]["metadata"].(map[string]interface{})["uid"].(string)
 		} else {
 			keyIndx := 0
 			var data map[string]interface{}
@@ -402,4 +345,364 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 			require.Equal(t, tt.expectedKind, data["Object"].(map[string]interface{})["kind"])
 		}
 	})
+}
+
+func TestClusterHealth(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	t.Run("cluster connected", func(t *testing.T) {
+		// Create a new context with a timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/health", nil)
+
+		// Start serving the request for 1 second
+		go func(ctx context.Context) {
+			r.ServeHTTP(rr, req)
+		}(ctx)
+
+		// wait for the context to be done
+		<-ctx.Done()
+		require.Equal(t, http.StatusOK, rr.Code)
+		require.Contains(t, rr.Body.String(), "success")
+	})
+}
+
+func TestTopLevelResourceRoutes(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	uidMap := map[string]string{}
+
+	resource := []TestRoute{
+		// Nodes
+		{
+			name:         "nodes",
+			url:          "/api/v1/resources/nodes",
+			expectedKind: "Node",
+		},
+		{
+			name:         "nodes/{uid}",
+			url:          "/api/v1/resources/nodes/{uid}",
+			expectedKind: "Node",
+		},
+
+		// Events
+		{
+			name:         "events",
+			url:          "/api/v1/resources/events",
+			expectedKind: "Event",
+		},
+		{
+			name:         "events/{uid}",
+			url:          "/api/v1/resources/events/{uid}",
+			expectedKind: "Event",
+		},
+
+		// Namespaces
+		{
+			name:         "namespaces",
+			url:          "/api/v1/resources/namespaces",
+			expectedKind: "Namespace",
+		},
+		{
+			name:         "namespaces/{uid}",
+			url:          "/api/v1/resources/namespaces/{uid}",
+			expectedKind: "Namespace",
+		},
+	}
+
+	for _, tt := range resource {
+		testRoutesHelper(t, tt, uidMap, r)
+	}
+}
+
+func TestWorkloadRoutes(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	uidMap := map[string]string{}
+
+	workloadTests := []TestRoute{
+		// Workloads - Pods
+		{
+			name:         "pods",
+			url:          "/api/v1/resources/workloads/pods",
+			expectedKind: "Pod",
+		},
+		{
+			name:         "pods/{uid}",
+			url:          "/api/v1/resources/workloads/pods/{uid}",
+			expectedKind: "Pod",
+		},
+
+		// Workloads - Deployments
+		{
+			name:         "deployments",
+			url:          "/api/v1/resources/workloads/deployments",
+			expectedKind: "Deployment",
+		},
+		{
+			name:         "deployments/{uid}",
+			url:          "/api/v1/resources/workloads/deployments/{uid}",
+			expectedKind: "Deployment",
+		},
+
+		// Workloads - Daemonsets
+		{
+			name:         "daemonsets",
+			url:          "/api/v1/resources/workloads/daemonsets",
+			expectedKind: "DaemonSet",
+		},
+		{
+			name:         "daemonsets/{uid}",
+			url:          "/api/v1/resources/workloads/daemonsets/{uid}",
+			expectedKind: "DaemonSet",
+		},
+
+		// Workloads - Statefulsets
+		{
+			name:         "statefulsets",
+			url:          "/api/v1/resources/workloads/statefulsets",
+			expectedKind: "StatefulSet",
+		},
+		{
+			name:         "statefulsets/{uid}",
+			url:          "/api/v1/resources/workloads/statefulsets/{uid}",
+			expectedKind: "StatefulSet",
+		},
+
+		// Workloads - Jobs
+		{
+			name:         "jobs",
+			url:          "/api/v1/resources/workloads/jobs",
+			expectedKind: "Job",
+		},
+		{
+			name:         "jobs/{uid}",
+			url:          "/api/v1/resources/workloads/jobs/{uid}",
+			expectedKind: "Job",
+		},
+
+		// Workloads - Cronjobs
+		{
+			name:         "cronjobs",
+			url:          "/api/v1/resources/workloads/cronjobs",
+			expectedKind: "CronJob",
+		},
+		{
+			name:         "cronjobs/{uid}",
+			url:          "/api/v1/resources/workloads/cronjobs/{uid}",
+			expectedKind: "CronJob",
+		},
+	}
+
+	for _, tt := range workloadTests {
+		testRoutesHelper(t, tt, uidMap, r)
+	}
+}
+
+func TestConfigRoutes(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	uidMap := map[string]string{}
+
+	configTests := []TestRoute{
+		// Configs - UDS Packages
+		{
+			name:         "uds-packages",
+			url:          "/api/v1/resources/configs/uds-packages",
+			expectedKind: "Package",
+		},
+		{
+			name:         "uds-packages/{uid}",
+			url:          "/api/v1/resources/configs/uds-packages/{uid}",
+			expectedKind: "Package",
+		},
+
+		// Configs - UDS Exemptions
+		{
+			name:         "uds-exemptions",
+			url:          "/api/v1/resources/configs/uds-exemptions",
+			expectedKind: "Exemption",
+		},
+		{
+			name:         "uds-exemptions/{uid}",
+			url:          "/api/v1/resources/configs/uds-exemptions/{uid}",
+			expectedKind: "Exemption",
+		},
+
+		// Configs - ConfigMaps
+		{
+			name:         "configmaps",
+			url:          "/api/v1/resources/configs/configmaps",
+			expectedKind: "ConfigMap",
+		},
+		{
+			name:         "configmaps/{uid}",
+			url:          "/api/v1/resources/configs/configmaps/{uid}",
+			expectedKind: "ConfigMap",
+		},
+
+		// Configs - Secrets
+		{
+			name:         "secrets",
+			url:          "/api/v1/resources/configs/secrets",
+			expectedKind: "Secret",
+		},
+		{
+			name:         "secrets/{uid}",
+			url:          "/api/v1/resources/configs/secrets/{uid}",
+			expectedKind: "Secret",
+		},
+	}
+
+	for _, tt := range configTests {
+		testRoutesHelper(t, tt, uidMap, r)
+	}
+}
+
+func TestNetworkAndStorageRoutes(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	uidMap := map[string]string{}
+
+	networkTests := []TestRoute{
+		// Network - Services
+		{
+			name:         "services",
+			url:          "/api/v1/resources/networks/services",
+			expectedKind: "Service",
+		},
+		{
+			name:         "services/{uid}",
+			url:          "/api/v1/resources/networks/services/{uid}",
+			expectedKind: "Service",
+		},
+	}
+
+	storageTests := []TestRoute{
+		// Storage - PersistentVolumes
+		{
+			name:         "persistentvolumes",
+			url:          "/api/v1/resources/storage/persistentvolumes",
+			expectedKind: "PersistentVolume",
+		},
+		{
+			name:         "persistentvolumes/{uid}",
+			url:          "/api/v1/resources/storage/persistentvolumes/{uid}",
+			expectedKind: "PersistentVolume",
+		},
+
+		// Storage - PersistentVolumeClaims
+		{
+			name:         "persistentvolumeclaims",
+			url:          "/api/v1/resources/storage/persistentvolumeclaims",
+			expectedKind: "PersistentVolumeClaim",
+		},
+		{
+			name:         "persistentvolumeclaims/{uid}",
+			url:          "/api/v1/resources/storage/persistentvolumeclaims/{uid}",
+			expectedKind: "PersistentVolumeClaim",
+		},
+	}
+
+	for _, tt := range networkTests {
+		testRoutesHelper(t, tt, uidMap, r)
+	}
+
+	for _, tt := range storageTests {
+		testRoutesHelper(t, tt, uidMap, r)
+	}
+}
+
+func TestClusterOpsRoutes(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	uidMap := map[string]string{}
+
+	clusterOpsTests := []TestRoute{
+
+		// Cluster Ops - Mutating Webhooks
+		{
+			name:         "mutatingwebhooks",
+			url:          "/api/v1/resources/cluster-ops/mutatingwebhooks",
+			expectedKind: "MutatingWebhookConfiguration",
+		},
+		{
+			name:         "mutatingwebhooks/{uid}",
+			url:          "/api/v1/resources/cluster-ops/mutatingwebhooks/{uid}",
+			expectedKind: "MutatingWebhookConfiguration",
+		},
+
+		// Cluster Ops - Validating Webhooks
+		{
+			name:         "validatingwebhooks",
+			url:          "/api/v1/resources/cluster-ops/validatingwebhooks",
+			expectedKind: "ValidatingWebhookConfiguration",
+		},
+		{
+			name:         "validatingwebhooks/{uid}",
+			url:          "/api/v1/resources/cluster-ops/validatingwebhooks/{uid}",
+			expectedKind: "ValidatingWebhookConfiguration",
+		},
+
+		// Cluster Ops - HPAs
+		{
+			name:         "hpas",
+			url:          "/api/v1/resources/cluster-ops/hpas",
+			expectedKind: "HorizontalPodAutoscaler",
+		},
+		{
+			name:         "hpas/{uid}",
+			url:          "/api/v1/resources/cluster-ops/hpas/{uid}",
+			expectedKind: "HorizontalPodAutoscaler",
+		},
+
+		// Cluster Ops - Priority Classes
+		{
+			name:         "priority-classes",
+			url:          "/api/v1/resources/cluster-ops/priority-classes",
+			expectedKind: "PriorityClass",
+		},
+		{
+			name:         "priority-classes/{uid}",
+			url:          "/api/v1/resources/cluster-ops/priority-classes/{uid}",
+			expectedKind: "PriorityClass",
+		},
+
+		// Cluster Ops - Runtime Classes
+		{
+			name:         "runtime-classes",
+			url:          "/api/v1/resources/cluster-ops/runtime-classes",
+			expectedKind: "RuntimeClass",
+		},
+		{
+			name:         "runtime-classes/{uid}",
+			url:          "/api/v1/resources/cluster-ops/runtime-classes/{uid}",
+			expectedKind: "RuntimeClass",
+		},
+	}
+
+	for _, tt := range clusterOpsTests {
+		testRoutesHelper(t, tt, uidMap, r)
+	}
 }

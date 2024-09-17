@@ -81,12 +81,7 @@ type Cache struct {
 	MetricsChanges chan struct{}
 }
 
-func NewCache(ctx context.Context) (*Cache, error) {
-	k8s, err := k8s.NewClient()
-	if err != nil {
-		return nil, fmt.Errorf("unable to connect to the cluster: %v", err)
-	}
-
+func NewCache(ctx context.Context, k8s *k8s.Clients) (*Cache, error) {
 	c := &Cache{
 		factory:        informers.NewSharedInformerFactory(k8s.Clientset, time.Minute*10),
 		stopper:        make(chan struct{}),

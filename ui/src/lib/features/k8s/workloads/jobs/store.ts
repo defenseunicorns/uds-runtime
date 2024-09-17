@@ -2,10 +2,9 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import type { V1Job as Resource } from '@kubernetes/client-node'
-import { formatDistance } from 'date-fns'
-
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
+import { formatDistance } from 'date-fns'
 
 interface Row extends CommonRow {
   completions: string

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { V1Deployment } from '@kubernetes/client-node'
 import {
   expectEqualIgnoringFields,
   MockResourceStore,
@@ -9,10 +10,11 @@ import {
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
-import type { V1Deployment } from '@kubernetes/client-node'
+
 import '@testing-library/jest-dom'
 
 import { resourceDescriptions } from '$lib/utils/descriptions'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 

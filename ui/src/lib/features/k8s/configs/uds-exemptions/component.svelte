@@ -3,8 +3,9 @@
 
 <script lang="ts">
   import { DataTable } from '$components'
-  import { createStore, type Columns } from './store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
+
+  import { createStore, type Columns } from './store'
 
   export let columns: Columns = [['name', 'emphasize'], ['namespace'], ['details'], ['matcher'], ['policies'], ['age']]
   const name = 'Exemptions'

@@ -2,11 +2,10 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import type { KubernetesObject } from '@kubernetes/client-node'
-  import { ChevronDown, ChevronUp, Filter, Information, Search } from 'carbon-icons-svelte'
   import { onDestroy, onMount } from 'svelte'
   import { type Unsubscriber } from 'svelte/store'
 
+  import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
   import { Drawer, Link, Tooltip } from '$components'
@@ -14,6 +13,7 @@
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
   import { apiAuthEnabled } from '$lib/features/api-auth/store'
+  import { ChevronDown, ChevronUp, Filter, Information, Search } from 'carbon-icons-svelte'
 
   // Determine if the data is namespaced
   export let isNamespaced = true
@@ -31,8 +31,8 @@
   export let name = ''
   export let description = 'No description available'
 
-  const rows = createStore()
-  const { namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows
+  let rows = createStore()
+  $: ({ namespace, search, searchBy, searchTypes, sortAsc, sortBy, numResources } = rows)
 
   // check for filtering
   let isFiltering = false
@@ -102,6 +102,8 @@
   })
 
   onMount(() => {
+    let stop = rows.start()
+
     // Function to navigate using the keyboard
     const keyboardNavigate = (e: KeyboardEvent) => {
       if (uid) {
@@ -125,13 +127,24 @@
       }
     }
 
+    // Function to restart the store on cluster reconnection
+    const handleClusterReconnected = () => {
+      console.log('Cluster reconnected, restarting store')
+      // stop current store first
+      stop()
+      // recreate rows to trigger re-render
+      rows = createStore()
+      stop = rows.start()
+    }
+
     // Bind the keyboard navigation event
     window.addEventListener('keydown', keyboardNavigate)
-    const stop = rows.start()
+    window.addEventListener('cluster-reconnected', handleClusterReconnected)
 
     // Clean up the event listener when the component is destroyed
     return () => {
       window.removeEventListener('keydown', keyboardNavigate)
+      window.removeEventListener('cluster-reconnected', handleClusterReconnected)
       stop()
     }
   })
@@ -241,53 +254,65 @@
             </tr>
           </thead>
           <tbody>
-            {#each $rows as row}
-              <tr
-                id={row.resource.metadata?.uid}
-                on:click={() =>
-                  !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
-                class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
-                class:cursor-pointer={!disableRowClick}
-              >
-                {#each columns as [key, style, modifier], idx}
-                  <!-- Check object to avoid issues with `false` values -->
-                  {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
-                  <td
-                    class={style || ''}
-                    data-testid={typeof value !== 'object' ? `${value}-testid-${idx + 1}` : `object-test-id-${idx + 1}`}
-                  >
-                    {#if value.component}
-                      <svelte:component this={value.component} {...value.props} />
-                    {:else if value.list}
-                      <ul class="line-clamp-4 mt-4 text-sm">
-                        {#each value.list as item}
-                          <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
-                        {/each}
-                      </ul>
-                    {:else if modifier === 'link-external'}
-                      <Link href={value.href || ''} text={value.text || ''} target={'_blank'} />
-                    {:else if modifier === 'link-internal'}
-                      <Link href={value.href || ''} text={value.text || ''} target={''} />
-                    {:else if key === 'namespace'}
-                      <button
-                        on:click|stopPropagation={() => namespace.set(value)}
-                        class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left"
-                      >
-                        {value}
-                      </button>
-                    {:else if style?.includes('truncate')}
-                      <Tooltip title={value}>
-                        <div class={`w-full ${style}`}>
-                          {value}
-                        </div>
-                      </Tooltip>
-                    {:else}
-                      {value.text || (value === 0 ? '0' : value) || '-'}
-                    {/if}
-                  </td>
-                {/each}
+            {#if $rows.length === 0 && isFiltering}
+              <tr class="!pointer-events-none !border-b-0">
+                <td class="text-center" colspan="9">No matching entries found</td>
               </tr>
-            {/each}
+            {:else if $rows.length === 0}
+              <tr class="!pointer-events-none !border-b-0">
+                <td class="text-center" colspan="9">No resources found</td>
+              </tr>
+            {:else}
+              {#each $rows as row}
+                <tr
+                  id={row.resource.metadata?.uid}
+                  on:click={() =>
+                    !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
+                  class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
+                  class:cursor-pointer={!disableRowClick}
+                >
+                  {#each columns as [key, style, modifier], idx}
+                    <!-- Check object to avoid issues with `false` values -->
+                    {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
+                    <td
+                      class={style || ''}
+                      data-testid={typeof value !== 'object'
+                        ? `${value}-testid-${idx + 1}`
+                        : `object-test-id-${idx + 1}`}
+                    >
+                      {#if value.component}
+                        <svelte:component this={value.component} {...value.props} />
+                      {:else if value.list}
+                        <ul class="line-clamp-4 mt-4 text-sm">
+                          {#each value.list as item}
+                            <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
+                          {/each}
+                        </ul>
+                      {:else if modifier === 'link-external'}
+                        <Link href={value.href || ''} text={value.text || ''} target={'_blank'} />
+                      {:else if modifier === 'link-internal'}
+                        <Link href={value.href || ''} text={value.text || ''} target={''} />
+                      {:else if key === 'namespace'}
+                        <button
+                          on:click|stopPropagation={() => namespace.set(value)}
+                          class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left"
+                        >
+                          {value}
+                        </button>
+                      {:else if style?.includes('truncate')}
+                        <Tooltip title={value}>
+                          <div class={`w-full ${style}`}>
+                            {value}
+                          </div>
+                        </Tooltip>
+                      {:else}
+                        {value.text || (value === 0 ? '0' : value) || '-'}
+                      {/if}
+                    </td>
+                  {/each}
+                </tr>
+              {/each}
+            {/if}
           </tbody>
         </table>
       </div>

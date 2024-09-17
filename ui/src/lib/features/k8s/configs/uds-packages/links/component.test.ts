@@ -1,6 +1,7 @@
-import * as components from '$components'
 import { render, screen } from '@testing-library/svelte'
+import * as components from '$components'
 import { describe, expect } from 'vitest'
+
 import EndpointComponent from './component.svelte'
 
 describe('EndpointComponent', () => {
