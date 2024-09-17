@@ -22,6 +22,9 @@ spec:
     - name: uds-runtime
       clientId: runtime
       redirectUris:
-        - "https://{{ .Values.package.host}}.{{ .Values.package.gateway }}.{{ .Values.package.domain }}"
+        - "https://{{ .Values.package.host}}.{{ .Values.package.gateway }}.{{ .Values.package.domain }}/auth"
       enableAuthserviceSelector:
         app: uds-runtime
+      groups:
+        anyOf:
+          - /UDS Core/Admin
