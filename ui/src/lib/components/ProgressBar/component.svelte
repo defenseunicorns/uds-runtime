@@ -29,9 +29,12 @@
   }
 </script>
 
-<div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-3">
-  <div class={`bg-green-600 rounded-full ${sizeMapping[size]}`} style={`width: ${calculatedWidth}%`}></div>
-  <span class="text-xs font-normal text-gray-500 dark:text-gray-400 truncate overflow-ellipsis">
+<div class="flex flex-col">
+  <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-3">
+    <div class={`bg-green-600 rounded-full ${sizeMapping[size]}`} style={`width: ${calculatedWidth}%`}></div>
+  </div>
+
+  <span class="text-xs mt-1 font-normal text-gray-500 dark:text-gray-400 truncate overflow-ellipsis">
     {generateSubtext()}
   </span>
 </div>
