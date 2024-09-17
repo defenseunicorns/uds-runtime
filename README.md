@@ -1,4 +1,4 @@
-# UDS Runtime - providing views and insights into your UDS cluster
+# UDS Runtime
 
 <img align="right"  alt="zarf logo" src="ui/static/doug.svg"  height="256" />
 
@@ -10,6 +10,8 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/defenseunicorns/uds-runtime/badge)](https://scorecard.dev/viewer/?uri=github.com/defenseunicorns/uds-runtime)
 
 [![UDS Documentation](https://img.shields.io/badge/docs-uds.defenseunicorns.com-775ba1)](https://uds.defenseunicorns.com/docs/)
+
+UDS Runtime is the frontend for all things UDS, providing views and insights into your UDS cluster.
 
 ## Quickstart Deploy
 
