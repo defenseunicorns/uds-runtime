@@ -1,6 +1,10 @@
 replicaCount: 1
-image: "###ZARF_CONST_IMAGE###"
-pullPolicy: IfNotPresent
+image:
+  repository: ghcr.io/defenseunicorns/uds-runtime
+  # x-release-please-start-version
+  tag: 0.3.0
+  # x-release-please-end
+  pullPolicy: IfNotPresent
 package:
   gateway: admin
   host: runtime

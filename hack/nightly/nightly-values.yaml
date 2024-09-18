@@ -1,5 +1,6 @@
-image: "###ZARF_CONST_IMAGE###"
-pullPolicy: Always
+image:
+  tag: nightly-unstable
+  pullPolicy: Always
 package:
   gateway: tenant
   host: runtime-canary

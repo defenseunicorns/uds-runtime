@@ -16,8 +16,8 @@ spec:
       serviceAccountName: uds-runtime-sa
       containers:
         - name: uds-runtime
-          image: "{{ .Values.image }}"
-          imagePullPolicy: {{ .Values.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080
           resources:
