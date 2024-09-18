@@ -9,7 +9,7 @@
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
 
-  import { memibytesToGigabytes, millicoresToCores } from '../helpers'
+  import { mebibytesToGigabytes, millicoresToCores } from '../helpers'
 
   import './styles.postcss'
 
@@ -191,7 +191,7 @@
           name: 'Memory Usage',
           data: clusterData.historicalUsage.map((point) => ({
             x: new Date(point.Timestamp).getTime(),
-            y: memibytesToGigabytes(point.Memory), // Convert bytes to GB
+            y: mebibytesToGigabytes(point.Memory), // Convert bytes to GB
           })),
         },
       ],
@@ -207,8 +207,8 @@
 
       cpuPercentage = calculatePercentage(clusterData.currentUsage.CPU, clusterData.cpuCapacity)
       memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
-      gbUsed = memibytesToGigabytes(clusterData.currentUsage.Memory)
-      gbCapacity = memibytesToGigabytes(clusterData.memoryCapacity)
+      gbUsed = mebibytesToGigabytes(clusterData.currentUsage.Memory)
+      gbCapacity = mebibytesToGigabytes(clusterData.memoryCapacity)
       cpuUsed = millicoresToCores(clusterData.currentUsage.CPU)
       cpuCapacity = millicoresToCores(clusterData.cpuCapacity)
 

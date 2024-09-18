@@ -74,5 +74,5 @@ export const getColorAndStatus = <T extends keyof K8StatusMapping>(type: T, stat
   return (k8StatusMapping[type][status] as { color: string }).color || 'Unknown'
 }
 
-export const memibytesToGigabytes = (value: number) => value / (1024 * 1024 * 1024)
+export const mebibytesToGigabytes = (value: number) => value / (1024 * 1024 * 1024)
 export const millicoresToCores = (value: number) => value / 1000
