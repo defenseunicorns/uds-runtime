@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-// Package auth provides an endpoint for authenticating against the runtime server.
 package auth
 
 import (
