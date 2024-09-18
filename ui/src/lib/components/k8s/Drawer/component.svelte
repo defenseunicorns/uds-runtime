@@ -6,7 +6,7 @@
 
   import type { CoreV1Event, KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
-  import { Event, EventList } from '$components'
+  import { Event } from '$components'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
