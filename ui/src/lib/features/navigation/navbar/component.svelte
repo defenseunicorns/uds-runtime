@@ -2,8 +2,6 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { onMount } from 'svelte'
-
   import { authenticated } from '$features/api-auth/store'
   import { NotificationFilled } from 'carbon-icons-svelte'
 
