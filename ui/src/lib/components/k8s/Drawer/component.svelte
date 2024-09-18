@@ -6,7 +6,7 @@
 
   import type { CoreV1Event, KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
-  import { Event } from '$components'
+  import { EventList } from '$components'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
@@ -411,7 +411,7 @@
           </dl>
         </div>
       {:else if activeTab === 'events'}
-        <Event resource={tempData[0].resource} />
+        <EventList events={tempData} />
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="text-gray-200 p-4">

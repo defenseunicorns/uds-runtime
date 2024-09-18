@@ -39,7 +39,7 @@
 
       <div class="flex flex-col sm:flex-row gap-9 border-b border-gray-700 pb-2">
         <dt class="font-bold text-sm flex-none w-[180px]">Sub-object</dt>
-        <dd class="text-gray-400">{resource.involvedObject.fieldPath || '-'}</dd>
+        <dd class="text-gray-400">{resource.involvedObject?.fieldPath || '-'}</dd>
       </div>
     </dl>
   </div>

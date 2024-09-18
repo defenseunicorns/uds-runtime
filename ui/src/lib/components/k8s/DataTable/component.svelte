@@ -148,11 +148,6 @@
       stop()
     }
   })
-
-  setTimeout(() => {
-    console.log('$rows')
-    console.log($rows)
-  }, 500)
 </script>
 
 {#if resource}
