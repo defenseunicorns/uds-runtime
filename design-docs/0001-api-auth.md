@@ -14,7 +14,7 @@ Instead of managing state in the frontend, the api authentication state is manag
 
 The generated api token is used initially by the frontend to authenticate with the backend, but once the token is validated, the backend generates a session ID and sets the session ID as a secure, HttpOnly cookie in the response. The frontend receives the response and the browser automatically stores the session cookie. For subsequent requests, the browser automatically includes the session cookie and the backend authMiddleware extracts and validate the session ID from the cookie. This approach simplifies the frontend codebase and reduces the amount of state management needed in the frontend.
 
-How does the frontend authenticate?
+The authentication flow is as follows:
 - Backend generates a token when it is started up and launches UDS Runtime in the browser.
     - i.e.(Runtime API connection: `http://127.0.0.1:8080?token=r1hrQ9CcuZMKpY2egjsPrzmge3-YqfqOHjmlIOvdKrLGOLnHPgFWt3dzsdkHwzDdXQAfRRHiH~rbGEx7Jc7rTxTd4riCuqGH`)
 - Frontend hits the /api-auth endpoint with the token as a query parameter.
