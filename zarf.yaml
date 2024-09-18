@@ -6,13 +6,15 @@ metadata:
   version: 0.3.0
   # x-release-please-end
 
+constants:
+  - name: IMAGE
+    value: "###ZARF_PKG_TMPL_IMAGE###"
+
 components:
   - name: uds-runtime
     required: true
-    # x-release-please-start-version
     images:
-      - ghcr.io/defenseunicorns/uds-runtime:0.3.0
-    # x-release-please-end
+      - "###ZARF_PKG_TMPL_IMAGE###"
     charts:
       - name: uds-runtime
         localPath: ./chart

@@ -4,11 +4,15 @@ metadata:
   description: nightly release of uds-runtime
   version: nightly-unstable
 
+constants:
+  - name: IMAGE
+    value: "###ZARF_PKG_TMPL_IMAGE###"
+
 components:
   - name: uds-runtime
     required: true
     images:
-      - ghcr.io/defenseunicorns/uds-runtime:nightly-unstable
+      - "###ZARF_PKG_TMPL_IMAGE###"
     charts:
       - name: uds-runtime
         localPath: ../../chart

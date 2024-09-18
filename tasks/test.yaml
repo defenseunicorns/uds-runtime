@@ -1,27 +1,28 @@
 includes:
   - setup: ./setup.yaml
+  - build: ./build.yaml
 
 tasks:
   - name: api-auth
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
-      - task: setup:build-ui
+      - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
-      - task: setup:build-api
-      - cmd: |
-          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
+      - task: build:api
+      - task: setup:k3d
       - task: deploy-load
       - cmd: npm run test:api-auth
         dir: ui
+
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
-      - task: setup:build-ui
+      - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
-      - task: setup:build-api
-      - task: k3d
+      - task: build:api
+      - task: setup:k3d
       - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
@@ -40,7 +41,7 @@ tasks:
   - name: unit
     description: "run all unit tests (backend and frontend)"
     actions:
-      - task: setup:build-ui
+      - task: build:ui
         description: "build ui since embedded in main.go"
       - task: go-unit
       - task: ui-unit
@@ -49,8 +50,8 @@ tasks:
     description: "run api server tests"
     actions:
       - description: "build ui since embedded in main.go"
-        task: setup:build-ui
-      - task: k3d
+        task: build:ui
+      - task: setup:k3d
       - task: deploy-load
       - cmd: npm ci && npm run load:api
         dir: hack/load-test
@@ -84,8 +85,8 @@ tasks:
             --set resources.requests.memory=256Mi --set resources.requests.cpu=100m
         description: deploy minio to test PVCs
 
-  - name: k3d
-    description: "start a k3d cluster"
+  - name: smoke
+    description: "run smoke tests"
     actions:
-      - cmd: |
-          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
+      - task: build:smoke-img-pkg
+      - task: setup:full-core

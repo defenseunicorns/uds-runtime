@@ -49,7 +49,7 @@ jobs:
 
       - name: Build binary artifacts
         run: |
-          uds run setup:build-all
+          uds run build:all
 
       - name: Upload Release Artifact
         env:
