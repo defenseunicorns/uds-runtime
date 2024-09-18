@@ -12,7 +12,6 @@
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
-  import { apiAuthEnabled } from '$lib/features/api-auth/store'
   import { ChevronDown, ChevronUp, Filter, Information, Search } from 'carbon-icons-svelte'
 
   // Determine if the data is namespaced
@@ -68,11 +67,7 @@
 
         // Fetch the resource data
         let results
-        if (!apiAuthEnabled) {
-          results = await fetch(`${apiPath}/${uid}`)
-        } else {
-          results = await fetch(`${apiPath}/${uid}?token=${sessionStorage.getItem('token')}`)
-        }
+        results = await fetch(`${apiPath}/${uid}`)
 
         // If the fetch is successful, set the resource data
         if (results.ok) {

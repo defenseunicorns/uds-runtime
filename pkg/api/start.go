@@ -15,8 +15,6 @@ import (
 
 	"strings"
 
-	"encoding/json"
-
 	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
@@ -60,6 +58,14 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	// Middleware chain for api token authentication
+	apiAuthMiddleware := func(next http.Handler) http.Handler {
+		if apiAuth {
+			return auth.Middleware(next)
+		}
+		return next
+	}
+
 	ctx := context.Background()
 	cache, err := resources.NewCache(ctx)
 	if err != nil {
@@ -71,23 +77,23 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	// expose API_AUTH_DISABLED env var to frontend via endpoint
-	r.Get("/auth-status", serveAuthStatus)
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
 		if apiAuth {
 			// If api auth is enabled, require a valid token for all routes under /api/v1
-			r.Use(auth.RequireSecret(token))
-			// Endpoint to test if connected with auth
-			r.Head("/", auth.Connect)
+			// authenticate token
+			r.With(auth.TokenAuthenticator(token)).Head("/api-auth", func(_ http.ResponseWriter, _ *http.Request) {})
+		} else {
+			r.Head("/api-auth", func(_ http.ResponseWriter, _ *http.Request) {})
 		}
-		r.Route("/monitor", func(r chi.Router) {
+
+		r.With(apiAuthMiddleware).Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
 			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(cache))
 		})
 
-		r.Route("/resources", func(r chi.Router) {
+		r.With(apiAuthMiddleware).Route("/resources", func(r chi.Router) {
 			r.Get("/nodes", getNodes(cache))
 			r.Get("/nodes/{uid}", getNode(cache))
 
@@ -198,7 +204,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	if apiAuth {
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
-		url := fmt.Sprintf("http://%s:%s/auth?token=%s", ip, port, token)
+		url := fmt.Sprintf("http://%s:%s?token=%s", ip, port, token)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {
@@ -261,16 +267,4 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	})
 
 	return nil
-}
-
-func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
-	authStatus := map[string]string{
-		"API_AUTH_DISABLED": os.Getenv("API_AUTH_DISABLED"),
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(authStatus)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
 }

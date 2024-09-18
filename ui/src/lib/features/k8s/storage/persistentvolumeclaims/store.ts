@@ -12,7 +12,6 @@ import {
   type K8StatusMapping,
   type ResourceStoreInterface,
 } from '$features/k8s/types'
-import { createEventSource } from '$lib/utils/helpers'
 
 interface Row extends CommonRow {
   storage_class: string
@@ -31,7 +30,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const podStore = writable<number>()
   const jsonPathFields = 'metadata.name,spec.volumes,status.phase'
   const podEventsPath = `/api/v1/resources/workloads/pods?fields=${jsonPathFields}`
-  const podEvents = createEventSource(podEventsPath)
+  const podEvents = new EventSource(podEventsPath)
 
   podEvents.onmessage = (event) => {
     const data = JSON.parse(event.data) as V1Pod[]

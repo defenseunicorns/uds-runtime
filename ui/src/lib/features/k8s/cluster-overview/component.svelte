@@ -5,7 +5,6 @@
   import { onMount } from 'svelte'
 
   import { goto } from '$app/navigation'
-  import { createEventSource } from '$lib/utils/helpers'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
 
@@ -194,7 +193,7 @@
 
   onMount(() => {
     const path: string = `/api/v1/monitor/cluster-overview`
-    const overview = createEventSource(path)
+    const overview = new EventSource(path)
 
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData

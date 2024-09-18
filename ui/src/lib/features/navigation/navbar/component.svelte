@@ -2,17 +2,25 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
+  import { onMount } from 'svelte'
+
+  import { authenticated } from '$features/api-auth/store'
   import { NotificationFilled } from 'carbon-icons-svelte'
 
   import { isSidebarExpanded } from '../store'
 
-  // Don't expand sidebar if on api auth page
+  let path = ''
+
+  onMount(() => {
+    path = window.location.pathname
+  })
+
+  // Don't expand sidebar if api auth is enabled and user is unauthenticated
   $: {
-    if ($apiAuthEnabled && !$authenticated) {
-      isSidebarExpanded.set(false)
-    } else {
+    if ($authenticated) {
       isSidebarExpanded.set(true)
+    } else {
+      isSidebarExpanded.set(false)
     }
   }
 </script>
@@ -24,7 +32,7 @@
     <div class="flex flex-wrap items-center justify-between">
       <div class="flex items-center justify-start">
         <!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
-        {#if !$apiAuthEnabled || ($apiAuthEnabled && $authenticated)}
+        {#if $authenticated}
           <button
             data-testid="toggle-sidebar"
             aria-expanded="true"

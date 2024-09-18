@@ -7,6 +7,7 @@
   import { onMount } from 'svelte'
 
   import { afterNavigate } from '$app/navigation'
+  import { authenticated } from '$features/api-auth/store'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
   import { initFlowbite } from 'flowbite'
@@ -14,7 +15,6 @@
   import '../app.postcss'
 
   import Unauthenticated from '$components/Auth/component.svelte'
-  import { apiAuthEnabled, authenticated } from '$lib/features/api-auth/store'
 
   let path = ''
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
@@ -30,7 +30,7 @@
 <Navbar />
 
 <!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
-{#if !$apiAuthEnabled || ($apiAuthEnabled && $authenticated)}
+{#if $authenticated}
   <Sidebar />
 {/if}
 
@@ -41,10 +41,6 @@
 >
   <div class="flex-grow overflow-hidden p-4 pt-6">
     <ToastPanel />
-    {#if $apiAuthEnabled && !$authenticated && path !== '/auth'}
-      <Unauthenticated />
-    {:else}
-      <slot />
-    {/if}
+    <slot />
   </div>
 </main>
