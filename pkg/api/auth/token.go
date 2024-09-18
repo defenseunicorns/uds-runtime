@@ -5,7 +5,6 @@
 package auth
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -27,11 +26,12 @@ func RequireLocalToken(validToken string) func(http.Handler) http.Handler {
 func RequireJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
-		log.Println("Token:", token)
+
 		if token == "" {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
+
 		next.ServeHTTP(w, r)
 	})
 }
