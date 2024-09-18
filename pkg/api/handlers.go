@@ -1,7 +1,10 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
@@ -856,4 +859,70 @@ func getStorageClasses(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return rest.Bind(cache.StorageClasses)
+}
+
+// @Description Get Cluster Connection Health
+// @Tags cluster-health
+// @Produce  json
+// @Success 200
+// @Router /health [get]
+func checkHealth(k8sResources *K8sResources, disconnected chan error) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Set headers to keep connection alive
+		rest.WriteHeaders(w)
+
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+
+		recovering := false
+
+		checkCluster := func() {
+			versionInfo, err := k8sResources.Client.Clientset.ServerVersion()
+			response := map[string]string{}
+
+			// if err then connection is lost
+			if err != nil {
+				response["error"] = err.Error()
+				w.WriteHeader(http.StatusInternalServerError)
+				disconnected <- err
+				// indicate that the reconnection handler should have been triggered by the disconnected channel
+				recovering = true
+			} else if recovering {
+				// if errors are resolved, send a reconnected message
+				response["reconnected"] = versionInfo.String()
+				recovering = false
+			} else {
+				response["success"] = versionInfo.String()
+				w.WriteHeader(http.StatusOK)
+			}
+
+			data, err := json.Marshal(response)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
+				return
+			}
+
+			// Write the data to the response
+			fmt.Fprintf(w, "data: %s\n\n", data)
+
+			// Flush the response to ensure it is sent to the client
+			if flusher, ok := w.(http.Flusher); ok {
+				flusher.Flush()
+			}
+		}
+
+		// Check the cluster immediately
+		checkCluster()
+
+		for {
+			select {
+			case <-ticker.C:
+				checkCluster()
+
+			case <-r.Context().Done():
+				// Client closed the connection
+				return
+			}
+		}
+	}
 }

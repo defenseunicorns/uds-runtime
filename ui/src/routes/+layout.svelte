@@ -4,7 +4,7 @@
 <script lang="ts">
   import 'flowbite'
 
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
 
   import { afterNavigate } from '$app/navigation'
   import { authenticated } from '$features/api-auth/store'
@@ -15,8 +15,11 @@
   import '../app.postcss'
 
   import Unauthenticated from '$components/Auth/component.svelte'
+  import { checkClusterConnection } from '$lib/utils/cluster-check/cluster-check'
 
   let path = ''
+  let clusterCheck: EventSource
+
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
   onMount(() => {
@@ -24,7 +27,15 @@
     path = window.location.pathname
   })
 
+  onDestroy(() => {
+    if (clusterCheck) clusterCheck.close()
+  })
+
   afterNavigate(initFlowbite)
+
+  $: if ($authenticated) {
+    clusterCheck = checkClusterConnection()
+  }
 </script>
 
 <Navbar />
