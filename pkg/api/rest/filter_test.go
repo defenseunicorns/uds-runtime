@@ -70,6 +70,17 @@ func TestJsonMarshal(t *testing.T) {
 			wantErr:    false,
 		},
 		{
+			name: "Single unstructured resource with no metadata",
+			payload: unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"foo": "bar",
+				},
+			},
+			fieldsList: []string{".foo"},
+			want:       `{"foo":"bar"}`,
+			wantErr:    false,
+		},
+		{
 			name:       "Invalid payload type",
 			payload:    "invalid",
 			fieldsList: []string{".field"},
