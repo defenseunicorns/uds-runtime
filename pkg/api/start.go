@@ -107,7 +107,6 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		}
 
 		if authSVC {
-			log.Println("Auth service enabled, requiring JWT for all routes")
 			r.Use(auth.RequireJWT)
 		}
 
@@ -343,8 +342,6 @@ func checkForClusterAuth() bool {
 	if strings.ToLower(os.Getenv("AUTH_SVC_ENABLED")) == "true" {
 		authSVC = true
 	}
-
-	log.Println(os.Getenv("AUTH_SVC_ENABLED"))
 
 	return authSVC
 }
