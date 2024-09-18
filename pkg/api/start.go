@@ -59,7 +59,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	// Middleware chain for api token authentication
 	apiAuthMiddleware := func(next http.Handler) http.Handler {
 		if apiAuth {
-			return auth.Middleware(next)
+			return udsMiddleware.ValidateSession(next)
 		}
 		return next
 	}

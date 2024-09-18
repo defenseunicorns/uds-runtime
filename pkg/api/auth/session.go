@@ -51,7 +51,7 @@ func TokenAuthenticator(validToken string) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token := r.URL.Query().Get("token")
 			if token == "" {
-				validateSessionCookie(next, w, r)
+				ValidateSessionCookie(next, w, r)
 			} else if token != validToken {
 				// If a token is passed in and its not valid, return unauthorized
 				w.WriteHeader(http.StatusUnauthorized)
@@ -77,13 +77,7 @@ func TokenAuthenticator(validToken string) func(http.Handler) http.Handler {
 	}
 }
 
-func Middleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		validateSessionCookie(next, w, r)
-	})
-}
-
-func validateSessionCookie(next http.Handler, w http.ResponseWriter, r *http.Request) {
+func ValidateSessionCookie(next http.Handler, w http.ResponseWriter, r *http.Request) {
 	// Retrieve the session cookie
 	cookie, err := r.Cookie("session_id")
 	if err != nil || !storage.ValidateSession(cookie.Value) {
