@@ -35,7 +35,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: smoke-test
-        run: uds run test:smoke --set REF=nightly-unstable --set DIR=hack/nightly
+        run: uds run test:smoke --set DIR=hack/smoke-test
 
       - name: Publish
         run: |

@@ -1,0 +1,7 @@
+image:
+  repository: uds-runtime
+  tag: smoke-test
+  pullPolicy: Always
+package:
+  gateway: tenant
+  host: runtime-canary
