@@ -4,9 +4,11 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { goto } from '$app/navigation'
+  import { Card, LinkCard, ProgressBar } from '$components'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
+
+  import { mebibytesToGigabytes, millicoresToCores } from '../helpers'
 
   import './styles.postcss'
 
@@ -42,6 +44,10 @@
 
   let cpuPercentage = 0
   let memoryPercentage = 0
+  let gbUsed = 0
+  let gbCapacity = 0
+  let cpuUsed = 0
+  let cpuCapacity = 0
 
   function calculatePercentage(usage: number, capacity: number): number {
     if (capacity <= 0) return 0
@@ -177,14 +183,14 @@
           name: 'CPU Usage',
           data: (clusterData.historicalUsage ?? []).map((point) => ({
             x: new Date(point.Timestamp).getTime(),
-            y: point.CPU / 1000, // Convert millicores to cores
+            y: millicoresToCores(point.CPU), // Convert millicores to cores
           })),
         },
         {
           name: 'Memory Usage',
           data: (clusterData.historicalUsage ?? []).map((point) => ({
             x: new Date(point.Timestamp).getTime(),
-            y: point.Memory / (1024 * 1024 * 1024), // Convert bytes to GB
+            y: mebibytesToGigabytes(point.Memory), // Convert bytes to GB
           })),
         },
       ],
@@ -200,6 +206,10 @@
 
       cpuPercentage = calculatePercentage(clusterData.currentUsage.CPU, clusterData.cpuCapacity)
       memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
+      gbUsed = mebibytesToGigabytes(clusterData.currentUsage.Memory)
+      gbCapacity = mebibytesToGigabytes(clusterData.memoryCapacity)
+      cpuUsed = millicoresToCores(clusterData.currentUsage.CPU)
+      cpuCapacity = millicoresToCores(clusterData.cpuCapacity)
 
       if (onMessageCount === 0) {
         onMessageCount++
@@ -219,53 +229,37 @@
 <div class="p-4 dark:text-white pt-0">
   <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <button
-      class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg hover:dark:bg-gray-700 flex"
-      on:click={() => goto('/workloads/pods')}
-    >
-      <div class="px-4 py-5 sm:p-6 flex flex-col items-start">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Pods</dt>
-        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-          {clusterData.totalPods}
-        </dd>
-      </div>
-    </button>
+    <LinkCard path="/workloads/pods">
+      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Pods</dt>
+      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+        {clusterData.totalPods}
+      </dd>
+    </LinkCard>
 
-    <button
-      class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg hover:dark:bg-gray-700 flex"
-      on:click={() => goto('/nodes')}
-    >
-      <div class="px-4 py-5 sm:p-6 flex flex-col items-start">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Nodes</dt>
-        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white" data-testid="node-count">
-          {clusterData.totalNodes}
-        </dd>
-      </div>
-    </button>
+    <LinkCard path="/nodes">
+      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Nodes</dt>
+      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white" data-testid="node-count">
+        {clusterData.totalNodes}
+      </dd>
+    </LinkCard>
 
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-      <div class="px-4 py-5 sm:p-6">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">CPU Usage</dt>
-        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-          {cpuPercentage.toFixed(2)}%
-        </dd>
-        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
-          <div class="bg-blue-600 h-2.5 rounded-full" style="width: {cpuPercentage}%"></div>
-        </div>
-      </div>
-    </div>
+    <Card>
+      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">CPU Usage</dt>
+      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+        {cpuPercentage.toFixed(2)}%
+      </dd>
 
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-      <div class="px-4 py-5 sm:p-6">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Memory Usage</dt>
-        <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-          {memoryPercentage.toFixed(2)}%
-        </dd>
-        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
-          <div class="bg-green-600 h-2.5 rounded-full" style="width: {memoryPercentage}%"></div>
-        </div>
-      </div>
-    </div>
+      <ProgressBar size="md" progress={cpuUsed} capacity={cpuCapacity} unit="Cores" />
+    </Card>
+
+    <Card>
+      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Memory Usage</dt>
+      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+        {memoryPercentage.toFixed(2)}%
+      </dd>
+
+      <ProgressBar size="md" progress={gbUsed} capacity={gbCapacity} unit="GB" />
+    </Card>
   </div>
   <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
