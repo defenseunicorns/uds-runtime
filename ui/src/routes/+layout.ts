@@ -12,7 +12,7 @@ export const load = async () => {
   const namespaces = createStore()
 
   const url = new URL(window.location.href)
-  let token = url.searchParams.get('token') || ''
+  const token = url.searchParams.get('token') || ''
 
   // validate token
   if (await Auth.connect(token)) {

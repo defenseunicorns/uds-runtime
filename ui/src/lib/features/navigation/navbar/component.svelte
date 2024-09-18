@@ -9,8 +9,6 @@
 
   import { isSidebarExpanded } from '../store'
 
-  let path = ''
-
   onMount(() => {
     path = window.location.pathname
   })

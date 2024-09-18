@@ -14,17 +14,14 @@
 
   import '../app.postcss'
 
-  import Unauthenticated from '$components/Auth/component.svelte'
   import { checkClusterConnection } from '$lib/utils/cluster-check/cluster-check'
 
-  let path = ''
   let clusterCheck: EventSource
 
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
   onMount(() => {
     initFlowbite()
-    path = window.location.pathname
   })
 
   onDestroy(() => {
