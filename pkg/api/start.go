@@ -33,11 +33,11 @@ import (
 )
 
 type K8sResources struct {
-	Client          *k8s.Clients
-	Cache           *resources.Cache
-	OriginalCtx     string
-	OriginalCluster string
-	Cancel          context.CancelFunc
+	client         *k8s.Clients
+	cache          *resources.Cache
+	currentCtx     string
+	currentCluster string
+	cancel         context.CancelFunc
 }
 
 // @title UDS Runtime API
@@ -67,16 +67,22 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	// Create the disconnected channel
 	disconnected := make(chan error)
 
+	inCluster, err := isRunningInCluster()
+	if err != nil {
+		k8sResources.cancel()
+		return nil, fmt.Errorf("failed to check if running in cluster: %w", err)
+	}
+
 	// Get current k8s context and start the reconnection goroutine if NOT in cluster
-	if !isRunningInCluster() {
+	if !inCluster {
 		currentCtx, currentCluster, err := k8s.GetCurrentContext()
 		if err != nil {
-			k8sResources.Cancel()
+			k8sResources.cancel()
 			return nil, fmt.Errorf("failed to get current context: %w", err)
 		}
 
-		k8sResources.OriginalCtx = currentCtx
-		k8sResources.OriginalCluster = currentCluster
+		k8sResources.currentCtx = currentCtx
+		k8sResources.currentCluster = currentCluster
 
 		go handleReconnection(disconnected, k8sResources, k8s.NewClient, resources.NewCache)
 	}
@@ -100,7 +106,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
-			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(k8sResources.Cache))
+			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(k8sResources.cache))
 		})
 
 		r.Route("/resources", func(r chi.Router) {
@@ -136,7 +142,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 				// Metrics have their own cache and change channel that updates every 30 seconds
 				// They do not support informers directly, so we need to poll the API
 				r.Get("/podmetrics", func(w http.ResponseWriter, r *http.Request) {
-					getPodMetrics(w, r, k8sResources.Cache)
+					getPodMetrics(w, r, k8sResources.cache)
 				})
 			})
 
@@ -253,9 +259,9 @@ func setupK8sResources() (*K8sResources, error) {
 
 	// K8sResources struct to hold references
 	k8sResources := &K8sResources{
-		Client: k8sClient,
-		Cache:  cache,
-		Cancel: cancel,
+		client: k8sClient,
+		cache:  cache,
+		cancel: cancel,
 	}
 
 	return k8sResources, nil
@@ -339,7 +345,7 @@ func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
 // withLatestCache returns a wrapper lambda function, creating a closure that can dynamically access the latest cache
 func withLatestCache(k8sResources *K8sResources, handler func(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		handler(k8sResources.Cache)(w, r)
+		handler(k8sResources.cache)(w, r)
 	}
 }
 
@@ -356,10 +362,17 @@ func getRetryInterval() time.Duration {
 	return 5 * time.Second // Default to 5 seconds if not set
 }
 
-// isRunningInCluster checks if the application is running inside cluster
-func isRunningInCluster() bool {
+// isRunningInCluster checks if the application is running in cluster
+func isRunningInCluster() (bool, error) {
 	_, err := rest.InClusterConfig()
-	return err == nil
+
+	if err == rest.ErrNotInCluster {
+		return false, nil
+	} else if err != nil {
+		return true, err
+	}
+
+	return true, nil
 }
 
 // handleReconnection is a goroutine that handles reconnection to the k8s API
@@ -370,7 +383,7 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 		log.Printf("Disconnected error received: %v\n", err)
 		for {
 			// Cancel the previous context
-			k8sResources.Cancel()
+			k8sResources.cancel()
 			time.Sleep(getRetryInterval())
 
 			currentCtx, currentCluster, err := k8s.GetCurrentContext()
@@ -380,7 +393,7 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 			}
 
 			// If the current context or cluster is different from the original, skip reconnection
-			if currentCtx != k8sResources.OriginalCtx || currentCluster != k8sResources.OriginalCluster {
+			if currentCtx != k8sResources.currentCtx || currentCluster != k8sResources.currentCluster {
 				log.Println("Current context has changed. Skipping reconnection.")
 				continue
 			}
@@ -399,9 +412,9 @@ func handleReconnection(disconnected chan error, k8sResources *K8sResources, cre
 				continue
 			}
 
-			k8sResources.Client = k8sClient
-			k8sResources.Cache = cache
-			k8sResources.Cancel = cancel
+			k8sResources.client = k8sClient
+			k8sResources.cache = cache
+			k8sResources.cancel = cancel
 			log.Println("Successfully reconnected to k8s and recreated cache")
 			break
 		}

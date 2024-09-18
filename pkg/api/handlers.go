@@ -878,7 +878,7 @@ func checkHealth(k8sResources *K8sResources, disconnected chan error) http.Handl
 
 		// Function to check the cluster health when running out of cluster
 		checkCluster := func() {
-			versionInfo, err := k8sResources.Client.Clientset.ServerVersion()
+			versionInfo, err := k8sResources.client.Clientset.ServerVersion()
 			response := map[string]string{}
 
 			// if err then connection is lost
@@ -912,8 +912,10 @@ func checkHealth(k8sResources *K8sResources, disconnected chan error) http.Handl
 			}
 		}
 
+		// DON'T return error to user in case sensitive
+		inCluster, _ := isRunningInCluster()
 		// If running in cluster don't check for version and send error or reconnected events
-		if isRunningInCluster() {
+		if inCluster {
 			checkCluster = func() {
 				response := map[string]string{
 					"success": "in-cluster",
