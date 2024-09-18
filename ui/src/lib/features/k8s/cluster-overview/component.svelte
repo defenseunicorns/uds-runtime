@@ -182,14 +182,14 @@
       series: [
         {
           name: 'CPU Usage',
-          data: clusterData.historicalUsage.map((point) => ({
+          data: (clusterData.historicalUsage ?? []).map((point) => ({
             x: new Date(point.Timestamp).getTime(),
             y: millicoresToCores(point.CPU), // Convert millicores to cores
           })),
         },
         {
           name: 'Memory Usage',
-          data: clusterData.historicalUsage.map((point) => ({
+          data: (clusterData.historicalUsage ?? []).map((point) => ({
             x: new Date(point.Timestamp).getTime(),
             y: mebibytesToGigabytes(point.Memory), // Convert bytes to GB
           })),
