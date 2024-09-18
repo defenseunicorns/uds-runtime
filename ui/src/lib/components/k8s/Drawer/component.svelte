@@ -70,17 +70,17 @@
         involvedObject: {
           apiVersion: 'v1',
           kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-86fjg',
+          name: 'podinfo-b4d7c7fd5-bbm65',
           namespace: 'podinfo',
           resourceVersion: '101919',
           uid: 'caff0343-c3d7-42bf-ab49-6a38f2ad318b',
         },
         kind: 'Event',
         lastTimestamp: new Date(),
-        message: 'Successfully assigned podinfo/podinfo-b4d7c7fd5-86fjg to k3d-runtime-server-0',
+        message: 'Successfully assigned podinfo/podinfo-b4d7c7fd5-bbm65 to k3d-runtime-server-0',
         metadata: {
           creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-86fjg.17f65e21c0312274',
+          name: 'podinfo-b4d7c7fd5-bbm65.17f65e21c0312274',
           namespace: 'podinfo',
           resourceVersion: '101923',
           uid: 'e18ee072-6488-4fad-896a-465534021899',
@@ -102,7 +102,7 @@
           apiVersion: 'v1',
           fieldPath: 'spec.containers{podinfo}',
           kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-86fjg',
+          name: 'podinfo-b4d7c7fd5-bbm65',
           namespace: 'podinfo',
           resourceVersion: '101921',
           uid: 'caff0343-c3d7-42bf-ab49-6a38f2ad318b',
@@ -112,7 +112,7 @@
         message: 'Container image "ghcr.io/stefanprodan/podinfo:6.4.0" already present on machine',
         metadata: {
           creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-86fjg.17f65e21d879569b',
+          name: 'podinfo-b4d7c7fd5-bbm65.17f65e21d879569b',
           namespace: 'podinfo',
           resourceVersion: '101928',
           uid: 'df645d11-52d3-4414-9646-aac1f15a0db0',
@@ -137,7 +137,7 @@
           apiVersion: 'v1',
           fieldPath: 'spec.containers{podinfo}',
           kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-86fjg',
+          name: 'podinfo-b4d7c7fd5-bbm65',
           namespace: 'podinfo',
           resourceVersion: '101921',
           uid: 'caff0343-c3d7-42bf-ab49-6a38f2ad318b',
@@ -147,7 +147,7 @@
         message: 'Created container podinfo',
         metadata: {
           creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-86fjg.17f65e21d923d387',
+          name: 'podinfo-b4d7c7fd5-bbm65.17f65e21d923d387',
           namespace: 'podinfo',
           resourceVersion: '101929',
           uid: '9494dcb0-4248-4118-a3b2-fdf7313a3f58',
@@ -172,7 +172,7 @@
           apiVersion: 'v1',
           fieldPath: 'spec.containers{podinfo}',
           kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-86fjg',
+          name: 'podinfo-b4d7c7fd5-bbm65',
           namespace: 'podinfo',
           resourceVersion: '101921',
           uid: 'caff0343-c3d7-42bf-ab49-6a38f2ad318b',
@@ -182,7 +182,7 @@
         message: 'Started container podinfo',
         metadata: {
           creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-86fjg.17f65e21dc959efe',
+          name: 'podinfo-b4d7c7fd5-bbm65.17f65e21dc959efe',
           namespace: 'podinfo',
           resourceVersion: '101930',
           uid: '57053521-ee9d-462a-b2e1-39986d8d383e',
@@ -311,6 +311,9 @@
     return new Date(dateString).toLocaleString()
   }
 
+  // console.log('resource')
+  // console.log(resource)
+
   $: details = [
     { label: 'Created', value: formatDate(resource.metadata?.creationTimestamp as unknown as string) },
     { label: 'Name', value: resource.metadata?.name },
@@ -411,7 +414,7 @@
           </dl>
         </div>
       {:else if activeTab === 'events'}
-        <EventList events={tempData} />
+        <EventList events={tempData} {resource} />
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="text-gray-200 p-4">
