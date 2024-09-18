@@ -25,15 +25,15 @@ func TestHandleReconnection(t *testing.T) {
 	}
 
 	k8sResources := &K8sResources{
-		Client:          &k8s.Clients{},
-		Cache:           &resources.Cache{},
-		Cancel:          func() {},
-		OriginalCtx:     "original-context",
-		OriginalCluster: "original-cluster",
+		client:         &k8s.Clients{},
+		cache:          &resources.Cache{},
+		cancel:         func() {},
+		currentCtx:     "original-context",
+		currentCluster: "original-cluster",
 	}
 
-	require.Nil(t, k8sResources.Client.Clientset)
-	require.Nil(t, k8sResources.Cache.Pods)
+	require.Nil(t, k8sResources.client.Clientset)
+	require.Nil(t, k8sResources.cache.Pods)
 
 	createClientMock := func() (*k8s.Clients, error) {
 		return &k8s.Clients{Clientset: &kubernetes.Clientset{}}, nil
@@ -54,8 +54,8 @@ func TestHandleReconnection(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources struct was updated
-	require.NotNil(t, k8sResources.Client.Clientset)
-	require.NotNil(t, k8sResources.Cache.Pods)
+	require.NotNil(t, k8sResources.client.Clientset)
+	require.NotNil(t, k8sResources.cache.Pods)
 
 	close(disconnected)
 }
@@ -66,11 +66,11 @@ func TestHandleReconnectionCreateClientError(t *testing.T) {
 	defer os.Unsetenv("RETRY_INTERVAL_MS")
 
 	k8sResources := &K8sResources{
-		Client:          &k8s.Clients{},
-		Cache:           &resources.Cache{},
-		Cancel:          func() {},
-		OriginalCtx:     "original-context",
-		OriginalCluster: "original-cluster",
+		client:         &k8s.Clients{},
+		cache:          &resources.Cache{},
+		cancel:         func() {},
+		currentCtx:     "original-context",
+		currentCluster: "original-cluster",
 	}
 
 	// Mock GetCurrentContext to return the same context and cluster as the original
@@ -96,8 +96,8 @@ func TestHandleReconnectionCreateClientError(t *testing.T) {
 	// Wait for the reconnection logic to attempt creating the client
 	time.Sleep(200 * time.Millisecond)
 
-	require.Nil(t, k8sResources.Client.Clientset)
-	require.Nil(t, k8sResources.Cache.Pods)
+	require.Nil(t, k8sResources.client.Clientset)
+	require.Nil(t, k8sResources.cache.Pods)
 
 	close(disconnected)
 }
@@ -108,11 +108,11 @@ func TestHandleReconnectionCreateCacheError(t *testing.T) {
 	defer os.Unsetenv("RETRY_INTERVAL_MS")
 
 	k8sResources := &K8sResources{
-		Client:          &k8s.Clients{},
-		Cache:           &resources.Cache{},
-		Cancel:          func() {},
-		OriginalCtx:     "original-context",
-		OriginalCluster: "original-cluster",
+		client:         &k8s.Clients{},
+		cache:          &resources.Cache{},
+		cancel:         func() {},
+		currentCtx:     "original-context",
+		currentCluster: "original-cluster",
 	}
 
 	// Mock GetCurrentContext to return the same context and cluster as the original
@@ -139,8 +139,8 @@ func TestHandleReconnectionCreateCacheError(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources cache was not updated since cache creation failed
-	require.Nil(t, k8sResources.Client.Clientset)
-	require.Nil(t, k8sResources.Cache.Pods)
+	require.Nil(t, k8sResources.client.Clientset)
+	require.Nil(t, k8sResources.cache.Pods)
 
 	close(disconnected)
 }
@@ -155,11 +155,11 @@ func TestHandleReconnectionContextChanged(t *testing.T) {
 	}
 
 	k8sResources := &K8sResources{
-		Client:          &k8s.Clients{},
-		Cache:           &resources.Cache{},
-		Cancel:          func() {},
-		OriginalCtx:     "original-context",
-		OriginalCluster: "original-cluster",
+		client:         &k8s.Clients{},
+		cache:          &resources.Cache{},
+		cancel:         func() {},
+		currentCtx:     "original-context",
+		currentCluster: "original-cluster",
 	}
 
 	createClientMock := func() (*k8s.Clients, error) {
@@ -182,8 +182,8 @@ func TestHandleReconnectionContextChanged(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources struct was not updated since the context/cluster has changed
-	require.Nil(t, k8sResources.Client.Clientset)
-	require.Nil(t, k8sResources.Cache.Pods)
+	require.Nil(t, k8sResources.client.Clientset)
+	require.Nil(t, k8sResources.cache.Pods)
 
 	close(disconnected)
 }

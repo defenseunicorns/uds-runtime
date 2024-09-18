@@ -12,7 +12,7 @@ export function checkClusterConnection() {
     addToast({
       type: 'error',
       message: disconnectedMsg,
-      timeoutSecs: 500,
+      timeoutSecs: 1000,
     })
   }
 
@@ -29,6 +29,13 @@ export function checkClusterConnection() {
         message: 'Cluster connection restored',
         timeoutSecs: 10,
       })
+
+      // Dispatch custom event for reconnection
+      // use window instead of svelte createEventDispatcher to trigger event globally
+      const event = new CustomEvent('cluster-reconnected', {
+        detail: { message: 'Cluster connection restored' },
+      })
+      window.dispatchEvent(event)
     }
 
     // only show error toast once and make timeout really long
@@ -36,7 +43,7 @@ export function checkClusterConnection() {
       addToast({
         type: 'error',
         message: disconnectedMsg,
-        timeoutSecs: 500,
+        timeoutSecs: 1000,
       })
     }
   }

@@ -29,27 +29,29 @@ class ClusterCheckEventSource {
 
     const msg = triggers && triggers?.msg
 
-    // Trigger onerror
-    setTimeout(() => {
-      if (triggers && triggers.onError) this.onerror!(new Event('error'))
-    }, triggers?.onError)
+    if (triggers?.onError) {
+      setTimeout(() => {
+        this.onerror?.(new Event('error'))
+      }, triggers.onError)
+    }
 
-    // Trigger onmessage with success
-    setTimeout(() => {
-      if (msg && msg.success)
-        this.onmessage!(new MessageEvent('message', { data: JSON.stringify({ success: 'success' }) }))
-    }, msg?.success)
+    if (msg?.success) {
+      setTimeout(() => {
+        this.onmessage?.(new MessageEvent('message', { data: JSON.stringify({ success: 'success' }) }))
+      }, msg.success)
+    }
 
-    // Trigger onmessage with error
-    setTimeout(() => {
-      if (msg && msg.error) this.onmessage!(new MessageEvent('message', { data: JSON.stringify({ error: 'error' }) }))
-    }, msg?.error)
+    if (msg?.error) {
+      setTimeout(() => {
+        this.onmessage?.(new MessageEvent('message', { data: JSON.stringify({ error: 'error' }) }))
+      }, msg.error)
+    }
 
-    // Trigger onmessage with reconnected
-    setTimeout(() => {
-      if (msg && msg.reconnected)
-        this.onmessage!(new MessageEvent('message', { data: JSON.stringify({ reconnected: 'reconnected' }) }))
-    }, msg?.reconnected)
+    if (msg?.reconnected) {
+      setTimeout(() => {
+        this.onmessage?.(new MessageEvent('message', { data: JSON.stringify({ reconnected: 'reconnected' }) }))
+      }, msg.reconnected)
+    }
   }
 }
 
@@ -129,5 +131,30 @@ describe('cluster check', () => {
     vi.advanceTimersByTime(1000)
     expect(get(toast)).toHaveLength(1)
     expect(get(toast)[0].message).toBe('Cluster health check failed: no connection')
+  })
+
+  test('event disptached on reconnection', async () => {
+    const eventSpy = vi.spyOn(window, 'dispatchEvent')
+    vi.stubGlobal(
+      'EventSource',
+      vi
+        .fn()
+        .mockImplementationOnce(
+          (url: string) =>
+            new ClusterCheckEventSource(url, urlAssertionMock, { onError: 1000, msg: { reconnected: 2000 } }),
+        ),
+    )
+    checkClusterConnection()
+
+    vi.advanceTimersByTime(1000)
+    expect(eventSpy).toHaveBeenCalledTimes(0)
+
+    vi.advanceTimersByTime(1000)
+    expect(eventSpy).toHaveBeenCalledTimes(1)
+    expect(eventSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: { message: 'Cluster connection restored' },
+      }),
+    )
   })
 })
