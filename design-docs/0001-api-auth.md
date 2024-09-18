@@ -22,6 +22,8 @@ How does the frontend authenticate?
 - Subsequent requests will include the session cookie and the backend will validate the session ID before processing any requests.
 <br><br>
 
+The session cookie is valid for the duration of the browser session and is deleted when the browser is closed.
+
 <p style="text-align:center;">
   <img src="./images/api-auth-flow.png" alt="API auth flow diagram">
 </p>
