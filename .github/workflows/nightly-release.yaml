@@ -34,6 +34,9 @@ jobs:
       - name: Setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
         uses: ./.github/actions/setup
 
+      - name: smoke-test
+        run: uds run test:smoke --set REF=nightly-unstable --set DIR=hack/nightly
+
       - name: Publish
         run: |
           uds run build:publish-uds-runtime --set REF=nightly-unstable --set DIR=hack/nightly

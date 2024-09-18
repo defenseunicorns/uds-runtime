@@ -89,6 +89,6 @@ tasks:
     actions:
       - task: ui
       - task: api-linux-amd64
-      - cmd: docker build --build-arg TARGETARCH=amd64 -t uds-runtime:smoke -f ./Dockerfile .
-      - cmd: uds zarf package create --set IMAGE=uds-runtime:smoke -o build --confirm
-      - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-${REF}.tar.zst
+      - cmd: docker build --build-arg TARGETARCH=amd64 -t uds-runtime:${REF} -f ./Dockerfile .
+      - cmd: uds zarf package create --set IMAGE=uds-runtime:$REF -o build --confirm
+        dir: ${DIR}
