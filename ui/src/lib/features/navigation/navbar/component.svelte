@@ -9,10 +9,6 @@
 
   import { isSidebarExpanded } from '../store'
 
-  onMount(() => {
-    path = window.location.pathname
-  })
-
   // Don't expand sidebar if api auth is enabled and user is unauthenticated
   $: {
     if ($authenticated) {
