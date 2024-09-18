@@ -6,6 +6,7 @@
 
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
+  import { Event, EventList } from '$components'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
@@ -18,6 +19,53 @@
   export let baseURL: string
 
   type Tab = 'metadata' | 'yaml' | 'events'
+
+  const tempData = [
+    {
+      resource: {
+        apiVersion: 'v1',
+        count: 1,
+        eventTime: null,
+        firstTimestamp: '2024-09-17T19:39:47Z',
+        involvedObject: {
+          apiVersion: 'v1',
+          fieldPath: 'spec.containers{podinfo}',
+          kind: 'Pod',
+          name: 'podinfo-b4d7c7fd5-876rf',
+          namespace: 'podinfo',
+          resourceVersion: '91375',
+          uid: 'c7e2f3a5-14a3-44ed-a427-1d886e7ad618',
+        },
+        kind: 'Event',
+        lastTimestamp: '2024-09-17T19:39:47Z',
+        message: 'Created container podinfo',
+        metadata: {
+          creationTimestamp: '2024-09-17T19:39:47Z',
+          name: 'podinfo-b4d7c7fd5-876rf.17f61f5c0be93267',
+          namespace: 'podinfo',
+          resourceVersion: '91383',
+          uid: '5e0ebdf1-a428-4da9-8d03-a2d97e4e2e9f',
+        },
+        reason: 'Created',
+        reportingComponent: '',
+        reportingInstance: '',
+        source: { component: 'kubelet', host: 'k3d-runtime-server-0' },
+        type: 'Normal',
+      },
+      table: {
+        name: 'podinfo-b4d7c7fd5-876rf.17f61f5c0be93267',
+        namespace: 'podinfo',
+        creationTimestamp: '2024-09-17T19:39:47.000Z',
+        count: 1,
+        message: 'Created container podinfo',
+        object_kind: 'Pod',
+        object_name: 'podinfo-b4d7c7fd5-876rf',
+        reason: 'Created',
+        type: 'Normal',
+        age: { text: '4m', sort: 1726601987000 },
+      },
+    },
+  ]
 
   onMount(() => {
     // initialize highlight language
@@ -112,6 +160,9 @@
             <button id="metadata" class:active={activeTab === 'metadata'} on:click={setActiveTab}>Metadata</button>
           </li>
           <li class="flex-1">
+            <button id="events" class:active={activeTab === 'events'} on:click={setActiveTab}>Events</button>
+          </li>
+          <li class="flex-1">
             <button id="yaml" class:active={activeTab === 'yaml'} on:click={setActiveTab}>YAML</button>
           </li>
         </ul>
@@ -159,6 +210,8 @@
             {/if}
           </dl>
         </div>
+      {:else if activeTab === 'events'}
+        <Event resource={tempData[0].resource} />
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="text-gray-200 p-4">
