@@ -755,7 +755,6 @@ func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *c
 
 			// if data is not empty then perform assertions
 			if len(body) > 0 {
-				fmt.Println(rr.Body.String())
 				// If uidMap.expectedKind is empty (eg. {Pod: ""}), then we need to store a UID for this kind
 				if uidMap[tt.expectedKind] == "" {
 					keyIndx := 5
