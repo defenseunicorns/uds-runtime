@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.4.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.3.0...v0.4.0) (2024-09-19)
+
+
+### Features
+
+* alert users to cluster disconnection and reconnect ([#270](https://github.com/defenseunicorns/uds-runtime/issues/270)) ([d121bdc](https://github.com/defenseunicorns/uds-runtime/commit/d121bdc0a9632df96a2fc68a447089538e21c05a))
+* **api:** implement authsvc in uds package and use jwt in api ([#335](https://github.com/defenseunicorns/uds-runtime/issues/335)) ([def3b83](https://github.com/defenseunicorns/uds-runtime/commit/def3b83fd36f59093460d1f0a52289055a097087))
+* **ui:** add functionality to Pepr table ([#298](https://github.com/defenseunicorns/uds-runtime/issues/298)) ([a11d397](https://github.com/defenseunicorns/uds-runtime/commit/a11d39736a203e4f4240b6997332f97e234d43aa))
+* **ui:** adding functionality to cards ([#327](https://github.com/defenseunicorns/uds-runtime/issues/327)) ([15dbd05](https://github.com/defenseunicorns/uds-runtime/commit/15dbd05e9049c2533f7cd9d5c8134ef3da872354))
+* **ui:** adding progress bar component ([#337](https://github.com/defenseunicorns/uds-runtime/issues/337)) ([a36a1ef](https://github.com/defenseunicorns/uds-runtime/commit/a36a1ef44451129d43ce104995a87bad413295c8))
+* **ui:** adding truncate and line clamp option ([#279](https://github.com/defenseunicorns/uds-runtime/issues/279)) ([de760fb](https://github.com/defenseunicorns/uds-runtime/commit/de760fb1217b635847a651c98658da732f7a6d6e))
+* **ui:** adjusting drawer margins ([#303](https://github.com/defenseunicorns/uds-runtime/issues/303)) ([c23c809](https://github.com/defenseunicorns/uds-runtime/commit/c23c80933e2d5f978b7106aba8a7ab3bcefaeecc))
+* **ui:** confirm status coloring ([#318](https://github.com/defenseunicorns/uds-runtime/issues/318)) ([eb31544](https://github.com/defenseunicorns/uds-runtime/commit/eb31544de52f72574be97cd5604601dffe09c3c0))
+* **ui:** reload data view when cluster reconnection is successful ([#336](https://github.com/defenseunicorns/uds-runtime/issues/336)) ([95137bc](https://github.com/defenseunicorns/uds-runtime/commit/95137bcec835031a82282a4a115d29817d34d5bd))
+* **ui:** update prettier plugin organize imports ([#324](https://github.com/defenseunicorns/uds-runtime/issues/324)) ([115cc6b](https://github.com/defenseunicorns/uds-runtime/commit/115cc6b8fe99a867c78b42e4e092861478de9014))
+
+
+### Bug Fixes
+
+* **api:** errors from trying to get kubecontext while in cluster ([#339](https://github.com/defenseunicorns/uds-runtime/issues/339)) ([23488f8](https://github.com/defenseunicorns/uds-runtime/commit/23488f8a69a40b00cf815d14f618a437c5ee6357))
+* **api:** flaky api tests ([#350](https://github.com/defenseunicorns/uds-runtime/issues/350)) ([1ef0a77](https://github.com/defenseunicorns/uds-runtime/commit/1ef0a771b61e8bda364a2c2782eb8a1cc2250958))
+* field selectors broken when metadata not present ([#338](https://github.com/defenseunicorns/uds-runtime/issues/338)) ([1a7443a](https://github.com/defenseunicorns/uds-runtime/commit/1a7443a053c8b12884354d67681a609bd0e32b0c))
+* historical usage loading ([#340](https://github.com/defenseunicorns/uds-runtime/issues/340)) ([f236ad9](https://github.com/defenseunicorns/uds-runtime/commit/f236ad923960c1170ffc72b29b373bd0640af1de))
+* **ui:** fixing issue with table data being null ([#320](https://github.com/defenseunicorns/uds-runtime/issues/320)) ([08c8c40](https://github.com/defenseunicorns/uds-runtime/commit/08c8c40526e61b42dcaa72e90b974ddae6f72a02))
+
+
+### Miscellaneous
+
+* api auth state design doc ([#331](https://github.com/defenseunicorns/uds-runtime/issues/331)) ([59ee0da](https://github.com/defenseunicorns/uds-runtime/commit/59ee0da8be37796115e5a9da9a40828e14ebefbb))
+* **api:** complete api tests for all routes ([#319](https://github.com/defenseunicorns/uds-runtime/issues/319)) ([734cc33](https://github.com/defenseunicorns/uds-runtime/commit/734cc336973b8e458f82ee4fea0ce0b545e17a6a))
+* **deps:** update dependency kubernetes-fluent-client to v3.0.3 ([#329](https://github.com/defenseunicorns/uds-runtime/issues/329)) ([467dcab](https://github.com/defenseunicorns/uds-runtime/commit/467dcabdd45d5ec3f07b5004682af7b846159a18))
+* **deps:** update github actions ([#266](https://github.com/defenseunicorns/uds-runtime/issues/266)) ([898acdb](https://github.com/defenseunicorns/uds-runtime/commit/898acdbf8de6c6af7b3e90b46a41c3119ba4e90e))
+* **deps:** update kubernetes packages to v0.31.1 ([#321](https://github.com/defenseunicorns/uds-runtime/issues/321)) ([0865775](https://github.com/defenseunicorns/uds-runtime/commit/086577577580b120fa67dcb220c107d27708b319))
+* move api token auth state management to backend using cookies ([#343](https://github.com/defenseunicorns/uds-runtime/issues/343)) ([45a4e76](https://github.com/defenseunicorns/uds-runtime/commit/45a4e76683b57954820019d24e8670e361727d1d))
+* undo release-as 0.3.0 ([#291](https://github.com/defenseunicorns/uds-runtime/issues/291)) ([3ee2cac](https://github.com/defenseunicorns/uds-runtime/commit/3ee2cac0fe3bf4866bc46bff8f337e00799eb027))
+* update readme with badges ([#225](https://github.com/defenseunicorns/uds-runtime/issues/225)) ([38df19a](https://github.com/defenseunicorns/uds-runtime/commit/38df19a3ba92594766ee0929f8e5dbe03fb577fe))
+
 ## [0.3.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.3.0...v0.3.0) (2024-09-06)
 
 
