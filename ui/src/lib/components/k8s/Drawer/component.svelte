@@ -7,6 +7,7 @@
   import type { CoreV1Event, KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
   import { EventList } from '$components'
+  import { createEventSource } from '$lib/utils/helpers'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
@@ -24,252 +25,18 @@
     resource: CoreV1Event
   }
 
-  const tempData: TempDataType[] = [
-    {
-      resource: {
-        apiVersion: 'v1',
-        count: 1,
-        eventTime: new Date(),
-        firstTimestamp: new Date(),
-        involvedObject: {
-          apiVersion: 'v1',
-          fieldPath: 'spec.containers{podinfo}',
-          kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-876rf',
-          namespace: 'podinfo',
-          resourceVersion: '91375',
-          uid: 'c7e2f3a5-14a3-44ed-a427-1d886e7ad618',
-        },
-        kind: 'Event',
-        lastTimestamp: new Date(),
-        message:
-          'Readiness probe failed: 2024-09-18T14:50:07.995Z\tINFO\tpodcli/check.go:137\tcheck failed\t{"address": "http://localhost:9898/readyz", "status code": 503}\n',
-        metadata: {
-          creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-876rf.17f65e222bbbba52',
-          namespace: 'podinfo',
-          resourceVersion: '101934',
-          uid: 'a45052c1-e115-4727-b783-62292c040a56',
-        },
-        reason: 'Unhealthy',
-        reportingComponent: '',
-        reportingInstance: '',
-        source: {
-          component: 'kubelet',
-          host: 'k3d-runtime-server-0',
-        },
-        type: 'Warning',
-      },
-    },
-    {
-      resource: {
-        action: 'Binding',
-        apiVersion: 'v1',
-        eventTime: new Date(),
-        firstTimestamp: new Date(),
-        involvedObject: {
-          apiVersion: 'v1',
-          kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-bbm65',
-          namespace: 'podinfo',
-          resourceVersion: '101919',
-          uid: 'caff0343-c3d7-42bf-ab49-6a38f2ad318b',
-        },
-        kind: 'Event',
-        lastTimestamp: new Date(),
-        message: 'Successfully assigned podinfo/podinfo-b4d7c7fd5-bbm65 to k3d-runtime-server-0',
-        metadata: {
-          creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-bbm65.17f65e21c0312274',
-          namespace: 'podinfo',
-          resourceVersion: '101923',
-          uid: 'e18ee072-6488-4fad-896a-465534021899',
-        },
-        reason: 'Scheduled',
-        reportingComponent: 'default-scheduler',
-        reportingInstance: 'default-scheduler-k3d-runtime-server-0',
-        source: {},
-        type: 'Normal',
-      },
-    },
-    {
-      resource: {
-        apiVersion: 'v1',
-        count: 1,
-        eventTime: new Date(),
-        firstTimestamp: new Date(),
-        involvedObject: {
-          apiVersion: 'v1',
-          fieldPath: 'spec.containers{podinfo}',
-          kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-bbm65',
-          namespace: 'podinfo',
-          resourceVersion: '101921',
-          uid: 'caff0343-c3d7-42bf-ab49-6a38f2ad318b',
-        },
-        kind: 'Event',
-        lastTimestamp: new Date(),
-        message: 'Container image "ghcr.io/stefanprodan/podinfo:6.4.0" already present on machine',
-        metadata: {
-          creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-bbm65.17f65e21d879569b',
-          namespace: 'podinfo',
-          resourceVersion: '101928',
-          uid: 'df645d11-52d3-4414-9646-aac1f15a0db0',
-        },
-        reason: 'Pulled',
-        reportingComponent: '',
-        reportingInstance: '',
-        source: {
-          component: 'kubelet',
-          host: 'k3d-runtime-server-0',
-        },
-        type: 'Normal',
-      },
-    },
-    {
-      resource: {
-        apiVersion: 'v1',
-        count: 1,
-        eventTime: new Date(),
-        firstTimestamp: new Date(),
-        involvedObject: {
-          apiVersion: 'v1',
-          fieldPath: 'spec.containers{podinfo}',
-          kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-bbm65',
-          namespace: 'podinfo',
-          resourceVersion: '101921',
-          uid: 'caff0343-c3d7-42bf-ab49-6a38f2ad318b',
-        },
-        kind: 'Event',
-        lastTimestamp: new Date(),
-        message: 'Created container podinfo',
-        metadata: {
-          creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-bbm65.17f65e21d923d387',
-          namespace: 'podinfo',
-          resourceVersion: '101929',
-          uid: '9494dcb0-4248-4118-a3b2-fdf7313a3f58',
-        },
-        reason: 'Created',
-        reportingComponent: '',
-        reportingInstance: '',
-        source: {
-          component: 'kubelet',
-          host: 'k3d-runtime-server-0',
-        },
-        type: 'Normal',
-      },
-    },
-    {
-      resource: {
-        apiVersion: 'v1',
-        count: 1,
-        eventTime: new Date(),
-        firstTimestamp: new Date(),
-        involvedObject: {
-          apiVersion: 'v1',
-          fieldPath: 'spec.containers{podinfo}',
-          kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-bbm65',
-          namespace: 'podinfo',
-          resourceVersion: '101921',
-          uid: 'caff0343-c3d7-42bf-ab49-6a38f2ad318b',
-        },
-        kind: 'Event',
-        lastTimestamp: new Date(),
-        message: 'Started container podinfo',
-        metadata: {
-          creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-bbm65.17f65e21dc959efe',
-          namespace: 'podinfo',
-          resourceVersion: '101930',
-          uid: '57053521-ee9d-462a-b2e1-39986d8d383e',
-        },
-        reason: 'Started',
-        reportingComponent: '',
-        reportingInstance: '',
-        source: {
-          component: 'kubelet',
-          host: 'k3d-runtime-server-0',
-        },
-        type: 'Normal',
-      },
-    },
-    {
-      resource: {
-        apiVersion: 'v1',
-        count: 1,
-        eventTime: new Date(),
-        firstTimestamp: new Date(),
-        involvedObject: {
-          apiVersion: 'v1',
-          fieldPath: 'spec.containers{podinfo}',
-          kind: 'Pod',
-          name: 'podinfo-b4d7c7fd5-876rf',
-          namespace: 'podinfo',
-          resourceVersion: '91375',
-          uid: 'c7e2f3a5-14a3-44ed-a427-1d886e7ad618',
-        },
-        kind: 'Event',
-        lastTimestamp: new Date(),
-        message: 'Stopping container podinfo',
-        metadata: {
-          creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5-876rf.17f65e21b7e3470f',
-          namespace: 'podinfo',
-          resourceVersion: '101916',
-          uid: '5daf4e02-d95e-4eff-9098-3279d905966b',
-        },
-        reason: 'Killing',
-        reportingComponent: '',
-        reportingInstance: '',
-        source: {
-          component: 'kubelet',
-          host: 'k3d-runtime-server-0',
-        },
-        type: 'Normal',
-      },
-    },
-    {
-      resource: {
-        apiVersion: 'v1',
-        count: 1,
-        eventTime: new Date(),
-        firstTimestamp: new Date(),
-        involvedObject: {
-          apiVersion: 'apps/v1',
-          kind: 'ReplicaSet',
-          name: 'podinfo-b4d7c7fd5',
-          namespace: 'podinfo',
-          resourceVersion: '91392',
-          uid: '194dd699-0480-481a-a2b4-b85df8174655',
-        },
-        kind: 'Event',
-        lastTimestamp: new Date(),
-        message: 'Created pod: podinfo-b4d7c7fd5-86fjg',
-        metadata: {
-          creationTimestamp: new Date(),
-          name: 'podinfo-b4d7c7fd5.17f65e21bfde302c',
-          namespace: 'podinfo',
-          resourceVersion: '101920',
-          uid: 'e014093a-186c-4182-b6d5-937cc56a8d44',
-        },
-        reason: 'SuccessfulCreate',
-        reportingComponent: '',
-        reportingInstance: '',
-        source: {
-          component: 'replicaset-controller',
-        },
-        type: 'Normal',
-      },
-    },
-  ]
+  let eventData: CoreV1Event[] = []
 
   onMount(() => {
     // initialize highlight language
     hljs.registerLanguage('yaml', yaml)
+
+    const path: string = '/api/v1/resources/events?dense=true'
+    const overview = createEventSource(path)
+
+    overview.onmessage = (event) => {
+      eventData = JSON.parse(event.data) as CoreV1Event[]
+    }
 
     const handleKeydown = (e: KeyboardEvent) => {
       const tabList: Tab[] = ['metadata', 'events', 'yaml']
@@ -414,7 +181,7 @@
           </dl>
         </div>
       {:else if activeTab === 'events'}
-        <EventList events={tempData} {resource} />
+        <EventList events={eventData} {resource} />
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="text-gray-200 p-4">

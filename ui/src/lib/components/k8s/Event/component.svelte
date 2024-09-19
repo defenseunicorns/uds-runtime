@@ -2,13 +2,13 @@
   import type { CoreV1Event } from '@kubernetes/client-node'
   import { ChevronRight } from 'carbon-icons-svelte'
 
-  export let resource: CoreV1Event
+  export let event: CoreV1Event
 
   let toggled = false
 
   const renderSource = () => {
-    if (resource.source && Object.keys(resource.source).length !== 0) {
-      return `${resource.source.component} ${resource.source.host}`
+    if (event.source && Object.keys(event.source).length !== 0) {
+      return `${event.source.component} ${event.source.host}`
     }
 
     return '<unknown>'
@@ -21,7 +21,7 @@
       <ChevronRight class="expanded-only h-6 w-6 transition {toggled ? 'rotate-90 transform' : ''} duration-300" />
     </button>
     <div>
-      <span class={`${resource.type === 'Warning' ? 'text-red-600' : ''}`}>{resource.message}</span>
+      <span class={`${event.type === 'Warning' ? 'text-red-600' : ''}`}>{event.message}</span>
     </div>
   </div>
 
@@ -34,12 +34,12 @@
 
       <div class="flex flex-col sm:flex-row gap-9 border-b border-gray-700 pb-2">
         <dt class="font-bold text-sm flex-none w-[180px]">Count</dt>
-        <dd class="text-gray-400">{resource.count || '-'}</dd>
+        <dd class="text-gray-400">{event.count || '-'}</dd>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-9 border-b border-gray-700 pb-2">
         <dt class="font-bold text-sm flex-none w-[180px]">Sub-object</dt>
-        <dd class="text-gray-400">{resource.involvedObject?.fieldPath || '-'}</dd>
+        <dd class="text-gray-400">{event.involvedObject?.fieldPath || '-'}</dd>
       </div>
     </dl>
   </div>
