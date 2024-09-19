@@ -12,8 +12,6 @@
 
   import './page.postcss'
 
-  import { createEventSource } from '$lib/utils/helpers'
-
   import { getDetails } from './helpers'
 
   let loaded = false
@@ -107,7 +105,7 @@
     streamFilter = params.stream || ''
 
     const path: string = `/api/v1/monitor/pepr/${streamFilter}`
-    eventSource = createEventSource(path)
+    eventSource = new EventSource(path)
 
     // Set the loaded flag when the connection is established
     eventSource.onopen = () => {

@@ -17,8 +17,6 @@ import (
 
 	"strings"
 
-	"encoding/json"
-
 	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
@@ -60,6 +58,18 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	if authSVC {
+		r.Use(auth.RequireJWT)
+	}
+
+	// Middleware chain for api token authentication
+	apiAuthMiddleware := func(next http.Handler) http.Handler {
+		if apiAuth {
+			return udsMiddleware.ValidateSession(next)
+		}
+		return next
+	}
+
 	// Setup k8s resources
 	k8sResources, err := setupK8sResources()
 	if err != nil {
@@ -94,29 +104,24 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	// expose API_AUTH_DISABLED env var to frontend via endpoint
-	r.Get("/auth-status", serveAuthStatus)
 	r.Get("/health", checkHealth(k8sResources, disconnected))
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
 		if apiAuth {
 			// If api auth is enabled, require a valid token for all routes under /api/v1
-			r.Use(auth.RequireLocalToken(token))
-			// Endpoint to test if connected with auth
-			r.Head("/", auth.Connect)
+			// authenticate token
+			r.With(auth.TokenAuthenticator(token)).Head("/api-auth", func(_ http.ResponseWriter, _ *http.Request) {})
+		} else {
+			r.Head("/api-auth", func(_ http.ResponseWriter, _ *http.Request) {})
 		}
 
-		if authSVC {
-			r.Use(auth.RequireJWT)
-		}
-
-		r.Route("/monitor", func(r chi.Router) {
+		r.With(apiAuthMiddleware).Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
 			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(k8sResources.cache))
 		})
 
-		r.Route("/resources", func(r chi.Router) {
+		r.With(apiAuthMiddleware).Route("/resources", func(r chi.Router) {
 			r.Get("/nodes", withLatestCache(k8sResources, getNodes))
 			r.Get("/nodes/{uid}", withLatestCache(k8sResources, getNode))
 
@@ -229,7 +234,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		ip := "127.0.0.1"
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
-		url := fmt.Sprintf("http://%s:%s/auth?token=%s", ip, port, token)
+		url := fmt.Sprintf("http://%s:%s?token=%s", ip, port, token)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {
@@ -344,18 +349,6 @@ func checkForClusterAuth() bool {
 	}
 
 	return authSVC
-}
-
-func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
-	authStatus := map[string]string{
-		"API_AUTH_DISABLED": os.Getenv("API_AUTH_DISABLED"),
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(authStatus)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
 }
 
 // withLatestCache returns a wrapper lambda function, creating a closure that can dynamically access the latest cache

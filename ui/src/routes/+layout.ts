@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { get } from 'svelte/store'
-
-import { apiAuthEnabled } from '$features/api-auth/store'
+import { authenticated } from '$features/api-auth/store'
 import { createStore } from '$features/k8s/namespaces/store'
-import { updateApiAuthEnabled } from '$lib/utils/helpers'
+import { Auth } from '$lib/utils/api-auth'
 
 export const ssr = false
 
@@ -13,18 +11,15 @@ export const ssr = false
 export const load = async () => {
   const namespaces = createStore()
 
-  await updateApiAuthEnabled()
+  const url = new URL(window.location.href)
+  const token = url.searchParams.get('token') || ''
 
-  // check session storage for auth status
-  const isAuthEnabled = JSON.parse(sessionStorage.getItem('apiAuthEnabled')!)
-  const isAuthenticated = JSON.parse(sessionStorage.getItem('authenticated')!)
-
-  // use auth status to determine if this is a page reload vs initial load
-  const isReload: boolean = isAuthEnabled !== null && isAuthenticated !== null
-
-  // start namespaces store if API auth is disabled or if doing a a reload
-  if (!get(apiAuthEnabled) || isReload) {
+  // validate token
+  if (await Auth.connect(token)) {
     namespaces.start()
+    authenticated.set(true)
+  } else {
+    authenticated.set(false)
   }
   return {
     namespaces,

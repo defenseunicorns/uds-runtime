@@ -46,7 +46,7 @@ test.afterAll(async () => {
 })
 
 function extractToken(log: string) {
-  const match = log.match(/auth\?token=([^&\s]+)/)
+  const match = log.match(/\?token=([^&\s]+)/)
   if (match) {
     extractedToken = match[1]
     // ANSI escape codes are being appended to the token
