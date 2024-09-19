@@ -178,8 +178,8 @@ github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e/go.mod h1:RbqR21r5mrJu
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
-github.com/zarf-dev/zarf v0.39.0 h1:pWcYHITUtKDdRoNKZCSpOtQMj5g32XgQmq2x2kqmgWI=
-github.com/zarf-dev/zarf v0.39.0/go.mod h1:heZFZKR4G+ap+B5fLBVRitQ516rMH5zHWoO4Eh2KcEk=
+github.com/zarf-dev/zarf v0.40.1 h1:4PH5sTg0AI8RZptkRZc7kc73SQdjTvHktgKU0gk3ZJU=
+github.com/zarf-dev/zarf v0.40.1/go.mod h1:heZFZKR4G+ap+B5fLBVRitQ516rMH5zHWoO4Eh2KcEk=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
 golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
