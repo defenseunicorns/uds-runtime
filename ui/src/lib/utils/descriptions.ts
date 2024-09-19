@@ -29,7 +29,7 @@ export const resourceDescriptions: { [key: string]: string } = {
   NetworkPolicies:
     'A NetworkPolicy is an API object that allows you to control the traffic flow at the IP address or port level.',
   Nodes: 'A Node is a worker machine in Kubernetes, previously known as a minion.',
-  Packages: 'A UDS Package allows you to define a set of netpols, ingress, and SSO and configurations for a workload.',
+  Packages: 'A UDS Package allows you to define a set of network policies, ingresses, metrics targets and SSO configurations for a workload.',
   PersistentVolumeClaims: 'A PersistentVolumeClaim (PVC) is a request for storage by a user. It is similar to a Pod.',
   PersistentVolumes:
     'A PersistentVolume (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.',
