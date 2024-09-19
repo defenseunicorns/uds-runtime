@@ -1,9 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
-import { get } from 'svelte/store'
-
-import { apiAuthEnabled } from '$lib/features/api-auth/store'
-
 const BASE_URL = '/api/v1'
 
 const headers = new Headers({
@@ -11,33 +7,11 @@ const headers = new Headers({
 })
 
 export class APIAuth {
-  constructor() {
-    const token = sessionStorage.getItem('token') || ''
-    const isApiAuthEnabled = get(apiAuthEnabled)
-    if (!token && isApiAuthEnabled) {
-      this.#invalidateAuth()
-    }
-  }
-
-  // Updates the internal token used for authentication.
-  updateToken(token: string) {
-    sessionStorage.setItem('token', token)
-  }
-
-  #invalidateAuth() {
-    sessionStorage.removeItem('token')
-    sessionStorage.removeItem('apiAuthEnabled')
-    sessionStorage.removeItem('authenticated')
-
-    if (location.pathname !== '/auth') {
-      location.pathname = '/auth'
-    }
-  }
-
   // wrapper for handling the request/response cycle.
-  async request<T>(): Promise<T> {
-    const token = sessionStorage.getItem('token')
-    const url = BASE_URL + '/' + (token ? `?token=${token}` : '')
+  async request<T>(token: string): Promise<T> {
+    const hasToken = token != '' ? true : false
+    const url = hasToken ? `${BASE_URL}/api-auth?token=${token}` : `${BASE_URL}/api-auth`
+
     const payload: RequestInit = { method: 'HEAD', headers }
 
     try {
@@ -55,11 +29,7 @@ export class APIAuth {
 const http = new APIAuth()
 const Auth = {
   connect: async (token: string) => {
-    if (!token) {
-      return false
-    }
-    http.updateToken(token)
-    return await http.request()
+    return await http.request(token)
   },
 }
 

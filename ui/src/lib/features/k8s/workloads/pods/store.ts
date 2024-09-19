@@ -12,7 +12,6 @@ import {
   type K8StatusMapping,
   type ResourceStoreInterface,
 } from '$features/k8s/types'
-import { createEventSource } from '$lib/utils/helpers'
 
 import ContainerStatus from './containers/component.svelte'
 import PodMetrics from './metrics/component.svelte'
@@ -49,7 +48,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const metricsStore = writable<number>()
 
   const path: string = `/api/v1/resources/workloads/podmetrics`
-  const metricsEvents = createEventSource(path)
+  const metricsEvents = new EventSource(path)
 
   // Listen for new metrics
   metricsEvents.onmessage = (event) => {

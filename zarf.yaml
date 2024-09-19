@@ -6,6 +6,10 @@ metadata:
   version: 0.3.0
   # x-release-please-end
 
+variables:
+  - name: DOMAIN
+    default: "uds.dev"
+
 components:
   - name: uds-runtime
     required: true
