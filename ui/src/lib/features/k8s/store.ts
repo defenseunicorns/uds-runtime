@@ -4,7 +4,6 @@
 import { derived, writable, type Writable } from 'svelte/store'
 
 import type { KubernetesObject } from '@kubernetes/client-node'
-import { createEventSource } from '$lib/utils/helpers'
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns'
 
 import { SearchByType, type CommonRow, type ResourceStoreInterface, type ResourceWithTable } from './types'
@@ -185,7 +184,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
 
     this.#initialized = true
 
-    this.#eventSource = createEventSource(this.url)
+    this.#eventSource = new EventSource(this.url)
 
     this.#eventSource.onmessage = ({ data }) => {
       try {
