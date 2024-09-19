@@ -27,3 +27,6 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "750m"
+          env:
+            - name: AUTH_SVC_ENABLED
+              value: {{ .Values.sso.enabled | quote }}
