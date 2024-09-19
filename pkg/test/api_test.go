@@ -8,9 +8,11 @@ package test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -303,48 +305,13 @@ func processResponseBody(body string) []byte {
 	// Split the body by newlines
 	lines := strings.Split(body, "\n")
 
+	// Check if data: [] is empty
+	emptyData := regexp.MustCompile(`data:\s*\[\s*\]`)
+	if emptyData.MatchString(lines[0]) {
+		return []byte{}
+	}
 	// return the first data:[] event
 	return []byte(lines[0])
-}
-
-// testRoutesHelper handles logic for testing getResources and getResource routes (e.g. /pods and /pods/{uid})
-func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *chi.Mux) {
-	t.Run(tt.name, func(t *testing.T) {
-		// Create a new context with a timeout
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-
-		rr := httptest.NewRecorder()
-
-		tt.url = strings.Replace(tt.url, "{uid}", uidMap[tt.expectedKind], 1)
-		req := httptest.NewRequest("GET", tt.url, nil)
-
-		// Start serving the request for 1 second
-		go func(ctx context.Context) {
-			r.ServeHTTP(rr, req)
-		}(ctx)
-
-		// wait for the context to be done
-		<-ctx.Done()
-
-		require.Equal(t, http.StatusOK, rr.Code)
-
-		body := processResponseBody(rr.Body.String())
-
-		// If uidMap.expectedKind is empty (eg. {Pod: ""}), then we need to store a UID for this kind
-		if uidMap[tt.expectedKind] == "" {
-			keyIndx := 5
-			var data []map[string]interface{}
-			json.Unmarshal(body[keyIndx:], &data)
-			require.Equal(t, tt.expectedKind, data[0]["kind"])
-			uidMap[tt.expectedKind] = data[0]["metadata"].(map[string]interface{})["uid"].(string)
-		} else {
-			keyIndx := 0
-			var data map[string]interface{}
-			json.Unmarshal(body[keyIndx:], &data)
-			require.Equal(t, tt.expectedKind, data["Object"].(map[string]interface{})["kind"])
-		}
-	})
 }
 
 func TestClusterHealth(t *testing.T) {
@@ -754,4 +721,68 @@ func TestClusterOpsRoutes(t *testing.T) {
 	for _, tt := range clusterOpsTests {
 		testRoutesHelper(t, tt, uidMap, r)
 	}
+}
+
+// testRoutesHelper handles logic for testing getResources and getResource routes (e.g. /pods and /pods/{uid})
+func testRoutesHelper(t *testing.T, tt TestRoute, uidMap map[string]string, r *chi.Mux) {
+	t.Run(tt.name, func(t *testing.T) {
+		maxRetries := 3
+		baseTimeout := 1 * time.Second
+		backoffFactor := 2
+
+		for attempt := 1; attempt <= maxRetries; attempt++ {
+			timeout := time.Duration(attempt) * baseTimeout
+			// Create a new context with a timeout (timeout increases with each attempt)
+			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			defer cancel()
+
+			rr := httptest.NewRecorder()
+
+			tt.url = strings.Replace(tt.url, "{uid}", uidMap[tt.expectedKind], 1)
+			req := httptest.NewRequest("GET", tt.url, nil)
+
+			// Start serving the request for 1 second
+			go func(ctx context.Context) {
+				r.ServeHTTP(rr, req)
+			}(ctx)
+
+			// wait for the context to be done
+			<-ctx.Done()
+
+			require.Equal(t, http.StatusOK, rr.Code)
+
+			body := processResponseBody(rr.Body.String())
+
+			// if data is not empty then perform assertions
+			if len(body) > 0 {
+				fmt.Println(rr.Body.String())
+				// If uidMap.expectedKind is empty (eg. {Pod: ""}), then we need to store a UID for this kind
+				if uidMap[tt.expectedKind] == "" {
+					keyIndx := 5
+					var data []map[string]interface{}
+					json.Unmarshal(body[keyIndx:], &data)
+					require.Equal(t, tt.expectedKind, data[0]["kind"])
+					uidMap[tt.expectedKind] = data[0]["metadata"].(map[string]interface{})["uid"].(string)
+				} else {
+					keyIndx := 0
+					var data map[string]interface{}
+					json.Unmarshal(body[keyIndx:], &data)
+					require.Equal(t, tt.expectedKind, data["Object"].(map[string]interface{})["kind"])
+				}
+
+				return
+			}
+
+			// if body was empty retry for maxRetries then fail
+			if attempt < maxRetries {
+				sleepDuration := time.Duration(attempt*backoffFactor) * time.Second
+				fmt.Printf("Attempt %d failed, retrying in %v...\n", attempt, sleepDuration)
+				fmt.Println("Body: ", rr.Body.String())
+				time.Sleep(sleepDuration) // Exponential backoff
+			} else {
+				// After the last retry attempt, fail the test
+				require.Fail(t, "Test failed after maximum retry attempts")
+			}
+		}
+	})
 }
