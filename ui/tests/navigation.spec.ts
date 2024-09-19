@@ -20,6 +20,23 @@ test.describe('Navigation', async () => {
     await expect(nodeCountEl).toHaveText('1')
   })
 
+  test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
+    // get pod count from overview page
+    await page.getByRole('link', { name: 'Overview' }).click()
+    const overviewPodCount = await page.getByTestId(`pod-count`).textContent()
+
+    // navigate to pods page and get pod count
+    await page.goto('/workloads/pods')
+    await page.waitForSelector('.emphasize:has-text("zarf")') // wait for pods to render
+    let podCount = await page.getByTestId('table-header-results').textContent()
+    expect(podCount).not.toBeNull()
+
+    // remove parentheses
+    podCount = podCount!.replace(/\(|\)/g, '')
+
+    await expect(overviewPodCount).toEqual(podCount)
+  })
+
   test.describe('navigates to Applications', async () => {
     test('Packages page', async ({ page }) => {
       await page.getByRole('button', { name: 'Applications' }).click()
