@@ -8,8 +8,8 @@ import (
 	"net/http"
 )
 
-// RequireSecret ensures the request has a valid token.
-func RequireSecret(validToken string) func(http.Handler) http.Handler {
+// RequireLocalToken ensures the request has a valid token.
+func RequireLocalToken(validToken string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token := r.URL.Query().Get("token")
@@ -21,6 +21,19 @@ func RequireSecret(validToken string) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func RequireJWT(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
+
+		if token == "" {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // Connect is a head-only request to test the connection.
