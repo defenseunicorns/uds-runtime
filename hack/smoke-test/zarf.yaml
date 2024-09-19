@@ -4,6 +4,10 @@ metadata:
   description: smoke test of nightly release of uds-runtime
   version: smoke-test
 
+variables:
+  - name: DOMAIN
+    default: "uds.dev"
+
 components:
   - name: uds-runtime
     required: true
