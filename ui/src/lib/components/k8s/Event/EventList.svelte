@@ -3,7 +3,7 @@
   import { Event } from '$components'
 
   export let events: CoreV1Event[]
-  export let resource: CoreV1Event
+  export let resource: KubernetesObject
 
   let filteredEvents = events.filter((event: CoreV1Event) => event.involvedObject.name === resource.metadata?.name)
 </script>

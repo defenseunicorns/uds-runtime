@@ -7,7 +7,6 @@
   import type { CoreV1Event, KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
   import { EventList } from '$components'
-  import { createEventSource } from '$lib/utils/helpers'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
@@ -21,21 +20,18 @@
 
   type Tab = 'metadata' | 'yaml' | 'events'
 
-  interface TempDataType {
-    resource: CoreV1Event
-  }
-
-  let eventData: CoreV1Event[] = []
+  let events: CoreV1Event[] = []
+  let eventSource: EventSource | null = null
 
   onMount(() => {
     // initialize highlight language
     hljs.registerLanguage('yaml', yaml)
 
-    const path: string = '/api/v1/resources/events?dense=true'
-    const overview = createEventSource(path)
+    const path: string = '/api/v1/resources/events?fields=.count,.involvedObject,.message,.source,.type'
+    eventSource = new EventSource(path)
 
-    overview.onmessage = (event) => {
-      eventData = JSON.parse(event.data) as CoreV1Event[]
+    eventSource.onmessage = (event) => {
+      events = JSON.parse(event.data) as CoreV1Event[]
     }
 
     const handleKeydown = (e: KeyboardEvent) => {
@@ -77,9 +73,6 @@
   function formatDate(dateString: string) {
     return new Date(dateString).toLocaleString()
   }
-
-  // console.log('resource')
-  // console.log(resource)
 
   $: details = [
     { label: 'Created', value: formatDate(resource.metadata?.creationTimestamp as unknown as string) },
@@ -181,7 +174,7 @@
           </dl>
         </div>
       {:else if activeTab === 'events'}
-        <EventList events={eventData} {resource} />
+        <EventList {events} {resource} />
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="text-gray-200 p-4">

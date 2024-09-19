@@ -34,7 +34,7 @@
 
       <div class="flex flex-col sm:flex-row gap-9 border-b border-gray-700 pb-2">
         <dt class="font-bold text-sm flex-none w-[180px]">Count</dt>
-        <dd class="text-gray-400">{event.count || '-'}</dd>
+        <dd class="text-gray-400">{event?.count || '-'}</dd>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-9 border-b border-gray-700 pb-2">
