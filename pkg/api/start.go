@@ -47,10 +47,12 @@ type K8sResources struct {
 // @BasePath /api/v1
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, error) {
-	apiAuth, token, err := setAuth()
+	apiAuth, token, err := checkForLocalAuth()
 	if err != nil {
 		return nil, fmt.Errorf("failed to set auth: %w", err)
 	}
+
+	authSVC := checkForClusterAuth()
 
 	r := chi.NewRouter()
 
@@ -99,10 +101,15 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		// Require a valid token for API calls
 		if apiAuth {
 			// If api auth is enabled, require a valid token for all routes under /api/v1
-			r.Use(auth.RequireSecret(token))
+			r.Use(auth.RequireLocalToken(token))
 			// Endpoint to test if connected with auth
 			r.Head("/", auth.Connect)
 		}
+
+		if authSVC {
+			r.Use(auth.RequireJWT)
+		}
+
 		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
@@ -310,7 +317,7 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	return nil
 }
 
-func setAuth() (bool, string, error) {
+func checkForLocalAuth() (bool, string, error) {
 	apiAuth := true
 	if strings.ToLower(os.Getenv("API_AUTH_DISABLED")) == "true" {
 		apiAuth = false
@@ -328,6 +335,15 @@ func setAuth() (bool, string, error) {
 	}
 
 	return apiAuth, token, nil
+}
+
+func checkForClusterAuth() bool {
+	authSVC := false
+	if strings.ToLower(os.Getenv("AUTH_SVC_ENABLED")) == "true" {
+		authSVC = true
+	}
+
+	return authSVC
 }
 
 func serveAuthStatus(w http.ResponseWriter, _ *http.Request) {
