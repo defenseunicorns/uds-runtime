@@ -58,6 +58,10 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	if authSVC {
+		r.Use(auth.RequireJWT)
+	}
+
 	// Middleware chain for api token authentication
 	apiAuthMiddleware := func(next http.Handler) http.Handler {
 		if apiAuth {
@@ -109,10 +113,6 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 			r.With(auth.TokenAuthenticator(token)).Head("/api-auth", func(_ http.ResponseWriter, _ *http.Request) {})
 		} else {
 			r.Head("/api-auth", func(_ http.ResponseWriter, _ *http.Request) {})
-		}
-
-		if authSVC {
-			r.Use(auth.RequireJWT)
 		}
 
 		r.With(apiAuthMiddleware).Route("/monitor", func(r chi.Router) {
