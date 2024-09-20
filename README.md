@@ -39,6 +39,10 @@ uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime:<
 
 \*_See [all tags](https://github.com/defenseunicorns/uds-runtime/pkgs/container/packages%2Fuds%2Fuds-runtime)_
 
+#### Resource Requirements
+
+When running in cluster, the Runtime pod will need more or less resources based on the number of resources in the cluster it will be watching. The [current defaults](./chart/values.yaml) work for a cluster running mainly UDS Core (about 44 pods). For running in larger clusters, UDS Core + SWF + Leapfrog for example (150+ pods), the `resource.limits.memory` will need to be more like `2Gi`.
+
 ### Locally (Out of Cluster)
 
 1. clone this repo
