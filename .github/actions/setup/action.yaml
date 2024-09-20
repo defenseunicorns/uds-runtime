@@ -10,12 +10,12 @@ runs:
         go-version: 1.21.x
 
     - name: Setup Node.js
-      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+      uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
       with:
         node-version: 22.9.0
 
     - name: Set up Homebrew
-      uses: Homebrew/actions/setup-homebrew@c4fb4dcc8c58d57ae2e382a04d5444995c9c1917 # master
+      uses: Homebrew/actions/setup-homebrew@f3fe7e5489044c80b8d27d9ce5d20e5e56c7563b # master
 
     - name: Install UDS CLI
       shell: bash
