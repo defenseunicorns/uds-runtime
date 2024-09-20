@@ -231,7 +231,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <LinkCard path="/workloads/pods">
       <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Pods</dt>
-      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
+      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white" data-testid="pod-count">
         {clusterData.totalPods}
       </dd>
     </LinkCard>
