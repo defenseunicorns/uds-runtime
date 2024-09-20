@@ -39,15 +39,32 @@ func TestBindClusterOverviewHandler(t *testing.T) {
 	podMetrics.Update("pod2", metrics["pod2"])
 
 	// Create ResourceList for nodes
-	resourceList := resources.ResourceList{
-		Resources:       make(map[string]*unstructured.Unstructured),
-		SparseResources: make(map[string]*unstructured.Unstructured),
+	nodeResourceList := resources.ResourceList{
+		Resources: make(map[string]*unstructured.Unstructured),
+	}
+
+	pods := map[string]*unstructured.Unstructured{
+		"pod1": {
+			Object: map[string]interface{}{
+				"name": "pod1",
+			},
+		},
+		"pod2": {
+			Object: map[string]interface{}{
+				"name": "pod2",
+			},
+		},
+	}
+
+	podResourceList := resources.ResourceList{
+		Resources: pods,
 	}
 
 	// Create a test cache
 	cache := &resources.Cache{}
 	cache.PodMetrics = podMetrics
-	cache.Nodes = &resourceList
+	cache.Pods = &podResourceList
+	cache.Nodes = &nodeResourceList
 
 	// Create a request to pass to our handler
 	req, err := http.NewRequest("GET", "/cluster-overview", nil)
