@@ -21,14 +21,13 @@
   type Tab = 'metadata' | 'yaml' | 'events'
 
   let events: CoreV1Event[] = []
-  let eventSource: EventSource | null = null
 
   onMount(() => {
     // initialize highlight language
     hljs.registerLanguage('yaml', yaml)
 
     const path: string = '/api/v1/resources/events?fields=.count,.involvedObject,.message,.source,.type'
-    eventSource = new EventSource(path)
+    const eventSource = new EventSource(path)
 
     eventSource.onmessage = (event) => {
       events = JSON.parse(event.data) as CoreV1Event[]
@@ -67,6 +66,7 @@
     // Clean up the event listener when the component is destroyed
     return () => {
       window.removeEventListener('keydown', handleKeydown)
+      eventSource.close()
     }
   })
 
