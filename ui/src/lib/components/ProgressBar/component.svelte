@@ -32,7 +32,7 @@
 <div class="flex flex-col">
   <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-3">
     <div
-      class={`bg-${unit === 'GB' ? 'green' : 'blue'}-600 rounded-full ${sizeMapping[size]}`}
+      class={`dark:bg-${unit === 'GB' ? 'green' : 'blue'}-600 rounded-full ${sizeMapping[size]}`}
       style={`width: ${calculatedWidth}%`}
     ></div>
   </div>
