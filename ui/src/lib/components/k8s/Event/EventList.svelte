@@ -5,7 +5,10 @@
   export let events: CoreV1Event[]
   export let resource: KubernetesObject
 
-  let filteredEvents = events.filter((event: CoreV1Event) => event.involvedObject.name === resource.metadata?.name)
+  let filteredEvents: CoreV1Event[] = []
+
+  $: filteredEvents =
+    events?.filter((event: CoreV1Event) => event.involvedObject.name === resource.metadata?.name) || []
 </script>
 
 <div class="m-6">
