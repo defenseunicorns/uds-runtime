@@ -105,9 +105,6 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       const key = `${d.resource.metadata?.namespace}/${d.resource.metadata?.name}`
       const metric = metrics.get(key)
 
-      console.log('metric')
-      console.log(metric)
-
       if (metric?.containers) {
         d.table.usage.sort = metric.containers.reduce((sum, container) => sum + parseCPU(container.usage.cpu), 0)
         d.table.usage.props.containers = metric.containers
