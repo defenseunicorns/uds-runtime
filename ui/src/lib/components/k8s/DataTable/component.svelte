@@ -296,7 +296,7 @@
                         </button>
                       {:else if style?.includes('truncate')}
                         <Tooltip title={value}>
-                          <div class={`w-full ${style}`}>
+                          <div class={`w-full ${style}`} style:width="100%">
                             {value}
                           </div>
                         </Tooltip>
