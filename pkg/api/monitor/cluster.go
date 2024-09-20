@@ -43,7 +43,7 @@ func BindClusterOverviewHandler(cache *resources.Cache) func(w http.ResponseWrit
 			// Timestamp the data
 			clusterData.CurrentUsage.Timestamp = time.Now()
 			// Get all available pod metrics
-			clusterData.TotalPods = cache.PodMetrics.GetCount()
+			clusterData.TotalPods = len(cache.Pods.Resources)
 			// Get the current usage
 			clusterData.CurrentUsage.CPU, clusterData.CurrentUsage.Memory = cache.PodMetrics.GetUsage()
 			// Get the historical usage
