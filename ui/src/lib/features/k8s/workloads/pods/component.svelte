@@ -14,7 +14,7 @@
     ['containers', '1/12'],
     ['status', 'w-1/12'],
     ['restarts', 'w-1/12'],
-    ['metrics', 'w-1/12'],
+    ['usage', 'w-1/12'],
     ['node', 'w-1/12 truncate'],
     ['age', 'w-1/12'],
   ]
