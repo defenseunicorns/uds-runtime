@@ -27,7 +27,7 @@ test.describe('Navigation', async () => {
 
     // navigate to pods page and get pod count
     await page.goto('/workloads/pods')
-    await page.waitForSelector('.emphasize:has-text("zarf")') // wait for pods to render
+    await page.waitForSelector('.emphasize:has-text("podinfo")') // wait for pods to render
     let podCount = await page.getByTestId('table-header-results').textContent()
     expect(podCount).not.toBeNull()
 
