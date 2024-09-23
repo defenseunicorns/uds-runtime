@@ -34,6 +34,6 @@ export UDS_ADMIN_TLS_KEY=$TLS_KEY
 export UDS_TENANT_TLS_CERT=$TLS_CERT
 export UDS_TENANT_TLS_KEY=$TLS_KEY
 
-# k3d-core-demo >= 0.27.3 deploys runtime on admin gateway. deploying nightly unstable afterward overwrites and redeploys runtime on tenant gateway without authsvc
-uds deploy ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-demo:0.27.3 --packages=init,core --set DOMAIN=burning.boats --confirm
+# k3d-core-demo:latest >= 0.27.3 deploys runtime on admin gateway. deploying nightly unstable afterward overwrites and redeploys runtime on tenant gateway without authsvc
+uds deploy ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-demo:latest --packages=init,core --set DOMAIN=burning.boats --confirm
 uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable --confirm
