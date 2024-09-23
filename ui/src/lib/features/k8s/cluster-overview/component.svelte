@@ -4,13 +4,16 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { Card, LinkCard, ProgressBar } from '$components'
+  import { Card, ProgressBar } from '$components'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
+  import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
 
   import { mebibytesToGigabytes, millicoresToCores } from '../helpers'
 
   import './styles.postcss'
+
+  import IconWidget from '$components/StatWidget/IconWidget.svelte'
 
   type ClusterData = {
     totalPods: number
@@ -229,19 +232,19 @@
 <div class="p-4 dark:text-white pt-0">
   <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <LinkCard path="/workloads/pods">
-      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Pods</dt>
-      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white" data-testid="pod-count">
-        {clusterData.totalPods}
-      </dd>
-    </LinkCard>
+    <IconWidget
+      title={clusterData.totalPods.toString()}
+      subtitle="Pods running in cluster"
+      icon={Analytics}
+      link="/workloads/pods"
+    />
 
-    <LinkCard path="/nodes">
-      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Running Nodes</dt>
-      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white" data-testid="node-count">
-        {clusterData.totalNodes}
-      </dd>
-    </LinkCard>
+    <IconWidget
+      title={clusterData.totalNodes.toString()}
+      subtitle="Nodes running in cluster"
+      icon={DataVis_1}
+      link="/nodes"
+    />
 
     <Card>
       <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">CPU Usage</dt>
