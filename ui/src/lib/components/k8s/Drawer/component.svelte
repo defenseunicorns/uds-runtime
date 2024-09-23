@@ -4,8 +4,9 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import type { KubernetesObject } from '@kubernetes/client-node'
+  import type { CoreV1Event, KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
+  import { EventList } from '$components'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
@@ -19,12 +20,21 @@
 
   type Tab = 'metadata' | 'yaml' | 'events'
 
+  let events: CoreV1Event[] = []
+
   onMount(() => {
     // initialize highlight language
     hljs.registerLanguage('yaml', yaml)
 
+    const path: string = '/api/v1/resources/events?fields=.count,.involvedObject,.message,.source,.type'
+    const eventSource = new EventSource(path)
+
+    eventSource.onmessage = (event) => {
+      events = JSON.parse(event.data) as CoreV1Event[]
+    }
+
     const handleKeydown = (e: KeyboardEvent) => {
-      const tabList: Tab[] = ['metadata', 'yaml', 'events']
+      const tabList: Tab[] = ['metadata', 'events', 'yaml']
       let targetTab: string | undefined
 
       switch (e.key) {
@@ -56,6 +66,7 @@
     // Clean up the event listener when the component is destroyed
     return () => {
       window.removeEventListener('keydown', handleKeydown)
+      eventSource.close()
     }
   })
 
@@ -78,7 +89,7 @@
 
   let activeTab: Tab = 'metadata'
 
-  function setActiveTab(evt: Event) {
+  function setActiveTab(evt: MouseEvent) {
     const target = evt.target as HTMLButtonElement
     activeTab = target.id as Tab
   }
@@ -110,6 +121,9 @@
         <ul class="flex w-full" id="drawer-tabs">
           <li class="flex-1">
             <button id="metadata" class:active={activeTab === 'metadata'} on:click={setActiveTab}>Metadata</button>
+          </li>
+          <li class="flex-1">
+            <button id="events" class:active={activeTab === 'events'} on:click={setActiveTab}>Events</button>
           </li>
           <li class="flex-1">
             <button id="yaml" class:active={activeTab === 'yaml'} on:click={setActiveTab}>YAML</button>
@@ -159,6 +173,8 @@
             {/if}
           </dl>
         </div>
+      {:else if activeTab === 'events'}
+        <EventList {events} {resource} />
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
         <div class="text-gray-200 p-4">

@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  ephemerial-cluster:
+  ephemeral-cluster:
     runs-on: ubuntu-latest
     env:
       SHA: ${{ github.sha }}

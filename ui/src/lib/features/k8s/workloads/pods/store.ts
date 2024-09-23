@@ -29,7 +29,7 @@ interface Row extends CommonRow {
   controlled_by: string
   node: string
   status: { component: typeof Status; props: { type: keyof K8StatusMapping; status: string } }
-  metrics: {
+  usage: {
     component: typeof PodMetrics
     sort: number
     props: {
@@ -81,7 +81,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
         (r.status?.containerStatuses?.length ?? 0) +
         (r.status?.ephemeralContainerStatuses?.length ?? 0),
     },
-    metrics: {
+    usage: {
       component: PodMetrics,
       sort: 0,
       props: {
@@ -106,8 +106,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       const metric = metrics.get(key)
 
       if (metric?.containers) {
-        d.table.metrics.sort = metric.containers.reduce((sum, container) => sum + parseCPU(container.usage.cpu), 0)
-        d.table.metrics.props.containers = metric.containers
+        d.table.usage.sort = metric.containers.reduce((sum, container) => sum + parseCPU(container.usage.cpu), 0)
+        d.table.usage.props.containers = metric.containers
       }
 
       return d
