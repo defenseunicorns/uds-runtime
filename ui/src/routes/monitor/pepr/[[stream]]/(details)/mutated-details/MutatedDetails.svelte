@@ -16,7 +16,7 @@
       {/if}
       <h3 class="font-bold">{key}:</h3>
       {#each ops as op}
-        <p class="text-pretty tooltip-w">
+        <p class="text-balance tooltip-w">
           {op.path}
           {#if op.value}
             <span class="text-blue-400">={JSON.stringify(op.value)}</span>
