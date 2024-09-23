@@ -37,7 +37,7 @@ suite('PodTable Component', () => {
       ['containers', '1/12'],
       ['status', 'w-1/12'],
       ['restarts', 'w-1/12'],
-      ['metrics', 'w-1/12'],
+      ['usage', 'w-1/12'],
       ['node', 'w-1/12 truncate'],
       ['age', 'w-1/12'],
     ],
@@ -165,7 +165,7 @@ suite('PodTable Component', () => {
       },
       sort: 2,
     },
-    metrics: {
+    usage: {
       component: SvelteComponent,
       sort: 0,
       // metrics added by store.filterCallback (not currently called in this test)
@@ -188,7 +188,7 @@ suite('PodTable Component', () => {
   expectEqualIgnoringFields(start()[0].table, expectedTable as unknown, [
     'creationTimestamp',
     'containers.component',
-    'metrics.component',
+    'usage.component',
     'status.component',
   ])
   vi.unstubAllGlobals()

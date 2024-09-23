@@ -11,3 +11,12 @@ package:
   gateway: admin
   host: runtime
   domain: "###ZARF_VAR_DOMAIN###"
+
+# Default requests and limits when running only uds-core (increase for production)
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "750m"
