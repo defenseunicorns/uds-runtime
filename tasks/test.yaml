@@ -88,10 +88,10 @@ tasks:
   - name: smoke
     description: "runtime nightly smoke tests"
     actions:
-      # - task: build:smoke-img-pkg
-      # - task: setup:slim-cluster
-      # - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst --confirm
-      #   dir: ${DIR}
+      - task: build:smoke-img-pkg
+      - task: setup:slim-cluster
+      - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst --confirm
+        dir: ${DIR}
       - description: Validate Runtime Pod
         wait:
           cluster:
