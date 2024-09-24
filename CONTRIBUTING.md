@@ -54,39 +54,7 @@ Most of the actions needed for running and testing UDS Runtime are contained in 
 > !NOTE
 > Tasks are used in CI. See the [pull request workflow](.github/workflows/pr-tests.yaml) for an example.
 
-A list of runnable tasks from `uds run --list-all`
-
-| Name                        | Description                                                                                                    |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| dev-server                  | run the api server in dev mode (requires air https://github.com/air-verse/air?tab=readme-ov-file#installation) |
-| dev-ui                      | run the ui in dev mode                                                                                         |
-| compile                     | compile the api server and ui outputting to build/                                                             |
-| test:e2e                    | run end-to-end tests (assumes api server is running on port 8080)                                              |
-| test:go                     | run api server unit tests                                                                                      |
-| test:ui-unit                | run frontend unit tests                                                                                        |
-| test:unit                   | run all unit tests (backend and frontend)                                                                      |
-| test:deploy-load            | deploy some Zarf packages to test against                                                                      |
-| test:deploy-min-core        | install min resources for UDS Core                                                                             |
-| lint:all                    | Run all linters                                                                                                |
-| lint:golangci               | Run golang linters                                                                                             |
-| lint:yaml                   | Run yaml linters                                                                                               |
-| lint:ui                     | Run ui lint and type check                                                                                     |
-| lint:format-ui              | Format ui code                                                                                                 |
-| setup:build-api             | build the go api server for the local platform                                                                 |
-| setup:build-api-linux-amd64 | build the go api server for linux amd64 (used for multi-arch container)                                        |
-| setup:build-api-linux-arm64 | build the go api server for linux arm64 (used for multi-arch container)                                        |
-| setup:build-ui              | build ui                                                                                                       |
-| setup:slim-cluster          | Create a k3d cluster and deploy core slim dev with metrics server                                              |
-| setup:simple-cluster        | Create a k3d cluster, no core                                                                                  |
-| setup:golangci              | Install golangci-lint to GOPATH using install.sh                                                               |
-| setup:clone-core            | Clone uds-core for custom slim dev setup                                                                       |
-| setup:metrics-server        | Create and deploy metrics server from cloned core                                                              |
-| build:publish-uds-runtime   | publish the uds runtime including its image and Zarf pkg (multi-arch)                                          |
-| build:push-container        | build container and push to GHCR (multi-arch)                                                                  |
-| build:build-zarf-packages   | build the uds runtime zarf packages (multi-arch)                                                               |
-| build:publish-zarf-packages | publish uds runtime zarf packages (multi-arch)                                                                 |
-| swagger:generate            | Generate Swagger docs                                                                                          |
-| swagger:test                | Ensure no changes to Swagger docs                                                                              |
+To view a complete list of all runnable tasks, run `uds run --list-all`.
 
 API authentication is enabled by default. To disable it, you can set the `API_AUTH_DISABLED` environment variable to true when running the backend. When running the backend and frontend locally with API auth enabled, when you start the backend, it will print a URL to the console with the api token query parameter as well as launch the app in your browser. If you are also running the frontend locally (via `npm run dev`), you will want to grab the token and update the url in your browser to use port `:5173` which is used by default. Example: `http://localhost:5173/auth?token=your-token-here`. More information on API authentication can be found in the [API Auth docs](./docs/api-auth.md).
 

@@ -31,5 +31,5 @@ tasks:
   - name: compile
     description: "compile the api server and ui outputting to build/"
     actions:
-      - task: setup:build-ui
-      - task: setup:build-api
+      - task: build:ui
+      - task: build:api
