@@ -2,7 +2,7 @@ import { type CarbonIcon } from 'carbon-icons-svelte'
 
 export type BarSizeType = 'sm' | 'md' | 'lg' | 'xl'
 export type UnitType = 'Cores' | 'GB'
-export type tailwindSize = 16 | 20 | 24 | 28 | 32 | 36 | 40 | 44 | 48
+export type TailwindSizeType = 16 | 20 | 24 | 28 | 32 | 36 | 40 | 44 | 48
 
 export type VariantType = {
   title: string

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { tailwindSize } from '$components/StatWidget/types'
+  import type { TailwindSizeType } from '$components/StatWidget/types'
 
-  export let size: tailwindSize = 32
+  export let size: TailwindSizeType = 32
 </script>
 
 <div
