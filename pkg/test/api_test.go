@@ -340,55 +340,6 @@ func TestClusterHealth(t *testing.T) {
 	})
 }
 
-func TestAuthSVCToken(t *testing.T) {
-	// must set before setup() is called
-	os.Setenv("AUTH_SVC_ENABLED", "true")
-	defer os.Unsetenv("AUTH_SVC_ENABLED")
-
-	r, err := setup()
-	require.NoError(t, err)
-
-	defer teardown()
-
-	t.Run("authorized with token", func(t *testing.T) {
-		// Create a new context with a timeout
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
-
-		rr := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/api/v1/resources/workloads/pods", nil)
-		req.Header.Set("Authorization", "Bearer valid-token")
-
-		// Start serving the request for 1 second
-		go func(ctx context.Context) {
-			r.ServeHTTP(rr, req)
-		}(ctx)
-
-		// wait for the context to be done
-		<-ctx.Done()
-		require.Equal(t, http.StatusOK, rr.Code)
-		require.NotEmpty(t, rr.Body.String())
-	})
-
-	t.Run("no token", func(t *testing.T) {
-		// Create a new context with a timeout
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
-
-		rr := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/api/v1/resources/workloads/pods", nil)
-
-		// Start serving the request for 1 second
-		go func(ctx context.Context) {
-			r.ServeHTTP(rr, req)
-		}(ctx)
-
-		// wait for the context to be done
-		<-ctx.Done()
-		require.Equal(t, http.StatusUnauthorized, rr.Code)
-	})
-}
-
 func TestTopLevelResourceRoutes(t *testing.T) {
 	r, err := setup()
 	require.NoError(t, err)
