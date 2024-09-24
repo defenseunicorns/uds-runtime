@@ -13,8 +13,6 @@
 
   import './styles.postcss'
 
-  import IconWidget from '$components/StatWidget/IconWidget.svelte'
-
   type ClusterData = {
     totalPods: number
     totalNodes: number
@@ -232,18 +230,24 @@
 <div class="p-4 dark:text-white pt-0">
   <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <IconWidget
-      title={clusterData.totalPods.toString()}
-      subtitle="Pods running in cluster"
-      icon={Analytics}
-      link="/workloads/pods"
+    <StatWidget
+      variant="with_right_icon"
+      props={{
+        title: clusterData.totalPods.toString(),
+        subtitle: 'Pods running in cluster',
+        icon: Analytics,
+        link: '/workloads/pods',
+      }}
     />
 
-    <IconWidget
-      title={clusterData.totalNodes.toString()}
-      subtitle="Nodes running in cluster"
-      icon={DataVis_1}
-      link="/nodes"
+    <StatWidget
+      variant="with_right_icon"
+      props={{
+        title: clusterData.totalNodes.toString(),
+        subtitle: 'Nodes running in cluster',
+        icon: DataVis_1,
+        link: '/nodes',
+      }}
     />
 
     <StatWidget
