@@ -14,6 +14,7 @@
   import './styles.postcss'
 
   import IconWidget from '$components/StatWidget/IconWidget.svelte'
+  import ProgressBarWidget from '$components/StatWidget/ProgressBarWidget.svelte'
 
   type ClusterData = {
     totalPods: number
@@ -246,23 +247,21 @@
       link="/nodes"
     />
 
-    <Card>
-      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">CPU Usage</dt>
-      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-        {cpuPercentage.toFixed(2)}%
-      </dd>
+    <ProgressBarWidget
+      capacity={cpuCapacity}
+      progress={cpuUsed}
+      title="CPU Usage"
+      unit="Cores"
+      value={cpuPercentage.toFixed(2)}
+    />
 
-      <ProgressBar size="md" progress={cpuUsed} capacity={cpuCapacity} unit="Cores" />
-    </Card>
-
-    <Card>
-      <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Memory Usage</dt>
-      <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
-        {memoryPercentage.toFixed(2)}%
-      </dd>
-
-      <ProgressBar size="md" progress={gbUsed} capacity={gbCapacity} unit="GB" />
-    </Card>
+    <ProgressBarWidget
+      capacity={gbCapacity}
+      progress={gbUsed}
+      title="Memory Usage"
+      unit="GB"
+      value={memoryPercentage.toFixed(2)}
+    />
   </div>
   <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
