@@ -29,4 +29,5 @@ spec:
       groups:
         anyOf:
           - /UDS Core/Admin
+          - /UDS Core/Auditor
   {{- end }}
