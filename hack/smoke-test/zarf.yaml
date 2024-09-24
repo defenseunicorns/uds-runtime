@@ -12,7 +12,7 @@ components:
   - name: uds-runtime
     required: true
     images:
-      - uds-runtime:smoke-test
+      - uds-runtime:smoke-test # local copy of uds-runtime
     charts:
       - name: uds-runtime
         localPath: ../../chart
