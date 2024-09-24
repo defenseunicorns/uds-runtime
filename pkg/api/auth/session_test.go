@@ -79,6 +79,11 @@ func TestRequireJWT(t *testing.T) {
 			expectedStatus: http.StatusForbidden,
 		},
 		{
+			name:           "Valid token with empty group",
+			token:          createToken([]string{}),
+			expectedStatus: http.StatusForbidden,
+		},
+		{
 			name:           "Invalid token",
 			token:          "invalid.token.string",
 			expectedStatus: http.StatusUnauthorized,
