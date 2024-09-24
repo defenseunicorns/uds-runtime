@@ -12,7 +12,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
       with:
-        node-version: 21.1.0
+        node-version: 22.9.0
 
     - name: Set up Homebrew
       uses: Homebrew/actions/setup-homebrew@00f483c95eacf401cf9f4aa3746964071a747334 # master

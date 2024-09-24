@@ -1,6 +1,3 @@
-includes:
-  - setup: setup.yaml
-
 variables:
   - name: REF
     description: "reference for the runtime image and zarf package"
@@ -12,6 +9,47 @@ variables:
     default: .
 
 tasks:
+  - name: all
+    description: build all the CLI binaries and gen checksums
+    actions:
+      - task: ui
+      - task: api-linux-amd64
+      - task: api-linux-arm64
+      - task: api-darwin-amd64
+      - task: api-darwin-arm64
+      - cmd: sha256sum build/* > build/checksums.txt
+
+  - name: api-linux-amd64
+    description: "build the go api server for linux amd64 (used for multi-arch container)"
+    actions:
+      - cmd: CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o build/uds-runtime-linux-amd64 .
+
+  - name: api-linux-arm64
+    description: "build the go api server for linux arm64 (used for multi-arch container)"
+    actions:
+      - cmd: CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -o build/uds-runtime-linux-arm64 .
+
+  - name: api-darwin-amd64
+    description: "build the go api server for darwin amd64"
+    actions:
+      - cmd: CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -o build/uds-runtime-darwin-amd64 .
+
+  - name: api-darwin-arm64
+    description: "build the go api server for darwin arm64"
+    actions:
+      - cmd: CGO_ENABLED=0 GOARCH=arm64 GOOS=darwin go build -o build/uds-runtime-darwin-arm64 .
+
+  - name: api
+    description: "build the go api server for the local platform"
+    actions:
+      - cmd: CGO_ENABLED=0 go build -o ./build/uds-runtime .
+
+  - name: ui
+    description: "build ui"
+    actions:
+      - cmd: npm ci && npm run build
+        dir: ui
+
   - name: publish-uds-runtime
     description: "publish the uds runtime including its image and Zarf pkg (multi-arch)"
     actions:
@@ -24,9 +62,9 @@ tasks:
     actions:
       - cmd: rm -fr build ui/build
       - cmd: go mod tidy
-      - task: setup:build-ui
-      - task: setup:build-api-linux-amd64
-      - task: setup:build-api-linux-arm64
+      - task: ui
+      - task: api-linux-amd64
+      - task: api-linux-arm64
       - cmd: |
           docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/defenseunicorns/uds-runtime:${REF} --push .
 
@@ -44,4 +82,13 @@ tasks:
       - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-amd64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds
         dir: ${DIR}
       - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-arm64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds
+        dir: ${DIR}
+
+  - name: smoke-img-pkg
+    description: "build docker image and zarf package for nightly smoke test"
+    actions:
+      - task: ui
+      - task: api-linux-amd64
+      - cmd: docker build --build-arg TARGETARCH=amd64 -t uds-runtime:smoke-test -f ./Dockerfile .
+      - cmd: uds zarf package create -o build --confirm
         dir: ${DIR}
