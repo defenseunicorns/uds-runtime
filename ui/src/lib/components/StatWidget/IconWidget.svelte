@@ -17,7 +17,12 @@
       </div>
 
       <div class="flex flex-col items-start">
-        <dt class="text-3xl font-semibold text-blue-500 dark:text-white truncate">{title}</dt>
+        <dt
+          class="text-3xl font-semibold text-blue-500 dark:text-white truncate"
+          data-testid={`resource-count-${subtitle.split(' ')[0].toLowerCase()}`}
+        >
+          {title}
+        </dt>
         <dd class="mt-1 text-sm text-gray-900 dark:text-gray-400">
           {subtitle}
         </dd>

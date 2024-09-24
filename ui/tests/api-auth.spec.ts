@@ -67,7 +67,7 @@ test.describe.serial('Authentication Tests', () => {
     await page.goto(`/auth?token=${extractedToken}`)
     await page.waitForSelector('role=link[name="Overview"]', { state: 'visible', timeout: 10000 })
     await page.getByRole('link', { name: 'Overview' }).click()
-    const nodeCountEl = page.getByTestId(`node-count`)
+    const nodeCountEl = page.getByTestId('resource-count-nodes')
     await expect(nodeCountEl).toHaveText('1')
   })
 
