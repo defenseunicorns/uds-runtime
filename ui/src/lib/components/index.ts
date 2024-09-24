@@ -4,6 +4,7 @@
 export { default as AnsiDisplay } from './AnsiDisplay/component.svelte'
 export { default as Link } from './Link/component.svelte'
 export { default as ProgressBar } from './ProgressBar/component.svelte'
+export { default as StatWidget } from './StatWidget/component.svelte'
 export { default as Tooltip } from './Tooltip/component.svelte'
 export { default as Card } from './k8s/Card/component.svelte'
 export { default as DataTable } from './k8s/DataTable/component.svelte'

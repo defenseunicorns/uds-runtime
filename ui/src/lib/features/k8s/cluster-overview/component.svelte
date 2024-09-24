@@ -4,7 +4,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { Card, ProgressBar } from '$components'
+  import { StatWidget } from '$components'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
   import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
@@ -247,20 +247,26 @@
       link="/nodes"
     />
 
-    <ProgressBarWidget
-      capacity={cpuCapacity}
-      progress={cpuUsed}
-      title="CPU Usage"
-      unit="Cores"
-      value={cpuPercentage.toFixed(2)}
+    <StatWidget
+      variant="progress_bar"
+      props={{
+        capacity: cpuCapacity,
+        progress: cpuUsed,
+        title: 'CPU Usage',
+        unit: 'Cores',
+        value: cpuPercentage.toFixed(2),
+      }}
     />
 
-    <ProgressBarWidget
-      capacity={gbCapacity}
-      progress={gbUsed}
-      title="Memory Usage"
-      unit="GB"
-      value={memoryPercentage.toFixed(2)}
+    <StatWidget
+      variant="progress_bar"
+      props={{
+        capacity: gbCapacity,
+        progress: gbUsed,
+        title: 'Memory Usage',
+        unit: 'GB',
+        value: memoryPercentage.toFixed(2),
+      }}
     />
   </div>
   <div class="mt-8">
