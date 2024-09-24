@@ -109,6 +109,7 @@ var allowedGroups = []string{
 	"/UDS Core/Auditor",
 }
 
+// RequireJWT is a middleware that checks if the request has a valid JWT token with the required groups.
 func RequireJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
