@@ -1,11 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { Card } from '$components'
-  import { Analytics } from 'carbon-icons-svelte'
+  import { type CarbonIcon } from 'carbon-icons-svelte'
 
   export let title: string
   export let subtitle: string
-  export let icon: typeof Analytics
+  export let icon: typeof CarbonIcon
   export let link: string = ''
 </script>
 

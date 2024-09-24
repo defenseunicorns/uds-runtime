@@ -14,7 +14,6 @@
   import './styles.postcss'
 
   import IconWidget from '$components/StatWidget/IconWidget.svelte'
-  import ProgressBarWidget from '$components/StatWidget/ProgressBarWidget.svelte'
 
   type ClusterData = {
     totalPods: number

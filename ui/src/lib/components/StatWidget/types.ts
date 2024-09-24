@@ -1,4 +1,4 @@
-import { Analytics } from 'carbon-icons-svelte'
+import { type CarbonIcon } from 'carbon-icons-svelte'
 
 export type BarSizeType = 'sm' | 'md' | 'lg' | 'xl'
 export type UnitType = 'Cores' | 'GB'
@@ -10,7 +10,7 @@ export type VariantType = {
 
 export type WithRightIconType = {
   subtitle: string
-  icon: typeof Analytics
+  icon: typeof CarbonIcon
   link: string
 }
 
