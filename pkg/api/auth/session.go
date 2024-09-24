@@ -7,7 +7,10 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"net/http"
+	"strings"
 	"sync"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type InMemoryStorage struct {
@@ -101,15 +104,46 @@ func Connect(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+var allowedGroups = []string{
+	"/UDS Core/Admin",
+	"/UDS Core/Auditor",
+}
+
 func RequireJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("Authorization")
+		authHeader := r.Header.Get("Authorization")
 
-		if token == "" {
-			w.WriteHeader(http.StatusUnauthorized)
+		if authHeader == "" {
+			http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
 			return
 		}
 
-		next.ServeHTTP(w, r)
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+		// parse the JWT token without validation (authservice will validate it, we only need the groups here)
+		token, _, err := jwt.NewParser(jwt.WithoutClaimsValidation()).ParseUnverified(tokenString, jwt.Claims(jwt.MapClaims{}))
+		if err != nil {
+			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// Check if the token contains a "groups" claim
+		if groups, ok := token.Claims.(jwt.MapClaims)["groups"].([]interface{}); ok {
+			// Check if any of the token's groups match the allowed groups
+			for _, group := range groups {
+				for _, allowedGroup := range allowedGroups {
+					if group == allowedGroup {
+						// Group is allowed, continue to the next handler
+						next.ServeHTTP(w, r)
+						return
+					}
+				}
+			}
+			// If we reach here, no matching group was found
+			http.Error(w, "Insufficient permissions", http.StatusForbidden)
+			return
+		}
+
+		http.Error(w, "Invalid token claims", http.StatusUnauthorized)
 	})
 }
