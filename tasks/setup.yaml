@@ -8,11 +8,11 @@ tasks:
       - task: commmon:k3d-full-cluster
 
   - name: slim-cluster
-    description: "Create a k3d cluster and deploy core slim dev with metrics server"
+    description: "Create a k3d cluster and deploy core slim dev with authsvc"
     actions:
       - task: common:k3d-test-cluster
       - task: clone-core
-      - task: metrics-server
+      - task: authsvc
 
   - name: simple-cluster
     description: "Create a uds-k3d cluster, no core"
@@ -42,3 +42,9 @@ tasks:
     actions:
       - cmd: uds zarf package create .github/uds-core/src/metrics-server --confirm --flavor upstream -o build/
       - cmd: uds zarf package deploy build/zarf-package-uds-core-metrics-server*.tar.zst --components=metrics-server --confirm
+
+  - name: authsvc
+    description: "Create and deploy authsvc from cloned core"
+    actions:
+      - cmd: uds zarf package create .github/uds-core/src/authservice --confirm --flavor upstream -o build/
+      - cmd: uds zarf package deploy build/zarf-package-uds-core-authservice*.tar.zst --confirm
