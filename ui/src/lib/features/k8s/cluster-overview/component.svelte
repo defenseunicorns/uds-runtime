@@ -229,7 +229,7 @@
 
 <div class="p-4 dark:text-white pt-0">
   <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div class="grid grid-cols-1 min-[1024px]:grid-cols-2 min-[1510px]:grid-cols-4 gap-4">
     <StatWidget
       variant="with_right_icon"
       props={{
