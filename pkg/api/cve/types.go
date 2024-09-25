@@ -4,8 +4,8 @@
 package cve
 
 type Reports struct {
-	ClusterOverview []ClusterOverview `json:"cluster-overview"`
-	ByImage         []ByImage         `json:"by-image"`
+	ClusterOverview []ClusterOverview `json:"cluster_overview"`
+	ByImage         []ByImage         `json:"by_image"`
 }
 
 type ClusterOverview struct {
@@ -13,22 +13,22 @@ type ClusterOverview struct {
 	PackageName       string `json:"package_name"`
 	Tag               string `json:"package_version"`
 	Repository        string `json:"repository"`
-	UpdatedAt         string `json:"build-date"`
+	UpdatedAt         string `json:"build_date"`
 	Critical          int    `json:"critical"`
 	High              int    `json:"high"`
-	Total             int    `json:"cve-count"`
-	ImagesWithPackage int    `json:"images-with-package"`
+	Total             int    `json:"cve_count"`
+	ImagesWithPackage int    `json:"images_with_package"`
 }
 
 type ByImage struct {
-	ImageID       string `json:"image-id"`
+	ImageID       string `json:"image_id"`
 	Component     string `json:"component"`
-	AppName       string `json:"app-name"`
-	AppVersion    string `json:"app-version"`
+	AppName       string `json:"app_name"`
+	AppVersion    string `json:"app_version"`
 	Author        string `json:"author"`
 	Vulnerability string `json:"vulnerability"`
 	Severity      string `json:"severity"`
 	Reporter      string `json:"reporter"`
-	VexStatus     string `json:"vex-status"`
+	VexStatus     string `json:"vex_status"`
 	Justified     string `json:"justified"`
 }
