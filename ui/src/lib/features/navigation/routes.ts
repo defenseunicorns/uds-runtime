@@ -76,6 +76,12 @@ const baseRoutes: BaseRoute[] = [
     name: 'Nodes',
     icon: BareMetalServer,
   },
+  {
+    name: 'Security',
+    icon: AudioConsole,
+    class: 'icon-rotate-90',
+    children: ['CVE Reports'],
+  },
 ]
 
 // Convert the path to a URL-friendly format

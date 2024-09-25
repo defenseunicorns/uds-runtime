@@ -225,6 +225,12 @@ test.describe('Navigation', async () => {
     await expect(page.getByTestId('k3d-runtime-server-0-testid-1')).toHaveText('k3d-runtime-server-0')
   })
 
+  test('navigates to Security page', async ({ page }) => {
+    await page.getByRole('link', { name: 'Security' }).click()
+
+    await expect(page.getByTestId('stat-widget')).toHaveText('0 Critical')
+  })
+
   test('navigates to Preferences page', async ({ page }) => {
     await page.getByTestId('global-sidenav-preferences').click()
 
