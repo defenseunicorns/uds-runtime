@@ -31,11 +31,10 @@ tasks:
       - cmd: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.1
 
   - name: clone-core
-    description: "Clone uds-core for custom slim dev setup"
+    description: "Clone uds-core into tmp dir for custom slim dev setup"
     actions:
       - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
         description: clone UDS Core
-        dir: tmp
 
   - name: metrics-server
     description: "Create and deploy metrics server from cloned core"
