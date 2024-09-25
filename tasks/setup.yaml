@@ -33,18 +33,18 @@ tasks:
   - name: clone-core
     description: "Clone uds-core for custom slim dev setup"
     actions:
-      - cmd: rm -r uds-core || true
-      - cmd: git clone https://github.com/defenseunicorns/uds-core.git
-        dir: .github/
+      - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
+        description: clone UDS Core
+        dir: tmp
 
   - name: metrics-server
     description: "Create and deploy metrics server from cloned core"
     actions:
-      - cmd: uds zarf package create .github/uds-core/src/metrics-server --confirm --flavor upstream -o build/
+      - cmd: uds zarf package create tmp/uds-core/src/metrics-server --confirm --flavor upstream -o build/
       - cmd: uds zarf package deploy build/zarf-package-uds-core-metrics-server*.tar.zst --components=metrics-server --confirm
 
   - name: authsvc
     description: "Create and deploy authsvc from cloned core"
     actions:
-      - cmd: uds zarf package create .github/uds-core/src/authservice --confirm --flavor upstream -o build/
+      - cmd: uds zarf package create tmp/uds-core/src/authservice --confirm --flavor upstream -o build/
       - cmd: uds zarf package deploy build/zarf-package-uds-core-authservice*.tar.zst --confirm
