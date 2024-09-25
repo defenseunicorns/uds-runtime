@@ -226,6 +226,11 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 				r.Get("/storageclasses", withLatestCache(k8sResources, getStorageClasses))
 				r.Get("/storageclasses/{uid}", withLatestCache(k8sResources, getStorageClass))
 			})
+
+			// Security resources
+			r.Route("/security", func(r chi.Router) {
+				r.Get("/reports", getSecurityReports)
+			})
 		})
 	})
 

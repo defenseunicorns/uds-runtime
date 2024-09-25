@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/security"
 )
 
 // @Description Get Nodes
@@ -859,6 +861,34 @@ func getStorageClasses(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return rest.Bind(cache.StorageClasses)
+}
+
+// @Description Get SecurityReports
+// @Tags security
+// @Accept  html
+// @Produce  json
+// @Success 200
+// @Router /resources/security/reports [get]
+func getSecurityReports(w http.ResponseWriter, _ *http.Request) {
+	dbPath := os.Getenv("SECURITY_HUB_DB_PATH")
+	clusterOverviews, err := security.FetchClusterOverview(dbPath)
+	if err != nil {
+		http.Error(w, "Failed to retrieve tables", http.StatusInternalServerError)
+		return
+	}
+
+	//TODO: FetchImageData implementation
+	byImage := []security.ByImage{}
+
+	securityReports := security.Reports{ClusterOverview: clusterOverviews, ByImage: byImage}
+
+	// Set the response header to JSON
+	w.Header().Set("Content-Type", "application/json")
+
+	// Encode the list of tables as JSON and send the response
+	if err := json.NewEncoder(w).Encode(securityReports); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }
 
 // @Description Get Cluster Connection Health

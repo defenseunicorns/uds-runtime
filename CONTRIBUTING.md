@@ -100,3 +100,7 @@ Before using `page.locator()` to use either the html structure or some complicat
 #### Ephemeral EC2 for Usability Tests
 
 There is an ephemeral ec2 instance deploying the nightly release of UDS Runtime along with `UDS Core`. For more details, please see the test IAC [README.md](./.github/test-infra/README.md).
+
+### Environment Variables
+- `API_AUTH_DISABLED` - Disables API authentication when set to `true`
+- `SECURITY_HUB_DB_PATH` - Path to the Security Hub database file. Used for `/api/v1/resources/security/reports` endpoint.

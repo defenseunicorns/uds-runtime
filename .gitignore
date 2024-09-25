@@ -33,3 +33,7 @@ tmp/
 
 *.pem
 .github/test-infra/**/.terraform*
+
+*.db
+
+launch.json
