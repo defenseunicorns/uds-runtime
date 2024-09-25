@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.5.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.4.0...v0.5.0) (2024-09-25)
+
+
+### Features
+
+* **api:** adds jwt group validation when in-cluster ([#387](https://github.com/defenseunicorns/uds-runtime/issues/387)) ([8a53f76](https://github.com/defenseunicorns/uds-runtime/commit/8a53f76fc684f3e2562ab3076b67d7a68571589d))
+* make deployment resources configurable and up default memory ([#372](https://github.com/defenseunicorns/uds-runtime/issues/372)) ([2981598](https://github.com/defenseunicorns/uds-runtime/commit/29815984b28b793087ede78a5de59e5376903477))
+* **ui:** adding events tab ([#342](https://github.com/defenseunicorns/uds-runtime/issues/342)) ([cb9b43a](https://github.com/defenseunicorns/uds-runtime/commit/cb9b43a84a3d157b9759a063788e1cecf9e9e868))
+* **ui:** fixing issue with progress bar ([#375](https://github.com/defenseunicorns/uds-runtime/issues/375)) ([3f8f204](https://github.com/defenseunicorns/uds-runtime/commit/3f8f20442b89f04af04aa7cd62655fe98d716063))
+* **ui:** updating pods table column name ([#369](https://github.com/defenseunicorns/uds-runtime/issues/369)) ([25aaaf9](https://github.com/defenseunicorns/uds-runtime/commit/25aaaf9a630b785a4b8b1b123d29a4df148e0288))
+
+
+### Bug Fixes
+
+* ensure pod counts are consistent ([#363](https://github.com/defenseunicorns/uds-runtime/issues/363)) ([a5c837b](https://github.com/defenseunicorns/uds-runtime/commit/a5c837b767a316a89a01cdcbebf36a6e407a4883))
+* fixing issue with firefox not supporting text-wrap: pretty ([#382](https://github.com/defenseunicorns/uds-runtime/issues/382)) ([4465617](https://github.com/defenseunicorns/uds-runtime/commit/44656170b50ce308cc61eb6b1aaa3ca325926080))
+* fixing memory bar for overview page ([#381](https://github.com/defenseunicorns/uds-runtime/issues/381)) ([4f321e3](https://github.com/defenseunicorns/uds-runtime/commit/4f321e348f57fd5d8d15fc3f383a3f64b403d9fd))
+* use tls 1.2 in canary deployment ([#383](https://github.com/defenseunicorns/uds-runtime/issues/383)) ([08b5bdc](https://github.com/defenseunicorns/uds-runtime/commit/08b5bdc6e9df063ce06466276bf78312f9e14aaf))
+
+
+### Miscellaneous
+
+* api route test helper with retries and exponential backoff ([#357](https://github.com/defenseunicorns/uds-runtime/issues/357)) ([674f37e](https://github.com/defenseunicorns/uds-runtime/commit/674f37ed94dfcf1722f8f23bbcd2434cf1adde66))
+* **ci:** update core demo bundle version for ephemeral env ([#360](https://github.com/defenseunicorns/uds-runtime/issues/360)) ([161fa7e](https://github.com/defenseunicorns/uds-runtime/commit/161fa7ee3685387a9ce4469b6e07dfa3082aec17))
+* **deps:** update dependency vite to v5.3.6 [security] ([#341](https://github.com/defenseunicorns/uds-runtime/issues/341)) ([6dc4ad2](https://github.com/defenseunicorns/uds-runtime/commit/6dc4ad22400ee48f71e2197441fa40253c6bf9c6))
+* **deps:** update github actions ([#334](https://github.com/defenseunicorns/uds-runtime/issues/334)) ([117410e](https://github.com/defenseunicorns/uds-runtime/commit/117410e92c7a6d7d5324d50338f34b11484e9818))
+* **deps:** update github actions ([#371](https://github.com/defenseunicorns/uds-runtime/issues/371)) ([78bb3a1](https://github.com/defenseunicorns/uds-runtime/commit/78bb3a1aa73de7d5f6145d6a7310d3460dbbdd46))
+* **deps:** update module github.com/zarf-dev/zarf to v0.40.1 ([#359](https://github.com/defenseunicorns/uds-runtime/issues/359)) ([12a0f5e](https://github.com/defenseunicorns/uds-runtime/commit/12a0f5ed8c64c6862db43408b7e878a996795673))
+* **deps:** update uds-core-types digest to df4d2da ([#362](https://github.com/defenseunicorns/uds-runtime/issues/362)) ([0a67913](https://github.com/defenseunicorns/uds-runtime/commit/0a679136bda31b46e66008bfbf30f8f8ddc61df8))
+* refactors uds tasks and adds smoke test ([#344](https://github.com/defenseunicorns/uds-runtime/issues/344)) ([2fec985](https://github.com/defenseunicorns/uds-runtime/commit/2fec985eecf3026a2cd05dda08aca1845ac0479c))
+* update description for UDS Package ([#356](https://github.com/defenseunicorns/uds-runtime/issues/356)) ([d360d38](https://github.com/defenseunicorns/uds-runtime/commit/d360d38f8e50648c6e6e167c70a12233ff2eef23))
+* update slim core with authsvc deployment and bump k3d version ([#389](https://github.com/defenseunicorns/uds-runtime/issues/389)) ([216bab6](https://github.com/defenseunicorns/uds-runtime/commit/216bab6a2735a1d8d2bbf7b55d6a8369579e81a3))
+
 ## [0.4.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.3.0...v0.4.0) (2024-09-19)
 
 
