@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-package security
+package cve
 
 type Reports struct {
 	ClusterOverview []ClusterOverview `json:"cluster-overview"`
@@ -9,15 +9,15 @@ type Reports struct {
 }
 
 type ClusterOverview struct {
-	PackageID   int    `json:"package_id"`
-	PackageName string `json:"package-name"`
-	Tag         string `json:"package-version"`
-	UpdatedAt   string `json:"build-date"`
-	//TODO: Author            string `json:"author"`
-	Critical          int `json:"critical"`
-	High              int `json:"high"`
-	Total             int `json:"cve-count"`
-	ImagesWithPackage int `json:"images-with-package"`
+	PackageID         int    `json:"package_id"`
+	PackageName       string `json:"package_name"`
+	Tag               string `json:"package_version"`
+	Repository        string `json:"repository"`
+	UpdatedAt         string `json:"build-date"`
+	Critical          int    `json:"critical"`
+	High              int    `json:"high"`
+	Total             int    `json:"cve-count"`
+	ImagesWithPackage int    `json:"images-with-package"`
 }
 
 type ByImage struct {

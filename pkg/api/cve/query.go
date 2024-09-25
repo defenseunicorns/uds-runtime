@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-package security
+package cve
 
 import (
 	"database/sql"
@@ -34,6 +34,7 @@ func FetchClusterOverview(dbPath string) ([]ClusterOverview, error) {
         p.id AS package_id,
         p.name AS package_name,
         p.tag,
+		p.repository,
         p.updated_at,
         lr.critical,
         lr.high,
@@ -52,6 +53,7 @@ func FetchClusterOverview(dbPath string) ([]ClusterOverview, error) {
         p.updated_at,
         p.name,
         p.tag,
+		p.repository,
         lr.critical,
         lr.high,
         lr.total
@@ -75,6 +77,7 @@ func FetchClusterOverview(dbPath string) ([]ClusterOverview, error) {
 			&clusterOverview.PackageID,
 			&clusterOverview.PackageName,
 			&clusterOverview.Tag,
+			&clusterOverview.Repository,
 			&clusterOverview.UpdatedAt,
 			&clusterOverview.Critical,
 			&clusterOverview.High,

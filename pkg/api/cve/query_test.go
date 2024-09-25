@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-package security
+package cve
 
 import (
 	"database/sql"
@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// note: error will be logged on init since test db won't be created yet
 func TestFetchClusterOverview(t *testing.T) {
 	// Create a temporary database file
 	dbPath := "test.db"
@@ -26,6 +27,7 @@ func TestFetchClusterOverview(t *testing.T) {
             id INTEGER PRIMARY KEY,
             name TEXT,
             tag TEXT,
+			repository TEXT,
             updated_at TEXT
         );
         CREATE TABLE reports (
@@ -42,10 +44,10 @@ func TestFetchClusterOverview(t *testing.T) {
             package_id INTEGER
         );
 
-        INSERT INTO packages (id, name, tag, updated_at) VALUES
-        (1, 'package1', 'v1.0', '2023-01-01'),
-        (2, 'package1', 'v1.0', '2023-01-02'),
-        (3, 'package2', 'v1.0', '2023-01-02');
+        INSERT INTO packages (id, name, tag, repository, updated_at) VALUES
+        (1, 'package1', 'v1.0', 'defenseunicorns', '2023-01-01'),
+        (2, 'package1', 'v1.0', 'defenseunicorns', '2023-01-02'),
+        (3, 'package2', 'v1.0', 'defenseunicorns', '2023-01-02');
 
         INSERT INTO reports (id, package_name, tag, critical, high, total, created_at) VALUES
         (1, 'package1', 'v1.0', 5, 10, 15, '2023-01-01'),
@@ -70,6 +72,7 @@ func TestFetchClusterOverview(t *testing.T) {
 	require.Equal(t, 2, overviews[0].PackageID)
 	require.Equal(t, "package1", overviews[0].PackageName)
 	require.Equal(t, "v1.0", overviews[0].Tag)
+	require.Equal(t, "defenseunicorns", overviews[0].Repository)
 	require.Equal(t, "2023-01-02", overviews[0].UpdatedAt)
 	require.Equal(t, 3, overviews[0].Critical)
 	require.Equal(t, 6, overviews[0].High)
@@ -79,6 +82,7 @@ func TestFetchClusterOverview(t *testing.T) {
 	require.Equal(t, 3, overviews[1].PackageID)
 	require.Equal(t, "package2", overviews[1].PackageName)
 	require.Equal(t, "v1.0", overviews[1].Tag)
+	require.Equal(t, "defenseunicorns", overviews[1].Repository)
 	require.Equal(t, "2023-01-02", overviews[1].UpdatedAt)
 	require.Equal(t, 2, overviews[1].Critical)
 	require.Equal(t, 4, overviews[1].High)
