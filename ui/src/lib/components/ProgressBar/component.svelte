@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { BarSizeType, UnitType } from '$components/StatWidget/types'
+  import type { BarSizeType, UnitType } from '$components/StatsWidget/types'
 
   export let size: BarSizeType = 'sm'
   export let progress: number = 0

@@ -4,7 +4,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { StatWidget } from '$components'
+  import { StatsWidget } from '$components'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
   import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
@@ -230,7 +230,7 @@
 <div class="p-4 dark:text-white pt-0">
   <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 min-[1024px]:grid-cols-2 min-[1510px]:grid-cols-4 gap-4">
-    <StatWidget
+    <StatsWidget
       variant="with_right_icon"
       props={{
         title: clusterData.totalPods.toString(),
@@ -240,7 +240,7 @@
       }}
     />
 
-    <StatWidget
+    <StatsWidget
       variant="with_right_icon"
       props={{
         title: clusterData.totalNodes.toString(),
@@ -250,7 +250,7 @@
       }}
     />
 
-    <StatWidget
+    <StatsWidget
       variant="progress_bar"
       props={{
         capacity: cpuCapacity,
@@ -261,7 +261,7 @@
       }}
     />
 
-    <StatWidget
+    <StatsWidget
       variant="progress_bar"
       props={{
         capacity: gbCapacity,
