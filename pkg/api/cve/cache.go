@@ -1,6 +1,7 @@
 package cve
 
 import (
+	"database/sql"
 	"log"
 	"os"
 	"sync"
@@ -18,16 +19,26 @@ func init() {
 
 func updateCache() {
 	dbPath := os.Getenv("SECURITY_HUB_DB_PATH")
-	clusterOverviews, err := FetchClusterOverview(dbPath)
+	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
-		log.Printf("Error fetching cluster overviews: %v", err)
+		log.Printf("Error opening database: %v", err)
+		return
+	}
+	defer db.Close()
+
+	clusterOverviews, err := FetchClusterOverview(db)
+	if err != nil {
+		log.Printf("Error fetching cluster overviews data: %v", err)
 		return
 	}
 
-	//TODO: FetchImageData implementation
-	byImage := []ByImage{}
+	findings, err := FetchFindings(db)
+	if err != nil {
+		log.Printf("Error fetching findings data: %v", err)
+		return
+	}
 
-	securityReports := Reports{ClusterOverview: clusterOverviews, ByImage: byImage}
+	securityReports := Reports{ClusterOverview: clusterOverviews, Findings: findings}
 
 	cacheMutex.Lock()
 	cache = securityReports
