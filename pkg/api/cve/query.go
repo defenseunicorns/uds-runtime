@@ -9,14 +9,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func FetchClusterOverview(dbPath string) ([]ClusterOverview, error) {
-	db, err := sql.Open("sqlite3", dbPath)
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	query := `
+func FetchClusterOverview(db *sql.DB) ([]Overview, error) {
+	rows, err := db.Query(`
     WITH LatestReports AS (
         SELECT
             id,
@@ -59,20 +53,18 @@ func FetchClusterOverview(dbPath string) ([]ClusterOverview, error) {
         lr.total
     ORDER BY
         p.id;
-    `
+    `)
 
-	// Execute the query
-	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var clusterOverviews []ClusterOverview
+	var clusterOverviews []Overview
 
 	// Iterate over the rows and populate the reports slice
 	for rows.Next() {
-		var clusterOverview ClusterOverview
+		var clusterOverview Overview
 		if err := rows.Scan(
 			&clusterOverview.PackageID,
 			&clusterOverview.PackageName,
@@ -94,4 +86,50 @@ func FetchClusterOverview(dbPath string) ([]ClusterOverview, error) {
 	}
 
 	return clusterOverviews, nil
+}
+
+func FetchFindings(db *sql.DB) ([]Finding, error) {
+	rows, err := db.Query(`
+        SELECT
+            digest,
+            pkg_name,
+            installed_version,
+			fixed_version,
+            type,
+            vulnerability_id,
+            severity,
+            severity_source
+        FROM
+            vulnerabilities;
+    `)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var findings []Finding
+
+	// Iterate over the rows and populate the reports slice
+	for rows.Next() {
+		var finding Finding
+		if err := rows.Scan(
+			&finding.ImageID,
+			&finding.AppName,
+			&finding.AppVersion,
+			&finding.FixedVersion,
+			&finding.Author,
+			&finding.Vulnerability,
+			&finding.Severity,
+			&finding.Reporter,
+		); err != nil {
+			return nil, err
+		}
+		findings = append(findings, finding)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return findings, nil
 }
