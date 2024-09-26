@@ -233,40 +233,40 @@
     <StatsWidget
       variant="with_right_icon"
       props={{
-        title: clusterData.totalPods.toString(),
-        subtitle: 'Pods running in cluster',
+        statText: clusterData.totalPods.toString(),
+        helperText: 'Pods running in cluster',
         icon: Analytics,
         link: '/workloads/pods',
       }}
     />
 
     <StatsWidget
-      variant="with_right_icon"
+      type="with_right_icon"
       props={{
-        title: clusterData.totalNodes.toString(),
-        subtitle: 'Nodes running in cluster',
+        statText: clusterData.totalNodes.toString(),
+        helperText: 'Nodes running in cluster',
         icon: DataVis_1,
         link: '/nodes',
       }}
     />
 
     <StatsWidget
-      variant="progress_bar"
+      type="progress_bar"
       props={{
         capacity: cpuCapacity,
         progress: cpuUsed,
-        title: 'CPU Usage',
+        statText: 'CPU Usage',
         unit: 'Cores',
         value: cpuPercentage.toFixed(2),
       }}
     />
 
     <StatsWidget
-      variant="progress_bar"
+      type="progress_bar"
       props={{
         capacity: gbCapacity,
         progress: gbUsed,
-        title: 'Memory Usage',
+        statText: 'Memory Usage',
         unit: 'GB',
         value: memoryPercentage.toFixed(2),
       }}

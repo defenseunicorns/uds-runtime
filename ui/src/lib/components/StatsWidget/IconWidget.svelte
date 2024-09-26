@@ -3,8 +3,8 @@
   import { Card } from '$components'
   import { type CarbonIcon } from 'carbon-icons-svelte'
 
-  export let title: string
-  export let subtitle: string
+  export let statText: string
+  export let helperText: string
   export let icon: typeof CarbonIcon
   export let link: string = ''
 </script>
@@ -19,12 +19,12 @@
       <div class="flex flex-col items-start">
         <dt
           class="text-3xl font-semibold text-blue-500 dark:text-white truncate"
-          data-testid={`resource-count-${subtitle.split(' ')[0].toLowerCase()}`}
+          data-testid={`resource-count-${helperText.split(' ')[0].toLowerCase()}`}
         >
-          {title}
+          {statText}
         </dt>
         <dd class="mt-1 text-sm text-gray-900 dark:text-gray-400">
-          {subtitle}
+          {helperText}
         </dd>
       </div>
     </div>
