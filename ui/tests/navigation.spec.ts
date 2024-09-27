@@ -18,6 +18,13 @@ test.describe('Navigation', async () => {
 
     const nodeCountEl = page.getByTestId('resource-count-nodes')
     await expect(nodeCountEl).toHaveText('1')
+
+    const card = page.getByTestId('card-container')
+
+    await expect(card.getByText('Pods running in cluster')).toBeVisible()
+    await expect(card.getByText('Nodes running in cluster')).toBeVisible()
+    await expect(card.getByText('CPU Usage')).toBeVisible()
+    await expect(card.getByText('Memory Usage')).toBeVisible()
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
