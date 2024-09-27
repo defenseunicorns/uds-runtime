@@ -9,6 +9,7 @@
   const convert = new Convert({
     newline: true,
     stream: true,
+    escapeXML: true,
   })
   let termElement: HTMLElement | null
   let scrollAnchor: Element | null | undefined
