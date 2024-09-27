@@ -28,7 +28,7 @@ func FetchClusterOverview(db *sql.DB) ([]Overview, error) {
         p.id AS package_id,
         p.name AS package_name,
         p.tag,
-		p.repository,
+        p.repository,
         p.updated_at,
         lr.critical,
         lr.high,

@@ -228,8 +228,9 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 			})
 		})
 
-		r.With(apiAuthMiddleware).Route("/security", func(r chi.Router) {
-			r.Get("/reports", getSecurityReports)
+		r.With(apiAuthMiddleware).Route("/cve", func(r chi.Router) {
+			r.Get("/overviews", getCVEOverviews)
+			r.Get("/findings", getCVEFindings)
 		})
 	})
 

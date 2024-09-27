@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/cve"
@@ -862,14 +863,61 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 	return rest.Bind(cache.StorageClasses)
 }
 
-// @Description Get SecurityReports
+// @Description Get cve findings
 // @Tags security
 // @Accept  html
 // @Produce  json
 // @Success 200
-// @Router /resources/security/reports [get]
-func getSecurityReports(w http.ResponseWriter, _ *http.Request) {
-	reports := cve.GetReports()
+// @Router /cve/findings [get]
+func getCVEFindings(w http.ResponseWriter, r *http.Request) {
+	// Parse query parameters for pagination
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	// Set default values if parameters are not provided
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		limit = 100
+	}
+
+	// Fetch paginated reports
+	reports, total, err := cve.GetFindings(page, limit)
+	if err != nil {
+		http.Error(w, "Failed to fetch reports", http.StatusInternalServerError)
+		return
+	}
+
+	// Set the response header to JSON
+	w.Header().Set("Content-Type", "application/json")
+
+	// Create a response structure with pagination metadata
+	response := map[string]interface{}{
+		"data":       reports,
+		"page":       page,
+		"limit":      limit,
+		"total":      total,
+		"totalPages": (total + limit - 1) / limit, // Calculate total pages
+	}
+
+	// Encode the response as JSON and send it
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+// @Description Get cve overviews
+// @Tags security
+// @Accept  html
+// @Produce  json
+// @Success 200
+// @Router /cve/overviews [get]
+func getCVEOverviews(w http.ResponseWriter, _ *http.Request) {
+	reports := cve.GetOverviews()
 
 	// Set the response header to JSON
 	w.Header().Set("Content-Type", "application/json")
