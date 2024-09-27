@@ -4,7 +4,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { StatsWidget } from '$components'
+  import { ProgressBarWidget, WithRightIconWidget } from '$components'
   import ApexCharts from 'apexcharts'
   import type { ApexOptions } from 'apexcharts'
   import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
@@ -230,46 +230,34 @@
 <div class="p-4 dark:text-white pt-0">
   <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 min-[1024px]:grid-cols-2 min-[1510px]:grid-cols-4 gap-4">
-    <StatsWidget
-      variant="with_right_icon"
-      props={{
-        statText: clusterData.totalPods.toString(),
-        helperText: 'Pods running in cluster',
-        icon: Analytics,
-        link: '/workloads/pods',
-      }}
+    <WithRightIconWidget
+      statText={clusterData.totalPods.toString()}
+      helperText="Pods running in cluster"
+      icon={Analytics}
+      link="/workloads/pods"
     />
 
-    <StatsWidget
-      type="with_right_icon"
-      props={{
-        statText: clusterData.totalNodes.toString(),
-        helperText: 'Nodes running in cluster',
-        icon: DataVis_1,
-        link: '/nodes',
-      }}
+    <WithRightIconWidget
+      statText={clusterData.totalNodes.toString()}
+      helperText="Nodes running in cluster"
+      icon={DataVis_1}
+      link="/nodes"
     />
 
-    <StatsWidget
-      type="progress_bar"
-      props={{
-        capacity: cpuCapacity,
-        progress: cpuUsed,
-        statText: 'CPU Usage',
-        unit: 'Cores',
-        value: cpuPercentage.toFixed(2),
-      }}
+    <ProgressBarWidget
+      capacity={cpuCapacity}
+      progress={cpuUsed}
+      statText="CPU Usage"
+      unit="Cores"
+      value={cpuPercentage.toFixed(2)}
     />
 
-    <StatsWidget
-      type="progress_bar"
-      props={{
-        capacity: gbCapacity,
-        progress: gbUsed,
-        statText: 'Memory Usage',
-        unit: 'GB',
-        value: memoryPercentage.toFixed(2),
-      }}
+    <ProgressBarWidget
+      capacity={gbCapacity}
+      progress={gbUsed}
+      statText="Memory Usage"
+      unit="Cores"
+      value={memoryPercentage.toFixed(2)}
     />
   </div>
   <div class="mt-8">
