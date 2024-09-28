@@ -55,9 +55,6 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	// Start the stream in a goroutine
 	go peprStream.Start(ctx)
 
-	// Track if the first message has been seen
-	seen := false
-
 	// Create a timer to send keep-alive messages
 	// The first message is sent after 2 seconds to detect empty streams
 	keepAliveTimer := time.NewTimer(2 * time.Second)
@@ -78,9 +75,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 		// See https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#examples
 		case <-keepAliveTimer.C:
 			// Set the keep-alive duration to 30 seconds after the first message
-			if !seen {
-				keepAliveTimer.Reset(30 * time.Second)
-			}
+			keepAliveTimer.Reset(30 * time.Second)
 
 			bufferWriter.KeepAlive()
 
@@ -119,7 +114,10 @@ func newBufferWriter(w http.ResponseWriter) *bufferWriter {
 func (bw *bufferWriter) KeepAlive() {
 	bw.mutex.Lock()
 	defer bw.mutex.Unlock()
-	fmt.Fprintf(bw.buffer, ": \n\n")
+	_, err := fmt.Fprintf(bw.buffer, ": \n\n")
+	if err != nil {
+		message.Warnf("Failed to write keep-alive message: %v", err)
+	}
 }
 
 // Write writes data to the buffer
