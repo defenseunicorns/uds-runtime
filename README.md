@@ -47,7 +47,7 @@ When running in cluster, the Runtime pod will need more or less resources based 
 
 1. clone this repo
 1. compile: `uds run compile`
-1. run: `./build/main`
+1. run: `./build/uds-runtime`
 
 ## Quickstart Development
 
