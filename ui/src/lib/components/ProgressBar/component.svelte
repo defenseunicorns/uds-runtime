@@ -1,6 +1,5 @@
 <script lang="ts">
-  type BarSizeType = 'sm' | 'md' | 'lg' | 'xl'
-  type UnitType = 'Cores' | 'GB'
+  import type { BarSizeType, UnitType } from '$components/StatsWidget/types'
 
   export let size: BarSizeType = 'sm'
   export let progress: number = 0
@@ -29,15 +28,15 @@
   }
 </script>
 
-<div class="flex flex-col">
-  <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-3">
-    <div
-      class={`${unit === 'GB' ? 'bg-green-500' : 'dark:bg-blue-600'} rounded-full ${sizeMapping[size]}`}
-      style={`width: ${calculatedWidth}%`}
-    ></div>
-  </div>
+<div class="bg-gray-200 rounded-full dark:bg-gray-700 mt-3">
+  <div
+    class={`${unit === 'GB' ? 'bg-green-500' : 'dark:bg-blue-600'} h-2.5 rounded-full ${sizeMapping[size]}`}
+    style={`width: ${calculatedWidth}%`}
+  />
+</div>
 
-  <span class="text-xs mt-1 font-normal text-gray-500 dark:text-gray-400 truncate overflow-ellipsis">
+<div class="text-xs mt-1 font-normal text-gray-500 dark:text-gray-400 truncate overflow-ellipsis">
+  <span>
     {progressText}
   </span>
 </div>

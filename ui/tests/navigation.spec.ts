@@ -16,14 +16,21 @@ test.describe('Navigation', async () => {
   test('Overview page', async ({ page }) => {
     await page.getByRole('link', { name: 'Overview' }).click()
 
-    const nodeCountEl = page.getByTestId(`node-count`)
+    const nodeCountEl = page.getByTestId('resource-count-nodes')
     await expect(nodeCountEl).toHaveText('1')
+
+    const card = page.getByTestId('card-container')
+
+    await expect(card.getByText('Pods running in cluster')).toBeVisible()
+    await expect(card.getByText('Nodes running in cluster')).toBeVisible()
+    await expect(card.getByText('CPU Usage')).toBeVisible()
+    await expect(card.getByText('Memory Usage')).toBeVisible()
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
     // get pod count from overview page
     await page.getByRole('link', { name: 'Overview' }).click()
-    const overviewPodCount = await page.getByTestId(`pod-count`).textContent()
+    const overviewPodCount = await page.getByTestId('resource-count-pods').textContent()
 
     // navigate to pods page and get pod count
     await page.goto('/workloads/pods')
