@@ -69,7 +69,7 @@
       if (sortKey === 'timestamp') {
         const aTime = a.ts ? new Date(a.ts).getTime() : a.epoch
         const bTime = b.ts ? new Date(b.ts).getTime() : b.epoch
-        return (aTime - bTime) * sortDirection
+        return (aTime - bTime) * sortDirection * -1 // latest events on top?
       } else if (sortKey === 'count') {
         const aValue = Number(a[sortKey as keyof typeof a]) || 0
         const bValue = Number(b[sortKey as keyof typeof b]) || 0
@@ -120,20 +120,33 @@
         payload.event = payload.header.split(' ')[0]
         payload.details = getDetails(payload)
 
-        // If this is a repeated event, update the count
         if (payload.repeated) {
-          // Find the first item in the peprStream that matches the header
-          peprStream.update((collection) => {
-            const idx = collection.findIndex((item) => item.header === payload.header)
-            if (idx !== -1) {
+          // note that events with "repeated" include a count and don't have a _name attribute
+          // so we just update the corresponding item in the pepr stream
+          const idx = $peprStream.findIndex((item) => item.header === payload.header)
+          if (idx !== -1) {
+            peprStream.update((collection) => {
               collection[idx].count = payload.repeated!
               collection[idx].ts = payload.ts
-            }
-            return collection
-          })
+              return collection
+            })
+          }
         } else {
-          // Otherwise, add the new event to the peprStream
-          peprStream.update((collection) => [payload, ...collection])
+          // check existing rows for duplicates
+          // todo: look into res.uid, see where uid comes from
+          const dupIdx = $peprStream.findIndex(
+            (item) => item.header === payload.header && item.res!.uid === payload.res!.uid,
+          )
+          if (dupIdx !== -1) {
+            // remove duplicate from the stream and update with the latest payload
+            peprStream.update((collection) => {
+              collection.splice(dupIdx, 1)
+              return [payload, ...collection]
+            })
+          } else {
+            // payload isn't a dup, add to stream
+            peprStream.update((collection) => [payload, ...collection])
+          }
         }
       } catch (error) {
         console.error('Error updating peprStream:', error)

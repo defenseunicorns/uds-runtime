@@ -18,6 +18,13 @@ import (
 	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
+var (
+	cachedBuffer     *bytes.Buffer
+	cachedBufferLock sync.RWMutex
+	lastCacheTime    time.Time
+	cacheDuration    = 5 * time.Minute
+)
+
 // @Description Get Pepr data
 // @Tags monitor
 // @Accept  html
@@ -32,6 +39,21 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
+
+	// Check if we have a valid cached buffer
+	cachedBufferLock.RLock()
+	if cachedBuffer != nil && time.Since(lastCacheTime) < cacheDuration {
+		// Use the cached buffer
+		rest.WriteHeaders(w)
+		_, err := w.Write(cachedBuffer.Bytes())
+		if err != nil {
+			message.Warnf("Failed to write response: %v", err)
+		}
+		cachedBufferLock.RUnlock()
+		message.Debug("Using cached buffer, no goroutines spawned")
+		return
+	}
+	cachedBufferLock.RUnlock()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -64,6 +86,10 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	flushTicker := time.NewTicker(time.Second)
 	defer flushTicker.Stop()
 
+	// create new cached buffer
+	// we use this so we can send the data to client before caching
+	newCachedBuffer := &bytes.Buffer{}
+
 	for {
 		select {
 		// Check if the client has disconnected
@@ -82,10 +108,20 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 		// Flush every second if there is data
 		case <-flushTicker.C:
 			if bufferWriter.buffer.Len() > 0 {
+				// Write to both the response and the new cache buffer
+				data := bufferWriter.buffer.Bytes()
+				newCachedBuffer.Write(data)
+
 				if err := bufferWriter.Flush(w); err != nil {
 					message.WarnErr(err, "Failed to flush buffer")
 					return
 				}
+
+				// Update the cached buffer
+				cachedBufferLock.Lock()
+				cachedBuffer = newCachedBuffer
+				lastCacheTime = time.Now()
+				cachedBufferLock.Unlock()
 			}
 		}
 	}
