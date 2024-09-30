@@ -40,18 +40,17 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if we have a valid cached buffer
+	// Only cache the default stream; check if we have a valid cached buffer
 	cachedBufferLock.RLock()
-	if cachedBuffer != nil && time.Since(lastCacheTime) < cacheDuration {
+	if streamFilter == "" && cachedBuffer != nil && time.Since(lastCacheTime) < cacheDuration {
 		// Use the cached buffer
 		rest.WriteHeaders(w)
 		_, err := w.Write(cachedBuffer.Bytes())
 		if err != nil {
 			message.Warnf("Failed to write response: %v", err)
 		}
-		cachedBufferLock.RUnlock()
+		w.(http.Flusher).Flush()
 		message.Debug("Using cached buffer, no goroutines spawned")
-		return
 	}
 	cachedBufferLock.RUnlock()
 
@@ -73,8 +72,9 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	peprStream.Follow = true
 	peprStream.Timestamps = true
 
-	//nolint:errcheck
 	// Start the stream in a goroutine
+	message.Debug("Starting parent pepr stream goroutine")
+	//nolint:errcheck
 	go peprStream.Start(ctx)
 
 	// Create a timer to send keep-alive messages
