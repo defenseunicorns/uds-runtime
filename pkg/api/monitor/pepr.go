@@ -21,8 +21,6 @@ import (
 var (
 	cachedBuffer     *bytes.Buffer
 	cachedBufferLock sync.RWMutex
-	lastCacheTime    time.Time
-	cacheDuration    = 5 * time.Minute
 )
 
 // @Description Get Pepr data
@@ -42,7 +40,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 
 	// Only cache the default stream; check if we have a valid cached buffer
 	cachedBufferLock.RLock()
-	if streamFilter == "" && cachedBuffer != nil && time.Since(lastCacheTime) < cacheDuration {
+	if streamFilter == "" && cachedBuffer != nil {
 		// Use the cached buffer
 		rest.WriteHeaders(w)
 		_, err := w.Write(cachedBuffer.Bytes())
@@ -50,7 +48,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 			message.Warnf("Failed to write response: %v", err)
 		}
 		w.(http.Flusher).Flush()
-		message.Debug("Using cached buffer, no goroutines spawned")
+		message.Debug("Used cached pepr stream buffer")
 	}
 	cachedBufferLock.RUnlock()
 
@@ -117,11 +115,12 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				// Update the cached buffer
-				cachedBufferLock.Lock()
-				cachedBuffer = newCachedBuffer
-				lastCacheTime = time.Now()
-				cachedBufferLock.Unlock()
+				// Update the cached buffer if on default stream
+				if streamFilter == "" {
+					cachedBufferLock.Lock()
+					cachedBuffer = newCachedBuffer
+					cachedBufferLock.Unlock()
+				}
 			}
 		}
 	}
