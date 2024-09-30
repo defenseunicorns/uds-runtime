@@ -68,10 +68,6 @@
     return Math.min(Math.max((usage / capacity) * 100, 0), 100)
   }
 
-  function formatNumber(value: number, decimals: number = 2): string {
-    return Number(value.toFixed(decimals)).toString()
-  }
-
   let chartjsOptions: ChartOptions<'line'> = {
     maintainAspectRatio: false,
     elements: {
