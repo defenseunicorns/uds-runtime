@@ -18,8 +18,6 @@ import (
 	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
-var streamCache = NewCache()
-
 // @Description Get Pepr data
 // @Tags monitor
 // @Accept  html
@@ -71,8 +69,8 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	flushTicker := time.NewTicker(time.Second)
 	defer flushTicker.Stop()
 
-	// create new cached buffer, we use this to send data to client before caching
-	newCachedBuffer := &bytes.Buffer{}
+	// create tmp cached buffer to hold stream data
+	tmpCacheBuffer := &bytes.Buffer{}
 
 	for {
 		select {
@@ -99,8 +97,8 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 
 				// Update the cached buffer if on default stream
 				if streamFilter == "" {
-					newCachedBuffer.Write(data)
-					streamCache.Set(newCachedBuffer)
+					tmpCacheBuffer.Write(data)
+					streamCache.Set(tmpCacheBuffer)
 				}
 			}
 		}

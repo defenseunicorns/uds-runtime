@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-// Package monitor provides mechanisms for interacting with Pepr data streams
 package monitor
 
 import (
@@ -13,23 +12,29 @@ import (
 	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
+// single instance of the pepr stream cache
+var streamCache = NewCache()
+
 type Cache struct {
 	buffer *bytes.Buffer
 	lock   sync.RWMutex
 }
 
+// NewCache creates a new Cache instance for caching pepr stream responses
 func NewCache() *Cache {
 	return &Cache{
 		buffer: nil,
 	}
 }
 
+// Get returns the cached buffer
 func (c *Cache) Get() *bytes.Buffer {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	return c.buffer
 }
 
+// Set sets the cached buffer
 func (c *Cache) Set(buffer *bytes.Buffer) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
