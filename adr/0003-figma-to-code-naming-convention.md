@@ -6,7 +6,7 @@ proposed
 
 ## Context
 
-In order to try to keep some sort of connection between the Figma designs and the components on the front end that are being built.
+Devs and designers are currently using different language to describe various Flowbite components. Designers use language from Flowbite's Figma library and devs are using generic language. This discrepancy in word choice is causing confusion when reviewing PRs
 
 ## Decision
 
@@ -22,7 +22,7 @@ In this image you can see 3 different things outlined
 
 <img width="1881" alt="Screenshot 2024-09-30 at 12 27 02 PM" src="https://github.com/user-attachments/assets/479f4b4d-b495-4f07-92b9-21cd112df4c4">
 
-In this case, this would have been a component that has variants, but rather than built extra abstractions and complication, the components were built out as individual components inside of a folder called `StatsWidget`
+In this case, this would have been a component that has variants
 
 <img width="1606" alt="Screenshot 2024-09-30 at 12 30 54 PM" src="https://github.com/user-attachments/assets/a3518cf7-f703-4cbf-842a-f65561b57731">
 
@@ -43,7 +43,7 @@ All attributes were not included, but the ones we did include were named based o
 
 ### Creates a Convention
 
-In deciding to name components based on Figma (flowbite) designs, we are using a naming convention that everyone can follow.
+In deciding to name components based on Figma (Flowbite) designs, we are using a naming convention that everyone can follow.
 
 ## Consequences
 
