@@ -18,10 +18,7 @@ import (
 	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
-var (
-	cachedBuffer     *bytes.Buffer
-	cachedBufferLock sync.RWMutex
-)
+var streamCache = NewCache()
 
 // @Description Get Pepr data
 // @Tags monitor
@@ -38,19 +35,10 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Only cache the default stream; check if we have a valid cached buffer
-	cachedBufferLock.RLock()
-	if streamFilter == "" && cachedBuffer != nil {
-		// Use the cached buffer
-		rest.WriteHeaders(w)
-		_, err := w.Write(cachedBuffer.Bytes())
-		if err != nil {
-			message.Warnf("Failed to write response: %v", err)
-		}
-		w.(http.Flusher).Flush()
-		message.Debug("Used cached pepr stream buffer")
+	// Only use cache for the default stream (empty streamFilter)
+	if streamFilter == "" {
+		streamCache.ServeCachedResponse(w)
 	}
-	cachedBufferLock.RUnlock()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -76,7 +64,6 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	go peprStream.Start(ctx)
 
 	// Create a timer to send keep-alive messages
-	// The first message is sent after 2 seconds to detect empty streams
 	keepAliveTimer := time.NewTimer(2 * time.Second)
 	defer keepAliveTimer.Stop()
 
@@ -84,8 +71,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	flushTicker := time.NewTicker(time.Second)
 	defer flushTicker.Stop()
 
-	// create new cached buffer
-	// we use this so we can send the data to client before caching
+	// create new cached buffer, we use this to send data to client before caching
 	newCachedBuffer := &bytes.Buffer{}
 
 	for {
@@ -96,19 +82,15 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 			return
 
 		// Handle keep-alive messages
-		// See https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#examples
 		case <-keepAliveTimer.C:
-			// Set the keep-alive duration to 30 seconds after the first message
 			keepAliveTimer.Reset(30 * time.Second)
-
 			bufferWriter.KeepAlive()
 
 		// Flush every second if there is data
 		case <-flushTicker.C:
 			if bufferWriter.buffer.Len() > 0 {
-				// Write to both the response and the new cache buffer
+				// Write to both the response and the cache buffer
 				data := bufferWriter.buffer.Bytes()
-				newCachedBuffer.Write(data)
 
 				if err := bufferWriter.Flush(w); err != nil {
 					message.WarnErr(err, "Failed to flush buffer")
@@ -117,9 +99,8 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 
 				// Update the cached buffer if on default stream
 				if streamFilter == "" {
-					cachedBufferLock.Lock()
-					cachedBuffer = newCachedBuffer
-					cachedBufferLock.Unlock()
+					newCachedBuffer.Write(data)
+					streamCache.Set(newCachedBuffer)
 				}
 			}
 		}

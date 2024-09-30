@@ -12,7 +12,7 @@
 
   import './page.postcss'
 
-  import { getDetails } from './helpers'
+  import { exportPeprStream, filterEvents, handlePeprMessage, sortEvents } from './helpers'
 
   let loaded = false
   let streamFilter = ''
@@ -29,8 +29,7 @@
     { value: 'failed', label: 'Errors and Denials' },
   ]
 
-  const peprStream = writable<PeprEvent[]>([])
-  export let columns = [
+  let columns = [
     { name: 'event', style: 'w-2/12' },
     { name: 'resource', style: 'w-3/12' },
     { name: 'details', style: 'w-1/12' },
@@ -39,6 +38,7 @@
   ]
 
   // Initialize the stores
+  const peprStream = writable<PeprEvent[]>([])
   let search = writable<string>('')
   let sortBy = writable<string>('timestamp')
   let sortAsc = writable<boolean>(true)
@@ -47,39 +47,6 @@
   let isFiltering = false
   $: {
     isFiltering = !!$search
-  }
-
-  function filterEvents(events: PeprEvent[], searchTerm: string): PeprEvent[] {
-    // filter events by the search term if one exists
-    if (!searchTerm) return events
-    const searchValue = searchTerm.toLowerCase()
-    return events.filter(
-      (item) =>
-        item._name.toLowerCase().includes(searchValue) ||
-        item.event.toLowerCase().includes(searchValue) ||
-        item.header.toLowerCase().includes(searchValue) ||
-        item.msg.toLowerCase().includes(searchValue),
-    )
-  }
-
-  function sortEvents(events: PeprEvent[], sortKey: string, isAscending: boolean): PeprEvent[] {
-    const sortDirection = isAscending ? 1 : -1 // sort events in ascending order by default
-    // sort events based on the sort key
-    return events.sort((a, b) => {
-      if (sortKey === 'timestamp') {
-        const aTime = a.ts ? new Date(a.ts).getTime() : a.epoch
-        const bTime = b.ts ? new Date(b.ts).getTime() : b.epoch
-        return (aTime - bTime) * sortDirection * -1 // latest events on top?
-      } else if (sortKey === 'count') {
-        const aValue = Number(a[sortKey as keyof typeof a]) || 0
-        const bValue = Number(b[sortKey as keyof typeof b]) || 0
-        return (aValue - bValue) * sortDirection
-      } else {
-        const aValue = String(a[sortKey as keyof typeof a] || '').toLowerCase()
-        const bValue = String(b[sortKey as keyof typeof b] || '').toLowerCase()
-        return aValue.localeCompare(bValue) * sortDirection
-      }
-    })
   }
 
   export const rows = derived([peprStream, search, sortBy, sortAsc], () => {
@@ -114,72 +81,13 @@
     }
 
     eventSource.onmessage = (e) => {
-      try {
-        const payload: PeprEvent = JSON.parse(e.data)
-        // The event type is the first word in the header
-        payload.event = payload.header.split(' ')[0]
-        payload.details = getDetails(payload)
-
-        if (payload.repeated) {
-          // note that events with "repeated" include a count and don't have a _name attribute
-          // so we just update the corresponding item in the pepr stream
-          const idx = $peprStream.findIndex((item) => item.header === payload.header)
-          if (idx !== -1) {
-            peprStream.update((collection) => {
-              collection[idx].count = payload.repeated!
-              collection[idx].ts = payload.ts
-              return collection
-            })
-          }
-        } else {
-          // check existing rows for duplicates
-          // todo: look into res.uid, see where uid comes from
-          const dupIdx = $peprStream.findIndex(
-            (item) => item.header === payload.header && item.res!.uid === payload.res!.uid,
-          )
-          if (dupIdx !== -1) {
-            // remove duplicate from the stream and update with the latest payload
-            peprStream.update((collection) => {
-              collection.splice(dupIdx, 1)
-              return [payload, ...collection]
-            })
-          } else {
-            // payload isn't a dup, add to stream
-            peprStream.update((collection) => [payload, ...collection])
-          }
-        }
-      } catch (error) {
-        console.error('Error updating peprStream:', error)
-      }
+      handlePeprMessage(e, peprStream, $peprStream)
     }
 
     eventSource.onerror = (error) => {
       console.error('EventSource failed:', error)
     }
   })
-
-  const exportPeprStream = () => {
-    const data = $rows.map((item) => ({
-      event: item.event,
-      resource: item._name,
-      count: item.count,
-      timestamp: item.ts,
-    }))
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `pepr-stream-${new Date().toISOString()}.json`
-
-    try {
-      a.click()
-    } finally {
-      setTimeout(() => {
-        URL.revokeObjectURL(url)
-      }, 100) // debounce to ensure download has started
-    }
-  }
 
   const widths = ['w-1/6', 'w-1/3', 'w-1/4', 'w-2/5', 'w-1/2', 'w-1/5', 'w-1/3', 'w-1/4']
   const skeletonRows = widths.sort(() => Math.random() - 0.5)
@@ -244,7 +152,7 @@
         <div
           class="flex flex-shrink-0 flex-col space-y-3 md:flex-row md:items-center md:space-x-3 md:space-y-0 lg:justify-end"
         >
-          <button name="Export" type="button" on:click={exportPeprStream}>
+          <button name="Export" type="button" on:click={() => exportPeprStream($rows)}>
             <Export class="mr-2" />
             Export
           </button>
