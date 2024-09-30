@@ -88,6 +88,7 @@
   })
 
   onDestroy(() => {
+    eventSource?.close()
     unsubscribePage()
   })
 
