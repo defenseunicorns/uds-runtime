@@ -1,23 +1,36 @@
 includes:
   - setup: ./setup.yaml
+  - build: ./build.yaml
 
 tasks:
+  - name: api-auth
+    description: "run end-to-end tests (assumes api server is running on port 8080)"
+    actions:
+      - task: build:ui
+      - cmd: npm run test:install # install playwright
+        dir: ui
+      - task: build:api
+      - task: setup:k3d
+      - task: deploy-load
+      - cmd: npm run test:api-auth
+        dir: ui
+
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
-      - task: setup:build-ui
+      - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
-      - task: setup:build-api
-      - cmd: |
-          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
+      - task: build:api
+      - task: setup:k3d
       - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
-  - name: go
+
+  - name: go-unit
     description: "run api server unit tests"
     actions:
-      - cmd: go test -failfast -v -timeout 30m ./...
+      - cmd: go test -failfast -v -timeout 30m --tags=unit ./...
 
   - name: ui-unit
     description: "run frontend unit tests"
@@ -28,10 +41,23 @@ tasks:
   - name: unit
     description: "run all unit tests (backend and frontend)"
     actions:
-      - task: setup:build-ui
+      - task: build:ui
         description: "build ui since embedded in main.go"
-      - task: go
+      - task: go-unit
       - task: ui-unit
+
+  - name: api
+    description: "run api server tests"
+    actions:
+      - description: "build ui since embedded in main.go"
+        task: build:ui
+      - task: setup:k3d
+      - task: deploy-load
+      - cmd: npm ci && npm run load:api
+        dir: hack/load-test
+      - cmd: uds zarf tools kubectl apply -f hack/load-test/rc.yaml
+        description: apply runtime class manually cause KFC is silly
+      - cmd: go test -failfast -v -timeout 30m --tags=integration ./...
 
   - name: deploy-load
     description: "deploy some Zarf packages to test against"
@@ -43,12 +69,56 @@ tasks:
   - name: deploy-min-core
     description: install min resources for UDS Core
     actions:
-      - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
-        description: clone UDS Core
+      # todo: refactor this with UDS functional layers: https://github.com/defenseunicorns/uds-runtime/issues/172
+      - task: setup:clone-core
       - cmd: npm ci && npx pepr deploy --confirm
         description: deploy UDS Core's Pepr module
         dir: tmp/uds-core
       - cmd: |
           helm repo add istio https://istio-release.storage.googleapis.com/charts
-          helm install istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
+          helm upgrade -i istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
         description: install Istio CRDs
+      - cmd: |
+          helm repo add minio https://charts.min.io/
+          helm upgrade -i -n uds-dev-stack minio minio/minio --create-namespace --set replicas=1 --set mode=standalone --set persistence.size=1Gi \
+            --set resources.requests.memory=256Mi --set resources.requests.cpu=100m
+        description: deploy minio to test PVCs
+
+  - name: smoke
+    description: "runtime nightly smoke tests"
+    actions:
+      - task: build:smoke-img-pkg
+      - task: setup:slim-cluster
+      - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst --confirm
+        dir: ${DIR}
+      - description: Validate Runtime Pod
+        wait:
+          cluster:
+            kind: Pod
+            name: app=uds-runtime
+            condition: Ready
+            namespace: uds-runtime
+        maxTotalSeconds: 30
+      - description: Validate Runtime Interface
+        wait:
+          network:
+            protocol: https
+            address: runtime.admin.uds.dev
+            code: 200
+        maxTotalSeconds: 20
+      - description: Verify Runtime is protected by checking redirect
+        maxRetries: 3
+        cmd: |
+          set -e
+          SSO_REDIRECT=$(uds zarf tools kubectl run curl-test --image=cgr.dev/chainguard/curl:latest -q --restart=Never --rm -i -- -Ls -o /dev/null -w %{url_effective} "https://runtime.admin.uds.dev")
+          case "${SSO_REDIRECT}" in
+          "https://sso.uds.dev"*)
+              echo "Protected by authservice"
+              ;;
+          *)
+              # Fallback option if the condition is false
+              echo "Runtime is not protected by authservice"
+              echo $SSO_REDIRECT
+              exit 1
+              ;;
+          esac

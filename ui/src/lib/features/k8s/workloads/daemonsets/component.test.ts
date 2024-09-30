@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
+import type { V1DaemonSet } from '@kubernetes/client-node'
 import {
   expectEqualIgnoringFields,
   MockResourceStore,
@@ -12,7 +13,7 @@ import {
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
-import type { V1DaemonSet } from '@kubernetes/client-node'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -97,7 +98,9 @@ suite('DaemonsetTable Component', () => {
 
   const store = createStore()
   const start = store.start as unknown as () => ResourceWithTable<V1DaemonSet, any>[]
-  expect(store.url).toEqual(`/api/v1/resources/workloads/daemonsets?dense=true`)
+  expect(store.url).toEqual(
+    `/api/v1/resources/workloads/daemonsets?fields=.metadata,.status,.spec.template.spec.nodeSelector`,
+  )
   // ignore creationTimestamp because age is not calculated at this point and added to the table
   expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })

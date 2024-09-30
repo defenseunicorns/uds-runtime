@@ -2,7 +2,7 @@ name: Nightly Release
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 9 * * *' # Runs at 9:00 AM UTC, which is 3:00 AM MT during Daylight Saving Time
+    - cron: "0 9 * * *" # Runs at 9:00 AM UTC, which is 3:00 AM MT during Daylight Saving Time
 
 permissions:
   contents: read
@@ -34,9 +34,16 @@ jobs:
       - name: Setup Environment (Go, Node, Homebrew, UDS CLI, k3d)
         uses: ./.github/actions/setup
 
+      - name: smoke-test
+        run: uds run test:smoke --set DIR=hack/smoke-test
+
       - name: Publish
         run: |
           uds run build:publish-uds-runtime --set REF=nightly-unstable --set DIR=hack/nightly
+
+      - name: Build binary artifacts
+        run: |
+          uds run build:all
 
       - name: Update nightly-unstable tag
         env:
@@ -46,7 +53,7 @@ jobs:
           # cleanup old release
           gh release delete nightly-unstable --cleanup-tag -y || true
           # generate new release
-          gh release create nightly-unstable ./build/zarf-package-uds-runtime-* \
+          gh release create nightly-unstable ./build/* ../../build/*\
             -t "nightly-unstable" \
             --prerelease \
             -n 'Nightly unstable build'

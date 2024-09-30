@@ -2,8 +2,10 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { beforeEach, vi } from 'vitest'
+import { SvelteComponent } from 'svelte'
 
+import type { V1Pod } from '@kubernetes/client-node'
+import StatusComponent from '$components/k8s/Status/component.svelte'
 import {
   expectEqualIgnoringFields,
   MockEventSource,
@@ -13,8 +15,8 @@ import {
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
-import type { V1Pod } from '@kubernetes/client-node'
-import { SvelteComponent } from 'svelte'
+import { beforeEach, vi } from 'vitest'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -29,15 +31,15 @@ suite('PodTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize'],
-      ['namespace'],
-      ['controlled_by'],
-      ['containers'],
-      ['status'],
-      ['restarts'],
-      ['metrics'],
-      ['node'],
-      ['age'],
+      ['name', 'emphasize w-3/12 truncate'],
+      ['namespace', 'w-2/12'],
+      ['controlled_by', 'w-1/12'],
+      ['containers', '1/12'],
+      ['status', 'w-1/12'],
+      ['restarts', 'w-1/12'],
+      ['usage', 'w-1/12'],
+      ['node', 'w-1/12 truncate'],
+      ['age', 'w-1/12'],
     ],
     name,
     description,
@@ -163,7 +165,7 @@ suite('PodTable Component', () => {
       },
       sort: 2,
     },
-    metrics: {
+    usage: {
       component: SvelteComponent,
       sort: 0,
       // metrics added by store.filterCallback (not currently called in this test)
@@ -171,7 +173,7 @@ suite('PodTable Component', () => {
     },
     restarts: 1,
     controlled_by: 'DaemonSet',
-    status: { component: SvelteComponent, props: { status: 'Running' } },
+    status: { component: StatusComponent, props: { type: 'Pod', status: 'Running' } },
     node: '',
   }
 
@@ -181,12 +183,12 @@ suite('PodTable Component', () => {
   expect(urlAssertionMock).toHaveBeenCalledWith(`/api/v1/resources/workloads/podmetrics`)
 
   const start = store.start as unknown as () => ResourceWithTable<V1Pod, any>[]
-  expect(store.url).toEqual('/api/v1/resources/workloads/pods')
+  expect(store.url).toEqual('/api/v1/resources/workloads/pods?fields=.metadata,.spec.nodeName,.status')
   // ignore creationTimestamp because age is not calculated at this point and added to the table
   expectEqualIgnoringFields(start()[0].table, expectedTable as unknown, [
     'creationTimestamp',
     'containers.component',
-    'metrics.component',
+    'usage.component',
     'status.component',
   ])
   vi.unstubAllGlobals()

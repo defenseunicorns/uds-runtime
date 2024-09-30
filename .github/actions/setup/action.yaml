@@ -10,17 +10,17 @@ runs:
         go-version: 1.21.x
 
     - name: Setup Node.js
-      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+      uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
       with:
-        node-version: 21.1.0
+        node-version: 22.9.0
 
     - name: Set up Homebrew
-      uses: Homebrew/actions/setup-homebrew@586516f25156b8094aeb6791d5f177c17250bc4b # master
+      uses: Homebrew/actions/setup-homebrew@00f483c95eacf401cf9f4aa3746964071a747334 # master
 
     - name: Install UDS CLI
       shell: bash
       # renovate: datasource=github-tags depName=defenseunicorns/uds-cli versioning=semver
-      run: brew install defenseunicorns/tap/uds@0.14.0
+      run: brew install defenseunicorns/tap/uds@0.16.0
 
     - name: Install Swagger CLI
       shell: bash
@@ -35,4 +35,4 @@ runs:
 
     - name: Install k3d
       shell: bash
-      run: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.6.3 bash
+      run: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.7.4 bash

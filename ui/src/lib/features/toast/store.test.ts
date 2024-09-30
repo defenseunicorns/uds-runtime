@@ -2,8 +2,10 @@
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
 import { get } from 'svelte/store'
+
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest'
-import { addToast, removeToast, toast, type Toast } from './store'
+
+import { addToast, getIdByMessage, removeToast, toast, type Toast } from './store'
 
 describe('Toast Store', () => {
   beforeEach(() => {
@@ -113,5 +115,13 @@ describe('Toast Store', () => {
     removeToast(12345) // Non-existent ID
 
     expect(get(toast)).toHaveLength(1)
+  })
+
+  test('gets toast id by message', () => {
+    const toast1: Toast = { message: 'Toast 1', timeoutSecs: 3, type: 'info' }
+    addToast(toast1)
+
+    const id = getIdByMessage('Toast 1')
+    expect(id).toBeDefined()
   })
 })

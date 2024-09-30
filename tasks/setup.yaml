@@ -1,40 +1,29 @@
 includes:
-  - common: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.11.2/tasks/setup.yaml
+  - common: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.13.0/tasks/setup.yaml
 
 tasks:
-  - name: build-api
-    description: "build the go api server for the local platform"
+  - name: full-core
+    description: "Create a k3d cluster and deploy full core dev"
     actions:
-      - cmd: go mod tidy
-      - cmd: CGO_ENABLED=0 go build -o ./build/uds-runtime .
-
-  - name: build-api-linux-amd64
-    description: "build the go api server for linux amd64 (used for multi-arch container)"
-    actions:
-      - cmd: CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o build/uds-runtime-amd64 .
-
-  - name: build-api-linux-arm64
-    description: "build the go api server for linux arm64 (used for multi-arch container)"
-    actions:
-      - cmd: CGO_ENABLED=0 GOARCH=arm64 GOOS=linux go build -o build/uds-runtime-arm64 .
-
-  - name: build-ui
-    description: "build ui"
-    actions:
-      - cmd: npm ci && npm run build
-        dir: ui
+      - task: commmon:k3d-full-cluster
 
   - name: slim-cluster
-    description: "Create a k3d cluster and deploy core slim dev with metrics server"
+    description: "Create a k3d cluster and deploy core slim dev with authsvc"
     actions:
       - task: common:k3d-test-cluster
       - task: clone-core
-      - task: metrics-server
+      - task: authsvc
 
   - name: simple-cluster
-    description: "Create a k3d cluster, no core"
+    description: "Create a uds-k3d cluster, no core"
     actions:
       - cmd: uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds-k3d:0.7.0 --confirm
+
+  - name: k3d
+    description: "start a plain k3d cluster"
+    actions:
+      - cmd: |
+          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
 
   - name: golangci
     description: "Install golangci-lint to GOPATH using install.sh"
@@ -42,14 +31,19 @@ tasks:
       - cmd: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.59.1
 
   - name: clone-core
-    description: "Clone uds-core for custom slim dev setup"
+    description: "Clone uds-core into tmp dir for custom slim dev setup"
     actions:
-      - cmd: rm -r uds-core || true
-      - cmd: git clone https://github.com/defenseunicorns/uds-core.git
-        dir: .github/
+      - cmd: rm -fr tmp && git clone --depth=1 https://github.com/defenseunicorns/uds-core.git tmp/uds-core
+        description: clone UDS Core
 
   - name: metrics-server
     description: "Create and deploy metrics server from cloned core"
     actions:
-      - cmd: uds zarf package create .github/uds-core/src/metrics-server --confirm --flavor upstream -o build/
-      - cmd: uds zarf package deploy build/zarf-package-uds-core-metrics-server*.tar.zst --confirm
+      - cmd: uds zarf package create tmp/uds-core/src/metrics-server --confirm --flavor upstream -o build/
+      - cmd: uds zarf package deploy build/zarf-package-uds-core-metrics-server*.tar.zst --components=metrics-server --confirm
+
+  - name: authsvc
+    description: "Create and deploy authsvc from cloned core"
+    actions:
+      - cmd: uds zarf package create tmp/uds-core/src/authservice --confirm --flavor upstream -o build/
+      - cmd: uds zarf package deploy build/zarf-package-uds-core-authservice*.tar.zst --confirm

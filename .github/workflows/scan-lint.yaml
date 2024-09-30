@@ -1,4 +1,4 @@
-name: Validate Lint
+name: Lint
 on:
   pull_request:
     branches: [main]
@@ -28,7 +28,7 @@ jobs:
 
       # build ui so ui/build exists when pre-commit runs
       - name: build-ui
-        run: uds run setup:build-ui
+        run: uds run build:ui
 
       - name: Run pre-commit
         uses: pre-commit/action@f7acafac0271bdd064cdfa1b13f17b4350e565ed #

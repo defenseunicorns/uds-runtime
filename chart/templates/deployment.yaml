@@ -22,8 +22,11 @@ spec:
             - containerPort: 8080
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "250m"
+              memory: {{ .Values.resources.requests.memory | quote }}
+              cpu: {{ .Values.resources.requests.cpu | quote }}
             limits:
-              memory: "512Mi"
-              cpu: "750m"
+              memory: {{ .Values.resources.limits.memory | quote }}
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+          env:
+            - name: AUTH_SVC_ENABLED
+              value: {{ .Values.sso.enabled | quote }}

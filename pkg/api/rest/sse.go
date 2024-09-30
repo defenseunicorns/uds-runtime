@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-package sse
+package rest
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -21,7 +20,7 @@ func WriteHeaders(w http.ResponseWriter) {
 }
 
 // Handler is a generic SSE handler that sends data to the client
-func Handler(w http.ResponseWriter, r *http.Request, getData func(string, string) []unstructured.Unstructured, changes <-chan struct{}) {
+func Handler(w http.ResponseWriter, r *http.Request, getData func(string, string) []unstructured.Unstructured, changes <-chan struct{}, fieldsList []string) {
 	WriteHeaders(w)
 
 	// Ensure the ResponseWriter supports flushing
@@ -60,7 +59,7 @@ func Handler(w http.ResponseWriter, r *http.Request, getData func(string, string
 		defer flusher.Flush()
 
 		// Convert the data to JSON
-		data, err := json.Marshal(getData(namespace, namePartial))
+		data, err := jsonMarshal(getData(namespace, namePartial), fieldsList)
 		if err != nil {
 			fmt.Fprintf(w, "data: Error: %v\n\n", err)
 			return

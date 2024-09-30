@@ -1,11 +1,14 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	"github.com/defenseunicorns/uds-runtime/pkg/api/sse"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
 )
 
 // @Description Get Nodes
@@ -18,8 +21,9 @@ import (
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getNodes(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Nodes)
+	return rest.Bind(cache.Nodes)
 }
 
 // @Description Get Node by UID
@@ -32,8 +36,9 @@ func getNodes(cache *resources.Cache) func(w http.ResponseWriter, r *http.Reques
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getNode(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Nodes)
+	return rest.Bind(cache.Nodes)
 }
 
 // @Description Get Events
@@ -46,8 +51,9 @@ func getNode(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getEvents(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Events)
+	return rest.Bind(cache.Events)
 }
 
 // @Description Get Event by UID
@@ -60,8 +66,9 @@ func getEvents(cache *resources.Cache) func(w http.ResponseWriter, r *http.Reque
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getEvent(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Events)
+	return rest.Bind(cache.Events)
 }
 
 // @Description Get Namespaces
@@ -74,8 +81,9 @@ func getEvent(cache *resources.Cache) func(w http.ResponseWriter, r *http.Reques
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getNamespaces(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Namespaces)
+	return rest.Bind(cache.Namespaces)
 }
 
 // @Description Get Namespace by UID
@@ -88,8 +96,9 @@ func getNamespaces(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getNamespace(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Namespaces)
+	return rest.Bind(cache.Namespaces)
 }
 
 // @Description Get Pods
@@ -102,8 +111,9 @@ func getNamespace(cache *resources.Cache) func(w http.ResponseWriter, r *http.Re
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPods(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Pods)
+	return rest.Bind(cache.Pods)
 }
 
 // @Description Get Pod by UID
@@ -116,8 +126,9 @@ func getPods(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPod(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Pods)
+	return rest.Bind(cache.Pods)
 }
 
 // @Description Get Deployments
@@ -130,8 +141,9 @@ func getPod(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getDeployments(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Deployments)
+	return rest.Bind(cache.Deployments)
 }
 
 // @Description Get Deployment by UID
@@ -144,8 +156,9 @@ func getDeployments(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getDeployment(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Deployments)
+	return rest.Bind(cache.Deployments)
 }
 
 // @Description Get Daemonsets
@@ -158,8 +171,9 @@ func getDeployment(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getDaemonsets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Daemonsets)
+	return rest.Bind(cache.Daemonsets)
 }
 
 // @Description Get Daemonset by UID
@@ -172,8 +186,9 @@ func getDaemonsets(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getDaemonset(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Daemonsets)
+	return rest.Bind(cache.Daemonsets)
 }
 
 // @Description Get Statefulsets
@@ -186,8 +201,9 @@ func getDaemonset(cache *resources.Cache) func(w http.ResponseWriter, r *http.Re
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getStatefulsets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Statefulsets)
+	return rest.Bind(cache.Statefulsets)
 }
 
 // @Description Get Statefulset by UID
@@ -200,8 +216,9 @@ func getStatefulsets(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getStatefulset(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Statefulsets)
+	return rest.Bind(cache.Statefulsets)
 }
 
 // @Description Get Jobs
@@ -214,8 +231,9 @@ func getStatefulset(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getJobs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Jobs)
+	return rest.Bind(cache.Jobs)
 }
 
 // @Description Get Job by UID
@@ -228,8 +246,9 @@ func getJobs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Jobs)
+	return rest.Bind(cache.Jobs)
 }
 
 // @Description Get CronJobs
@@ -242,8 +261,9 @@ func getJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getCronJobs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.CronJobs)
+	return rest.Bind(cache.CronJobs)
 }
 
 // @Description Get CronJob by UID
@@ -256,8 +276,9 @@ func getCronJobs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Req
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getCronJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.CronJobs)
+	return rest.Bind(cache.CronJobs)
 }
 
 // @Description Get PodMetrics
@@ -267,7 +288,7 @@ func getCronJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Success 200
 // @Router /resources/workloads/podmetrics [get]
 func getPodMetrics(w http.ResponseWriter, r *http.Request, cache *resources.Cache) {
-	sse.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges)
+	rest.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges, nil)
 }
 
 // @Description Get UDS Packages
@@ -280,8 +301,9 @@ func getPodMetrics(w http.ResponseWriter, r *http.Request, cache *resources.Cach
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.UDSPackages)
+	return rest.Bind(cache.UDSPackages)
 }
 
 // @Description Get UDS Package by UID
@@ -294,8 +316,9 @@ func getUDSPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSPackage(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.UDSPackages)
+	return rest.Bind(cache.UDSPackages)
 }
 
 // @Description Get UDS Exemptions
@@ -308,8 +331,9 @@ func getUDSPackage(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSExemptions(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.UDSExemptions)
+	return rest.Bind(cache.UDSExemptions)
 }
 
 // @Description Get UDS Exemption by UID
@@ -322,8 +346,9 @@ func getUDSExemptions(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSExemption(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.UDSExemptions)
+	return rest.Bind(cache.UDSExemptions)
 }
 
 // @Description Get ConfigMaps
@@ -336,8 +361,9 @@ func getUDSExemption(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getConfigMaps(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Configmaps)
+	return rest.Bind(cache.Configmaps)
 }
 
 // @Description Get ConfigMap by UID
@@ -350,8 +376,9 @@ func getConfigMaps(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getConfigMap(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Configmaps)
+	return rest.Bind(cache.Configmaps)
 }
 
 // @Description Get Secrets
@@ -364,8 +391,9 @@ func getConfigMap(cache *resources.Cache) func(w http.ResponseWriter, r *http.Re
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getSecrets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Secrets)
+	return rest.Bind(cache.Secrets)
 }
 
 // @Description Get Secret by UID
@@ -378,8 +406,9 @@ func getSecrets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getSecret(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Secrets)
+	return rest.Bind(cache.Secrets)
 }
 
 // @Description Get MutatingWebhooks
@@ -392,8 +421,9 @@ func getSecret(cache *resources.Cache) func(w http.ResponseWriter, r *http.Reque
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getMutatingWebhooks(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.MutatingWebhooks)
+	return rest.Bind(cache.MutatingWebhooks)
 }
 
 // @Description Get MutatingWebhook by UID
@@ -406,8 +436,9 @@ func getMutatingWebhooks(cache *resources.Cache) func(w http.ResponseWriter, r *
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getMutatingWebhook(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.MutatingWebhooks)
+	return rest.Bind(cache.MutatingWebhooks)
 }
 
 // @Description Get ValidatingWebhooks
@@ -420,8 +451,9 @@ func getMutatingWebhook(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getValidatingWebhooks(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.ValidatingWebhooks)
+	return rest.Bind(cache.ValidatingWebhooks)
 }
 
 // @Description Get ValidatingWebhook by UID
@@ -434,8 +466,9 @@ func getValidatingWebhooks(cache *resources.Cache) func(w http.ResponseWriter, r
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getValidatingWebhook(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.ValidatingWebhooks)
+	return rest.Bind(cache.ValidatingWebhooks)
 }
 
 // @Description Get HPAs
@@ -448,8 +481,9 @@ func getValidatingWebhook(cache *resources.Cache) func(w http.ResponseWriter, r 
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getHPAs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.HPAs)
+	return rest.Bind(cache.HPAs)
 }
 
 // @Description Get HPA by UID
@@ -462,8 +496,9 @@ func getHPAs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getHPA(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.HPAs)
+	return rest.Bind(cache.HPAs)
 }
 
 // @Description Get PriorityClasses
@@ -476,8 +511,9 @@ func getHPA(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPriorityClasses(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.PriorityClasses)
+	return rest.Bind(cache.PriorityClasses)
 }
 
 // @Description Get PriorityClass by UID
@@ -490,8 +526,9 @@ func getPriorityClasses(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPriorityClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.PriorityClasses)
+	return rest.Bind(cache.PriorityClasses)
 }
 
 // @Description Get RuntimeClasses
@@ -504,8 +541,9 @@ func getPriorityClass(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getRuntimeClasses(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.RuntimeClasses)
+	return rest.Bind(cache.RuntimeClasses)
 }
 
 // @Description Get RuntimeClass by UID
@@ -518,8 +556,9 @@ func getRuntimeClasses(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getRuntimeClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.RuntimeClasses)
+	return rest.Bind(cache.RuntimeClasses)
 }
 
 // @Description Get PodDisruptionBudgets
@@ -532,8 +571,9 @@ func getRuntimeClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPodDisruptionBudgets(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.PodDisruptionBudgets)
+	return rest.Bind(cache.PodDisruptionBudgets)
 }
 
 // @Description Get PodDisruptionBudget by UID
@@ -546,8 +586,9 @@ func getPodDisruptionBudgets(cache *resources.Cache) func(w http.ResponseWriter,
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPodDisruptionBudget(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.PodDisruptionBudgets)
+	return rest.Bind(cache.PodDisruptionBudgets)
 }
 
 // @Description Get LimitRanges
@@ -560,8 +601,9 @@ func getPodDisruptionBudget(cache *resources.Cache) func(w http.ResponseWriter, 
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getLimitRanges(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.LimitRanges)
+	return rest.Bind(cache.LimitRanges)
 }
 
 // @Description Get LimitRange by UID
@@ -574,8 +616,9 @@ func getLimitRanges(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getLimitRange(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.LimitRanges)
+	return rest.Bind(cache.LimitRanges)
 }
 
 // @Description Get ResourceQuotas
@@ -588,8 +631,9 @@ func getLimitRange(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getResourceQuotas(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.ResourceQuotas)
+	return rest.Bind(cache.ResourceQuotas)
 }
 
 // @Description Get ResourceQuota by UID
@@ -602,8 +646,9 @@ func getResourceQuotas(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getResourceQuota(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.ResourceQuotas)
+	return rest.Bind(cache.ResourceQuotas)
 }
 
 // @Description Get Services
@@ -616,8 +661,9 @@ func getResourceQuota(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getServices(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Services)
+	return rest.Bind(cache.Services)
 }
 
 // @Description Get Service by UID
@@ -630,8 +676,9 @@ func getServices(cache *resources.Cache) func(w http.ResponseWriter, r *http.Req
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getService(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Services)
+	return rest.Bind(cache.Services)
 }
 
 // @Description Get NetworkPolicies
@@ -644,8 +691,9 @@ func getService(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getNetworkPolicies(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.NetworkPolicies)
+	return rest.Bind(cache.NetworkPolicies)
 }
 
 // @Description Get NetworkPolicy by UID
@@ -658,8 +706,9 @@ func getNetworkPolicies(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getNetworkPolicy(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.NetworkPolicies)
+	return rest.Bind(cache.NetworkPolicies)
 }
 
 // @Description Get Endpoints
@@ -672,8 +721,9 @@ func getNetworkPolicy(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getEndpoints(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Endpoints)
+	return rest.Bind(cache.Endpoints)
 }
 
 // @Description Get Endpoint by UID
@@ -686,8 +736,9 @@ func getEndpoints(cache *resources.Cache) func(w http.ResponseWriter, r *http.Re
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getEndpoint(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.Endpoints)
+	return rest.Bind(cache.Endpoints)
 }
 
 // @Description Get VirtualServices
@@ -700,8 +751,9 @@ func getEndpoint(cache *resources.Cache) func(w http.ResponseWriter, r *http.Req
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getVirtualServices(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.VirtualServices)
+	return rest.Bind(cache.VirtualServices)
 }
 
 // @Description Get VirtualService by UID
@@ -714,8 +766,9 @@ func getVirtualServices(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getVirtualService(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.VirtualServices)
+	return rest.Bind(cache.VirtualServices)
 }
 
 // @Description Get PersistentVolumes
@@ -728,8 +781,9 @@ func getVirtualService(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPersistentVolumes(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.PersistentVolumes)
+	return rest.Bind(cache.PersistentVolumes)
 }
 
 // @Description Get PersistentVolume by UID
@@ -742,8 +796,9 @@ func getPersistentVolumes(cache *resources.Cache) func(w http.ResponseWriter, r 
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPersistentVolume(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.PersistentVolumes)
+	return rest.Bind(cache.PersistentVolumes)
 }
 
 // @Description Get PersistentVolumeClaims
@@ -756,8 +811,9 @@ func getPersistentVolume(cache *resources.Cache) func(w http.ResponseWriter, r *
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPersistentVolumeClaims(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.PersistentVolumeClaims)
+	return rest.Bind(cache.PersistentVolumeClaims)
 }
 
 // @Description Get PersistentVolumeClaim by UID
@@ -770,8 +826,9 @@ func getPersistentVolumeClaims(cache *resources.Cache) func(w http.ResponseWrite
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getPersistentVolumeClaim(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.PersistentVolumeClaims)
+	return rest.Bind(cache.PersistentVolumeClaims)
 }
 
 // @Description Get StorageClasses
@@ -784,8 +841,9 @@ func getPersistentVolumeClaim(cache *resources.Cache) func(w http.ResponseWriter
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getStorageClasses(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.StorageClasses)
+	return rest.Bind(cache.StorageClasses)
 }
 
 // @Description Get StorageClass by UID
@@ -798,6 +856,93 @@ func getStorageClasses(cache *resources.Cache) func(w http.ResponseWriter, r *ht
 // @Param dense query bool false "Send the data in dense format"
 // @Param namespace query string false "Filter by namespace"
 // @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return sse.Bind(cache.StorageClasses)
+	return rest.Bind(cache.StorageClasses)
+}
+
+// @Description Get Cluster Connection Health
+// @Tags cluster-health
+// @Produce  json
+// @Success 200
+// @Router /health [get]
+func checkHealth(k8sResources *K8sResources, disconnected chan error) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Set headers to keep connection alive
+		rest.WriteHeaders(w)
+
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+
+		recovering := false
+
+		// Function to check the cluster health when running out of cluster
+		checkCluster := func() {
+			versionInfo, err := k8sResources.client.Clientset.ServerVersion()
+			response := map[string]string{}
+
+			// if err then connection is lost
+			if err != nil {
+				response["error"] = err.Error()
+				w.WriteHeader(http.StatusInternalServerError)
+				disconnected <- err
+				// indicate that the reconnection handler should have been triggered by the disconnected channel
+				recovering = true
+			} else if recovering {
+				// if errors are resolved, send a reconnected message
+				response["reconnected"] = versionInfo.String()
+				recovering = false
+			} else {
+				response["success"] = versionInfo.String()
+				w.WriteHeader(http.StatusOK)
+			}
+
+			data, err := json.Marshal(response)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
+				return
+			}
+
+			// Write the data to the response
+			fmt.Fprintf(w, "data: %s\n\n", data)
+
+			// Flush the response to ensure it is sent to the client
+			if flusher, ok := w.(http.Flusher); ok {
+				flusher.Flush()
+			}
+		}
+
+		// DON'T return error to user in case sensitive
+		inCluster, _ := isRunningInCluster()
+		// If running in cluster don't check for version and send error or reconnected events
+		if inCluster {
+			checkCluster = func() {
+				response := map[string]string{
+					"success": "in-cluster",
+				}
+				data, _ := json.Marshal(response)
+				// Write the data to the response
+				fmt.Fprintf(w, "data: %s\n\n", data)
+
+				// Flush the response to ensure it is sent to the client
+				if flusher, ok := w.(http.Flusher); ok {
+					flusher.Flush()
+				}
+			}
+		}
+
+		// Check the cluster immediately
+		checkCluster()
+
+		for {
+			select {
+			case <-ticker.C:
+				checkCluster()
+
+			case <-r.Context().Done():
+				// Client closed the connection
+				return
+			}
+		}
+	}
 }

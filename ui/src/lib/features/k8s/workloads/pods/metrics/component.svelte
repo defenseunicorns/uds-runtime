@@ -3,6 +3,7 @@
 
 <script lang="ts">
   import type { ContainerMetric } from '@kubernetes/client-node'
+
   import { formatCPU, formatMemory, parseCPU, parseMemory } from './utils'
 
   export let containers: ContainerMetric[] = []

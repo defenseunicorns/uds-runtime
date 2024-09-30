@@ -1,4 +1,4 @@
-name: PR Tests
+name: Tests
 on:
   workflow_call:
   pull_request:
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        type: [unit, e2e]
+        type: [unit, e2e, api]
     steps:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -42,10 +42,10 @@ jobs:
 
       - name: Debug Output
         if: ${{ matrix.type == 'e2e'}}
-        uses: defenseunicorns/uds-common/.github/actions/debug-output@76287d41ec5f06ecbdd0a6453877a78675aceffe # v0.11.2
+        uses: defenseunicorns/uds-common/.github/actions/debug-output@ea9db8ab9bfc4a5d87acd7d1af385aa8e44206d3 # v0.13.0
 
       - name: Save logs
         if: always()
-        uses: defenseunicorns/uds-common/.github/actions/save-logs@76287d41ec5f06ecbdd0a6453877a78675aceffe # v0.11.2
+        uses: defenseunicorns/uds-common/.github/actions/save-logs@ea9db8ab9bfc4a5d87acd7d1af385aa8e44206d3 # v0.13.0
         with:
           suffix: ${{ matrix.type }}

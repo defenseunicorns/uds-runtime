@@ -2,9 +2,21 @@ replicaCount: 1
 image:
   repository: ghcr.io/defenseunicorns/uds-runtime
   # x-release-please-start-version
-  tag: 0.2.0
+  tag: 0.5.0
   # x-release-please-end
   pullPolicy: IfNotPresent
+sso:
+  enabled: true
 package:
   gateway: admin
   host: runtime
+  domain: "###ZARF_VAR_DOMAIN###"
+
+# Default requests and limits when running only uds-core (increase for production)
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "750m"

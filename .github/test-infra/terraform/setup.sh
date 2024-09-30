@@ -4,10 +4,10 @@
 git clone https://github.com/defenseunicorns/uds-k3d.git
 
 # Define the file path
- file_path="uds-k3d/chart/templates/nginx.yaml"
+file_path="uds-k3d/chart/templates/nginx.yaml"
 
 # # Replace 'uds.dev' with 'exploding.boats'
- sed -i 's/uds\.dev/burning.boats/g' "$file_path"
+sed -i 's/uds\.dev/burning.boats/g' "$file_path"
 
 # # Deploy cluster
 cd uds-k3d && uds run
@@ -31,8 +31,14 @@ TLS_KEY=$(aws secretsmanager get-secret-value --secret-id "runtime-tls-key" --qu
 
 export UDS_ADMIN_TLS_CERT=$TLS_CERT
 export UDS_ADMIN_TLS_KEY=$TLS_KEY
+
+# Enable TLS 1.2 support for admin gateway to support route53 health checks:
+# https://docs.aws.amazon.com/Route53/latest/APIReference/API_HealthCheckConfig.html
+export UDS_ADMIN_TLS1_2_SUPPORT=true
+
 export UDS_TENANT_TLS_CERT=$TLS_CERT
 export UDS_TENANT_TLS_KEY=$TLS_KEY
 
-uds deploy ghcr.io/defenseunicorns/packages/uds/bundles/k3d-core-demo:0.25.2 --packages=init,core --set DOMAIN=burning.boats --confirm
+# k3d-core-demo:latest >= 0.27.3 deploys runtime on admin gateway. deploying nightly unstable afterward overwrites and redeploys runtime on tenant gateway without authsvc
+uds deploy k3d-core-demo:latest --packages=init,core --set DOMAIN=burning.boats --confirm
 uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime:nightly-unstable --confirm

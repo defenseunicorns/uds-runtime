@@ -2,15 +2,17 @@
 <!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
 
 <script lang="ts">
-  import type { KubernetesObject } from '@kubernetes/client-node'
+  import { onMount } from 'svelte'
+
+  import type { CoreV1Event, KubernetesObject } from '@kubernetes/client-node'
+  import { goto } from '$app/navigation'
+  import { EventList } from '$components'
   import { Close } from 'carbon-icons-svelte'
   import DOMPurify from 'dompurify'
   import hljs from 'highlight.js/lib/core'
   import yaml from 'highlight.js/lib/languages/yaml'
-  import { onMount } from 'svelte'
   import * as YAML from 'yaml'
 
-  import { goto } from '$app/navigation'
   import './styles.postcss'
 
   export let resource: KubernetesObject
@@ -18,12 +20,21 @@
 
   type Tab = 'metadata' | 'yaml' | 'events'
 
+  let events: CoreV1Event[] = []
+
   onMount(() => {
     // initialize highlight language
     hljs.registerLanguage('yaml', yaml)
 
+    const path: string = '/api/v1/resources/events?fields=.count,.involvedObject,.message,.source,.type'
+    const eventSource = new EventSource(path)
+
+    eventSource.onmessage = (event) => {
+      events = JSON.parse(event.data) as CoreV1Event[]
+    }
+
     const handleKeydown = (e: KeyboardEvent) => {
-      const tabList: Tab[] = ['metadata', 'yaml', 'events']
+      const tabList: Tab[] = ['metadata', 'events', 'yaml']
       let targetTab: string | undefined
 
       switch (e.key) {
@@ -55,6 +66,7 @@
     // Clean up the event listener when the component is destroyed
     return () => {
       window.removeEventListener('keydown', handleKeydown)
+      eventSource.close()
     }
   })
 
@@ -77,7 +89,7 @@
 
   let activeTab: Tab = 'metadata'
 
-  function setActiveTab(evt: Event) {
+  function setActiveTab(evt: MouseEvent) {
     const target = evt.target as HTMLButtonElement
     activeTab = target.id as Tab
   }
@@ -111,6 +123,9 @@
             <button id="metadata" class:active={activeTab === 'metadata'} on:click={setActiveTab}>Metadata</button>
           </li>
           <li class="flex-1">
+            <button id="events" class:active={activeTab === 'events'} on:click={setActiveTab}>Events</button>
+          </li>
+          <li class="flex-1">
             <button id="yaml" class:active={activeTab === 'yaml'} on:click={setActiveTab}>YAML</button>
           </li>
         </ul>
@@ -119,7 +134,7 @@
 
     <!-- Content -->
 
-    <div class="flex-grow overflow-y-auto dark:text-gray-300">
+    <div class="flex-grow overflow-y-auto dark:text-gray-300 pb-20">
       {#if activeTab === 'metadata'}
         <!-- Metadata tab -->
         <div class="bg-gray-800 text-gray-200 p-6 rounded-lg">
@@ -158,18 +173,15 @@
             {/if}
           </dl>
         </div>
+      {:else if activeTab === 'events'}
+        <EventList {events} {resource} />
       {:else if activeTab === 'yaml'}
         <!-- YAML tab -->
-        <div class="text-gray-200 p-4 pb-20">
+        <div class="text-gray-200 p-4">
           <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre w-full block">
             <!-- We turned off svelte/no-at-html-tags eslint rule because we are using DOMPurify to sanitize -->
             {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(resource), { language: 'yaml' }).value)}
           </code>
-        </div>
-      {:else if activeTab === 'events'}
-        <!-- Events tab -->
-        <div class="bg-gray-800 text-gray-200 p-6 rounded-lg shadow-lg">
-          <p>Events tab content</p>
         </div>
       {/if}
     </div>

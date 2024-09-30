@@ -4,15 +4,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
+import type { V1PersistentVolumeClaim } from '@kubernetes/client-node'
+import StatusComponent from '$components/k8s/Status/component.svelte'
 import {
   expectEqualIgnoringFields,
+  MockEventSource,
   MockResourceStore,
   testK8sTableWithCustomColumns,
   testK8sTableWithDefaults,
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
-import type { V1PersistentVolumeClaim } from '@kubernetes/client-node'
+import { vi } from 'vitest'
+
 import Component from './component.svelte'
 import { createStore } from './store'
 
@@ -26,12 +30,24 @@ suite('PersistentVolumeClaim Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['namespace'], ['storage_class'], ['capacity'], ['age'], ['status']],
+    columns: [['name', 'emphasize'], ['namespace'], ['storage_class'], ['capacity'], ['pods'], ['age'], ['status']],
     name,
     description,
   })
 
   testK8sTableWithCustomColumns(Component, { createStore, name, description })
+
+  const urlAssertionMock = vi.fn().mockImplementation((url: string) => {
+    console.log(url)
+  })
+
+  vi.stubGlobal(
+    'EventSource',
+    vi
+      .fn()
+      // pods EventSource is created first in createStore()
+      .mockImplementationOnce((url: string) => new MockEventSource(url, urlAssertionMock)),
+  )
 
   vi.mock('../../store.ts', async (importOriginal) => {
     const mockData = [
@@ -67,13 +83,15 @@ suite('PersistentVolumeClaim Component', () => {
       namespace: 'loki',
       storage_class: 'local-path',
       capacity: '10Gi',
-      status: 'Bound',
+      status: { component: StatusComponent, props: { type: 'PersistentVolumeClaims', status: 'Bound' } },
     },
   ]
 
   const store = createStore()
   const start = store.start as unknown as () => ResourceWithTable<V1PersistentVolumeClaim, any>[]
   expect(store.url).toEqual(`/api/v1/resources/storage/persistentvolumeclaims?dense=true`)
-  // ignore creationTimestamp because age is not calculated at this point and added to the table
-  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
+
+  // ignore creationTimestamp and pods because neither are calculated at this point and added to the table
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp', 'status.component'])
+  vi.unstubAllGlobals()
 })

@@ -3,15 +3,19 @@ metadata:
   name: uds-runtime
   description: tbd
   # x-release-please-start-version
-  version: 0.2.0
+  version: 0.5.0
   # x-release-please-end
+
+variables:
+  - name: DOMAIN
+    default: "uds.dev"
 
 components:
   - name: uds-runtime
     required: true
     # x-release-please-start-version
     images:
-      - ghcr.io/defenseunicorns/uds-runtime:0.2.0
+      - ghcr.io/defenseunicorns/uds-runtime:0.5.0
     # x-release-please-end
     charts:
       - name: uds-runtime

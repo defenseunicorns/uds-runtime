@@ -4,6 +4,8 @@
 import flowbitePlugin from 'flowbite/plugin'
 import type { Config } from 'tailwindcss'
 
+const TAILWIND_SIZE_OPTIONS = [16, 20, 24, 28, 32, 36, 40, 44, 48] as const
+
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}', './node_modules/flowbite/**/*.js'],
 
@@ -49,4 +51,5 @@ export default {
   variants: {},
 
   plugins: [flowbitePlugin],
+  safelist: TAILWIND_SIZE_OPTIONS.map((item: number) => `h-${item}`),
 } as Config

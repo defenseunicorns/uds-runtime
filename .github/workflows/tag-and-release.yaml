@@ -43,6 +43,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: smoke-test
+        run: uds run test:smoke --set DIR=hack/smoke-test
+
       - name: Publish
         run: |
           uds run build:publish-uds-runtime
+
+      - name: Build binary artifacts
+        run: |
+          uds run build:all
+
+      - name: Upload Release Artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        if: ${{ needs.tag-new-version.outputs.release_created }}
+        run: gh release upload v${{ needs.tag-new-version.outputs.release_tag }} ./build/*

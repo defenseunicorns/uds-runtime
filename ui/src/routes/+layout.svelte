@@ -3,23 +3,44 @@
 
 <script lang="ts">
   import 'flowbite'
-  import { initFlowbite } from 'flowbite'
-  import { onMount } from 'svelte'
+
+  import { onDestroy, onMount } from 'svelte'
 
   import { afterNavigate } from '$app/navigation'
+  import { authenticated } from '$features/api-auth/store'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
+  import { initFlowbite } from 'flowbite'
+
   import '../app.postcss'
+
+  import { checkClusterConnection } from '$lib/utils/cluster-check/cluster-check'
+
+  let clusterCheck: EventSource
 
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
-  onMount(initFlowbite)
+  onMount(() => {
+    initFlowbite()
+  })
+
+  onDestroy(() => {
+    if (clusterCheck) clusterCheck.close()
+  })
+
   afterNavigate(initFlowbite)
+
+  $: if ($authenticated) {
+    clusterCheck = checkClusterConnection()
+  }
 </script>
 
 <Navbar />
 
-<Sidebar />
+<!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
+{#if $authenticated}
+  <Sidebar />
+{/if}
 
 <main
   class="flex h-screen flex-col pt-16 transition-all duration-300 ease-in-out {$isSidebarExpanded

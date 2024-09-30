@@ -4,18 +4,44 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Navigation', async () => {
-  // podinfo is deployed into the test cluster, we will use this to check if various pages render correctly
-  const query = 'podinfo'
-
   test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({
+      width: 3024,
+      height: 1964,
+    })
+
     await page.goto('/')
   })
 
   test('Overview page', async ({ page }) => {
     await page.getByRole('link', { name: 'Overview' }).click()
 
-    const nodeCountEl = page.getByTestId(`node-count`)
+    const nodeCountEl = page.getByTestId('resource-count-nodes')
     await expect(nodeCountEl).toHaveText('1')
+
+    const card = page.getByTestId('card-container')
+
+    await expect(card.getByText('Pods running in cluster')).toBeVisible()
+    await expect(card.getByText('Nodes running in cluster')).toBeVisible()
+    await expect(card.getByText('CPU Usage')).toBeVisible()
+    await expect(card.getByText('Memory Usage')).toBeVisible()
+  })
+
+  test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
+    // get pod count from overview page
+    await page.getByRole('link', { name: 'Overview' }).click()
+    const overviewPodCount = await page.getByTestId('resource-count-pods').textContent()
+
+    // navigate to pods page and get pod count
+    await page.goto('/workloads/pods')
+    await page.waitForSelector('.emphasize:has-text("podinfo")') // wait for pods to render
+    let podCount = await page.getByTestId('table-header-results').textContent()
+    expect(podCount).not.toBeNull()
+
+    // remove parentheses
+    podCount = podCount!.replace(/\(|\)/g, '')
+
+    await expect(overviewPodCount).toEqual(podCount)
   })
 
   test.describe('navigates to Applications', async () => {
@@ -23,9 +49,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Applications' }).click()
       await page.getByRole('link', { name: 'Packages' }).click()
 
-      const query = 'podinfo-test' // package name
-      const element = page.locator(`.emphasize:has-text("${query}")`)
-      await expect(element).toBeVisible()
+      await expect(page.getByTestId('podinfo-test-testid-1')).toHaveText('podinfo-test')
     })
   })
 
@@ -35,8 +59,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('link', { name: 'Pepr' }).click()
 
       const query = 'uds-policy-exemptions/podinfo2' // package name
-      const element = page.locator(`td:has-text("${query}")`).first()
-      await expect(element).toBeVisible()
+      await expect(page.getByTestId(`pepr-resource-${query}`)).toHaveText(query)
     })
 
     test('Events page', async ({ page }) => {
@@ -50,7 +73,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Pods' }).click()
 
-      const element = page.locator(`.emphasize:has-text("${query}")`)
+      const element = page.locator(`.emphasize:has-text("podinfo")`).first()
       await expect(element).toBeVisible()
     })
 
@@ -58,8 +81,7 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Workloads' }).click()
       await page.getByRole('link', { name: 'Deployments' }).click()
 
-      const element = page.locator(`.emphasize:has-text("${query}")`)
-      await expect(element).toBeVisible()
+      await expect(page.getByTestId('podinfo-testid-1')).toHaveText('podinfo')
     })
 
     test('DaemonSets page', async ({ page }) => {
@@ -88,21 +110,17 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Packages' }).click()
 
-      const element = page.locator(`.emphasize:has-text("${query}")`)
-      await expect(element).toBeVisible()
+      await expect(page.getByTestId('podinfo-testid-1')).toHaveText('podinfo')
     })
 
     test('UDS Exemptions page', async ({ page }) => {
       await page.getByRole('button', { name: 'Config' }).click()
       await page.getByRole('link', { name: 'UDS Exemptions' }).click()
 
-      let query = 'podinfo2' // exemption name
-      let element = page.locator(`.emphasize:has-text("${query}")`)
-      await expect(element).toBeVisible()
+      await expect(page.getByTestId('podinfo2-testid-1')).toHaveText('podinfo2')
 
-      query = '- RequireNonRootUser' // exemption policy name
-      element = page.locator(`td:has-text("${query}")`)
-      await expect(element).toBeVisible()
+      const policy = 'RequireNonRootUser'
+      await expect(page.getByTestId(`${policy}-list-item-test-id`)).toHaveText(`- ${policy}`)
     })
 
     test('ConfigMaps page', async ({ page }) => {
@@ -173,9 +191,9 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Network Policies' }).click()
 
-      const query = 'allow-podinfo-egress-dns-lookup-via-coredns' // network policy name
-      const element = page.locator(`.emphasize:has-text("${query}")`).first()
-      await expect(element).toBeVisible()
+      await expect(page.getByTestId('allow-podinfo-egress-dns-lookup-via-coredns-testid-1')).toHaveText(
+        'allow-podinfo-egress-dns-lookup-via-coredns',
+      )
     })
 
     test('Endpoints page', async ({ page }) => {
@@ -193,6 +211,7 @@ test.describe('Navigation', async () => {
     test('Persistent Volume Claims page', async ({ page }) => {
       await page.getByRole('button', { name: 'Storage' }).click()
       await page.getByRole('link', { name: 'Persistent Volume Claims' }).click()
+      await expect(page.getByText('minio-')).toBeVisible() // ensure pods have rendered
     })
 
     test('Storage Classes page', async ({ page }) => {
@@ -204,33 +223,30 @@ test.describe('Navigation', async () => {
   test('navigates to Namespaces page', async ({ page }) => {
     await page.getByRole('link', { name: 'Namespaces' }).click()
 
-    const element = page.locator(`.emphasize:has-text("${query}")`).first()
-    await expect(element).toBeVisible()
+    await expect(page.getByTestId('podinfo-testid-1')).toHaveText('podinfo')
   })
 
   test('navigates to Nodes page', async ({ page }) => {
     await page.getByRole('link', { name: 'Nodes' }).click()
 
-    const query = 'k3d-runtime-server-0'
-    const element = page.locator(`.emphasize:has-text("${query}")`).first()
-    await expect(element).toBeVisible()
+    await expect(page.getByTestId('k3d-runtime-server-0-testid-1')).toHaveText('k3d-runtime-server-0')
   })
 
   test('navigates to Preferences page', async ({ page }) => {
     await page.getByTestId('global-sidenav-preferences').click()
 
-    await expect(page.locator('h1')).toHaveText('Preferences')
+    await expect(page.getByText('Preferences')).toBeVisible()
   })
 
   test('navigates to Settings page', async ({ page }) => {
     await page.getByTestId('global-sidenav-settings').click()
 
-    await expect(page.locator('h1')).toHaveText('Settings')
+    await expect(page.getByText('Settings')).toBeVisible()
   })
 
   test('navigates to Help page', async ({ page }) => {
     await page.getByTestId('global-sidenav-help').click()
 
-    await expect(page.locator('h1')).toHaveText('Help')
+    await expect(page.getByText('Help')).toBeVisible()
   })
 })

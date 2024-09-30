@@ -21,6 +21,15 @@ test.describe('Drawer', async () => {
       await expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
     })
 
+    test('will display Events details', async ({ page }) => {
+      const drawerEl = page.getByTestId('drawer')
+
+      await expect(drawerEl).toBeVisible()
+      await drawerEl.getByRole('button', { name: 'Events' }).click()
+
+      await expect(drawerEl.getByText('Created container podinfo')).toBeVisible()
+    })
+
     test('will display YAML details', async ({ page }) => {
       const drawerEl = page.getByTestId('drawer')
       const labelName = await drawerEl.locator(':text("app.kubernetes.io/name:")').textContent()

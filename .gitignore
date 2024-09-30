@@ -13,6 +13,7 @@ Thumbs.db
 # Env
 .env
 .env.*
+.env*
 !.env.example
 !.env.test
 
@@ -22,11 +23,13 @@ vite.config.ts.timestamp-*
 
 # # Playwright/ Vitest
 /ui/test-results
+screenshot.png
 
 # Dev
 zarf-sbom
 tmp/
 *.tar.zst
+.vscode/
 
 *.pem
 .github/test-infra/**/.terraform*
