@@ -72,14 +72,6 @@
     return Number(value.toFixed(decimals)).toString()
   }
 
-  function formatCPU(value: number): string {
-    return formatNumber(value) + ' cores'
-  }
-
-  function formatMemory(value: number): string {
-    return formatNumber(value) + ' GB'
-  }
-
   let chartjsOptions: ChartOptions<'line'> = {
     maintainAspectRatio: false,
     elements: {
