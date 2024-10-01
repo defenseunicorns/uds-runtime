@@ -38,6 +38,8 @@ type K8sResources struct {
 	cancel         context.CancelFunc
 }
 
+// Setup initializes the API server with the given assets
+// It returns the chi router, a boolean indicating if the server is running in cluster, and an error if any
 // @title UDS Runtime API
 // @version 0.0.0
 // @license.name Apache 2.0
@@ -45,9 +47,19 @@ type K8sResources struct {
 // @BasePath /api/v1
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
-	apiAuth, token, err := checkForLocalAuth()
+	var apiAuth bool
+	var token string
+
+	inCluster, err := isRunningInCluster()
 	if err != nil {
-		return nil, false, fmt.Errorf("failed to set auth: %w", err)
+		return nil, inCluster, fmt.Errorf("failed to check if running in cluster: %w", err)
+	}
+
+	if !inCluster {
+		apiAuth, token, err = checkForLocalAuth()
+		if err != nil {
+			return nil, inCluster, fmt.Errorf("failed to set auth: %w", err)
+		}
 	}
 
 	authSVC := checkForClusterAuth()
@@ -73,17 +85,11 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	// Setup k8s resources
 	k8sResources, err := setupK8sResources()
 	if err != nil {
-		return nil, false, fmt.Errorf("failed to setup k8s resources: %w", err)
+		return nil, inCluster, fmt.Errorf("failed to setup k8s resources: %w", err)
 	}
 
 	// Create the disconnected channel
 	disconnected := make(chan error)
-
-	inCluster, err := isRunningInCluster()
-	if err != nil {
-		k8sResources.cancel()
-		return nil, inCluster, fmt.Errorf("failed to check if running in cluster: %w", err)
-	}
 
 	// Get current k8s context and start the reconnection goroutine if NOT in cluster
 	if !inCluster {
@@ -231,10 +237,10 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 
 	if apiAuth {
 		port := "8443"
-		ip := "runtime-local.uds.dev"
+		host := "runtime-local.uds.dev"
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
-		url := fmt.Sprintf("https://%s:%s?token=%s", ip, port, token)
+		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, token)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {
