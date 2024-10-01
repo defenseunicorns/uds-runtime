@@ -37,15 +37,6 @@ export function checkClusterConnection() {
       })
       window.dispatchEvent(event)
     }
-
-    // only show error toast once and make timeout really long
-    if (!errToast && data['error']) {
-      addToast({
-        type: 'error',
-        message: disconnectedMsg,
-        timeoutSecs: 1000,
-      })
-    }
   }
 
   return clusterCheck
