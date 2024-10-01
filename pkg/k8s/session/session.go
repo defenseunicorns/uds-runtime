@@ -24,15 +24,46 @@ type K8sSession struct {
 type createClient func() (*client.Clients, error)
 type createCache func(ctx context.Context, client *client.Clients) (*resources.Cache, error)
 
-// getRetryInterval returns the interval to wait before retrying to connect to the k8s API
-func getRetryInterval() time.Duration {
-	if interval, exists := os.LookupEnv("CONNECTION_RETRY_MS"); exists {
-		parsed, err := strconv.Atoi(interval)
-		if err == nil {
-			return time.Duration(parsed) * time.Millisecond
+// CreateK8sSession creates a new k8s session
+func CreateK8sSession() (*K8sSession, error) {
+	k8sClient, err := client.NewClient()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create k8s client: %w", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cache, err := resources.NewCache(ctx, k8sClient)
+	if err != nil {
+		cancel()
+		return nil, fmt.Errorf("failed to create cache: %w", err)
+	}
+
+	inCluster, err := client.IsRunningInCluster()
+	if err != nil {
+		cancel()
+		return nil, fmt.Errorf("failed to check if running in cluster: %w", err)
+	}
+
+	var currentCtx, currentCluster string
+	if !inCluster { // get the current context and cluster
+		currentCtx, currentCluster, err = client.GetCurrentContext()
+		if err != nil {
+			cancel()
+			return nil, fmt.Errorf("failed to get current context: %w", err)
 		}
 	}
-	return 5 * time.Second // Default to 5 seconds if not set
+
+	// K8sResources struct to hold references
+	session := &K8sSession{
+		Clients:        k8sClient,
+		Cache:          cache,
+		CurrentCtx:     currentCtx,
+		CurrentCluster: currentCluster,
+		Cancel:         cancel,
+		InCluster:      inCluster,
+	}
+
+	return session, nil
 }
 
 // handleReconnection is a goroutine that handles reconnection to the k8s API
@@ -81,44 +112,13 @@ func (ks *K8sSession) HandleReconnection(disconnected chan error, createClient c
 	}
 }
 
-// CreateK8sSession creates a new k8s session
-func CreateK8sSession() (*K8sSession, error) {
-	k8sClient, err := client.NewClient()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create k8s client: %w", err)
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	cache, err := resources.NewCache(ctx, k8sClient)
-	if err != nil {
-		cancel()
-		return nil, fmt.Errorf("failed to create cache: %w", err)
-	}
-
-	inCluster, err := client.IsRunningInCluster()
-	if err != nil {
-		cancel()
-		return nil, fmt.Errorf("failed to check if running in cluster: %w", err)
-	}
-
-	var currentCtx, currentCluster string
-	if !inCluster { // get the current context and cluster
-		currentCtx, currentCluster, err = client.GetCurrentContext()
-		if err != nil {
-			cancel()
-			return nil, fmt.Errorf("failed to get current context: %w", err)
+// getRetryInterval returns the interval to wait before retrying to connect to the k8s API
+func getRetryInterval() time.Duration {
+	if interval, exists := os.LookupEnv("CONNECTION_RETRY_MS"); exists {
+		parsed, err := strconv.Atoi(interval)
+		if err == nil {
+			return time.Duration(parsed) * time.Millisecond
 		}
 	}
-
-	// K8sResources struct to hold references
-	session := &K8sSession{
-		Clients:        k8sClient,
-		Cache:          cache,
-		CurrentCtx:     currentCtx,
-		CurrentCluster: currentCluster,
-		Cancel:         cancel,
-		InCluster:      inCluster,
-	}
-
-	return session, nil
+	return 5 * time.Second // Default to 5 seconds if not set
 }
