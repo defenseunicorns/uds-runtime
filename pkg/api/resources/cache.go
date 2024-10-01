@@ -8,8 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
-
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s/client"
 	admissionRegV1 "k8s.io/api/admissionregistration/v1"
 	appsV1 "k8s.io/api/apps/v1"
 	autoScalingV2 "k8s.io/api/autoscaling/v2"
@@ -81,16 +80,16 @@ type Cache struct {
 	MetricsChanges chan struct{}
 }
 
-func NewCache(ctx context.Context, k8s *k8s.Clients) (*Cache, error) {
+func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 	c := &Cache{
-		factory:        informers.NewSharedInformerFactory(k8s.Clientset, time.Minute*10),
+		factory:        informers.NewSharedInformerFactory(clients.Clientset, time.Minute*10),
 		stopper:        make(chan struct{}),
 		PodMetrics:     NewPodMetrics(),
 		MetricsChanges: make(chan struct{}, 1),
 	}
 
 	// Create the dynamic client and factory
-	dynamicClient, err := dynamic.NewForConfig(k8s.Config)
+	dynamicClient, err := dynamic.NewForConfig(clients.Config)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create dynamic client: %v", err)
 	}
@@ -114,7 +113,7 @@ func NewCache(ctx context.Context, k8s *k8s.Clients) (*Cache, error) {
 	}
 
 	// Start metrics collection
-	go c.StartMetricsCollection(ctx, k8s.MetricsClient)
+	go c.StartMetricsCollection(ctx, clients.MetricsClient)
 
 	// Stop the informer when the context is done
 	go func() {

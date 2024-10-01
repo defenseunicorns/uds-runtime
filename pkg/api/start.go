@@ -4,7 +4,6 @@
 package api
 
 import (
-	"context"
 	"embed"
 	"fmt"
 	"io"
@@ -12,8 +11,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
-	"time"
 
 	"strings"
 
@@ -23,20 +20,12 @@ import (
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s/client"
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s/k8s_session"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
-	"k8s.io/client-go/rest"
 )
-
-type K8sResources struct {
-	client         *k8s.Clients
-	cache          *resources.Cache
-	currentCtx     string
-	currentCluster string
-	cancel         context.CancelFunc
-}
 
 // @title UDS Runtime API
 // @version 0.0.0
@@ -71,7 +60,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	}
 
 	// Setup k8s resources
-	k8sResources, err := setupK8sResources()
+	k8sResources, err := k8s_session.CreateK8sSession()
 	if err != nil {
 		return nil, fmt.Errorf("failed to setup k8s resources: %w", err)
 	}
@@ -79,24 +68,24 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	// Create the disconnected channel
 	disconnected := make(chan error)
 
-	inCluster, err := isRunningInCluster()
+	inCluster, err := k8s_session.IsRunningInCluster()
 	if err != nil {
-		k8sResources.cancel()
+		k8sResources.Cancel()
 		return nil, fmt.Errorf("failed to check if running in cluster: %w", err)
 	}
 
 	// Get current k8s context and start the reconnection goroutine if NOT in cluster
 	if !inCluster {
-		currentCtx, currentCluster, err := k8s.GetCurrentContext()
+		currentCtx, currentCluster, err := client.GetCurrentContext()
 		if err != nil {
-			k8sResources.cancel()
+			k8sResources.Cancel()
 			return nil, fmt.Errorf("failed to get current context: %w", err)
 		}
 
-		k8sResources.currentCtx = currentCtx
-		k8sResources.currentCluster = currentCluster
+		k8sResources.CurrentCtx = currentCtx
+		k8sResources.CurrentCluster = currentCluster
 
-		go handleReconnection(disconnected, k8sResources, k8s.NewClient, resources.NewCache)
+		go k8s_session.HandleReconnection(disconnected, k8sResources, client.NewClient, resources.NewCache)
 	}
 
 	// Add Swagger UI routes
@@ -118,7 +107,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 		r.With(apiAuthMiddleware).Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
-			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(k8sResources.cache))
+			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(k8sResources.Cache))
 		})
 
 		r.With(apiAuthMiddleware).Route("/resources", func(r chi.Router) {
@@ -154,7 +143,7 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 				// Metrics have their own cache and change channel that updates every 30 seconds
 				// They do not support informers directly, so we need to poll the API
 				r.Get("/podmetrics", func(w http.ResponseWriter, r *http.Request) {
-					getPodMetrics(w, r, k8sResources.cache)
+					getPodMetrics(w, r, k8sResources.Cache)
 				})
 			})
 
@@ -256,29 +245,6 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	return r, nil
 }
 
-func setupK8sResources() (*K8sResources, error) {
-	k8sClient, err := k8s.NewClient()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create k8s client: %w", err)
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	cache, err := resources.NewCache(ctx, k8sClient)
-	if err != nil {
-		cancel()
-		return nil, fmt.Errorf("failed to create cache: %w", err)
-	}
-
-	// K8sResources struct to hold references
-	k8sResources := &K8sResources{
-		client: k8sClient,
-		cache:  cache,
-		cancel: cancel,
-	}
-
-	return k8sResources, nil
-}
-
 // fileServer is a custom file server handler for embedded files
 func fileServer(r chi.Router, root http.FileSystem) error {
 	// Load index.html content and modification time at startup
@@ -352,80 +318,8 @@ func checkForClusterAuth() bool {
 }
 
 // withLatestCache returns a wrapper lambda function, creating a closure that can dynamically access the latest cache
-func withLatestCache(k8sResources *K8sResources, handler func(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
+func withLatestCache(k8sResources *k8s_session.K8sSessionCTX, handler func(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		handler(k8sResources.cache)(w, r)
-	}
-}
-
-type createClient func() (*k8s.Clients, error)
-type createCache func(ctx context.Context, client *k8s.Clients) (*resources.Cache, error)
-
-func getRetryInterval() time.Duration {
-	if interval, exists := os.LookupEnv("RETRY_INTERVAL_MS"); exists {
-		parsed, err := strconv.Atoi(interval)
-		if err == nil {
-			return time.Duration(parsed) * time.Millisecond
-		}
-	}
-	return 5 * time.Second // Default to 5 seconds if not set
-}
-
-// isRunningInCluster checks if the application is running in cluster
-func isRunningInCluster() (bool, error) {
-	_, err := rest.InClusterConfig()
-
-	if err == rest.ErrNotInCluster {
-		return false, nil
-	} else if err != nil {
-		return true, err
-	}
-
-	return true, nil
-}
-
-// handleReconnection is a goroutine that handles reconnection to the k8s API
-// passing createClient and createCache instead of calling k8s.NewClient and resources.NewCache for testing purposes
-func handleReconnection(disconnected chan error, k8sResources *K8sResources, createClient createClient,
-	createCache createCache) {
-	for err := range disconnected {
-		log.Printf("Disconnected error received: %v\n", err)
-		for {
-			// Cancel the previous context
-			k8sResources.cancel()
-			time.Sleep(getRetryInterval())
-
-			currentCtx, currentCluster, err := k8s.GetCurrentContext()
-			if err != nil {
-				log.Printf("Error fetching current context: %v\n", err)
-				continue
-			}
-
-			// If the current context or cluster is different from the original, skip reconnection
-			if currentCtx != k8sResources.currentCtx || currentCluster != k8sResources.currentCluster {
-				log.Println("Current context has changed. Skipping reconnection.")
-				continue
-			}
-
-			k8sClient, err := createClient()
-			if err != nil {
-				log.Printf("Retrying to create k8s client: %v\n", err)
-				continue
-			}
-
-			// Create a new context and cache
-			ctx, cancel := context.WithCancel(context.Background())
-			cache, err := createCache(ctx, k8sClient)
-			if err != nil {
-				log.Printf("Retrying to create cache: %v\n", err)
-				continue
-			}
-
-			k8sResources.client = k8sClient
-			k8sResources.cache = cache
-			k8sResources.cancel = cancel
-			log.Println("Successfully reconnected to k8s and recreated cache")
-			break
-		}
+		handler(k8sResources.Cache)(w, r)
 	}
 }
