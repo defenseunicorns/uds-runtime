@@ -43,7 +43,7 @@ func TestHandler(t *testing.T) {
 
 	// Run the handler in a separate goroutine to simulate real-world usage
 	go func() {
-		Handler(rr, req, getData, changes, nil)
+		Handler(rr, req, getData, changes, nil, false)
 	}()
 
 	// Simulate a change
