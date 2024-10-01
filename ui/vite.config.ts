@@ -10,11 +10,11 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       // Proxy all requests starting with /api to the go server
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://runtime-local:8443',
         changeOrigin: true,
       },
       '/health': {
-        target: 'http://localhost:8080',
+        target: 'https://runtime-local:8443',
         changeOrigin: true,
       },
     },
