@@ -248,7 +248,7 @@
       capacity={gbCapacity}
       progress={gbUsed}
       statText="Memory Usage"
-      unit="Cores"
+      unit="GB"
       value={memoryPercentage.toFixed(2)}
     />
   </div>
