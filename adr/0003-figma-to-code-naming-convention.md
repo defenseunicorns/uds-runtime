@@ -20,11 +20,11 @@ In this image you can see 3 different things outlined
 - The selected component
 - The name of the selected compoent or type i.e. "With right icon"
 
-![Alt text](../ui/static/stats-widgets.png?raw=true)
+![Alt text](./images/stats-widgets.png?raw=true)
 
 In this case, this would have been a component that has variants
 
-![Alt text](../ui/static/stats-widget-code.png?raw=true)
+![Alt text](./images/stats-widget-code.png?raw=true)
 
 In this image we can see...
 
@@ -35,7 +35,7 @@ In this image we can see...
   - Stats text
   - Helper text
 
-![Alt text](../ui/static/stats-widget-attributes.png?raw=true)
+![Alt text](./images/stats-widget-attributes.png?raw=true)
 
 All attributes were not included, but the ones we did include were named based on this components attributes in Figma
 
