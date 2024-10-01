@@ -1,5 +1,5 @@
 import { addToast } from '$features/toast'
-import { getIdByMessage, removeToast } from '$features/toast/store'
+import { toast } from '$features/toast/store'
 
 // checkClusterConnection checks the connection to the cluster and
 // shows a toast message if the connection is lost or restored.
@@ -19,11 +19,8 @@ export function checkClusterConnection() {
   // handle cluster disconnection and reconnection events
   clusterCheck.onmessage = (msg) => {
     const data = JSON.parse(msg.data) as Record<'success' | 'error' | 'reconnected', string>
-    const errToast = getIdByMessage(disconnectedMsg)
-
-    // remove error toast if cluster is reconnected
-    if (errToast && data['reconnected']) {
-      removeToast(errToast)
+    if (data['reconnected']) {
+      toast.update(() => [])
       addToast({
         type: 'success',
         message: 'Cluster connection restored',
@@ -39,7 +36,7 @@ export function checkClusterConnection() {
     }
 
     // only show error toast once and make timeout really long
-    if (!errToast && data['error']) {
+    if (data['error']) {
       addToast({
         type: 'error',
         message: disconnectedMsg,
