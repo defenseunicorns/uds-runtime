@@ -41,9 +41,9 @@ func (c *Cache) Set(buffer *bytes.Buffer) {
 	c.buffer = buffer
 }
 
-// ServeCachedResponse attempts to serve a cached response if available.
+// Serve attempts to serve a cached response if available.
 // It returns true if a cached response was served, false otherwise.
-func (c *Cache) ServeCachedResponse(w http.ResponseWriter) bool {
+func (c *Cache) Serve(w http.ResponseWriter) bool {
 	cachedBuffer := c.Get()
 	if cachedBuffer == nil || cachedBuffer.Len() == 0 {
 		return false

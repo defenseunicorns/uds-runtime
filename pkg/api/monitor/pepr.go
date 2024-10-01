@@ -35,7 +35,7 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 
 	// Only use cache for the default stream (empty streamFilter)
 	if streamFilter == "" {
-		streamCache.ServeCachedResponse(w)
+		streamCache.Serve(w)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
