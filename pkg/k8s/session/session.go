@@ -1,4 +1,4 @@
-package k8s_session
+package session
 
 import (
 	"context"
@@ -10,11 +10,10 @@ import (
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/k8s/client"
-	"k8s.io/client-go/rest"
 )
 
-type K8sSessionCTX struct {
-	Client         *client.Clients
+type K8sSession struct {
+	Clients        *client.Clients
 	Cache          *resources.Cache
 	CurrentCtx     string
 	CurrentCluster string
@@ -36,28 +35,15 @@ func getRetryInterval() time.Duration {
 	return 5 * time.Second // Default to 5 seconds if not set
 }
 
-// isRunningInCluster checks if the application is running in cluster
-func IsRunningInCluster() (bool, error) {
-	_, err := rest.InClusterConfig()
-
-	if err == rest.ErrNotInCluster {
-		return false, nil
-	} else if err != nil {
-		return true, err
-	}
-
-	return true, nil
-}
-
 // handleReconnection is a goroutine that handles reconnection to the k8s API
 // passing createClient and createCache instead of calling clients.NewClient and resources.NewCache for testing purposes
-func HandleReconnection(disconnected chan error, k8sResources *K8sSessionCTX, createClient createClient,
+func (ks *K8sSession) HandleReconnection(disconnected chan error, createClient createClient,
 	createCache createCache) {
 	for err := range disconnected {
 		log.Printf("Disconnected error received: %v\n", err)
 		for {
 			// Cancel the previous context
-			k8sResources.Cancel()
+			ks.Cancel()
 			time.Sleep(getRetryInterval())
 
 			currentCtx, currentCluster, err := client.GetCurrentContext()
@@ -67,7 +53,7 @@ func HandleReconnection(disconnected chan error, k8sResources *K8sSessionCTX, cr
 			}
 
 			// If the current context or cluster is different from the original, skip reconnection
-			if currentCtx != k8sResources.CurrentCtx || currentCluster != k8sResources.CurrentCluster {
+			if currentCtx != ks.CurrentCtx || currentCluster != ks.CurrentCluster {
 				log.Println("Current context has changed. Skipping reconnection.")
 				continue
 			}
@@ -86,16 +72,17 @@ func HandleReconnection(disconnected chan error, k8sResources *K8sSessionCTX, cr
 				continue
 			}
 
-			k8sResources.Client = k8sClient
-			k8sResources.Cache = cache
-			k8sResources.Cancel = cancel
+			ks.Clients = k8sClient
+			ks.Cache = cache
+			ks.Cancel = cancel
 			log.Println("Successfully reconnected to k8s and recreated cache")
 			break
 		}
 	}
 }
 
-func CreateK8sSession() (*K8sSessionCTX, error) {
+// CreateK8sSession creates a new k8s session
+func CreateK8sSession() (*K8sSession, error) {
 	k8sClient, err := client.NewClient()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create k8s client: %w", err)
@@ -108,12 +95,30 @@ func CreateK8sSession() (*K8sSessionCTX, error) {
 		return nil, fmt.Errorf("failed to create cache: %w", err)
 	}
 
-	// K8sResources struct to hold references
-	k8sResources := &K8sSessionCTX{
-		Client: k8sClient,
-		Cache:  cache,
-		Cancel: cancel,
+	inCluster, err := client.IsRunningInCluster()
+	if err != nil {
+		cancel()
+		return nil, fmt.Errorf("failed to check if running in cluster: %w", err)
 	}
 
-	return k8sResources, nil
+	var currentCtx, currentCluster string
+	if !inCluster { // get the current context and cluster
+		currentCtx, currentCluster, err = client.GetCurrentContext()
+		if err != nil {
+			cancel()
+			return nil, fmt.Errorf("failed to get current context: %w", err)
+		}
+	}
+
+	// K8sResources struct to hold references
+	session := &K8sSession{
+		Clients:        k8sClient,
+		Cache:          cache,
+		CurrentCtx:     currentCtx,
+		CurrentCluster: currentCluster,
+		Cancel:         cancel,
+		InCluster:      inCluster,
+	}
+
+	return session, nil
 }

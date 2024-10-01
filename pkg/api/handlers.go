@@ -9,7 +9,7 @@ import (
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
-	"github.com/defenseunicorns/uds-runtime/pkg/k8s/k8s_session"
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s/session"
 )
 
 // @Description Get Nodes
@@ -867,7 +867,7 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Produce  json
 // @Success 200
 // @Router /health [get]
-func checkHealth(k8sResources *k8s_session.K8sSessionCTX, disconnected chan error) http.HandlerFunc {
+func checkHealth(k8sSession *session.K8sSession, disconnected chan error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Set headers to keep connection alive
 		rest.WriteHeaders(w)
@@ -879,7 +879,7 @@ func checkHealth(k8sResources *k8s_session.K8sSessionCTX, disconnected chan erro
 
 		// Function to check the cluster health when running out of cluster
 		checkCluster := func() {
-			versionInfo, err := k8sResources.Client.Clientset.ServerVersion()
+			versionInfo, err := k8sSession.Clients.Clientset.ServerVersion()
 			response := map[string]string{}
 
 			// if err then connection is lost
@@ -913,10 +913,8 @@ func checkHealth(k8sResources *k8s_session.K8sSessionCTX, disconnected chan erro
 			}
 		}
 
-		// DON'T return error to user in case sensitive
-		inCluster, _ := k8s_session.IsRunningInCluster()
 		// If running in cluster don't check for version and send error or reconnected events
-		if inCluster {
+		if k8sSession.InCluster {
 			checkCluster = func() {
 				response := map[string]string{
 					"success": "in-cluster",

@@ -1,6 +1,6 @@
 //go:build unit
 
-package k8s_session
+package session
 
 import (
 	"context"
@@ -24,16 +24,16 @@ func TestHandleReconnection(t *testing.T) {
 		return "original-context", "original-cluster", nil
 	}
 
-	k8sSessionCTX := &K8sSessionCTX{
-		Client:         &client.Clients{},
+	k8sSession := &K8sSession{
+		Clients:        &client.Clients{},
 		Cache:          &resources.Cache{},
 		Cancel:         func() {},
 		CurrentCtx:     "original-context",
 		CurrentCluster: "original-cluster",
 	}
 
-	require.Nil(t, k8sSessionCTX.Client.Clientset)
-	require.Nil(t, k8sSessionCTX.Cache.Pods)
+	require.Nil(t, k8sSession.Clients.Clientset)
+	require.Nil(t, k8sSession.Cache.Pods)
 
 	createClientMock := func() (*client.Clients, error) {
 		return &client.Clients{Clientset: &kubernetes.Clientset{}}, nil
@@ -48,14 +48,14 @@ func TestHandleReconnection(t *testing.T) {
 	disconnected <- fmt.Errorf("simulated disconnection")
 
 	// Run the handleReconnection function in a goroutine
-	go HandleReconnection(disconnected, k8sSessionCTX, createClientMock, createCacheMock)
+	go k8sSession.HandleReconnection(disconnected, createClientMock, createCacheMock)
 
 	// Wait for the reconnection logic to complete
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources struct was updated
-	require.NotNil(t, k8sSessionCTX.Client.Clientset)
-	require.NotNil(t, k8sSessionCTX.Cache.Pods)
+	require.NotNil(t, k8sSession.Clients.Clientset)
+	require.NotNil(t, k8sSession.Cache.Pods)
 
 	close(disconnected)
 }
@@ -65,8 +65,8 @@ func TestHandleReconnectionCreateClientError(t *testing.T) {
 	os.Setenv("CONNECTION_RETRY_MS", "100")
 	defer os.Unsetenv("CONNECTION_RETRY_MS")
 
-	k8sSessionCTX := &K8sSessionCTX{
-		Client:         &client.Clients{},
+	k8sSession := &K8sSession{
+		Clients:        &client.Clients{},
 		Cache:          &resources.Cache{},
 		Cancel:         func() {},
 		CurrentCtx:     "original-context",
@@ -91,13 +91,13 @@ func TestHandleReconnectionCreateClientError(t *testing.T) {
 	disconnected <- fmt.Errorf("simulated disconnection")
 
 	// Run the handleReconnection function in a goroutine
-	go HandleReconnection(disconnected, k8sSessionCTX, createClientMock, createCacheMock)
+	go k8sSession.HandleReconnection(disconnected, createClientMock, createCacheMock)
 
 	// Wait for the reconnection logic to attempt creating the client
 	time.Sleep(200 * time.Millisecond)
 
-	require.Nil(t, k8sSessionCTX.Client.Clientset)
-	require.Nil(t, k8sSessionCTX.Cache.Pods)
+	require.Nil(t, k8sSession.Clients.Clientset)
+	require.Nil(t, k8sSession.Cache.Pods)
 
 	close(disconnected)
 }
@@ -107,8 +107,8 @@ func TestHandleReconnectionCreateCacheError(t *testing.T) {
 	os.Setenv("CONNECTION_RETRY_MS", "100")
 	defer os.Unsetenv("CONNECTION_RETRY_MS")
 
-	k8sSessionCTX := &K8sSessionCTX{
-		Client:         &client.Clients{},
+	k8sSession := &K8sSession{
+		Clients:        &client.Clients{},
 		Cache:          &resources.Cache{},
 		Cancel:         func() {},
 		CurrentCtx:     "original-context",
@@ -133,14 +133,14 @@ func TestHandleReconnectionCreateCacheError(t *testing.T) {
 	disconnected <- fmt.Errorf("simulated disconnection")
 
 	// Run the handleReconnection function in a goroutine
-	go HandleReconnection(disconnected, k8sSessionCTX, createClientMock, createCacheMock)
+	go k8sSession.HandleReconnection(disconnected, createClientMock, createCacheMock)
 
 	// Wait for the reconnection logic to complete
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources cache was not updated since cache creation failed
-	require.Nil(t, k8sSessionCTX.Client.Clientset)
-	require.Nil(t, k8sSessionCTX.Cache.Pods)
+	require.Nil(t, k8sSession.Clients.Clientset)
+	require.Nil(t, k8sSession.Cache.Pods)
 
 	close(disconnected)
 }
@@ -154,8 +154,8 @@ func TestHandleReconnectionContextChanged(t *testing.T) {
 		return "new-context", "new-cluster", nil
 	}
 
-	k8sSessionCTX := &K8sSessionCTX{
-		Client:         &client.Clients{},
+	k8sSession := &K8sSession{
+		Clients:        &client.Clients{},
 		Cache:          &resources.Cache{},
 		Cancel:         func() {},
 		CurrentCtx:     "original-context",
@@ -176,14 +176,14 @@ func TestHandleReconnectionContextChanged(t *testing.T) {
 	disconnected <- fmt.Errorf("simulated disconnection")
 
 	// Run the handleReconnection function in a goroutine
-	go HandleReconnection(disconnected, k8sSessionCTX, createClientMock, createCacheMock)
+	go k8sSession.HandleReconnection(disconnected, createClientMock, createCacheMock)
 
 	// Wait for the reconnection logic to complete
 	time.Sleep(200 * time.Millisecond)
 
 	// Verify that the K8sResources struct was not updated since the context/cluster has changed
-	require.Nil(t, k8sSessionCTX.Client.Clientset)
-	require.Nil(t, k8sSessionCTX.Cache.Pods)
+	require.Nil(t, k8sSession.Clients.Clientset)
+	require.Nil(t, k8sSession.Cache.Pods)
 
 	close(disconnected)
 }

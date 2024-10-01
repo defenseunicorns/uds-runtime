@@ -46,6 +46,19 @@ func NewClient() (*Clients, error) {
 	}, nil
 }
 
+// IsRunningInCluster checks if the application is running in cluster
+func IsRunningInCluster() (bool, error) {
+	_, err := rest.InClusterConfig()
+
+	if err == rest.ErrNotInCluster {
+		return false, nil
+	} else if err != nil {
+		return true, err
+	}
+
+	return true, nil
+}
+
 // Declare GetCurrentContext as a variable so it can be mocked
 var GetCurrentContext = func() (string, string, error) {
 	// Actual implementation of GetCurrentContext
