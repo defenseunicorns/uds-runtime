@@ -33,3 +33,7 @@ tmp/
 
 *.pem
 .github/test-infra/**/.terraform*
+
+# Allow certs in hack/certs
+!hack/certs/cert.pem
+!hack/certs/key.pem

@@ -38,16 +38,28 @@ type K8sResources struct {
 	cancel         context.CancelFunc
 }
 
+// Setup initializes the API server with the given assets
+// It returns the chi router, a boolean indicating if the server is running in cluster, and an error if any
 // @title UDS Runtime API
 // @version 0.0.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 // @schemes http https
-func Setup(assets *embed.FS) (*chi.Mux, error) {
-	apiAuth, token, err := checkForLocalAuth()
+func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
+	var apiAuth bool
+	var token string
+
+	inCluster, err := isRunningInCluster()
 	if err != nil {
-		return nil, fmt.Errorf("failed to set auth: %w", err)
+		return nil, inCluster, fmt.Errorf("failed to check if running in cluster: %w", err)
+	}
+
+	if !inCluster {
+		apiAuth, token, err = checkForLocalAuth()
+		if err != nil {
+			return nil, inCluster, fmt.Errorf("failed to set auth: %w", err)
+		}
 	}
 
 	authSVC := checkForClusterAuth()
@@ -73,24 +85,18 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	// Setup k8s resources
 	k8sResources, err := setupK8sResources()
 	if err != nil {
-		return nil, fmt.Errorf("failed to setup k8s resources: %w", err)
+		return nil, inCluster, fmt.Errorf("failed to setup k8s resources: %w", err)
 	}
 
 	// Create the disconnected channel
 	disconnected := make(chan error)
-
-	inCluster, err := isRunningInCluster()
-	if err != nil {
-		k8sResources.cancel()
-		return nil, fmt.Errorf("failed to check if running in cluster: %w", err)
-	}
 
 	// Get current k8s context and start the reconnection goroutine if NOT in cluster
 	if !inCluster {
 		currentCtx, currentCluster, err := k8s.GetCurrentContext()
 		if err != nil {
 			k8sResources.cancel()
-			return nil, fmt.Errorf("failed to get current context: %w", err)
+			return nil, inCluster, fmt.Errorf("failed to get current context: %w", err)
 		}
 
 		k8sResources.currentCtx = currentCtx
@@ -230,15 +236,15 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	})
 
 	if apiAuth {
-		port := "8080"
-		ip := "127.0.0.1"
+		port := "8443"
+		host := "runtime-local.uds.dev"
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
-		url := fmt.Sprintf("http://%s:%s?token=%s", ip, port, token)
+		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, token)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {
-			return nil, fmt.Errorf("failed to launch URL: %w", err)
+			return nil, inCluster, fmt.Errorf("failed to launch URL: %w", err)
 		}
 	}
 
@@ -246,14 +252,14 @@ func Setup(assets *embed.FS) (*chi.Mux, error) {
 	if assets != nil {
 		staticFS, err := fs.Sub(assets, "ui/build")
 		if err != nil {
-			return nil, fmt.Errorf("failed to create static file system: %w", err)
+			return nil, inCluster, fmt.Errorf("failed to create static file system: %w", err)
 		}
 
 		if err := fileServer(r, http.FS(staticFS)); err != nil {
-			return nil, fmt.Errorf("failed to serve static files: %w", err)
+			return nil, inCluster, fmt.Errorf("failed to serve static files: %w", err)
 		}
 	}
-	return r, nil
+	return r, inCluster, nil
 }
 
 func setupK8sResources() (*K8sResources, error) {
