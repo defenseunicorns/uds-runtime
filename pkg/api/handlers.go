@@ -871,7 +871,7 @@ func checkHealth(k8sResources *K8sResources, disconnected chan error) http.Handl
 		// Set headers to keep connection alive
 		rest.WriteHeaders(w)
 
-		ticker := time.NewTicker(30 * time.Second)
+		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 
 		recovering := false

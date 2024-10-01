@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { get, writable } from 'svelte/store'
+import { writable } from 'svelte/store'
 
 export type Toast = {
   id?: number
@@ -31,14 +31,4 @@ export const addToast = (newToast: Toast) => {
 
 export const removeToast = (id?: number) => {
   toast.update((toasts) => toasts.filter((toast) => toast.id !== id))
-}
-
-export const getIdByMessage = (message: string) => {
-  let id: number | undefined
-  const toasts = get(toast)
-  const found = toasts.find((toast) => toast.message === message)
-  if (found) {
-    id = found.id
-  }
-  return id
 }
