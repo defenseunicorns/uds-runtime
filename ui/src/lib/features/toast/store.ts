@@ -13,9 +13,12 @@ export type Toast = {
 export const toast = writable<Toast[]>([])
 
 export const addToast = (newToast: Toast) => {
-  console.log('addToast', newToast)
-
   toast.update((toasts) => {
+    // don't show duplicate toasts
+    if (toasts.some((toast) => toast.message === newToast.message)) {
+      return toasts
+    }
+
     const id = Date.now() + Math.random()
     const toast = { id, ...newToast }
 
