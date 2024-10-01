@@ -47,4 +47,4 @@ In deciding to name components based on Figma (Flowbite) designs, we are using a
 
 ## Consequences
 
-If flowbite updates their component library in Figma and the names change, then there is going to be a disconnect between the library naming and the front end components.
+If Flowbite updates their component library in Figma and the names change, then there is going to be a disconnect between the library naming and the front end components.
