@@ -76,9 +76,10 @@ func (s *Stream) Start(ctx context.Context) error {
 		wg.Add(1)
 		// Run as a goroutine to stream logs for each pod without blocking
 		go func(podName, container string) {
-			defer wg.Done()
-
-			message.Debugf("Spawning goroutine for pod %s", podName)
+			defer func() {
+				message.Debug("Cleaned up pepr streaming goroutine")
+				wg.Done()
+			}()
 
 			// Set up the pod log options
 			podOpts := &corev1.PodLogOptions{
