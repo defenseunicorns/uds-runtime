@@ -2,7 +2,7 @@
 
 ## Status
 
-proposed
+accepted
 
 ## Context
 
@@ -10,7 +10,7 @@ Devs and designers are currently using different language to describe various Fl
 
 ## Decision
 
-A decision was made to name components based on the naming used by the flowbite Figma library, for components that we are using that are either blocks or what Figma calls "widgets".
+A decision was made to name components based on the naming used by the Flowbite Figma library.
 
 ### Examples...
 
