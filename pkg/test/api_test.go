@@ -30,7 +30,7 @@ type TestRoute struct {
 
 func setup() (*chi.Mux, error) {
 	os.Setenv("API_AUTH_DISABLED", "true")
-	r, err := api.Setup(nil)
+	r, _, err := api.Setup(nil)
 	return r, err
 }
 

@@ -5,9 +5,9 @@
   import { onMount } from 'svelte'
 
   import { ProgressBarWidget, WithRightIconWidget } from '$components'
-  import ApexCharts from 'apexcharts'
-  import type { ApexOptions } from 'apexcharts'
   import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
+  import { type ChartData, type ChartOptions } from 'chart.js'
+  import Chart from 'chart.js/auto'
 
   import { mebibytesToGigabytes, millicoresToCores } from '../helpers'
 
@@ -50,155 +50,133 @@
   let cpuUsed = 0
   let cpuCapacity = 0
 
+  function formatTicks(tick: string | number) {
+    if (typeof tick === 'number') {
+      return tick.toFixed(2)
+    }
+    return tick
+  }
+
+  const formatTime = (timestamp: string) => {
+    let parts = new Date(timestamp).toISOString().split('T')
+    parts.shift()
+    return parts.join('').split('.')[0]
+  }
+
   function calculatePercentage(usage: number, capacity: number): number {
     if (capacity <= 0) return 0
     return Math.min(Math.max((usage / capacity) * 100, 0), 100)
   }
 
-  function formatNumber(value: number, decimals: number = 2): string {
-    return Number(value.toFixed(decimals)).toString()
-  }
-
-  function formatCPU(value: number): string {
-    return formatNumber(value) + ' cores'
-  }
-
-  function formatMemory(value: number): string {
-    return formatNumber(value) + ' GB'
-  }
-
-  let options: ApexOptions = {
-    series: [
-      {
-        name: 'CPU Usage',
-        data: [],
-      },
-      {
-        name: 'Memory Usage',
-        data: [],
-      },
-    ],
-    chart: {
-      type: 'line',
-      height: 350,
-      animations: {
-        enabled: true,
-        easing: 'linear',
-        dynamicAnimation: {
-          speed: 1000,
-        },
-      },
-      background: '#1f2937',
-      foreColor: '#e5e7eb',
-    },
-    stroke: {
-      curve: 'smooth',
-      width: 3,
-    },
-    xaxis: {
-      type: 'datetime',
-      labels: {
-        style: {
-          colors: '#e5e7eb',
-        },
+  let chartjsOptions: ChartOptions<'line'> = {
+    maintainAspectRatio: false,
+    elements: {
+      point: {
+        radius: 0,
       },
     },
-    yaxis: [
-      {
-        title: {
-          text: 'CPU Usage (cores)',
-          style: {
-            color: '#e5e7eb',
-          },
-        },
-        labels: {
-          formatter: function (value: number) {
-            return formatCPU(value)
-          },
-          style: {
-            colors: '#e5e7eb',
-          },
-        },
-      },
-      {
-        title: {
-          text: 'Memory Usage (GB)',
-          style: {
-            color: '#e5e7eb',
-          },
-        },
-        opposite: true,
-        labels: {
-          formatter: function (value: number) {
-            return formatMemory(value)
-          },
-          style: {
-            colors: '#e5e7eb',
-          },
-        },
-      },
-    ],
-    legend: {
-      show: true,
-      labels: {
-        colors: '#e5e7eb',
-      },
-    },
-    tooltip: {
-      theme: 'dark',
+    scales: {
       x: {
-        format: 'dd MMM yyyy HH:mm:ss',
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: 'white',
+          maxTicksLimit: 20,
+        },
       },
-      y: [
-        {
-          formatter: function (value: number) {
-            return formatCPU(value)
+      y: {
+        grid: {
+          color: 'rgba(255, 255, 255, 0.2)',
+        },
+        type: 'linear',
+        display: true,
+        position: 'left',
+        title: {
+          display: true,
+          text: 'CPU Usage (cores)',
+          color: 'white',
+          padding: {
+            bottom: 15,
           },
         },
-        {
-          formatter: function (value: number) {
-            return formatMemory(value)
+        ticks: {
+          color: 'white',
+          callback: (value) => `${formatTicks(value)} cores`,
+        },
+      },
+      y1: {
+        grid: {
+          display: false,
+        },
+        type: 'linear',
+        display: true,
+        position: 'right',
+        title: {
+          display: true,
+          text: 'Memory Usage (GB)',
+          color: 'white',
+          padding: {
+            bottom: 10,
           },
         },
-      ],
+        ticks: {
+          color: 'white',
+          callback: (value) => `${formatTicks(value)} GB`,
+        },
+      },
     },
-    grid: {
-      borderColor: '#4b5563',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: 'white',
+          boxHeight: 14,
+          boxWidth: 14,
+          useBorderRadius: true,
+          borderRadius: 7,
+        },
+      },
+      tooltip: {
+        enabled: true,
+        mode: 'index',
+        intersect: false,
+        backgroundColor: '#1F2937',
+        borderColor: 'white',
+        borderWidth: 1,
+      },
+    },
+    hover: {
+      intersect: true,
     },
   }
 
   let onMessageCount = 0
-  let el: HTMLDivElement | undefined = undefined
-  let apexChart: ApexCharts
-
-  $: {
-    options = updateClusterData(clusterData)
-    apexChart?.updateOptions(options)
-  }
-
-  function updateClusterData(clusterData: ClusterData): ApexOptions {
-    return {
-      ...options,
-      series: [
-        {
-          name: 'CPU Usage',
-          data: (clusterData.historicalUsage ?? []).map((point) => ({
-            x: new Date(point.Timestamp).getTime(),
-            y: millicoresToCores(point.CPU), // Convert millicores to cores
-          })),
-        },
-        {
-          name: 'Memory Usage',
-          data: (clusterData.historicalUsage ?? []).map((point) => ({
-            x: new Date(point.Timestamp).getTime(),
-            y: mebibytesToGigabytes(point.Memory), // Convert bytes to GB
-          })),
-        },
-      ],
-    }
+  let myChart: Chart
+  let chartjsData: ChartData<'line'> = {
+    labels: [],
+    datasets: [
+      {
+        label: 'Memory Usage',
+        data: [],
+        borderColor: '#00D39F',
+        backgroundColor: '#00D39F',
+        yAxisID: 'y1',
+        tension: 0.4,
+      },
+      {
+        label: 'CPU Usage',
+        data: [],
+        borderColor: '#057FDD',
+        backgroundColor: '#057FDD',
+        yAxisID: 'y',
+        tension: 0.4,
+      },
+    ],
   }
 
   onMount(() => {
+    let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
     const path: string = `/api/v1/monitor/cluster-overview`
     const overview = new EventSource(path)
 
@@ -213,18 +191,32 @@
       cpuCapacity = millicoresToCores(clusterData.cpuCapacity)
 
       if (onMessageCount === 0) {
-        onMessageCount++
-        apexChart = new ApexCharts(el, updateClusterData(clusterData))
-        apexChart?.render()
+        myChart = new Chart(ctx, {
+          type: 'line',
+          data: chartjsData,
+          options: chartjsOptions,
+        })
       }
+
+      // on each message manually update the grap
+      myChart.data.labels = clusterData.historicalUsage.map((point) => [formatTime(point.Timestamp)])
+      myChart.data.datasets[0].data = clusterData.historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
+      myChart.data.datasets[1].data = clusterData.historicalUsage.map((point) => point.CPU / 1000)
+      myChart.update()
+      onMessageCount++
     }
+
+    Chart.register({})
 
     return () => {
       onMessageCount = 0
       overview.close()
-      apexChart?.destroy()
+      myChart.destroy()
     }
   })
+
+  // Chart.js settings
+  Chart.defaults.datasets.line.tension = 0.4
 </script>
 
 <div class="p-4 dark:text-white pt-0">
@@ -256,14 +248,15 @@
       capacity={gbCapacity}
       progress={gbUsed}
       statText="Memory Usage"
-      unit="Cores"
+      unit="GB"
       value={memoryPercentage.toFixed(2)}
     />
   </div>
   <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
-    <div class="h-96 bg-gray-800 rounded-lg overflow-hidden shadow">
-      <div bind:this={el} />
+
+    <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow" style:position="relative" style:margin="auto">
+      <canvas id="chartjs-el" height={350} />
     </div>
   </div>
 </div>

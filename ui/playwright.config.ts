@@ -2,12 +2,16 @@ import { defineConfig } from '@playwright/test'
 import { loadEnv } from 'vite'
 
 const { VITE_PORT_ENV } = loadEnv('dev', process.cwd())
-const port = VITE_PORT_ENV ?? '8080'
+
+// use port 8443 because by default we use TLS when running locally
+const port = VITE_PORT_ENV ?? '8443'
+const protocol = 'https'
+const host = 'runtime-local.uds.dev'
 
 export default defineConfig({
   webServer: {
     command: 'API_AUTH_DISABLED=true ../build/uds-runtime',
-    url: `http://localhost:${port}`,
+    url: `${protocol}://${host}:${port}`,
     reuseExistingServer: !process.env.CI,
   },
   timeout: 10 * 1000,
@@ -17,7 +21,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 1,
   testMatch: /^(?!.*api-auth)(.+\.)?(test|spec)\.[jt]s$/,
   use: {
-    baseURL: `http://localhost:${port}/`,
+    baseURL: `${protocol}://${host}:${port}/`,
   },
 })
 
