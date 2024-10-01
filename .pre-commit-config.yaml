@@ -12,6 +12,7 @@ repos:
         args:
           - "--allow-missing-credentials"
       - id: detect-private-key
+        exclude: 'hack/certs/key.pem'
       - id: end-of-file-fixer
         exclude_types:
           - json
