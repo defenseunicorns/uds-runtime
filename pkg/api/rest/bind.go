@@ -59,19 +59,18 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 				return
 			}
 
-			// Otherwise, write the data to the client
-			writeData(w, data, fieldsList)
+			writeResourceData(w, data, fieldsList, resource.MissingCRD)
 			return
 		}
 
 		// If once is true, send the list data once and close the connection
 		if once {
-			writeData(w, getData(namespace, namePartial), fieldsList)
+			writeResourceData(w, getData(namespace, namePartial), fieldsList, resource.MissingCRD)
 			return
 		}
 
 		// Otherwise, send the data as an SSE stream
-		Handler(w, r, getData, resource.Changes, fieldsList)
+		Handler(w, r, getData, resource.Changes, fieldsList, resource.MissingCRD)
 	}
 }
 
@@ -95,4 +94,13 @@ func writeData(w http.ResponseWriter, payload any, fieldsList []string) {
 		http.Error(w, "Failed to write data", http.StatusInternalServerError)
 		return
 	}
+}
+
+// writeResourceData writes the resource data to the http.ResponseWriter while checking for missing CRD
+func writeResourceData(w http.ResponseWriter, data interface{}, fieldsList []string, missingCRD bool) {
+	if missingCRD {
+		writeData(w, "data: {\"error\":\"crd not found\"}\n\n", nil)
+		return
+	}
+	writeData(w, data, fieldsList)
 }

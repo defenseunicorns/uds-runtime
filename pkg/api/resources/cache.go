@@ -20,6 +20,7 @@ import (
 	schedulingV1 "k8s.io/api/scheduling/v1"
 	storageV1 "k8s.io/api/storage/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	dynamicInformer "k8s.io/client-go/dynamic/dynamicinformer"
@@ -98,10 +99,10 @@ func NewCache(ctx context.Context, k8s *k8s.Clients) (*Cache, error) {
 
 	c.bindCoreResources()
 	c.bindWorkloadResources()
-	c.bindUDSResources()
+	c.bindUDSResources(dynamicClient)
 	c.bindConfigResources()
 	c.bindClusterOpsResources()
-	c.bindNetworkResources()
+	c.bindNetworkResources(dynamicClient)
 	c.bindStorageResources()
 
 	// start the informer
@@ -179,7 +180,7 @@ func (c *Cache) bindClusterOpsResources() {
 	c.ResourceQuotas = NewResourceList(c.factory.Core().V1().ResourceQuotas().Informer(), resourceQuotaGVK)
 }
 
-func (c *Cache) bindNetworkResources() {
+func (c *Cache) bindNetworkResources(d dynamic.Interface) {
 	serviceGVK := coreV1.SchemeGroupVersion.WithKind("Service")
 	networkPolicyGVK := coreV1.SchemeGroupVersion.WithKind("NetworkPolicy")
 	endpointGVK := coreV1.SchemeGroupVersion.WithKind("Endpoints")
@@ -196,7 +197,16 @@ func (c *Cache) bindNetworkResources() {
 		Resource: "virtualservices",
 	}
 
-	c.VirtualServices = NewResourceList(c.dynamicFactory.ForResource(istioVSGVR).Informer(), isitoVSGVK)
+	informer := c.dynamicFactory.ForResource(istioVSGVR).Informer()
+	c.VirtualServices = NewResourceList(informer, isitoVSGVK)
+	err := informer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
+		if !isCRDInCluster("virtualservices.networking.istio.io", d) {
+			c.VirtualServices.MissingCRD = true
+		}
+	})
+	if err != nil {
+		fmt.Printf("Error setting watch error handler: %v\n", err)
+	}
 }
 
 func (c *Cache) bindStorageResources() {
@@ -209,7 +219,7 @@ func (c *Cache) bindStorageResources() {
 	c.StorageClasses = NewResourceList(c.factory.Storage().V1().StorageClasses().Informer(), storageClassGVK)
 }
 
-func (c *Cache) bindUDSResources() {
+func (c *Cache) bindUDSResources(d dynamic.Interface) {
 	udsPackageGVK := schema.FromAPIVersionAndKind("uds.dev/v1alpha1", "Package")
 	udsExemptionGVK := schema.FromAPIVersionAndKind("uds.dev/v1alpha1", "Exemption")
 
@@ -225,6 +235,41 @@ func (c *Cache) bindUDSResources() {
 		Resource: "exemptions",
 	}
 
-	c.UDSPackages = NewResourceList(c.dynamicFactory.ForResource(udsPackageGVR).Informer(), udsPackageGVK)
-	c.UDSExemptions = NewResourceList(c.dynamicFactory.ForResource(udsExemptionsGVR).Informer(), udsExemptionGVK)
+	packageInformer := c.dynamicFactory.ForResource(udsPackageGVR).Informer()
+	err := packageInformer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
+		if !isCRDInCluster("packages.uds.dev", d) {
+			c.UDSPackages.MissingCRD = true
+		}
+	})
+	if err != nil {
+		fmt.Printf("Error setting watch error handler: %v\n", err)
+	}
+	c.UDSPackages = NewResourceList(packageInformer, udsPackageGVK)
+
+	exemptionInformer := c.dynamicFactory.ForResource(udsExemptionsGVR).Informer()
+	err = exemptionInformer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
+		if !isCRDInCluster("exemptions.uds.dev", d) {
+			c.UDSExemptions.MissingCRD = true
+		}
+	})
+	if err != nil {
+		fmt.Printf("Error setting watch error handler: %v\n", err)
+	}
+	c.UDSExemptions = NewResourceList(exemptionInformer, udsExemptionGVK)
+}
+
+func isCRDInCluster(crdName string, d dynamic.Interface) bool {
+	// Define the GVR for CRDs
+	crdGVR := schema.GroupVersionResource{
+		Group:    "apiextensions.k8s.io",
+		Version:  "v1",
+		Resource: "customresourcedefinitions",
+	}
+
+	_, err := d.Resource(crdGVR).Get(context.TODO(), crdName, metav1.GetOptions{})
+	if err != nil {
+		fmt.Printf("CRD %s does not exist: %v\n", crdName, err)
+		return false
+	}
+	return true
 }

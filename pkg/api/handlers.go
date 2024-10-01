@@ -288,7 +288,7 @@ func getCronJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Success 200
 // @Router /resources/workloads/podmetrics [get]
 func getPodMetrics(w http.ResponseWriter, r *http.Request, cache *resources.Cache) {
-	rest.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges, nil)
+	rest.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges, nil, false)
 }
 
 // @Description Get UDS Packages

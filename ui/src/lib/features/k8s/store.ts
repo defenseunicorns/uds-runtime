@@ -92,6 +92,13 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
       ],
       ([$resources, $namespace, $search, $searchBy, $sortBy, $sortAsc]) => {
         let filtered = $resources
+        if (typeof $resources === 'string') {
+          if ($resources === 'crd not found') {
+            this.numResources.set(0)
+            return $resources
+          }
+        }
+
         this.numResources.set($resources.length)
 
         // If there is a namespace, filter the resources
@@ -242,6 +249,12 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
     // If we don't have resoure return empty array to avoid 'Cannot read properties of null (reading 'map')' error
     if (!resources) {
       return []
+    }
+
+    // Check if the resources contain an error
+    const containsError = Object.keys(resources)[0] === 'error'
+    if (containsError) {
+      return Object.values(resources)[0]
     }
 
     // Map the resources to the common table format
