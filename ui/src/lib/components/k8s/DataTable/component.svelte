@@ -258,7 +258,7 @@
                 <td class="text-center" colspan="9">No resources found</td>
               </tr>
               <!--This case only happens when returning an error when a CRD does not exist in the cluster-->
-            {:else if typeof $rows === 'string'}
+            {:else if $rows.length > 0 && typeof $rows[0].resource === 'string'}
               <tr class="!pointer-events-none !border-b-0">
                 <td class="text-center" colspan="9">CRD does not exist</td>
               </tr>
