@@ -18,7 +18,7 @@ In this image you can see 3 different things outlined
 
 - The Name of the component at large which is called Stats Widget
 - The selected component
-- The name of the selected compoent or type i.e. "With right icon"
+- The name of the selected component or type i.e. "With right icon"
 
 ![Alt text](./images/stats-widgets.png?raw=true)
 
@@ -29,7 +29,7 @@ In this case, this would have been a component that has variants
 In this image we can see...
 
 - The name of the folder `StatsWidget`
-- The name of the compoennt `WithRightIcon`
+- The name of the component `WithRightIcon`
 - The component
 - The attributes for the component which line up with the attributes that the component has i.e.
   - Stats text
