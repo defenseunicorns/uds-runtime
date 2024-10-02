@@ -40,7 +40,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	// Create a k8s session
 	k8sSession, err := session.CreateK8sSession()
 	if err != nil {
-		return nil, false, fmt.Errorf("failed to setup k8s session context: %w", err)
+		return nil, false, fmt.Errorf("failed to setup k8s session: %w", err)
 	}
 
 	inCluster := k8sSession.InCluster
