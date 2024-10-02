@@ -44,37 +44,53 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   // Using dense=true because this CR does not use the status field
   const url = `/api/v1/resources/configs/uds-exemptions?dense=true`
 
-  const transform = (resources: Resource[]) =>
-    resources
-      // Breakout the nested spec.exemptions array into individual rows
-      .flatMap((r) => (r.spec?.exemptions ?? []).map((e) => ({ ...e, resource: r })))
-      // Transform the resource into a table row
-      .map<ResourceWithTable<Resource, Row>>((e) => ({
-        resource: e.resource,
-        table: {
-          name: e.resource.metadata?.name ?? '',
-          namespace: e.resource.metadata?.namespace ?? '',
-          creationTimestamp: new Date(e.resource.metadata?.creationTimestamp ?? ''),
-          title: e.title ?? '',
-          details: {
-            component: ExemptionDetails,
-            sort: e.title ?? '',
-            props: {
-              exemption: e,
-            },
+  const transform = (resources: Resource[]) => {
+    if (!Array.isArray(resources)) {
+      // Check if the resources contain an error
+      const containsError = Object.keys(resources)[0] === 'error'
+      if (containsError) {
+        return [
+          {
+            resource: Object.values(resources)[0] as Resource,
+            table: {} as Row,
           },
-          matcher: {
-            component: ExemptionMatcher,
-            props: {
-              matcher: e.matcher,
-            },
-          },
-          policies: {
-            list: e.policies.sort(),
-          },
-        },
-      }))
+        ]
+      }
+      return []
+    }
 
+    return (
+      resources
+        // Breakout the nested spec.exemptions array into individual rows
+        .flatMap((r) => (r.spec?.exemptions ?? []).map((e) => ({ ...e, resource: r })))
+        // Transform the resource into a table row
+        .map<ResourceWithTable<Resource, Row>>((e) => ({
+          resource: e.resource,
+          table: {
+            name: e.resource.metadata?.name ?? '',
+            namespace: e.resource.metadata?.namespace ?? '',
+            creationTimestamp: new Date(e.resource.metadata?.creationTimestamp ?? ''),
+            title: e.title ?? '',
+            details: {
+              component: ExemptionDetails,
+              sort: e.title ?? '',
+              props: {
+                exemption: e,
+              },
+            },
+            matcher: {
+              component: ExemptionMatcher,
+              props: {
+                matcher: e.matcher,
+              },
+            },
+            policies: {
+              list: e.policies.sort(),
+            },
+          },
+        }))
+    )
+  }
   const store = new ResourceStore<Resource, Row>(url, transform, 'namespace')
 
   return {
