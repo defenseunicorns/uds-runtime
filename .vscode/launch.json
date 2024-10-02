@@ -9,10 +9,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "main.go",
-      "env": {
-        "API_AUTH_DISABLED": "true"
-      }
+      "program": "main.go"
     }
   ]
 }
