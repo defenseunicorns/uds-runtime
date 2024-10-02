@@ -26,10 +26,10 @@ export class APIAuth {
   }
 }
 
-const http = new APIAuth()
+const apiAuth = new APIAuth()
 const Auth = {
   connect: async (token: string) => {
-    return await http.request(token)
+    return await apiAuth.request(token)
   },
 }
 

@@ -11,11 +11,11 @@ export default defineConfig(({ mode }) => ({
       // Proxy all requests starting with /api to the go server
       // noting that we ues https and 8443 because by default we use TLS when running locally
       '/api': {
-        target: 'https://runtime-local:8443',
+        target: 'https://runtime-local.uds.dev:8443',
         changeOrigin: true,
       },
       '/health': {
-        target: 'https://runtime-local:8443',
+        target: 'https://runtime-local.uds.dev:8443',
         changeOrigin: true,
       },
     },
