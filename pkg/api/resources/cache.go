@@ -6,6 +6,7 @@ package resources
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
@@ -199,14 +200,7 @@ func (c *Cache) bindNetworkResources(d dynamic.Interface) {
 
 	informer := c.dynamicFactory.ForResource(istioVSGVR).Informer()
 	c.VirtualServices = NewResourceList(informer, isitoVSGVK)
-	err := informer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
-		if !isCRDInCluster("virtualservices.networking.istio.io", d) {
-			c.VirtualServices.MissingCRD = true
-		}
-	})
-	if err != nil {
-		fmt.Printf("Error setting watch error handler: %v\n", err)
-	}
+	setWatchErrorHandler(informer, "virtualservices.networking.istio.io", d, &c.VirtualServices.MissingCRD)
 }
 
 func (c *Cache) bindStorageResources() {
@@ -236,26 +230,24 @@ func (c *Cache) bindUDSResources(d dynamic.Interface) {
 	}
 
 	packageInformer := c.dynamicFactory.ForResource(udsPackageGVR).Informer()
-	err := packageInformer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
-		if !isCRDInCluster("packages.uds.dev", d) {
-			c.UDSPackages.MissingCRD = true
-		}
-	})
-	if err != nil {
-		fmt.Printf("Error setting watch error handler: %v\n", err)
-	}
 	c.UDSPackages = NewResourceList(packageInformer, udsPackageGVK)
+	setWatchErrorHandler(packageInformer, "packages.uds.dev", d, &c.UDSPackages.MissingCRD)
 
 	exemptionInformer := c.dynamicFactory.ForResource(udsExemptionsGVR).Informer()
-	err = exemptionInformer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
-		if !isCRDInCluster("exemptions.uds.dev", d) {
-			c.UDSExemptions.MissingCRD = true
+	c.UDSExemptions = NewResourceList(exemptionInformer, udsExemptionGVK)
+	setWatchErrorHandler(exemptionInformer, "exemptions.uds.dev", d, &c.UDSExemptions.MissingCRD)
+}
+
+// setWatchErrorHandler sets a watch error handler on the provided informer for custom resources
+func setWatchErrorHandler(informer cache.SharedIndexInformer, crdName string, d dynamic.Interface, missingCRD *bool) {
+	err := informer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
+		if !isCRDInCluster(crdName, d) {
+			*missingCRD = true
 		}
 	})
 	if err != nil {
-		fmt.Printf("Error setting watch error handler: %v\n", err)
+		log.Printf("error setting watch error handler: %v", err)
 	}
-	c.UDSExemptions = NewResourceList(exemptionInformer, udsExemptionGVK)
 }
 
 func isCRDInCluster(crdName string, d dynamic.Interface) bool {
@@ -268,7 +260,7 @@ func isCRDInCluster(crdName string, d dynamic.Interface) bool {
 
 	_, err := d.Resource(crdGVR).Get(context.TODO(), crdName, metav1.GetOptions{})
 	if err != nil {
-		fmt.Printf("CRD %s does not exist: %v\n", crdName, err)
+		log.Printf("CRD %s does not exist: %v\n", crdName, err)
 		return false
 	}
 	return true
