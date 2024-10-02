@@ -37,12 +37,13 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	var apiAuth bool
 	var token string
 
-	// Create a k8s session {Clients, Cache, CurrentCtx, CurrentCluster, Cancel, InCluster}
+	// Create a k8s session
 	k8sSession, err := session.CreateK8sSession()
-	inCluster := k8sSession.InCluster
 	if err != nil {
-		return nil, inCluster, fmt.Errorf("failed to setup k8s session context: %w", err)
+		return nil, false, fmt.Errorf("failed to setup k8s session context: %w", err)
 	}
+
+	inCluster := k8sSession.InCluster
 
 	// Create the disconnected channel
 	disconnected := make(chan error)
@@ -82,7 +83,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	r.Get("/health", checkHealth(k8sSession, disconnected))
+	r.Get("/health", checkClusteConnection(k8sSession, disconnected))
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
 		if apiAuth {
@@ -307,8 +308,8 @@ func checkForClusterAuth() bool {
 }
 
 // withLatestCache returns a wrapper lambda function, creating a closure that can dynamically access the latest cache
-func withLatestCache(k8sSessionCTX *session.K8sSession, handler func(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
+func withLatestCache(k8sSession *session.K8sSession, handler func(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		handler(k8sSessionCTX.Cache)(w, r)
+		handler(k8sSession.Cache)(w, r)
 	}
 }

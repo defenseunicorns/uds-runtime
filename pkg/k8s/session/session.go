@@ -2,13 +2,16 @@ package session
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
 	"github.com/defenseunicorns/uds-runtime/pkg/k8s/client"
 )
 
@@ -121,4 +124,83 @@ func getRetryInterval() time.Duration {
 		}
 	}
 	return 5 * time.Second // Default to 5 seconds if not set
+}
+
+func MonitorConnection(k8sSession *K8sSession, disconnected chan error) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Set headers to keep connection alive
+		rest.WriteHeaders(w)
+
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+
+		recovering := false
+
+		// Function to check the cluster health when running out of cluster
+		checkCluster := func() {
+			versionInfo, err := k8sSession.Clients.Clientset.ServerVersion()
+			response := map[string]string{}
+
+			// if err then connection is lost
+			if err != nil {
+				response["error"] = err.Error()
+				w.WriteHeader(http.StatusInternalServerError)
+				disconnected <- err
+				// indicate that the reconnection handler should have been triggered by the disconnected channel
+				recovering = true
+			} else if recovering {
+				// if errors are resolved, send a reconnected message
+				response["reconnected"] = versionInfo.String()
+				recovering = false
+			} else {
+				response["success"] = versionInfo.String()
+				w.WriteHeader(http.StatusOK)
+			}
+
+			data, err := json.Marshal(response)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
+				return
+			}
+
+			// Write the data to the response
+			fmt.Fprintf(w, "data: %s\n\n", data)
+
+			// Flush the response to ensure it is sent to the client
+			if flusher, ok := w.(http.Flusher); ok {
+				flusher.Flush()
+			}
+		}
+
+		// If running in cluster don't check for version and send error or reconnected events
+		if k8sSession.InCluster {
+			checkCluster = func() {
+				response := map[string]string{
+					"success": "in-cluster",
+				}
+				data, _ := json.Marshal(response)
+				// Write the data to the response
+				fmt.Fprintf(w, "data: %s\n\n", data)
+
+				// Flush the response to ensure it is sent to the client
+				if flusher, ok := w.(http.Flusher); ok {
+					flusher.Flush()
+				}
+			}
+		}
+
+		// Check the cluster immediately
+		checkCluster()
+
+		for {
+			select {
+			case <-ticker.C:
+				checkCluster()
+
+			case <-r.Context().Done():
+				// Client closed the connection
+				return
+			}
+		}
+	}
 }
