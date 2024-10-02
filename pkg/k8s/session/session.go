@@ -178,7 +178,11 @@ func MonitorConnection(k8sSession *K8sSession, disconnected chan error) http.Han
 				response := map[string]string{
 					"success": "in-cluster",
 				}
-				data, _ := json.Marshal(response)
+				data, err := json.Marshal(response)
+				if err != nil {
+					http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
+					return
+				}
 				// Write the data to the response
 				fmt.Fprintf(w, "data: %s\n\n", data)
 
