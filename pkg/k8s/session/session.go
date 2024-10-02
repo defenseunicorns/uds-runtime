@@ -66,7 +66,7 @@ func CreateK8sSession() (*K8sSession, error) {
 	return session, nil
 }
 
-// handleReconnection is a goroutine that handles reconnection to the k8s API
+// HandleReconnection is a goroutine that handles reconnection to the k8s API
 // passing createClient and createCache instead of calling clients.NewClient and resources.NewCache for testing purposes
 func (ks *K8sSession) HandleReconnection(disconnected chan error, createClient createClient,
 	createCache createCache) {
