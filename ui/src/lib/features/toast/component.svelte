@@ -28,13 +28,15 @@
         </div>
         <div class="text-sm font-normal">{toast.message}</div>
       </div>
-      <button
-        type="button"
-        class="flex-shrink-0 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
-        on:click={() => removeToast(toast.id)}
-      >
-        <Close class="w-5 h-5" />
-      </button>
+      {#if !toast.noClose}
+        <button
+          type="button"
+          class="flex-shrink-0 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+          on:click={() => removeToast(toast.id)}
+        >
+          <Close class="w-5 h-5" />
+        </button>
+      {/if}
     </div>
   {/each}
 </div>

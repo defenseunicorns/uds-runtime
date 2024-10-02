@@ -131,7 +131,7 @@ func MonitorConnection(k8sSession *K8sSession, disconnected chan error) http.Han
 		// Set headers to keep connection alive
 		rest.WriteHeaders(w)
 
-		ticker := time.NewTicker(30 * time.Second)
+		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
 
 		recovering := false
@@ -144,7 +144,6 @@ func MonitorConnection(k8sSession *K8sSession, disconnected chan error) http.Han
 			// if err then connection is lost
 			if err != nil {
 				response["error"] = err.Error()
-				w.WriteHeader(http.StatusInternalServerError)
 				disconnected <- err
 				// indicate that the reconnection handler should have been triggered by the disconnected channel
 				recovering = true

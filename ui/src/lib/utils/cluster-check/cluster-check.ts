@@ -12,7 +12,7 @@ export function checkClusterConnection() {
     addToast({
       type: 'error',
       message: disconnectedMsg,
-      timeoutSecs: 1000,
+      noClose: true,
     })
   }
 
@@ -40,7 +40,7 @@ export function checkClusterConnection() {
       addToast({
         type: 'error',
         message: disconnectedMsg,
-        timeoutSecs: 1000,
+        noClose: true,
       })
     }
   }
