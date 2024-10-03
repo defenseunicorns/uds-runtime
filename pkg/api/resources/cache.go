@@ -200,7 +200,7 @@ func (c *Cache) bindNetworkResources(d dynamic.Interface) {
 
 	informer := c.dynamicFactory.ForResource(istioVSGVR).Informer()
 	c.VirtualServices = NewResourceList(informer, isitoVSGVK)
-	setWatchErrorHandler(informer, "virtualservices.networking.istio.io", d, &c.VirtualServices.MissingCRD)
+	setWatchErrorHandler(informer, "virtualservices.networking.istio.io", d, c.VirtualServices)
 }
 
 func (c *Cache) bindStorageResources() {
@@ -231,19 +231,22 @@ func (c *Cache) bindUDSResources(d dynamic.Interface) {
 
 	packageInformer := c.dynamicFactory.ForResource(udsPackageGVR).Informer()
 	c.UDSPackages = NewResourceList(packageInformer, udsPackageGVK)
-	setWatchErrorHandler(packageInformer, "packages.uds.dev", d, &c.UDSPackages.MissingCRD)
+	setWatchErrorHandler(packageInformer, "packages.uds.dev", d, c.UDSPackages)
 
 	exemptionInformer := c.dynamicFactory.ForResource(udsExemptionsGVR).Informer()
 	c.UDSExemptions = NewResourceList(exemptionInformer, udsExemptionGVK)
-	setWatchErrorHandler(exemptionInformer, "exemptions.uds.dev", d, &c.UDSExemptions.MissingCRD)
+	setWatchErrorHandler(exemptionInformer, "exemptions.uds.dev", d, c.UDSExemptions)
 }
 
 // setWatchErrorHandler sets a watch error handler on the provided informer for custom resources
-func setWatchErrorHandler(informer cache.SharedIndexInformer, crdName string, d dynamic.Interface, missingCRD *bool) {
+func setWatchErrorHandler(informer cache.SharedIndexInformer, crdName string, d dynamic.Interface, resource *ResourceList) {
 	err := informer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
 		if !isCRDInCluster(crdName, d) {
-			*missingCRD = true
+			resource.MissingCRD = true
+		} else {
+			resource.MissingCRD = false
 		}
+		resource.Changes <- struct{}{}
 	})
 	if err != nil {
 		log.Printf("error setting watch error handler: %v", err)

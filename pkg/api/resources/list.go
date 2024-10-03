@@ -108,6 +108,13 @@ func (r *ResourceList) GetSparseResources(namespace string, namePartial string) 
 	return resources
 }
 
+// GetSparseResources returns a slice of the current resources with only metadata and status fields.
+func (r *ResourceList) IsCRDMissing() bool {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+	return r.MissingCRD
+}
+
 // notifyChange updates the ResourceList based on the event type and notifies subscribers of changes.
 func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 	r.mutex.Lock()

@@ -260,7 +260,11 @@
               <!--This case only happens when returning an error when a CRD does not exist in the cluster-->
             {:else if $rows.length > 0 && typeof $rows[0].resource === 'string'}
               <tr class="!pointer-events-none !border-b-0">
-                <td class="text-center" colspan="9">CRD does not exist</td>
+                <td class="text-center" colspan="9">
+                  The CRD for the resources you are trying to view does not exist in the cluster.
+                  <br />
+                  Install CRD and refresh page to view resources.
+                </td>
               </tr>
             {:else}
               {#each $rows as row}

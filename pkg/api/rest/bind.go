@@ -43,6 +43,8 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 			getData = resource.GetResources
 		}
 
+		isCRDMissing := resource.IsCRDMissing
+
 		// If a UID is provided, send the data for that UID
 		// Streaming is not supported for single resources
 		if uid != "" {
@@ -70,7 +72,7 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 		}
 
 		// Otherwise, send the data as an SSE stream
-		Handler(w, r, getData, resource.Changes, fieldsList, resource.MissingCRD)
+		Handler(w, r, getData, resource.Changes, fieldsList, isCRDMissing)
 	}
 }
 
