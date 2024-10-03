@@ -79,3 +79,20 @@ export type K8StatusMapping = {
   Secrets: Record<SecretStatus, K8TypeFields>
   Namespaces: Record<NamespaceStatus, K8TypeFields>
 }
+
+export type ClusterData = {
+  totalPods: number
+  totalNodes: number
+  cpuCapacity: number
+  memoryCapacity: number
+  currentUsage: {
+    CPU: number
+    Memory: number
+    Timestamp: string
+  }
+  historicalUsage: {
+    CPU: number
+    Memory: number
+    Timestamp: string
+  }[]
+}
