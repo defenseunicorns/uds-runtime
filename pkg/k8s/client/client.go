@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 // Package k8s contains k8s client logic
-package k8s
+package client
 
 import (
 	"fmt"
@@ -44,6 +44,19 @@ func NewClient() (*Clients, error) {
 		MetricsClient: metricsClient,
 		Config:        config,
 	}, nil
+}
+
+// IsRunningInCluster checks if the application is running in cluster
+func IsRunningInCluster() (bool, error) {
+	_, err := rest.InClusterConfig()
+
+	if err == rest.ErrNotInCluster {
+		return false, nil
+	} else if err != nil {
+		return true, err
+	}
+
+	return true, nil
 }
 
 // Declare GetCurrentContext as a variable so it can be mocked
