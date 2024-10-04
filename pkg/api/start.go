@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"strings"
 
@@ -311,6 +312,14 @@ func checkForClusterAuth() bool {
 // withLatestCache returns a wrapper lambda function, creating a closure that can dynamically access the latest cache
 func withLatestCache(k8sSession *session.K8sSession, handler func(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Wait until cache is ready
+		k8sSession.ReadyMutex.RLock()
+		for !k8sSession.Ready {
+			k8sSession.ReadyMutex.RUnlock()
+			time.Sleep(10 * time.Millisecond) // Small delay to prevent busy-waiting
+			k8sSession.ReadyMutex.RLock()
+		}
+		k8sSession.ReadyMutex.RUnlock()
 		handler(k8sSession.Cache)(w, r)
 	}
 }
