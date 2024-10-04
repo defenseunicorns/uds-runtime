@@ -45,18 +45,18 @@ func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersion
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj any) {
 			r.notifyChange(obj, Added)
-			// reset MissingCRD field
+			// reset MissingCRD field for dynamic informers
 			r.MissingCRD = false
 		},
 		//nolint:revive
 		UpdateFunc: func(oldObj, newObj any) {
 			r.notifyChange(newObj, Modified)
-			// reset MissingCRD field
+			// reset MissingCRD field for dynamic informers
 			r.MissingCRD = false
 		},
 		DeleteFunc: func(obj any) {
 			r.notifyChange(obj, Deleted)
-			// reset MissingCRD field
+			// reset MissingCRD field for dynamic informers
 			r.MissingCRD = false
 		},
 	})
