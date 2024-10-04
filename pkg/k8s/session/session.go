@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
@@ -25,8 +24,6 @@ type K8sSession struct {
 	InCluster      bool
 	Status         chan string
 	disconnected   chan error
-	Ready          bool         // Readiness flag
-	ReadyMutex     sync.RWMutex // Mutex to guard access to the readiness flag
 }
 
 type createClient func() (*client.Clients, error)
@@ -71,7 +68,6 @@ func CreateK8sSession() (*K8sSession, error) {
 		InCluster:      inCluster,
 		Status:         make(chan string),
 		disconnected:   make(chan error),
-		Ready:          true,
 	}
 
 	return session, nil
@@ -83,11 +79,6 @@ func (ks *K8sSession) HandleReconnection(createClient createClient,
 	createCache createCache) {
 	for err := range ks.disconnected {
 		log.Printf("Disconnected error received: %v\n", err)
-
-		// Set readiness to false since we are about to reconnect
-		ks.ReadyMutex.Lock()
-		ks.Ready = false
-		ks.ReadyMutex.Unlock()
 
 		for {
 			// Cancel the previous context
@@ -124,11 +115,6 @@ func (ks *K8sSession) HandleReconnection(createClient createClient,
 			ks.Cache = cache
 			ks.Cancel = cancel
 
-			// Set readiness to true
-			ks.ReadyMutex.Lock()
-			ks.Ready = true
-			ks.ReadyMutex.Unlock()
-
 			log.Println("Successfully reconnected to k8s and recreated cache")
 
 			// Purge the disconnected channel in case more errors came in while reconnecting
@@ -157,20 +143,12 @@ func (ks *K8sSession) StartClusterMonitoring() {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
-	recovering := false
-
 	for range ticker.C {
 		// Perform cluster health check
 		_, err := ks.Clients.Clientset.ServerVersion()
 		if err != nil {
 			ks.Status <- "error"
 			ks.disconnected <- err
-			recovering = true
-		} else if recovering {
-			// if errors are resolved, send a reconnected message
-			ks.Status <- "reconnected"
-			// reset recovering flag
-			recovering = false
 		} else {
 			ks.Status <- "success"
 		}

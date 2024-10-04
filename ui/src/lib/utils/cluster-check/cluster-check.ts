@@ -1,3 +1,5 @@
+import { get } from 'svelte/store'
+
 import { addToast } from '$features/toast'
 import { toast } from '$features/toast/store'
 
@@ -10,7 +12,10 @@ export function checkClusterConnection() {
   // handle cluster disconnection and reconnection events
   clusterCheck.onmessage = (msg) => {
     const data = JSON.parse(msg.data)
-    if (data === 'reconnected') {
+    const errToast = get(toast).find((t) => t.message === disconnectedMsg)
+
+    // a disconnection occured but has now been resolved
+    if (data === 'success' && errToast) {
       toast.update(() => [])
       addToast({
         type: 'success',
@@ -26,7 +31,7 @@ export function checkClusterConnection() {
       window.dispatchEvent(event)
     }
 
-    // only show error toast once and make timeout really long
+    // show a disconnection toast message
     if (data === 'error') {
       addToast({
         type: 'error',
