@@ -86,7 +86,7 @@
 </script>
 
 <div class="p-4 dark:text-white pt-0">
-  <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
+  <!-- <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 min-[1024px]:grid-cols-2 min-[1510px]:grid-cols-4 gap-4">
     <WithRightIconWidget
       statText={clusterData.totalPods.toString()}
@@ -125,12 +125,12 @@
     <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow" style:position="relative" style:margin="auto">
       <canvas id="chartjs-el" height={350} />
     </div>
-  </div>
+  </div> -->
 
   <div class="flex flex-col">
-    <div class="bg-white dark:bg-gray-800 w-full relative shadow-md rounded-t-lg overflow-hidden mt-10 px-6">
+    <div class="bg-white dark:bg-gray-800 w-full relative shadow-md rounded-lg overflow-hidden mt-10">
       <!-- Header which has Title, Dropdown and Search-->
-      <div class="py-6 dark:border-gray-700 flex items-start">
+      <div class="p-6 dark:border-gray-700 flex items-start">
         <div class="w-7/12 flex">
           <div class="flex h-6 items-center space-x-1">
             <h5 class="dark:text-white font-semibold justify-items-start">Event Logs</h5>
@@ -293,14 +293,29 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Footer with link-->
-  <div class="bg-white dark:bg-gray-800 rounded-b-lg px-10 h-20 flex items-center justify-end">
-    <button class="text-sm dark:text-blue-300 flex items-center space-x-1" on:click={() => goto('/monitor/events')}>
-      <span>VIEW EVENTS</span>
-      <ChevronRight />
-    </button>
+      <!-- Rows -->
+      <div class="flex flex-col text-xs">
+        <div class="row-header flex text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 p-6">
+          <div class="w-2/12">STATUS</div>
+          <div class="w-8/12">EVENT</div>
+          <div class="w-2/12">TIMESTAMP</div>
+        </div>
+
+        <div class="rows-cells flex p-6">
+          <div class="w-2/12 py-1 px-3 rounded-md bg-red-900 w-auto content-center">Completed</div>
+          <div class="w-8/12">Payment from John Doe</div>
+          <div class="w-2/12">April 23, 2024</div>
+        </div>
+      </div>
+
+      <!-- Footer with link-->
+      <div class="bg-white dark:bg-gray-800 rounded-b-lg px-10 h-20 flex items-center justify-end">
+        <button class="text-sm dark:text-blue-300 flex items-center space-x-1" on:click={() => goto('/monitor/events')}>
+          <span>VIEW EVENTS</span>
+          <ChevronRight />
+        </button>
+      </div>
+    </div>
   </div>
 </div>
