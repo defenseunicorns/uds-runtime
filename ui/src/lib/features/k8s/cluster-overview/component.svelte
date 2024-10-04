@@ -6,7 +6,7 @@
 
   import { ProgressBarWidget, WithRightIconWidget } from '$components'
   import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
-  import { Analytics, ChevronRight, DataVis_1 } from 'carbon-icons-svelte'
+  import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
   import Chart from 'chart.js/auto'
 
   import { calculatePercentage, formatTime, mebibytesToGigabytes, millicoresToCores } from '../helpers'
@@ -118,13 +118,13 @@
     />
   </div>
 
-  <!-- <div class="mt-8">
+  <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
 
     <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow" style:position="relative" style:margin="auto">
       <canvas id="chartjs-el" height={350} />
     </div>
-  </div> -->
+  </div>
 
   <EventsOverviewWidget title="Event Logs" dropdown={{ title: 'Last 30 days', options: [] }} />
 </div>
