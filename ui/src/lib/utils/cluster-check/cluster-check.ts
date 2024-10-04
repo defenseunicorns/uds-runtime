@@ -7,19 +7,10 @@ export function checkClusterConnection() {
   const clusterCheck = new EventSource('/health')
   const disconnectedMsg = 'Cluster health check failed: no connection'
 
-  // handle initial connection error
-  clusterCheck.onerror = () => {
-    addToast({
-      type: 'error',
-      message: disconnectedMsg,
-      noClose: true,
-    })
-  }
-
   // handle cluster disconnection and reconnection events
   clusterCheck.onmessage = (msg) => {
-    const data = JSON.parse(msg.data) as Record<'success' | 'error' | 'reconnected', string>
-    if (data['reconnected']) {
+    const data = JSON.parse(msg.data)
+    if (data === 'reconnected') {
       toast.update(() => [])
       addToast({
         type: 'success',
@@ -36,7 +27,7 @@ export function checkClusterConnection() {
     }
 
     // only show error toast once and make timeout really long
-    if (data['error']) {
+    if (data === 'error') {
       addToast({
         type: 'error',
         message: disconnectedMsg,

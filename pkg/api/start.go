@@ -46,7 +46,8 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	inCluster := k8sSession.InCluster
 
 	// Create the disconnected channel
-	disconnected := make(chan error)
+
+	go k8sSession.StartClusterMonitoring()
 
 	if !inCluster {
 		apiAuth, token, err = checkForLocalAuth()
@@ -55,7 +56,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		}
 
 		// Start the reconnection goroutine
-		go k8sSession.HandleReconnection(disconnected, client.NewClient, resources.NewCache)
+		go k8sSession.HandleReconnection(client.NewClient, resources.NewCache)
 	}
 
 	authSVC := checkForClusterAuth()
@@ -83,7 +84,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	r.Get("/health", checkClusteConnection(k8sSession, disconnected))
+	r.Get("/health", checkClusteConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
 		if apiAuth {
