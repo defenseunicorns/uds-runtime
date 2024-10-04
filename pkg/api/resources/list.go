@@ -108,7 +108,7 @@ func (r *ResourceList) GetSparseResources(namespace string, namePartial string) 
 	return resources
 }
 
-// GetSparseResources returns a slice of the current resources with only metadata and status fields.
+// IsCRDMissing returns the value of the MissingCRD field for the ResourceList.
 func (r *ResourceList) IsCRDMissing() bool {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()

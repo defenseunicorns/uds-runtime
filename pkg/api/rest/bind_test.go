@@ -127,7 +127,7 @@ func TestWriteData(t *testing.T) {
 	rr := httptest.NewRecorder()
 	payload := map[string]string{"key": "value"}
 
-	writeData(rr, payload, nil)
+	writeData(rr, payload, nil, false)
 
 	// Check the status code
 	if status := rr.Code; status != http.StatusOK {

@@ -43,8 +43,6 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 			getData = resource.GetResources
 		}
 
-		isCRDMissing := resource.IsCRDMissing
-
 		// If a UID is provided, send the data for that UID
 		// Streaming is not supported for single resources
 		if uid != "" {
@@ -61,24 +59,28 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 				return
 			}
 
-			writeResourceData(w, data, fieldsList, resource.MissingCRD)
+			writeData(w, data, fieldsList, resource.MissingCRD)
 			return
 		}
 
 		// If once is true, send the list data once and close the connection
 		if once {
-			writeResourceData(w, getData(namespace, namePartial), fieldsList, resource.MissingCRD)
+			writeData(w, getData(namespace, namePartial), fieldsList, resource.MissingCRD)
 			return
 		}
 
 		// Otherwise, send the data as an SSE stream
-		Handler(w, r, getData, resource.Changes, fieldsList, isCRDMissing)
+		Handler(w, r, getData, resource.Changes, fieldsList, resource.IsCRDMissing)
 	}
 }
 
 // writeData writes the payload to the http.ResponseWriter
-// It handles field filtering if specific fields are requested
-func writeData(w http.ResponseWriter, payload any, fieldsList []string) {
+// It handles field filtering if specific fields are requested and checks for missing CRD
+func writeData(w http.ResponseWriter, payload any, fieldsList []string, missingCRD bool) {
+	if missingCRD {
+		payload = "data: {\"error\":\"crd not found\"}\n\n"
+		fieldsList = nil
+	}
 	// Marshal the payload to JSON and filter the fields if specified
 	data, err := jsonMarshal(payload, fieldsList)
 	if err != nil {
@@ -96,13 +98,4 @@ func writeData(w http.ResponseWriter, payload any, fieldsList []string) {
 		http.Error(w, "Failed to write data", http.StatusInternalServerError)
 		return
 	}
-}
-
-// writeResourceData writes the resource data to the http.ResponseWriter while checking for missing CRD
-func writeResourceData(w http.ResponseWriter, data interface{}, fieldsList []string, missingCRD bool) {
-	if missingCRD {
-		writeData(w, "data: {\"error\":\"crd not found\"}\n\n", nil)
-		return
-	}
-	writeData(w, data, fieldsList)
 }
