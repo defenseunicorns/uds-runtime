@@ -127,6 +127,7 @@
       console.log('Cluster reconnected, restarting store')
       // stop current store first
       stop()
+
       // recreate rows to trigger re-render
       rows = createStore()
       stop = rows.start()

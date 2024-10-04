@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
@@ -24,6 +25,8 @@ type K8sSession struct {
 	InCluster      bool
 	Status         chan string
 	disconnected   chan error
+	ready          bool
+	readySync      sync.RWMutex
 }
 
 type createClient func() (*client.Clients, error)
@@ -68,6 +71,7 @@ func CreateK8sSession() (*K8sSession, error) {
 		InCluster:      inCluster,
 		Status:         make(chan string),
 		disconnected:   make(chan error),
+		ready:          true,
 	}
 
 	return session, nil
@@ -79,6 +83,11 @@ func (ks *K8sSession) HandleReconnection(createClient createClient,
 	createCache createCache) {
 	for err := range ks.disconnected {
 		log.Printf("Disconnected error received: %v\n", err)
+
+		// Set ready to false to block cluster check ticker
+		ks.readySync.Lock()
+		ks.ready = false
+		ks.readySync.Unlock()
 
 		for {
 			// Cancel the previous context
@@ -117,10 +126,9 @@ func (ks *K8sSession) HandleReconnection(createClient createClient,
 
 			log.Println("Successfully reconnected to k8s and recreated cache")
 
-			// Purge the disconnected channel in case more errors came in while reconnecting
-			for len(ks.disconnected) > 0 {
-				<-ks.disconnected
-			}
+			ks.readySync.Lock()
+			ks.ready = true
+			ks.readySync.Unlock()
 
 			break
 		}
@@ -144,6 +152,10 @@ func (ks *K8sSession) StartClusterMonitoring() {
 	defer ticker.Stop()
 
 	for range ticker.C {
+		// Skip if not ready, prevents race conditions using new cache
+		if !ks.ready {
+			continue
+		}
 		// Perform cluster health check
 		_, err := ks.Clients.Clientset.ServerVersion()
 		if err != nil {
