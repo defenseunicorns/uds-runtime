@@ -24,6 +24,7 @@ func TestBind(t *testing.T) {
 	resourceList := &resources.ResourceList{
 		Resources:       make(map[string]*unstructured.Unstructured),
 		SparseResources: make(map[string]*unstructured.Unstructured),
+		CRDExists:       true,
 	}
 	resourceList.Resources["1"] = test.CreateMockPod("mock-pod-1", "uds-dev-stack", "1")
 	resourceList.Resources["2"] = test.CreateMockPod("mock-pod-2", "uds-dev-stack", "2")
