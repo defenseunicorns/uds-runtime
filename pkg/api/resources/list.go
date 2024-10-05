@@ -27,17 +27,20 @@ type ResourceList struct {
 	HasSynced       cache.InformerSynced
 	Changes         chan struct{}
 	gvk             schema.GroupVersionKind
-	MissingCRD      bool
+	GVR             schema.GroupVersionResource
+	CRDExists       bool
 }
 
-// NewResourceList initializes a ResourceList and sets up event handlers for resource changes.
-func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersionKind) *ResourceList {
+// initializeResourceList initializes the common fields of ResourceList.
+func initializeResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersionKind) *ResourceList {
 	r := &ResourceList{
 		Resources:       make(map[string]*unstructured.Unstructured),
 		SparseResources: make(map[string]*unstructured.Unstructured),
 		Changes:         make(chan struct{}, 1),
 		HasSynced:       informer.HasSynced,
 		gvk:             gvk,
+		CRDExists:       true,
+		GVR:             schema.GroupVersionResource{},
 	}
 
 	//nolint:errcheck
@@ -45,22 +48,28 @@ func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersion
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj any) {
 			r.notifyChange(obj, Added)
-			// reset MissingCRD field for dynamic informers
-			r.MissingCRD = false
 		},
-		//nolint:revive
-		UpdateFunc: func(oldObj, newObj any) {
+		UpdateFunc: func(_, newObj any) {
 			r.notifyChange(newObj, Modified)
-			// reset MissingCRD field for dynamic informers
-			r.MissingCRD = false
 		},
 		DeleteFunc: func(obj any) {
 			r.notifyChange(obj, Deleted)
-			// reset MissingCRD field for dynamic informers
-			r.MissingCRD = false
 		},
 	})
 
+	return r
+}
+
+// NewResourceList initializes a ResourceList and sets up event handlers for resource changes.
+func NewResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersionKind) *ResourceList {
+	r := initializeResourceList(informer, gvk)
+	return r
+}
+
+// NewDynamicResourceList initializes a ResourceList with a gvr.
+func NewDynamicResourceList(informer cache.SharedIndexInformer, gvk schema.GroupVersionKind, gvr schema.GroupVersionResource) *ResourceList {
+	r := initializeResourceList(informer, gvk)
+	r.GVR = gvr
 	return r
 }
 
@@ -108,11 +117,11 @@ func (r *ResourceList) GetSparseResources(namespace string, namePartial string) 
 	return resources
 }
 
-// IsCRDMissing returns the value of the MissingCRD field for the ResourceList.
-func (r *ResourceList) IsCRDMissing() bool {
+// CRDExistsInCluster returns the value of the MissingCRD field for the ResourceList.
+func (r *ResourceList) CRDExistsInCluster() bool {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
-	return r.MissingCRD
+	return r.CRDExists
 }
 
 // notifyChange updates the ResourceList based on the event type and notifies subscribers of changes.
@@ -120,7 +129,7 @@ func (r *ResourceList) notifyChange(obj interface{}, eventType string) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	resource, err := toUnstructured(obj)
+	resource, err := ToUnstructured(obj)
 	if err != nil {
 		// Handle error or log it
 		return

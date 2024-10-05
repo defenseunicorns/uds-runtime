@@ -9,8 +9,8 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-// toUnstructured converts an object to an Unstructured
-func toUnstructured(obj interface{}) (*unstructured.Unstructured, error) {
+// ToUnstructured converts an object to an Unstructured
+func ToUnstructured(obj interface{}) (*unstructured.Unstructured, error) {
 	// If it's already Unstructured, just return it
 	if u, ok := obj.(*unstructured.Unstructured); ok {
 		return u, nil
@@ -18,7 +18,7 @@ func toUnstructured(obj interface{}) (*unstructured.Unstructured, error) {
 
 	// If it's a DeletedFinalStateUnknown, extract the object and convert that
 	if deletedObj, ok := obj.(cache.DeletedFinalStateUnknown); ok {
-		return toUnstructured(deletedObj.Obj)
+		return ToUnstructured(deletedObj.Obj)
 	}
 
 	// Otherwise, convert to Unstructured
