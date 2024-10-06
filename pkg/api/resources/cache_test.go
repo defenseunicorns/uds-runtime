@@ -215,7 +215,7 @@ func TestBindNetworkResources(t *testing.T) {
 	}
 
 	// Bind resources
-	c.bindNetworkResources(dynamicClient)
+	c.bindNetworkResources()
 
 	// Create a new context with a timeout for informer factory
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
@@ -336,7 +336,7 @@ func TestBindUDSResources(t *testing.T) {
 	}
 
 	// Bind resources
-	c.bindUDSResources(dynamicClient)
+	c.bindUDSResources()
 
 	// Create a new context with a timeout for dynamic informer factory
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
@@ -402,7 +402,7 @@ func TestSimpleAndDynamicClient(t *testing.T) {
 
 	// Bind resources
 	c.bindWorkloadResources()
-	c.bindUDSResources(dynamicClient)
+	c.bindUDSResources()
 
 	// Create a new context with a timeout for informer factory
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
