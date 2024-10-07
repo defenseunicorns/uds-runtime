@@ -15,15 +15,10 @@ func handleRequest(w http.ResponseWriter, r *http.Request, resource *resources.R
 	// If true, send full resource data
 	// By default, send the data as a sparse stream
 	dense := r.URL.Query().Get("dense") == "true"
-	// Get the namespace from the URL query
 	namespace := r.URL.Query().Get("namespace")
-	// Get the namePartial from the URL query
 	namePartial := r.URL.Query().Get("name")
-	// Get the UID
 	uid := chi.URLParam(r, "uid")
-	// If true, send data only once
 	once := r.URL.Query().Get("once") == "true"
-	// Get the fields from the URL query
 	fields := r.URL.Query().Get("fields")
 
 	var fieldsList []string
