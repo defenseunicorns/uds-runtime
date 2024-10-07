@@ -3,6 +3,7 @@
 
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
+  import { getColorAndStatus } from '$features/k8s/helpers'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { type Columns } from '$lib/features/k8s/events/store'
   import { ChevronRight, Information, Search } from 'carbon-icons-svelte'
@@ -37,10 +38,19 @@
     return () => stop()
   })
 
-  setTimeout(() => {
-    console.log('$rows')
-    console.log($rows)
-  }, 1000)
+  const calculateTypeClass = (key: string, rowData: string): string => {
+    let color: string = ''
+
+    if (key === 'type' && rowData === 'Normal') {
+      color = getColorAndStatus('Logs', 'Normal')
+    }
+
+    if (key === 'type' && rowData === 'Warning') {
+      color = getColorAndStatus('Logs', 'Warning')
+    }
+
+    return color
+  }
 </script>
 
 <div class="events">
@@ -84,7 +94,7 @@
   </div>
 
   <!-- Rows -->
-  <div class="events__rows">
+  <div class="events__rows {$rows.length === 0 && !isFiltering ? '!h-30' : 'h-96'}">
     <div class="events__rows-header">
       {#each columns as [header, style]}
         <span class={style}>
@@ -94,12 +104,12 @@
     </div>
 
     {#if $rows.length === 0 && isFiltering}
-      <div class="!pointer-events-none !border-b-0">
-        <span class="text-center">No matching entries found</span>
+      <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
+        <span>No matching entries found</span>
       </div>
     {:else if $rows.length === 0}
-      <div class="!pointer-events-none !border-b-0">
-        <span class="text-center">No resources found</span>
+      <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
+        <span>No resources found</span>
       </div>
     {:else}
       {#each $rows as row}
@@ -107,7 +117,7 @@
           {#each columns as [key, style]}
             <!-- Check object to avoid issues with `false` values -->
             {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
-            <span class={style}>
+            <span class={`${style} ${calculateTypeClass(key, row.table[key])}`}>
               {value.text || (value === 0 ? '0' : value) || '-'}
             </span>
           {/each}
@@ -142,7 +152,7 @@
   }
 
   .events__rows {
-    @apply flex flex-col text-xs h-96 overflow-hidden overflow-y-scroll;
+    @apply flex flex-col text-xs overflow-hidden overflow-y-scroll;
   }
 
   .events__rows-header {

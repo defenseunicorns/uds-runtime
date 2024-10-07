@@ -67,6 +67,10 @@ const k8StatusMapping: K8StatusMapping = {
     Active: { color: statusColors.success },
     Terminating: { color: statusColors.warning },
   },
+  Logs: {
+    Normal: { color: statusColors.success },
+    Warning: { color: statusColors.warning },
+  },
 }
 
 // Function to get the color and status for a specific type and status

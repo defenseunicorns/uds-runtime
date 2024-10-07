@@ -61,6 +61,7 @@ export type CronJobStatus = 'Active' | 'Suspended'
 export type ConfigMapStatus = 'Active'
 export type SecretStatus = 'Active'
 export type NamespaceStatus = 'Active' | 'Terminating'
+export type LogTypeStatus = 'Normal' | 'Warning'
 
 type K8TypeFields = { color: string }
 
@@ -78,6 +79,7 @@ export type K8StatusMapping = {
   ConfigMaps: Record<ConfigMapStatus, K8TypeFields>
   Secrets: Record<SecretStatus, K8TypeFields>
   Namespaces: Record<NamespaceStatus, K8TypeFields>
+  Logs: Record<LogTypeStatus, K8TypeFields>
 }
 
 export type ClusterData = {
