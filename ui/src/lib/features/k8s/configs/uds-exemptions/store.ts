@@ -45,6 +45,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
   const url = `/api/v1/resources/configs/uds-exemptions?dense=true`
 
   const transform = (resources: Resource[]) => {
+    // Additional CRD error check needed here since the exemption resouces are broken out to pull the
+    // data needed for each table row vs using the generic transformResource function
     if (!Array.isArray(resources)) {
       // Check if the resources contain an error
       const containsError = Object.keys(resources)[0] === 'error'

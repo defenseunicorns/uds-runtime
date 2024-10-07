@@ -14,12 +14,12 @@ import (
 // CRDs is a thread-safe struct to store the list of CRDs and notify subscribers of changes.
 type CRDs struct {
 	mutex       sync.RWMutex
-	definitions map[string]struct{}
+	definitions map[string]bool
 }
 
 func NewCRDs() *CRDs {
 	return &CRDs{
-		definitions: make(map[string]struct{}),
+		definitions: make(map[string]bool),
 	}
 }
 
@@ -58,7 +58,7 @@ func (c *CRDs) addCRD(crd interface{}) {
 		return
 	}
 	crdName := resource.Object["metadata"].(map[string]interface{})["name"].(string)
-	c.definitions[crdName] = struct{}{}
+	c.definitions[crdName] = true
 }
 
 func (c *CRDs) removeCRD(crd interface{}) {
