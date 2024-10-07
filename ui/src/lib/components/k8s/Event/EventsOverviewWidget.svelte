@@ -51,7 +51,7 @@
         <h2 class="events__header-title">{title}</h2>
 
         <div class="relative group">
-          <Information class="ml-1 w-4 h-4 text-gray-400" />
+          <Information class="ml-1 w-4 h-4 dark:text-gray-400 text-blue-500" />
 
           <div class="tooltip tooltip-right min-w-72">
             <div class="whitespace-normal">{description}</div>
@@ -118,7 +118,10 @@
 
   <!-- Footer with link-->
   <div class="events__footer">
-    <button class="text-sm dark:text-blue-300 flex items-center space-x-1" on:click={() => goto('/monitor/events')}>
+    <button
+      class="text-sm text-blue-500 dark:text-blue-300 flex items-center space-x-1"
+      on:click={() => goto('/monitor/events')}
+    >
       <span>VIEW EVENTS</span>
       <ChevronRight />
     </button>
@@ -143,7 +146,7 @@
   }
 
   .events__rows-header {
-    @apply flex justify-start text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 px-6 py-5;
+    @apply flex justify-start text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 px-6 py-5;
   }
 
   .events__rows-item {
