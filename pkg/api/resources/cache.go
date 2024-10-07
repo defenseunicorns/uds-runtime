@@ -196,14 +196,14 @@ func (c *Cache) bindNetworkResources() {
 	c.Endpoints = NewResourceList(c.factory.Core().V1().Endpoints().Informer(), endpointGVK)
 
 	// VirtualServices are not part of the core informer factory
-	vgr := schema.GroupVersionResource{
+	gvr := schema.GroupVersionResource{
 		Group:    "networking.istio.io",
 		Version:  "v1",
 		Resource: "virtualservices",
 	}
 
-	informer := c.dynamicFactory.ForResource(vgr).Informer()
-	c.VirtualServices = NewDynamicResourceList(informer, isitoVSGVK, vgr)
+	informer := c.dynamicFactory.ForResource(gvr).Informer()
+	c.VirtualServices = NewDynamicResourceList(informer, isitoVSGVK, gvr)
 	c.setWatchErrorHandler(informer, c.VirtualServices)
 }
 
