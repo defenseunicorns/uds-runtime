@@ -25,6 +25,10 @@ test.describe('Navigation', async () => {
     await expect(card.getByText('Nodes running in cluster')).toBeVisible()
     await expect(card.getByText('CPU Usage')).toBeVisible()
     await expect(card.getByText('Memory Usage')).toBeVisible()
+
+    // Check for Events Widget
+    await expect(page.getByText('Event Logs')).toBeVisible()
+    await expect(page.getByText('VIEW EVENTS')).toBeVisible()
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
