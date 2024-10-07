@@ -80,7 +80,7 @@ type Cache struct {
 	PodMetrics     *PodMetrics
 	MetricsChanges chan struct{}
 
-	// CustomResrouceDefinitions
+	// CustomResourceDefinitions
 	CRDs *CRDs
 }
 
