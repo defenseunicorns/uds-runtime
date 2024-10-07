@@ -865,5 +865,5 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Success 200
 // @Router /health [get]
 func checkClusteConnection(k8sSession *session.K8sSession) http.HandlerFunc {
-	return session.ServeConnStatus(k8sSession)
+	return k8sSession.ServeConnStatus()
 }

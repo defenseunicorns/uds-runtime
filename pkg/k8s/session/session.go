@@ -161,8 +161,8 @@ func getRetryInterval() time.Duration {
 	return 5 * time.Second // Default to 5 seconds if not set
 }
 
-// SSE Handler for /health
-func ServeConnStatus(k8sSession *K8sSession) http.HandlerFunc {
+// ServeConnStatus returns a handler function that streams the connection status to the client
+func (ks *K8sSession) ServeConnStatus() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Set headers to keep connection alive
 		rest.WriteHeaders(w)
@@ -174,7 +174,7 @@ func ServeConnStatus(k8sSession *K8sSession) http.HandlerFunc {
 		}
 
 		// If running in cluster don't check connection
-		if k8sSession.InCluster {
+		if ks.InCluster {
 			sendInClusterStatus(w, flusher)
 			return
 		}
@@ -190,7 +190,7 @@ func ServeConnStatus(k8sSession *K8sSession) http.HandlerFunc {
 		}
 
 		// To mitigate timing between connection start and getting status updates, immediately check cluster connection
-		_, err := k8sSession.Clients.Clientset.ServerVersion()
+		_, err := ks.Clients.Clientset.ServerVersion()
 		if err != nil {
 			sendStatus("error")
 		} else {
@@ -200,7 +200,7 @@ func ServeConnStatus(k8sSession *K8sSession) http.HandlerFunc {
 		// Listen for updates and send them to the client
 		for {
 			select {
-			case msg := <-k8sSession.Status:
+			case msg := <-ks.Status:
 				sendStatus(msg)
 
 			case <-r.Context().Done():
