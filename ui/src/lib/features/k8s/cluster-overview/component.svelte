@@ -6,6 +6,8 @@
 
   import { ProgressBarWidget, WithRightIconWidget } from '$components'
   import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
+  import { createStore } from '$lib/features/k8s/events/store'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
   import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
   import Chart from 'chart.js/auto'
 
@@ -38,6 +40,7 @@
   let onMessageCount = 0
   let myChart: Chart
   let chartjsData = chartData
+  const description = resourceDescriptions['Events']
 
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
@@ -126,5 +129,5 @@
     </div>
   </div>
 
-  <EventsOverviewWidget title="Event Logs" dropdown={{ title: 'Last 30 days', options: [] }} />
+  <EventsOverviewWidget title="Event Logs" {createStore} {description} />
 </div>

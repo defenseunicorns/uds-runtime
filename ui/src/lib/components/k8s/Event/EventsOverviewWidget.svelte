@@ -1,14 +1,46 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
-  import { ChevronDown, ChevronRight, Information, Time } from 'carbon-icons-svelte'
+  import { onMount } from 'svelte'
 
-  type DropdownProps = {
-    title: string
-    options: string[]
-  }
+  import type { KubernetesObject } from '@kubernetes/client-node'
+  import { goto } from '$app/navigation'
+  import { type ResourceStoreInterface } from '$features/k8s/types'
+  import { type Columns } from '$lib/features/k8s/events/store'
+  import { ChevronRight, Information, Search } from 'carbon-icons-svelte'
+
+  let columns: Columns = [
+    ['namespace', 'w-2/12'],
+    ['age', 'w-1/12'],
+    ['type', 'w-2/12'],
+    ['reason', 'w-2/12'],
+    ['object_kind', 'w-1/12'],
+    ['object_name', 'w-3/12'],
+    ['count', 'w-1/12'],
+  ]
 
   export let title: string
-  export let dropdown: DropdownProps
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
+  export let description: string
+
+  let rows = createStore()
+  $: ({ namespace, search } = rows)
+
+  // check for filtering
+  let isFiltering = false
+  $: {
+    isFiltering = !!($search || $namespace)
+  }
+
+  onMount(() => {
+    let stop = rows.start()
+
+    return () => stop()
+  })
+
+  setTimeout(() => {
+    console.log('$rows')
+    console.log($rows)
+  }, 1000)
 </script>
 
 <div class="events">
@@ -22,106 +54,28 @@
           <Information class="ml-1 w-4 h-4 text-gray-400" />
 
           <div class="tooltip tooltip-right min-w-72">
-            <div class="whitespace-normal">Showing 1-10 of 6,560 results</div>
+            <div class="whitespace-normal">{description}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="w-9/12 min-[1400px]:w-6/12 flex space-x-5">
-      <div class="w-1/3 flex justify-end">
-        <button
-          id="filterDropdownButton"
-          data-dropdown-toggle="filterDropdown"
-          class="hover:text-primary-700 flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 md:w-auto dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-          type="button"
-          data-testid="datatable-filter-dropdown"
-        >
-          <Time class="mr-1.5" style="height: 12px" />
-          {dropdown.title}
-          <ChevronDown class="ml-1" />
-        </button>
-
-        <div id="filterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-          <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Choose brand</h6>
-          <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
-            <li class="flex items-center">
-              <input
-                id="apple"
-                type="checkbox"
-                value=""
-                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Apple (56)</label>
-            </li>
-            <li class="flex items-center">
-              <input
-                id="fitbit"
-                type="checkbox"
-                value=""
-                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                Microsoft (16)
-              </label>
-            </li>
-            <li class="flex items-center">
-              <input
-                id="razor"
-                type="checkbox"
-                value=""
-                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label for="razor" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Razor (49)</label>
-            </li>
-            <li class="flex items-center">
-              <input
-                id="nikon"
-                type="checkbox"
-                value=""
-                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label for="nikon" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Nikon (12)</label>
-            </li>
-            <li class="flex items-center">
-              <input
-                id="benq"
-                type="checkbox"
-                value=""
-                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-              />
-              <label for="benq" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">BenQ (74)</label>
-            </li>
-          </ul>
-        </div>
-      </div>
-
+    <div class="w-9/12 min-[1400px]:w-6/12 flex justify-end">
       <div class="w-2/3">
         <form class="flex items-center">
           <label for="simple-search" class="sr-only">Search</label>
           <div class="relative w-full">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg
-                aria-hidden="true"
-                class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                fill="currentColor"
-                viewbox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <Search size={16} class="text-gray-500 dark:text-gray-400" />
             </div>
 
             <input
               type="text"
               id="simple-search"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-8 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Search"
               required
+              bind:value={$search}
             />
           </div>
         </form>
@@ -132,46 +86,34 @@
   <!-- Rows -->
   <div class="events__rows">
     <div class="events__rows-header">
-      <div class="w-2/12">STATUS</div>
-      <div class="w-8/12">EVENT</div>
-      <div class="w-2/12">TIMESTAMP</div>
+      {#each columns as [header, style]}
+        <span class={style}>
+          {header.replaceAll('_', ' ').toUpperCase()}
+        </span>
+      {/each}
     </div>
 
-    <div class="events__rows-item">
-      <div class="w-2/12 content-center"><span class="py-1.5 px-2.5 rounded-md bg-green-900">Completed</span></div>
-      <div class="w-8/12">Payment from Bonnie Green</div>
-      <div class="w-2/12">April 23, 2024</div>
-    </div>
-
-    <div class="events__rows-item">
-      <div class="w-2/12 content-center"><span class="py-1.5 px-2.5 rounded-md bg-green-900">Completed</span></div>
-      <div class="w-8/12">Payment refund from #00910</div>
-      <div class="w-2/12">April 23, 2024</div>
-    </div>
-
-    <div class="events__rows-item">
-      <div class="w-2/12 content-center"><span class="py-1.5 px-2.5 rounded-md bg-red-900">Cancelled</span></div>
-      <div class="w-8/12">Payment refund from #087651</div>
-      <div class="w-2/12">April 18, 2024</div>
-    </div>
-
-    <div class="events__rows-item">
-      <div class="w-2/12 content-center"><span class="py-1.5 px-2.5 rounded-md bg-red-900">Cancelled</span></div>
-      <div class="w-8/12">Payment refund from #087651</div>
-      <div class="w-2/12">April 18, 2024</div>
-    </div>
-
-    <div class="events__rows-item">
-      <div class="w-2/12 content-center"><span class="py-1.5 px-2.5 rounded-md bg-pink-900">In Progress</span></div>
-      <div class="w-8/12">Payment from Jose Leos</div>
-      <div class="w-2/12">April 18, 2024</div>
-    </div>
-
-    <div class="events__rows-item">
-      <div class="w-2/12 content-center"><span class="py-1.5 px-2.5 rounded-md bg-green-900">Completed</span></div>
-      <div class="w-8/12">Payment from THEMSBERG LLC</div>
-      <div class="w-2/12">April 18, 2024</div>
-    </div>
+    {#if $rows.length === 0 && isFiltering}
+      <div class="!pointer-events-none !border-b-0">
+        <span class="text-center">No matching entries found</span>
+      </div>
+    {:else if $rows.length === 0}
+      <div class="!pointer-events-none !border-b-0">
+        <span class="text-center">No resources found</span>
+      </div>
+    {:else}
+      {#each $rows as row}
+        <div id={row.resource.metadata?.uid} class="events__rows-item">
+          {#each columns as [key, style]}
+            <!-- Check object to avoid issues with `false` values -->
+            {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
+            <span class={style}>
+              {value.text || (value === 0 ? '0' : value) || '-'}
+            </span>
+          {/each}
+        </div>
+      {/each}
+    {/if}
   </div>
 
   <!-- Footer with link-->
@@ -197,11 +139,11 @@
   }
 
   .events__rows {
-    @apply flex flex-col text-xs;
+    @apply flex flex-col text-xs h-96 overflow-hidden overflow-y-scroll;
   }
 
   .events__rows-header {
-    @apply flex text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 px-6 py-5;
+    @apply flex justify-start text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 px-6 py-5;
   }
 
   .events__rows-item {
