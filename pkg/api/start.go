@@ -20,7 +20,6 @@ import (
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	"github.com/defenseunicorns/uds-runtime/pkg/k8s/client"
 	"github.com/defenseunicorns/uds-runtime/pkg/k8s/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -53,8 +52,6 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 
 		// Start the cluster monitoring goroutine
 		go k8sSession.StartClusterMonitoring()
-		// Start the reconnection goroutine
-		go k8sSession.HandleReconnection(client.NewClient, resources.NewCache)
 	}
 
 	authSVC := checkForClusterAuth()

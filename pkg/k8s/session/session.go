@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
@@ -19,14 +18,14 @@ import (
 type K8sSession struct {
 	Clients        *client.Clients
 	Cache          *resources.Cache
+	Cancel         context.CancelFunc
 	CurrentCtx     string
 	CurrentCluster string
-	Cancel         context.CancelFunc
-	InCluster      bool
 	Status         chan string
-	disconnected   chan error
+	InCluster      bool
 	ready          bool
-	readySync      sync.RWMutex
+	createCache    createCache
+	createClient   createClient
 }
 
 type createClient func() (*client.Clients, error)
@@ -70,80 +69,12 @@ func CreateK8sSession() (*K8sSession, error) {
 		Cancel:         cancel,
 		InCluster:      inCluster,
 		Status:         make(chan string),
-		disconnected:   make(chan error),
 		ready:          true,
+		createCache:    resources.NewCache,
+		createClient:   client.NewClient,
 	}
 
 	return session, nil
-}
-
-// HandleReconnection is a goroutine that handles reconnection to the k8s API
-// passing createClient and createCache instead of calling clients.NewClient and resources.NewCache for testing purposes
-func (ks *K8sSession) HandleReconnection(createClient createClient,
-	createCache createCache) {
-	for err := range ks.disconnected {
-		log.Printf("Disconnected error received: %v\n", err)
-
-		// Set ready to false to block cluster check ticker
-		ks.readySync.Lock()
-		ks.ready = false
-		ks.readySync.Unlock()
-
-		for {
-			// Cancel the previous context
-			ks.Cancel()
-			time.Sleep(getRetryInterval())
-
-			currentCtx, currentCluster, err := client.GetCurrentContext()
-			if err != nil {
-				log.Printf("Error fetching current context: %v\n", err)
-				continue
-			}
-
-			// If the current context or cluster is different from the original, skip reconnection
-			if currentCtx != ks.CurrentCtx || currentCluster != ks.CurrentCluster {
-				log.Println("Current context has changed. Skipping reconnection.")
-				continue
-			}
-
-			k8sClient, err := createClient()
-			if err != nil {
-				log.Printf("Retrying to create k8s client: %v\n", err)
-				continue
-			}
-
-			// Create a new context and cache
-			ctx, cancel := context.WithCancel(context.Background())
-			cache, err := createCache(ctx, k8sClient)
-			if err != nil {
-				log.Printf("Retrying to create cache: %v\n", err)
-				continue
-			}
-
-			ks.Clients = k8sClient
-			ks.Cache = cache
-			ks.Cancel = cancel
-
-			log.Println("Successfully reconnected to k8s and recreated cache")
-
-			ks.readySync.Lock()
-			ks.ready = true
-			ks.readySync.Unlock()
-
-			break
-		}
-	}
-}
-
-// getRetryInterval returns the interval to wait before retrying to connect to the k8s API
-func getRetryInterval() time.Duration {
-	if interval, exists := os.LookupEnv("CONNECTION_RETRY_MS"); exists {
-		parsed, err := strconv.Atoi(interval)
-		if err == nil {
-			return time.Duration(parsed) * time.Millisecond
-		}
-	}
-	return 5 * time.Second // Default to 5 seconds if not set
 }
 
 // StartClusterMonitoring is a goroutine that checks the connection to the cluster
@@ -160,11 +91,74 @@ func (ks *K8sSession) StartClusterMonitoring() {
 		_, err := ks.Clients.Clientset.ServerVersion()
 		if err != nil {
 			ks.Status <- "error"
-			ks.disconnected <- err
+			log.Println("Cluster check failed")
+			ks.HandleReconnection()
 		} else {
+			log.Println("Cluster check successful")
 			ks.Status <- "success"
 		}
 	}
+}
+
+// HandleReconnection is a goroutine that handles reconnection to the k8s API
+// passing createClient and createCache instead of calling clients.NewClient and resources.NewCache for testing purposes
+func (ks *K8sSession) HandleReconnection() {
+	log.Println("Disconnected error received")
+
+	// Set ready to false to block cluster check ticker
+	ks.ready = false
+
+	for {
+		// Cancel the previous context
+		ks.Cancel()
+		time.Sleep(getRetryInterval())
+
+		currentCtx, currentCluster, err := client.GetCurrentContext()
+		if err != nil {
+			log.Printf("Error fetching current context: %v\n", err)
+			continue
+		}
+
+		// If the current context or cluster is different from the original, skip reconnection
+		if currentCtx != ks.CurrentCtx || currentCluster != ks.CurrentCluster {
+			log.Println("Current context has changed. Skipping reconnection.")
+			continue
+		}
+
+		k8sClient, err := ks.createClient()
+		if err != nil {
+			log.Printf("Retrying to create k8s client: %v\n", err)
+			continue
+		}
+
+		// Create a new context and cache
+		ctx, cancel := context.WithCancel(context.Background())
+		cache, err := ks.createCache(ctx, k8sClient)
+		if err != nil {
+			log.Printf("Retrying to create cache: %v\n", err)
+			continue
+		}
+
+		ks.Clients = k8sClient
+		ks.Cache = cache
+		ks.Cancel = cancel
+
+		ks.ready = true
+		log.Println("Successfully reconnected to cluster and recreated cache")
+
+		break
+	}
+}
+
+// getRetryInterval returns the interval to wait before retrying to connect to the k8s API
+func getRetryInterval() time.Duration {
+	if interval, exists := os.LookupEnv("CONNECTION_RETRY_MS"); exists {
+		parsed, err := strconv.Atoi(interval)
+		if err == nil {
+			return time.Duration(parsed) * time.Millisecond
+		}
+	}
+	return 5 * time.Second // Default to 5 seconds if not set
 }
 
 // SSE Handler for /health
@@ -179,25 +173,13 @@ func ServeConnStatus(k8sSession *K8sSession) http.HandlerFunc {
 			return
 		}
 
-		// If running in cluster don't check for version and send error or reconnected events
+		// If running in cluster don't check connection
 		if k8sSession.InCluster {
-			response := map[string]string{
-				"success": "in-cluster",
-			}
-			data, err := json.Marshal(response)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
-				return
-			}
-			// Write the data to the response
-			fmt.Fprintf(w, "data: %s\n\n", data)
-
-			flusher.Flush()
-
+			sendInClusterStatus(w, flusher)
 			return
 		}
 
-		sendData := func(msg string) {
+		sendStatus := func(msg string) {
 			data, err := json.Marshal(msg)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
@@ -207,18 +189,19 @@ func ServeConnStatus(k8sSession *K8sSession) http.HandlerFunc {
 			flusher.Flush()
 		}
 
-		// to mitigate timing between connection start and getting status updates
-		// immediately check cluster connection and return error if not connected
+		// To mitigate timing between connection start and getting status updates, immediately check cluster connection
 		_, err := k8sSession.Clients.Clientset.ServerVersion()
 		if err != nil {
-			sendData("error")
+			sendStatus("error")
+		} else {
+			sendStatus("success")
 		}
 
 		// Listen for updates and send them to the client
 		for {
 			select {
 			case msg := <-k8sSession.Status:
-				sendData(msg)
+				sendStatus(msg)
 
 			case <-r.Context().Done():
 				// Client disconnected
@@ -226,4 +209,19 @@ func ServeConnStatus(k8sSession *K8sSession) http.HandlerFunc {
 			}
 		}
 	}
+}
+
+func sendInClusterStatus(w http.ResponseWriter, flusher http.Flusher) {
+	response := map[string]string{
+		"success": "in-cluster",
+	}
+	data, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
+		return
+	}
+	// Write the data to the response
+	fmt.Fprintf(w, "data: %s\n\n", data)
+
+	flusher.Flush()
 }

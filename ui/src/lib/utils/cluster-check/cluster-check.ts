@@ -11,7 +11,7 @@ export function checkClusterConnection() {
 
   // handle cluster disconnection and reconnection events
   clusterCheck.onmessage = (msg) => {
-    const data = JSON.parse(msg.data)
+    const data = JSON.parse(msg.data) as 'success' | 'error'
     const errToast = get(toast).find((t) => t.message === disconnectedMsg)
 
     // a disconnection occured but has now been resolved
