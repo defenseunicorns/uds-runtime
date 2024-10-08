@@ -51,8 +51,10 @@ jobs:
           uds run build:publish-uds-runtime
 
       - name: Build binary artifacts
-        run: |
-          uds run build:all
+        run: uds run build:all
+
+      - name: Tar ui/build for release
+        run: tar -czf build/uds-runtime-ui.tar.gz ui/build
 
       - name: Upload Release Artifact
         env:
