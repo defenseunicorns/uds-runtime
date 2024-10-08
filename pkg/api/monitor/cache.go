@@ -27,11 +27,16 @@ func NewCache() *Cache {
 	}
 }
 
-// Get returns the cached buffer
+// Get returns a deep copy of cached buffer
 func (c *Cache) Get() *bytes.Buffer {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
-	return c.buffer
+
+	if c.buffer == nil {
+		return nil
+	}
+
+	return bytes.NewBuffer(c.buffer.Bytes())
 }
 
 // Set sets the cached buffer
