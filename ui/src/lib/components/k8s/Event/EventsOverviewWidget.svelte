@@ -144,7 +144,7 @@
   }
 
   .events__header {
-    @apply p-6 dark:border-gray-700 flex items-start;
+    @apply p-6 dark:border-gray-700 flex items-start border-b-2;
   }
 
   .events__header-title {
