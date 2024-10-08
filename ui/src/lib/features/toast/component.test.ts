@@ -75,4 +75,11 @@ describe('Toast Component', () => {
     expect(get(toast)).toHaveLength(0)
     expect(screen.queryByText('Test toast')).not.toBeInTheDocument()
   })
+
+  test('hides close button if noClose is true', () => {
+    addToast({ message: 'Test toast', timeoutSecs: 3, type: 'info', noClose: true })
+    render(ToastComponent)
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+  })
 })

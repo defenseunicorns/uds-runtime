@@ -114,7 +114,7 @@ func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 	go c.factory.Start(c.stopper)
 	go c.dynamicFactory.Start(c.stopper)
 
-	// Wait for the pod cache to sync as they it is required for metrics collection
+	// Wait for the pod cache to sync as it is required for metrics collection
 	if !cache.WaitForCacheSync(ctx.Done(), c.Pods.HasSynced) {
 		return nil, fmt.Errorf("timed out waiting for caches to sync")
 	}

@@ -14,9 +14,9 @@
 
   import '../app.postcss'
 
-  import { checkClusterConnection } from '$lib/utils/cluster-check/cluster-check'
+  import { ClusterCheck } from '$lib/utils/cluster-check/cluster-check'
 
-  let clusterCheck: EventSource
+  let clusterCheck: ClusterCheck
 
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
@@ -31,7 +31,7 @@
   afterNavigate(initFlowbite)
 
   $: if ($authenticated) {
-    clusterCheck = checkClusterConnection()
+    clusterCheck = new ClusterCheck()
   }
 </script>
 
