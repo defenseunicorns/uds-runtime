@@ -2,8 +2,6 @@ module github.com/defenseunicorns/uds-runtime
 
 go 1.22.7
 
-toolchain go1.23.2
-
 require (
 	github.com/charmbracelet/lipgloss v0.13.0
 	github.com/go-chi/chi/v5 v5.1.0
