@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/defenseunicorns/uds-runtime/pkg/k8s"
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s/client"
 	"github.com/zarf-dev/zarf/src/pkg/message"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -52,7 +52,7 @@ func NewStream(writer io.Writer, reader Reader, namespace string) *Stream {
 func (s *Stream) Start(ctx context.Context) error {
 	// Create a new client if one is not provided (usually for testing)
 	if s.Client == nil {
-		c, err := k8s.NewClient()
+		c, err := client.NewClient()
 		if err != nil {
 			return fmt.Errorf("unable to connect to the cluster: %v", err)
 		}

@@ -20,7 +20,7 @@ func WriteHeaders(w http.ResponseWriter) {
 }
 
 // Handler is a generic SSE handler that sends data to the client
-func Handler(w http.ResponseWriter, r *http.Request, getData func(string, string) []unstructured.Unstructured, changes <-chan struct{}, fieldsList []string) {
+func Handler(w http.ResponseWriter, r *http.Request, getData func(string, string) []unstructured.Unstructured, changes <-chan struct{}, fieldsList []string, crdExists func() bool) {
 	WriteHeaders(w)
 
 	// Ensure the ResponseWriter supports flushing
@@ -57,6 +57,12 @@ func Handler(w http.ResponseWriter, r *http.Request, getData func(string, string
 
 		// Flush the headers at the end
 		defer flusher.Flush()
+
+		// Check for missing CRD error
+		if crdExists != nil && !crdExists() {
+			fmt.Fprintf(w, "data: {\"error\":\"crd not found\"}\n\n")
+			return
+		}
 
 		// Convert the data to JSON
 		data, err := jsonMarshal(getData(namespace, namePartial), fieldsList)

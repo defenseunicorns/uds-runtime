@@ -1,14 +1,12 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
-	"time"
 
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
+	"github.com/defenseunicorns/uds-runtime/pkg/k8s/session"
 )
 
 // @Description Get Nodes
@@ -288,7 +286,7 @@ func getCronJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Success 200
 // @Router /resources/workloads/podmetrics [get]
 func getPodMetrics(w http.ResponseWriter, r *http.Request, cache *resources.Cache) {
-	rest.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges, nil)
+	rest.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges, nil, nil)
 }
 
 // @Description Get UDS Packages
@@ -303,7 +301,7 @@ func getPodMetrics(w http.ResponseWriter, r *http.Request, cache *resources.Cach
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.UDSPackages)
+	return rest.BindCustomResource(cache.UDSPackages, cache)
 }
 
 // @Description Get UDS Package by UID
@@ -318,7 +316,7 @@ func getUDSPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSPackage(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.UDSPackages)
+	return rest.BindCustomResource(cache.UDSPackages, cache)
 }
 
 // @Description Get UDS Exemptions
@@ -333,7 +331,7 @@ func getUDSPackage(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSExemptions(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.UDSExemptions)
+	return rest.BindCustomResource(cache.UDSExemptions, cache)
 }
 
 // @Description Get UDS Exemption by UID
@@ -348,7 +346,7 @@ func getUDSExemptions(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSExemption(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.UDSExemptions)
+	return rest.BindCustomResource(cache.UDSExemptions, cache)
 }
 
 // @Description Get ConfigMaps
@@ -753,7 +751,7 @@ func getEndpoint(cache *resources.Cache) func(w http.ResponseWriter, r *http.Req
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getVirtualServices(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.VirtualServices)
+	return rest.BindCustomResource(cache.VirtualServices, cache)
 }
 
 // @Description Get VirtualService by UID
@@ -768,7 +766,7 @@ func getVirtualServices(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getVirtualService(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.VirtualServices)
+	return rest.BindCustomResource(cache.VirtualServices, cache)
 }
 
 // @Description Get PersistentVolumes
@@ -861,88 +859,11 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 	return rest.Bind(cache.StorageClasses)
 }
 
-// @Description Get Cluster Connection Health
-// @Tags cluster-health
+// @Description Get Cluster Connection Status
+// @Tags cluster-connection-status
 // @Produce  json
 // @Success 200
 // @Router /health [get]
-func checkHealth(k8sResources *K8sResources, disconnected chan error) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Set headers to keep connection alive
-		rest.WriteHeaders(w)
-
-		ticker := time.NewTicker(30 * time.Second)
-		defer ticker.Stop()
-
-		recovering := false
-
-		// Function to check the cluster health when running out of cluster
-		checkCluster := func() {
-			versionInfo, err := k8sResources.client.Clientset.ServerVersion()
-			response := map[string]string{}
-
-			// if err then connection is lost
-			if err != nil {
-				response["error"] = err.Error()
-				w.WriteHeader(http.StatusInternalServerError)
-				disconnected <- err
-				// indicate that the reconnection handler should have been triggered by the disconnected channel
-				recovering = true
-			} else if recovering {
-				// if errors are resolved, send a reconnected message
-				response["reconnected"] = versionInfo.String()
-				recovering = false
-			} else {
-				response["success"] = versionInfo.String()
-				w.WriteHeader(http.StatusOK)
-			}
-
-			data, err := json.Marshal(response)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
-				return
-			}
-
-			// Write the data to the response
-			fmt.Fprintf(w, "data: %s\n\n", data)
-
-			// Flush the response to ensure it is sent to the client
-			if flusher, ok := w.(http.Flusher); ok {
-				flusher.Flush()
-			}
-		}
-
-		// DON'T return error to user in case sensitive
-		inCluster, _ := isRunningInCluster()
-		// If running in cluster don't check for version and send error or reconnected events
-		if inCluster {
-			checkCluster = func() {
-				response := map[string]string{
-					"success": "in-cluster",
-				}
-				data, _ := json.Marshal(response)
-				// Write the data to the response
-				fmt.Fprintf(w, "data: %s\n\n", data)
-
-				// Flush the response to ensure it is sent to the client
-				if flusher, ok := w.(http.Flusher); ok {
-					flusher.Flush()
-				}
-			}
-		}
-
-		// Check the cluster immediately
-		checkCluster()
-
-		for {
-			select {
-			case <-ticker.C:
-				checkCluster()
-
-			case <-r.Context().Done():
-				// Client closed the connection
-				return
-			}
-		}
-	}
+func checkClusteConnection(k8sSession *session.K8sSession, disconnected chan error) http.HandlerFunc {
+	return session.MonitorConnection(k8sSession, disconnected)
 }
