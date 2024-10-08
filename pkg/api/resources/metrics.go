@@ -154,7 +154,7 @@ func (c *Cache) collectMetrics(ctx context.Context, metricsClient *versioned.Cli
 		totalMemory += mem
 
 		// Convert the metrics to unstructured
-		converted, err := toUnstructured(metrics)
+		converted, err := ToUnstructured(metrics)
 		if err != nil {
 			fmt.Printf("Error converting metrics for pod %s/%s: %v\n", pod.GetNamespace(), pod.GetName(), err)
 			continue
