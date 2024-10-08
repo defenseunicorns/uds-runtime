@@ -864,6 +864,6 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Produce  json
 // @Success 200
 // @Router /health [get]
-func checkClusteConnection(k8sSession *session.K8sSession, disconnected chan error) http.HandlerFunc {
-	return session.MonitorConnection(k8sSession, disconnected)
+func checkClusteConnection(k8sSession *session.K8sSession) http.HandlerFunc {
+	return k8sSession.ServeConnStatus()
 }

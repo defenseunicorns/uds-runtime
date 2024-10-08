@@ -1,49 +1,57 @@
 import { addToast } from '$features/toast'
 import { toast } from '$features/toast/store'
 
-// checkClusterConnection checks the connection to the cluster and
-// shows a toast message if the connection is lost or restored.
-export function checkClusterConnection() {
-  const clusterCheck = new EventSource('/health')
-  const disconnectedMsg = 'Cluster health check failed: no connection'
+export class ClusterCheck {
+  #clusterCheck: EventSource
+  #disconnectedMsg = 'Cluster health check failed: no connection'
+  #disconnected = false
 
-  // handle initial connection error
-  clusterCheck.onerror = () => {
+  constructor() {
+    this.#clusterCheck = new EventSource('/health')
+
+    this.#clusterCheck.addEventListener('close', function () {
+      this.close()
+    })
+
+    this.#clusterCheck.onmessage = (msg) => {
+      if (msg.data === 'error') {
+        this.#handleDisconnectedEvt()
+      } else if (msg.data === 'success' && this.#disconnected) {
+        this.#handleReconnectionEvt()
+      }
+    }
+  }
+
+  #handleDisconnectedEvt() {
     addToast({
       type: 'error',
-      message: disconnectedMsg,
-      timeoutSecs: 1000,
+      message: this.#disconnectedMsg,
+      noClose: true,
     })
+    this.#disconnected = true
   }
 
-  // handle cluster disconnection and reconnection events
-  clusterCheck.onmessage = (msg) => {
-    const data = JSON.parse(msg.data) as Record<'success' | 'error' | 'reconnected', string>
-    if (data['reconnected']) {
-      toast.update(() => [])
-      addToast({
-        type: 'success',
-        message: 'Cluster connection restored',
-        timeoutSecs: 10,
-      })
+  #handleReconnectionEvt() {
+    // a disconnection occured but has now been resolved
+    // clear the disconnection toast message
+    toast.update(() => [])
+    this.#disconnected = false
 
-      // Dispatch custom event for reconnection
-      // use window instead of svelte createEventDispatcher to trigger event globally
-      const event = new CustomEvent('cluster-reconnected', {
-        detail: { message: 'Cluster connection restored' },
-      })
-      window.dispatchEvent(event)
-    }
+    addToast({
+      type: 'success',
+      message: 'Cluster connection restored',
+      timeoutSecs: 10,
+    })
 
-    // only show error toast once and make timeout really long
-    if (data['error']) {
-      addToast({
-        type: 'error',
-        message: disconnectedMsg,
-        timeoutSecs: 1000,
-      })
-    }
+    // Dispatch custom event for reconnection
+    // use window instead of svelte createEventDispatcher to trigger event globally
+    const event = new CustomEvent('cluster-reconnected', {
+      detail: { message: 'Cluster connection restored' },
+    })
+    window.dispatchEvent(event)
   }
 
-  return clusterCheck
+  close() {
+    this.#clusterCheck.close()
+  }
 }
