@@ -4,7 +4,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { ProgressBarWidget, WithRightIconWidget } from '$components'
+  import { CoreServicesWidget, ProgressBarWidget, WithRightIconWidget } from '$components'
   import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
   import { createStore } from '$lib/features/k8s/events/store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
@@ -119,6 +119,13 @@
       unit="GB"
       value={memoryPercentage.toFixed(2)}
     />
+  </div>
+
+  <div class="mt-8 flex">
+    <div class="flex w-1/2"></div>
+    <div class="flex w-1/2">
+      <CoreServicesWidget />
+    </div>
   </div>
 
   <div class="mt-8">
