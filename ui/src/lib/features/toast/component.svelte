@@ -4,7 +4,7 @@
   import { removeToast, toast } from './store'
 </script>
 
-<div class="fixed top-20 right-5 p-4 z-40">
+<div class="fixed top-11 right-5 p-4 z-40">
   {#each $toast as toast}
     <div
       class="flex items-center justify-between shadow-gray-900 w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-lg dark:text-gray-400 dark:bg-gray-800 mb-4"
