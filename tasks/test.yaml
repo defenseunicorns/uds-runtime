@@ -85,12 +85,12 @@ tasks:
         description: deploy minio to test PVCs
 
   - name: smoke
-    description: "runtime nightly smoke tests"
+    description: "runtime nightly smoke tests -- (requires DIR to be set)"
     actions:
       - task: build:smoke-img-pkg
       - task: setup:slim-cluster
       - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst --confirm
-        dir: ${DIR}
+        dir: hack/smoke-test
       - description: Validate Runtime Pod
         wait:
           cluster:

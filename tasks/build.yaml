@@ -91,4 +91,4 @@ tasks:
       - task: api-linux-amd64
       - cmd: docker build --build-arg TARGETARCH=amd64 -t uds-runtime:smoke-test -f ./Dockerfile .
       - cmd: uds zarf package create -o build --confirm
-        dir: ${DIR}
+        dir: hack/smoke-test

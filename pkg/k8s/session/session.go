@@ -2,7 +2,6 @@ package session
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -91,17 +90,14 @@ func (ks *K8sSession) StartClusterMonitoring() {
 		_, err := ks.Clients.Clientset.ServerVersion()
 		if err != nil {
 			ks.Status <- "error"
-			log.Println("Cluster check failed")
 			ks.HandleReconnection()
 		} else {
-			log.Println("Cluster check successful")
 			ks.Status <- "success"
 		}
 	}
 }
 
-// HandleReconnection is a goroutine that handles reconnection to the k8s API
-// passing createClient and createCache instead of calling clients.NewClient and resources.NewCache for testing purposes
+// HandleReconnection infinitely retries to re-create the client and cache of the formerly connected cluster
 func (ks *K8sSession) HandleReconnection() {
 	log.Println("Disconnected error received")
 
@@ -175,17 +171,12 @@ func (ks *K8sSession) ServeConnStatus() http.HandlerFunc {
 
 		// If running in cluster don't check connection
 		if ks.InCluster {
-			sendInClusterStatus(w, flusher)
-			return
+			fmt.Fprintf(w, "data: %s-close\n\n", "success")
+			flusher.Flush()
 		}
 
 		sendStatus := func(msg string) {
-			data, err := json.Marshal(msg)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
-				return
-			}
-			fmt.Fprintf(w, "data: %s\n\n", data)
+			fmt.Fprintf(w, "data: %s\n\n", msg)
 			flusher.Flush()
 		}
 
@@ -209,19 +200,4 @@ func (ks *K8sSession) ServeConnStatus() http.HandlerFunc {
 			}
 		}
 	}
-}
-
-func sendInClusterStatus(w http.ResponseWriter, flusher http.Flusher) {
-	response := map[string]string{
-		"success": "in-cluster",
-	}
-	data, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("data: Error: %v\n\n", err), http.StatusInternalServerError)
-		return
-	}
-	// Write the data to the response
-	fmt.Fprintf(w, "data: %s\n\n", data)
-
-	flusher.Flush()
 }

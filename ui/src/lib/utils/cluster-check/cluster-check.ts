@@ -1,22 +1,42 @@
-import { get } from 'svelte/store'
-
 import { addToast } from '$features/toast'
 import { toast } from '$features/toast/store'
 
 // checkClusterConnection checks the connection to the cluster and
 // shows a toast message if the connection is lost or restored.
-export function checkClusterConnection() {
-  const clusterCheck = new EventSource('/health')
-  const disconnectedMsg = 'Cluster health check failed: no connection'
 
-  // handle cluster disconnection and reconnection events
-  clusterCheck.onmessage = (msg) => {
-    const data = JSON.parse(msg.data) as 'success' | 'error'
-    const errToast = get(toast).find((t) => t.message === disconnectedMsg)
+export class ClusterCheck {
+  #clusterCheck: EventSource
+  #disconnectedMsg = 'Cluster health check failed: no connection'
+  #disconnected = false
 
+  constructor() {
+    this.#clusterCheck = new EventSource('/health')
+    this.#clusterCheck.onmessage = (msg) => {
+      this.#handleCloseEvt(msg.data)
+      this.#handleDisconnectedEvt(msg.data)
+      this.#handleReconnectionEvt(msg.data)
+    }
+  }
+
+  #handleDisconnectedEvt(data: string) {
+    console.log(data, 'error')
+    if (data === 'error') {
+      addToast({
+        type: 'error',
+        message: this.#disconnectedMsg,
+        noClose: true,
+      })
+      this.#disconnected = true
+    }
+  }
+
+  #handleReconnectionEvt(data: string) {
     // a disconnection occured but has now been resolved
-    if (data === 'success' && errToast) {
+    if (data === 'success' && this.#disconnected) {
+      // clear the disconnection toast message
       toast.update(() => [])
+      this.#disconnected = false
+
       addToast({
         type: 'success',
         message: 'Cluster connection restored',
@@ -30,16 +50,15 @@ export function checkClusterConnection() {
       })
       window.dispatchEvent(event)
     }
+  }
 
-    // show a disconnection toast message
-    if (data === 'error') {
-      addToast({
-        type: 'error',
-        message: disconnectedMsg,
-        noClose: true,
-      })
+  #handleCloseEvt(data: string) {
+    if (data.includes('close')) {
+      this.#clusterCheck.close()
     }
   }
 
-  return clusterCheck
+  close() {
+    this.#clusterCheck.close()
+  }
 }

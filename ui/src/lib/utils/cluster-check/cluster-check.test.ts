@@ -3,7 +3,7 @@ import { get } from 'svelte/store'
 import { toast } from '$features/toast/store'
 import type { Mock } from 'vitest'
 
-import { checkClusterConnection } from './cluster-check'
+import { ClusterCheck } from './cluster-check'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -23,10 +23,12 @@ class ClusterCheckEventSource {
 
     for (const trigger of triggers) {
       setTimeout(() => {
-        this.onmessage?.(new MessageEvent('message', { data: JSON.stringify(trigger.msg) }))
+        this.onmessage?.(new MessageEvent('message', { data: trigger.msg }))
       }, trigger.timer)
     }
   }
+
+  close() {}
 }
 
 describe('cluster check', () => {
@@ -52,7 +54,8 @@ describe('cluster check', () => {
           ]),
       ),
     )
-    checkClusterConnection()
+
+    new ClusterCheck()
 
     expect(urlAssertionMock).toHaveBeenCalledWith('/health')
 
@@ -79,7 +82,8 @@ describe('cluster check', () => {
           ]),
       ),
     )
-    checkClusterConnection()
+
+    new ClusterCheck()
 
     vi.advanceTimersByTime(1000)
     expect(get(toast)).toHaveLength(1)
@@ -102,7 +106,7 @@ describe('cluster check', () => {
           ]),
       ),
     )
-    checkClusterConnection()
+    new ClusterCheck()
 
     vi.advanceTimersByTime(1000)
     expect(eventSpy).toHaveBeenCalledTimes(0)
@@ -114,5 +118,21 @@ describe('cluster check', () => {
         detail: { message: 'Cluster connection restored' },
       }),
     )
+  })
+
+  test('close eventSource on message containing "close" (in-cluster case)', async () => {
+    const closeSpy = vi.spyOn(ClusterCheckEventSource.prototype, 'close')
+    vi.stubGlobal(
+      'EventSource',
+      vi
+        .fn()
+        .mockImplementationOnce(
+          (url: string) => new ClusterCheckEventSource(url, urlAssertionMock, [{ msg: 'close', timer: 1000 }]),
+        ),
+    )
+    new ClusterCheck()
+
+    vi.advanceTimersByTime(1000)
+    expect(closeSpy).toHaveBeenCalledTimes(1)
   })
 })
