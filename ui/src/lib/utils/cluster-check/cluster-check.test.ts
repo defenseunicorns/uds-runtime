@@ -30,7 +30,7 @@ class ClusterCheckEventSource {
       if (trigger.closeEvt) {
         // let addEventListener get set before calling handler
         setTimeout(() => {
-          this.closeEvtHandler && this.closeEvtHandler()
+          if (this.closeEvtHandler) this.closeEvtHandler()
           return
         }, 1000)
       }
