@@ -6,6 +6,7 @@ package resources
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/k8s/client"
@@ -78,6 +79,9 @@ type Cache struct {
 	// Metrics
 	PodMetrics     *PodMetrics
 	MetricsChanges chan struct{}
+
+	// CustomResourceDefinitions
+	CRDs *CRDs
 }
 
 func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
@@ -86,6 +90,7 @@ func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 		stopper:        make(chan struct{}),
 		PodMetrics:     NewPodMetrics(),
 		MetricsChanges: make(chan struct{}, 1),
+		CRDs:           NewCRDs(),
 	}
 
 	// Create the dynamic client and factory
@@ -94,6 +99,8 @@ func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 		return nil, fmt.Errorf("unable to create dynamic client: %v", err)
 	}
 	c.dynamicFactory = dynamicInformer.NewFilteredDynamicSharedInformerFactory(dynamicClient, time.Minute*10, metaV1.NamespaceAll, nil)
+
+	c.setupCRDInformer()
 
 	c.bindCoreResources()
 	c.bindWorkloadResources()
@@ -189,13 +196,15 @@ func (c *Cache) bindNetworkResources() {
 	c.Endpoints = NewResourceList(c.factory.Core().V1().Endpoints().Informer(), endpointGVK)
 
 	// VirtualServices are not part of the core informer factory
-	istioVSGVR := schema.GroupVersionResource{
+	gvr := schema.GroupVersionResource{
 		Group:    "networking.istio.io",
 		Version:  "v1",
 		Resource: "virtualservices",
 	}
 
-	c.VirtualServices = NewResourceList(c.dynamicFactory.ForResource(istioVSGVR).Informer(), isitoVSGVK)
+	informer := c.dynamicFactory.ForResource(gvr).Informer()
+	c.VirtualServices = NewDynamicResourceList(informer, isitoVSGVK, gvr)
+	c.setWatchErrorHandler(informer, c.VirtualServices)
 }
 
 func (c *Cache) bindStorageResources() {
@@ -224,6 +233,26 @@ func (c *Cache) bindUDSResources() {
 		Resource: "exemptions",
 	}
 
-	c.UDSPackages = NewResourceList(c.dynamicFactory.ForResource(udsPackageGVR).Informer(), udsPackageGVK)
-	c.UDSExemptions = NewResourceList(c.dynamicFactory.ForResource(udsExemptionsGVR).Informer(), udsExemptionGVK)
+	packageInformer := c.dynamicFactory.ForResource(udsPackageGVR).Informer()
+	c.UDSPackages = NewDynamicResourceList(packageInformer, udsPackageGVK, udsPackageGVR)
+	c.setWatchErrorHandler(packageInformer, c.UDSPackages)
+
+	exemptionInformer := c.dynamicFactory.ForResource(udsExemptionsGVR).Informer()
+	c.UDSExemptions = NewDynamicResourceList(exemptionInformer, udsExemptionGVK, udsExemptionsGVR)
+	c.setWatchErrorHandler(exemptionInformer, c.UDSExemptions)
+}
+
+// setWatchErrorHandler sets a watch error handler on the provided informer for custom resources
+func (c *Cache) setWatchErrorHandler(informer cache.SharedIndexInformer, resource *ResourceList) {
+	err := informer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
+		if !c.CRDs.Contains(resource.GVR) {
+			resource.CRDExists = false
+		} else {
+			resource.CRDExists = true
+		}
+		resource.Changes <- struct{}{}
+	})
+	if err != nil {
+		log.Printf("error setting watch error handler: %v", err)
+	}
 }

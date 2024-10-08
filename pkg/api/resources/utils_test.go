@@ -23,7 +23,7 @@ func TestToUnstructured(t *testing.T) {
 		mockUDSPackage.SetName(mockUDSPackageName)
 		mockUDSPackage.SetUID("123e4567-e89b-12d3-a456-426614174UD5P4CK4G3")
 
-		result, err := toUnstructured(mockUDSPackage)
+		result, err := ToUnstructured(mockUDSPackage)
 		require.NoError(t, err)
 		require.Equal(t, mockUDSPackage, result)
 	})
@@ -37,7 +37,7 @@ func TestToUnstructured(t *testing.T) {
 		mockUDSPackage.SetUID("123e4567-e89b-12d3-a456-426614174UD5P4CK4G3")
 
 		deletedObj := cache.DeletedFinalStateUnknown{Obj: mockUDSPackage}
-		result, err := toUnstructured(deletedObj)
+		result, err := ToUnstructured(deletedObj)
 		require.NoError(t, err)
 		require.Equal(t, mockUDSPackage, result)
 	})
@@ -50,7 +50,7 @@ func TestToUnstructured(t *testing.T) {
 		mockPod.SetName(mockPodName)
 		mockPod.SetUID("123e4567-e89b-12d3-a456-426614174P0D")
 
-		result, err := toUnstructured(mockPod)
+		result, err := ToUnstructured(mockPod)
 		require.NoError(t, err)
 		require.NotNil(t, result)
 		require.Equal(t, mockPodName, result.Object["metadata"].(map[string]interface{})["name"])
@@ -60,7 +60,7 @@ func TestToUnstructured(t *testing.T) {
 	t.Run("Conversion Error", func(t *testing.T) {
 		// Create an object that cannot be converted
 		obj := make(chan int)
-		result, err := toUnstructured(obj)
+		result, err := ToUnstructured(obj)
 		require.Error(t, err)
 		require.Nil(t, result)
 	})
