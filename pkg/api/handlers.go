@@ -286,7 +286,7 @@ func getCronJob(cache *resources.Cache) func(w http.ResponseWriter, r *http.Requ
 // @Success 200
 // @Router /resources/workloads/podmetrics [get]
 func getPodMetrics(w http.ResponseWriter, r *http.Request, cache *resources.Cache) {
-	rest.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges, nil)
+	rest.Handler(w, r, cache.PodMetrics.GetAll, cache.MetricsChanges, nil, nil)
 }
 
 // @Description Get UDS Packages
@@ -301,7 +301,7 @@ func getPodMetrics(w http.ResponseWriter, r *http.Request, cache *resources.Cach
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.UDSPackages)
+	return rest.BindCustomResource(cache.UDSPackages, cache)
 }
 
 // @Description Get UDS Package by UID
@@ -316,7 +316,7 @@ func getUDSPackages(cache *resources.Cache) func(w http.ResponseWriter, r *http.
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSPackage(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.UDSPackages)
+	return rest.BindCustomResource(cache.UDSPackages, cache)
 }
 
 // @Description Get UDS Exemptions
@@ -331,7 +331,7 @@ func getUDSPackage(cache *resources.Cache) func(w http.ResponseWriter, r *http.R
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSExemptions(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.UDSExemptions)
+	return rest.BindCustomResource(cache.UDSExemptions, cache)
 }
 
 // @Description Get UDS Exemption by UID
@@ -346,7 +346,7 @@ func getUDSExemptions(cache *resources.Cache) func(w http.ResponseWriter, r *htt
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getUDSExemption(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.UDSExemptions)
+	return rest.BindCustomResource(cache.UDSExemptions, cache)
 }
 
 // @Description Get ConfigMaps
@@ -751,7 +751,7 @@ func getEndpoint(cache *resources.Cache) func(w http.ResponseWriter, r *http.Req
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getVirtualServices(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.VirtualServices)
+	return rest.BindCustomResource(cache.VirtualServices, cache)
 }
 
 // @Description Get VirtualService by UID
@@ -766,7 +766,7 @@ func getVirtualServices(cache *resources.Cache) func(w http.ResponseWriter, r *h
 // @Param name query string false "Filter by name (partial match)"
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getVirtualService(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return rest.Bind(cache.VirtualServices)
+	return rest.BindCustomResource(cache.VirtualServices, cache)
 }
 
 // @Description Get PersistentVolumes
