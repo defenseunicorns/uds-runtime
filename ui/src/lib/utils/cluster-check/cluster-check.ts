@@ -1,9 +1,6 @@
 import { addToast } from '$features/toast'
 import { toast } from '$features/toast/store'
 
-// checkClusterConnection checks the connection to the cluster and
-// shows a toast message if the connection is lost or restored.
-
 export class ClusterCheck {
   #clusterCheck: EventSource
   #disconnectedMsg = 'Cluster health check failed: no connection'
@@ -11,51 +8,47 @@ export class ClusterCheck {
 
   constructor() {
     this.#clusterCheck = new EventSource('/health')
+
+    this.#clusterCheck.addEventListener('close', function () {
+      this.close()
+    })
+
     this.#clusterCheck.onmessage = (msg) => {
-      this.#handleCloseEvt(msg.data)
-      this.#handleDisconnectedEvt(msg.data)
-      this.#handleReconnectionEvt(msg.data)
+      if (msg.data === 'error') {
+        this.#handleDisconnectedEvt()
+      } else if (msg.data === 'success' && this.#disconnected) {
+        this.#handleReconnectionEvt()
+      }
     }
   }
 
-  #handleDisconnectedEvt(data: string) {
-    console.log(data, 'error')
-    if (data === 'error') {
-      addToast({
-        type: 'error',
-        message: this.#disconnectedMsg,
-        noClose: true,
-      })
-      this.#disconnected = true
-    }
+  #handleDisconnectedEvt() {
+    addToast({
+      type: 'error',
+      message: this.#disconnectedMsg,
+      noClose: true,
+    })
+    this.#disconnected = true
   }
 
-  #handleReconnectionEvt(data: string) {
+  #handleReconnectionEvt() {
     // a disconnection occured but has now been resolved
-    if (data === 'success' && this.#disconnected) {
-      // clear the disconnection toast message
-      toast.update(() => [])
-      this.#disconnected = false
+    // clear the disconnection toast message
+    toast.update(() => [])
+    this.#disconnected = false
 
-      addToast({
-        type: 'success',
-        message: 'Cluster connection restored',
-        timeoutSecs: 10,
-      })
+    addToast({
+      type: 'success',
+      message: 'Cluster connection restored',
+      timeoutSecs: 10,
+    })
 
-      // Dispatch custom event for reconnection
-      // use window instead of svelte createEventDispatcher to trigger event globally
-      const event = new CustomEvent('cluster-reconnected', {
-        detail: { message: 'Cluster connection restored' },
-      })
-      window.dispatchEvent(event)
-    }
-  }
-
-  #handleCloseEvt(data: string) {
-    if (data.includes('close')) {
-      this.#clusterCheck.close()
-    }
+    // Dispatch custom event for reconnection
+    // use window instead of svelte createEventDispatcher to trigger event globally
+    const event = new CustomEvent('cluster-reconnected', {
+      detail: { message: 'Cluster connection restored' },
+    })
+    window.dispatchEvent(event)
   }
 
   close() {

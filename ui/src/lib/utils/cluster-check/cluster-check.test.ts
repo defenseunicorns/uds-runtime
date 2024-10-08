@@ -16,12 +16,25 @@ class ClusterCheckEventSource {
   // Placeholder for the 'onmessage' event handler
   onmessage: ((event: MessageEvent) => void) | null = null
   onerror: ((event: Event) => void) | null = null
+  closeEvtHandler: (() => void) | null = null
 
-  constructor(url: string, urlAssertionMock: Mock<Procedure>, triggers: { msg: string; timer: number }[]) {
+  constructor(
+    url: string,
+    urlAssertionMock: Mock<Procedure>,
+    triggers: { msg: string; timer: number; closeEvt?: boolean }[],
+  ) {
     // Used for testing the correct URL was passed to the EventSource
     urlAssertionMock(url)
 
     for (const trigger of triggers) {
+      if (trigger.closeEvt) {
+        // let addEventListener get set before calling handler
+        setTimeout(() => {
+          this.closeEvtHandler && this.closeEvtHandler()
+          return
+        }, 1000)
+      }
+
       setTimeout(() => {
         this.onmessage?.(new MessageEvent('message', { data: trigger.msg }))
       }, trigger.timer)
@@ -29,6 +42,10 @@ class ClusterCheckEventSource {
   }
 
   close() {}
+
+  addEventListener(_: string, handler: () => void) {
+    this.closeEvtHandler = handler
+  }
 }
 
 describe('cluster check', () => {
@@ -127,7 +144,7 @@ describe('cluster check', () => {
       vi
         .fn()
         .mockImplementationOnce(
-          (url: string) => new ClusterCheckEventSource(url, urlAssertionMock, [{ msg: 'close', timer: 1000 }]),
+          (url: string) => new ClusterCheckEventSource(url, urlAssertionMock, [{ msg: '', timer: 0, closeEvt: true }]),
         ),
     )
     new ClusterCheck()

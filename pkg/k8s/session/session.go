@@ -171,7 +171,7 @@ func (ks *K8sSession) ServeConnStatus() http.HandlerFunc {
 
 		// If running in cluster don't check connection
 		if ks.InCluster {
-			fmt.Fprintf(w, "data: %s-close\n\n", "success")
+			fmt.Fprint(w, "event: close\ndata: in-cluster\n\n")
 			flusher.Flush()
 		}
 

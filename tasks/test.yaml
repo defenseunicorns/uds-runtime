@@ -85,7 +85,7 @@ tasks:
         description: deploy minio to test PVCs
 
   - name: smoke
-    description: "runtime nightly smoke tests -- (requires DIR to be set)"
+    description: "runtime nightly smoke tests"
     actions:
       - task: build:smoke-img-pkg
       - task: setup:slim-cluster
