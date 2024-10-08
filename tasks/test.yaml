@@ -90,7 +90,7 @@ tasks:
       - task: build:smoke-img-pkg
       - task: setup:slim-cluster
       - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst --confirm
-        dir: ${DIR}
+        dir: hack/smoke-test
       - description: Validate Runtime Pod
         wait:
           cluster:

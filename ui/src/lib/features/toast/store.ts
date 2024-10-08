@@ -6,8 +6,9 @@ import { writable } from 'svelte/store'
 export type Toast = {
   id?: number
   message: string
-  timeoutSecs: number
+  timeoutSecs?: number
   type: 'success' | 'info' | 'warning' | 'error'
+  noClose?: boolean
 }
 
 export const toast = writable<Toast[]>([])
