@@ -50,7 +50,15 @@
 
       if (clusterData && Object.keys(clusterData).length > 0) {
         const { cpuCapacity, currentUsage, historicalUsage, memoryCapacity } = clusterData
-        const { CPU, Memory } = currentUsage
+        let { CPU, Memory } = currentUsage
+
+        // Handle case where CPU or Memory is -1 indicating metrics server is not available. Don't want to display negative values
+        if (CPU == -1) {
+          CPU = 0
+        }
+        if (Memory == -1) {
+          Memory = 0
+        }
 
         cpuPercentage = calculatePercentage(CPU, cpuCapacity)
         memoryPercentage = calculatePercentage(Memory, memoryCapacity)
