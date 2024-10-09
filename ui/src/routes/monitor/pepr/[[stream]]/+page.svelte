@@ -185,7 +185,7 @@
             <tbody>
               {#if $rows.length === 0}
                 <tr>
-                  <td colspan="4" class="text-center">No matching entries found</td>
+                  <td colspan="5" class="text-center">No matching entries found</td>
                 </tr>
               {:else}
                 {#each $rows as item}
