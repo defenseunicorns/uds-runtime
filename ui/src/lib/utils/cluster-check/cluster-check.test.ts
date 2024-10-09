@@ -3,55 +3,48 @@ import { get } from 'svelte/store'
 import { toast } from '$features/toast/store'
 import type { Mock } from 'vitest'
 
-import { checkClusterConnection } from './cluster-check'
+import { ClusterCheck } from './cluster-check'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Vitest type redeclared cause it's not exported from vitest
 type Procedure = (...args: any[]) => any
 
-const urlAssertionMock = vi.fn().mockImplementation((url: string) => {
-  console.log(url)
-})
+const urlAssertionMock = vi.fn()
 
 class ClusterCheckEventSource {
   // Placeholder for the 'onmessage' event handler
   onmessage: ((event: MessageEvent) => void) | null = null
   onerror: ((event: Event) => void) | null = null
+  closeEvtHandler: (() => void) | null = null
 
   constructor(
     url: string,
     urlAssertionMock: Mock<Procedure>,
-    triggers?: { onError?: number; msg?: { success?: number; error?: number; reconnected?: number } },
+    triggers: { msg: string; timer: number; closeEvt?: boolean }[],
   ) {
     // Used for testing the correct URL was passed to the EventSource
     urlAssertionMock(url)
 
-    const msg = triggers && triggers?.msg
+    for (const trigger of triggers) {
+      if (trigger.closeEvt) {
+        // let addEventListener get set before calling handler
+        setTimeout(() => {
+          if (this.closeEvtHandler) this.closeEvtHandler()
+          return
+        }, 1000)
+      }
 
-    if (triggers?.onError) {
       setTimeout(() => {
-        this.onerror?.(new Event('error'))
-      }, triggers.onError)
+        this.onmessage?.(new MessageEvent('message', { data: trigger.msg }))
+      }, trigger.timer)
     }
+  }
 
-    if (msg?.success) {
-      setTimeout(() => {
-        this.onmessage?.(new MessageEvent('message', { data: JSON.stringify({ success: 'success' }) }))
-      }, msg.success)
-    }
+  close() {}
 
-    if (msg?.error) {
-      setTimeout(() => {
-        this.onmessage?.(new MessageEvent('message', { data: JSON.stringify({ error: 'error' }) }))
-      }, msg.error)
-    }
-
-    if (msg?.reconnected) {
-      setTimeout(() => {
-        this.onmessage?.(new MessageEvent('message', { data: JSON.stringify({ reconnected: 'reconnected' }) }))
-      }, msg.reconnected)
-    }
+  addEventListener(_: string, handler: () => void) {
+    this.closeEvtHandler = handler
   }
 }
 
@@ -66,40 +59,22 @@ describe('cluster check', () => {
     vi.useRealTimers()
   })
 
-  test('cluster check initial error then restored', async () => {
-    vi.stubGlobal(
-      'EventSource',
-      vi
-        .fn()
-        .mockImplementationOnce(
-          (url: string) =>
-            new ClusterCheckEventSource(url, urlAssertionMock, { onError: 1000, msg: { reconnected: 2000 } }),
-        ),
-    )
-    checkClusterConnection()
-    expect(urlAssertionMock).toHaveBeenCalledWith('/health')
-    expect(get(toast)).toHaveLength(0)
-
-    vi.advanceTimersByTime(1000)
-    expect(get(toast)).toHaveLength(1)
-    expect(get(toast)[0].message).toBe('Cluster health check failed: no connection')
-
-    vi.advanceTimersByTime(1000)
-    expect(get(toast)).toHaveLength(1)
-    expect(get(toast)[0].message).toBe('Cluster connection restored')
-  })
-
   test('cluster check success, then error, then restored', async () => {
     vi.stubGlobal(
       'EventSource',
       vi.fn().mockImplementationOnce(
         (url: string) =>
-          new ClusterCheckEventSource(url, urlAssertionMock, {
-            msg: { success: 1000, error: 2000, reconnected: 3000 },
-          }),
+          new ClusterCheckEventSource(url, urlAssertionMock, [
+            { msg: 'success', timer: 1000 },
+            { msg: 'error', timer: 2000 },
+            { msg: 'success', timer: 3000 },
+          ]),
       ),
     )
-    checkClusterConnection()
+
+    new ClusterCheck()
+
+    expect(urlAssertionMock).toHaveBeenCalledWith('/health')
 
     vi.advanceTimersByTime(1000)
     expect(get(toast)).toHaveLength(0)
@@ -116,13 +91,16 @@ describe('cluster check', () => {
   test('multiple errors only show one toast', async () => {
     vi.stubGlobal(
       'EventSource',
-      vi
-        .fn()
-        .mockImplementationOnce(
-          (url: string) => new ClusterCheckEventSource(url, urlAssertionMock, { onError: 1000, msg: { error: 2000 } }),
-        ),
+      vi.fn().mockImplementationOnce(
+        (url: string) =>
+          new ClusterCheckEventSource(url, urlAssertionMock, [
+            { msg: 'error', timer: 1000 },
+            { msg: 'error', timer: 2000 },
+          ]),
+      ),
     )
-    checkClusterConnection()
+
+    new ClusterCheck()
 
     vi.advanceTimersByTime(1000)
     expect(get(toast)).toHaveLength(1)
@@ -137,14 +115,15 @@ describe('cluster check', () => {
     const eventSpy = vi.spyOn(window, 'dispatchEvent')
     vi.stubGlobal(
       'EventSource',
-      vi
-        .fn()
-        .mockImplementationOnce(
-          (url: string) =>
-            new ClusterCheckEventSource(url, urlAssertionMock, { onError: 1000, msg: { reconnected: 2000 } }),
-        ),
+      vi.fn().mockImplementationOnce(
+        (url: string) =>
+          new ClusterCheckEventSource(url, urlAssertionMock, [
+            { msg: 'error', timer: 1000 },
+            { msg: 'success', timer: 2000 },
+          ]),
+      ),
     )
-    checkClusterConnection()
+    new ClusterCheck()
 
     vi.advanceTimersByTime(1000)
     expect(eventSpy).toHaveBeenCalledTimes(0)
@@ -156,5 +135,21 @@ describe('cluster check', () => {
         detail: { message: 'Cluster connection restored' },
       }),
     )
+  })
+
+  test('close eventSource on message containing "close" (in-cluster case)', async () => {
+    const closeSpy = vi.spyOn(ClusterCheckEventSource.prototype, 'close')
+    vi.stubGlobal(
+      'EventSource',
+      vi
+        .fn()
+        .mockImplementationOnce(
+          (url: string) => new ClusterCheckEventSource(url, urlAssertionMock, [{ msg: '', timer: 0, closeEvt: true }]),
+        ),
+    )
+    new ClusterCheck()
+
+    vi.advanceTimersByTime(1000)
+    expect(closeSpy).toHaveBeenCalledTimes(1)
   })
 })

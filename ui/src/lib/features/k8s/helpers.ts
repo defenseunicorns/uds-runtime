@@ -67,6 +67,10 @@ const k8StatusMapping: K8StatusMapping = {
     Active: { color: statusColors.success },
     Terminating: { color: statusColors.warning },
   },
+  Logs: {
+    Normal: { color: statusColors.success },
+    Warning: { color: statusColors.warning },
+  },
 }
 
 // Function to get the color and status for a specific type and status
@@ -76,3 +80,24 @@ export const getColorAndStatus = <T extends keyof K8StatusMapping>(type: T, stat
 
 export const mebibytesToGigabytes = (value: number) => value / (1024 * 1024 * 1024)
 export const millicoresToCores = (value: number) => value / 1000
+
+export const formatTicks = (tick: string | number) => {
+  if (typeof tick === 'number') {
+    return tick.toFixed(2)
+  }
+
+  return tick
+}
+
+export const formatTime = (timestamp: string) => {
+  const parts = new Date(timestamp).toISOString().split('T')
+  parts.shift()
+
+  return parts.join('').split('.')[0]
+}
+
+export const calculatePercentage = (usage: number, capacity: number): number => {
+  if (capacity <= 0) return 0
+
+  return Math.min(Math.max((usage / capacity) * 100, 0), 100)
+}
