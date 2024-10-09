@@ -3,7 +3,6 @@
 
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
-  import { getColorAndStatus } from '$features/k8s/helpers'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { type Columns } from '$lib/features/k8s/events/store'
   import { ChevronRight, Information, Search } from 'carbon-icons-svelte'
@@ -36,20 +35,6 @@
 
     return () => stop()
   })
-
-  const calculateTypeClass = (key: string, rowData: string): string => {
-    let color: string = ''
-
-    if (key === 'type' && rowData === 'Normal') {
-      color = getColorAndStatus('Logs', 'Normal')
-    }
-
-    if (key === 'type' && rowData === 'Warning') {
-      color = getColorAndStatus('Logs', 'Warning')
-    }
-
-    return color
-  }
 </script>
 
 <div class="events">
@@ -116,9 +101,15 @@
           {#each columns as [key, style]}
             <!-- Check object to avoid issues with `false` values -->
             {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
-            <span class={`${style} ${calculateTypeClass(key, row.table[key])}`}>
-              {value.text || (value === 0 ? '0' : value) || '-'}
-            </span>
+            {#if value.component}
+              <span class={style}>
+                <svelte:component this={value.component} {...value.props} />
+              </span>
+            {:else}
+              <span class={style}>
+                {value.text || (value === 0 ? '0' : value) || '-'}
+              </span>
+            {/if}
           {/each}
         </div>
       {/each}
