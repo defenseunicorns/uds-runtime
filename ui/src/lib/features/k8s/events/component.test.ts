@@ -80,7 +80,7 @@ suite('EventTable Component', () => {
       object_kind: 'Pod',
       object_name: 'pepr-uds-core-watcher-8495d97876-xvbml',
       reason: 'Pulling',
-      type: 'Normal',
+      type: { component: {}, props: { type: 'Logs', status: 'Normal' } },
       count: 1,
       message: 'Pulling image "127.0.0.1:31999/defenseunicorns/pepr/controller:v0.32.7-zarf-804409620"',
     },
@@ -90,5 +90,5 @@ suite('EventTable Component', () => {
   const start = store.start as unknown as () => ResourceWithTable<CoreV1Event, any>[]
   expect(store.url).toEqual(`/api/v1/resources/events?dense=true`)
   // ignore creationTimestamp because age is not calculated at this point and added to the table
-  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
+  expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp', 'type.component'])
 })
