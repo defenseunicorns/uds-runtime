@@ -28,9 +28,6 @@ import (
 func Pepr(w http.ResponseWriter, r *http.Request) {
 	streamFilter := chi.URLParam(r, "stream")
 
-	// stop the timer for the cache
-	defer streamCache.Stop()
-
 	if !pepr.IsValidStreamFilter(pepr.StreamKind(streamFilter)) {
 		http.Error(w, http.StatusText(404), 404)
 		return
