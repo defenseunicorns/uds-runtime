@@ -4,6 +4,7 @@
 package api
 
 import (
+	"crypto/tls"
 	"embed"
 	"fmt"
 	"io"
@@ -24,6 +25,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
 // @title UDS Runtime API
@@ -270,6 +272,42 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 		// If the file exists, serve it using the http.FileServer
 		fs.ServeHTTP(w, r)
 	})
+
+	return nil
+}
+
+func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error {
+	//nolint:gosec,govet
+	if inCluster {
+		log.Println("Starting server on :8080")
+
+		if err := http.ListenAndServe(":8080", r); err != nil {
+			message.WarnErrf(err, "server failed to start: %s", err.Error())
+			return err
+		}
+	} else {
+		// create tls config from embedded cert and key
+		cert, err := tls.X509KeyPair(localCert, localKey)
+		if err != nil {
+			log.Fatalf("Failed to load embedded certificate: %v", err)
+		}
+		tlsConfig := &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		}
+
+		// Create a server with TLS config
+		server := &http.Server{
+			Addr:      ":8443",
+			Handler:   r,
+			TLSConfig: tlsConfig,
+		}
+
+		log.Println("Starting server on :8443")
+		if err = server.ListenAndServeTLS("", ""); err != nil {
+			message.WarnErrf(err, "server failed to start: %s", err.Error())
+			return err
+		}
+	}
 
 	return nil
 }
