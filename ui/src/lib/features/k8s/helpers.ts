@@ -74,7 +74,7 @@ const k8StatusMapping: K8StatusMapping = {
 }
 
 // Function to get the color and status for a specific type and status
-export const getColorAndStatus = <T extends keyof K8StatusMapping>(type: T, status: keyof K8StatusMapping[T]) => {
+export const getColorForStatus = <T extends keyof K8StatusMapping>(type: T, status: keyof K8StatusMapping[T]) => {
   return (k8StatusMapping[type][status] as { color: string }).color || 'Unknown'
 }
 
