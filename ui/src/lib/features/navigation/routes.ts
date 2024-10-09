@@ -56,6 +56,7 @@ const baseRoutes: BaseRoute[] = [
       'Limit Ranges',
       'Priority Classes',
       'Runtime Classes',
+      'CRDs',
     ],
   },
   {
