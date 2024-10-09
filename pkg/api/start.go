@@ -20,7 +20,6 @@ import (
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
-	"github.com/defenseunicorns/uds-runtime/pkg/k8s/client"
 	"github.com/defenseunicorns/uds-runtime/pkg/k8s/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -45,17 +44,14 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 
 	inCluster := k8sSession.InCluster
 
-	// Create the disconnected channel
-	disconnected := make(chan error)
-
 	if !inCluster {
 		apiAuth, token, err = checkForLocalAuth()
 		if err != nil {
 			return nil, inCluster, fmt.Errorf("failed to set auth: %w", err)
 		}
 
-		// Start the reconnection goroutine
-		go k8sSession.HandleReconnection(disconnected, client.NewClient, resources.NewCache)
+		// Start the cluster monitoring goroutine
+		go k8sSession.StartClusterMonitoring()
 	}
 
 	authSVC := checkForClusterAuth()
@@ -83,7 +79,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	r.Get("/health", checkClusteConnection(k8sSession, disconnected))
+	r.Get("/health", checkClusteConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
 		// Require a valid token for API calls
 		if apiAuth {
