@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
 	"github.com/zarf-dev/zarf/src/pkg/message"
@@ -16,14 +17,40 @@ import (
 var streamCache = NewCache()
 
 type Cache struct {
-	buffer *bytes.Buffer
-	lock   sync.RWMutex
+	buffer  *bytes.Buffer
+	lock    sync.RWMutex
+	timer   *time.Timer
+	maxSize int
 }
 
-// NewCache creates a new Cache instance for caching pepr stream responses
 func NewCache() *Cache {
-	return &Cache{
-		buffer: nil,
+	c := &Cache{
+		buffer:  &bytes.Buffer{},
+		maxSize: 1024 * 1024 * 10, // 10MB
+	}
+	c.startResetTimer()
+	return c
+}
+
+func (c *Cache) startResetTimer() {
+	c.timer = time.AfterFunc(5*time.Minute, func() {
+		message.Debug("Cache invalidated by timer, resetting cache")
+		c.Reset()
+		c.startResetTimer() // restart timer
+	})
+}
+
+func (c *Cache) Reset() {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	message.Debug("Resetting cache")
+	c.buffer.Reset()
+}
+
+func (c *Cache) Stop() {
+	if c.timer != nil {
+		message.Debugf("Stopping cache timer")
+		c.timer.Stop()
 	}
 }
 
@@ -41,6 +68,11 @@ func (c *Cache) Get() *bytes.Buffer {
 
 // Set sets the cached buffer
 func (c *Cache) Set(buffer *bytes.Buffer) {
+	if buffer.Len() > c.maxSize {
+		message.Debugf("Buffer size %d exceeds max size %d, resetting cache", buffer.Len(), c.maxSize)
+		c.Reset()
+		return
+	}
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.buffer = buffer

@@ -134,6 +134,7 @@ export function handlePeprMessage(e: MessageEvent, peprStreamStore: Writable<Pep
       if (idx !== -1) {
         peprStreamStore.update((collection) => {
           collection[idx].count = payload.repeated!
+          collection[idx].ts = payload.ts
           return collection
         })
       }
