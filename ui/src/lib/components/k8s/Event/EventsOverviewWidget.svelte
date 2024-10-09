@@ -3,7 +3,7 @@
 
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
-  import { type LogTypeStatus, type ResourceStoreInterface } from '$features/k8s/types'
+  import { type ResourceStoreInterface } from '$features/k8s/types'
   import { type Columns } from '$lib/features/k8s/events/store'
   import { ChevronRight, Information, Search } from 'carbon-icons-svelte'
 
