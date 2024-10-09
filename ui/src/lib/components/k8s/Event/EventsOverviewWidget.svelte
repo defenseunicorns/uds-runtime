@@ -18,18 +18,17 @@
     ['count', 'w-1/12'],
   ]
 
-  export let title: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let createStore: () => ResourceStoreInterface<KubernetesObject, any>
   export let description: string
 
   let rows = createStore()
-  $: ({ namespace, search } = rows)
+  $: ({ search } = rows)
 
   // check for filtering
   let isFiltering = false
   $: {
-    isFiltering = !!($search || $namespace)
+    isFiltering = !!$search
   }
 
   onMount(() => {
@@ -58,7 +57,7 @@
   <div class="events__header">
     <div class="w-3/12 min-[1400px]:w-6/12 flex">
       <div class="flex h-6 items-center space-x-1">
-        <h2 class="events__header-title">{title}</h2>
+        <h2 class="events__header-title">Event Logs</h2>
 
         <div class="relative group">
           <Information class="ml-1 w-4 h-4 dark:text-gray-400 text-blue-500" />
