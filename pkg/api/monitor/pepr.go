@@ -33,6 +33,11 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Only use cache for the default stream (empty streamFilter)
+	if streamFilter == "" {
+		streamCache.Serve(w)
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -51,18 +56,21 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 	peprStream.Follow = true
 	peprStream.Timestamps = true
 
-	//nolint:errcheck
 	// Start the stream in a goroutine
+	message.Debug("Starting parent pepr stream goroutine")
+	//nolint:errcheck
 	go peprStream.Start(ctx)
 
 	// Create a timer to send keep-alive messages
-	// The first message is sent after 2 seconds to detect empty streams
 	keepAliveTimer := time.NewTimer(2 * time.Second)
 	defer keepAliveTimer.Stop()
 
 	// Create a ticker to flush the buffer
 	flushTicker := time.NewTicker(time.Second)
 	defer flushTicker.Stop()
+
+	// create tmp cached buffer to hold stream data
+	tmpCacheBuffer := &bytes.Buffer{}
 
 	for {
 		select {
@@ -72,19 +80,25 @@ func Pepr(w http.ResponseWriter, r *http.Request) {
 			return
 
 		// Handle keep-alive messages
-		// See https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#examples
 		case <-keepAliveTimer.C:
-			// Set the keep-alive duration to 30 seconds after the first message
 			keepAliveTimer.Reset(30 * time.Second)
-
 			bufferWriter.KeepAlive()
 
 		// Flush every second if there is data
 		case <-flushTicker.C:
 			if bufferWriter.buffer.Len() > 0 {
+				// Write to both the response and the cache buffer
+				data := bufferWriter.buffer.Bytes()
+
 				if err := bufferWriter.Flush(w); err != nil {
 					message.WarnErr(err, "Failed to flush buffer")
 					return
+				}
+
+				// Update the cached buffer if on default stream
+				if streamFilter == "" {
+					tmpCacheBuffer.Write(data)
+					streamCache.Set(tmpCacheBuffer)
 				}
 			}
 		}

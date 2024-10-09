@@ -10,10 +10,15 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: build:api
-      - task: setup:k3d
-      - task: deploy-load
+      - task: deploy-runtime-cluster
       - cmd: npm run test:api-auth
         dir: ui
+
+  - name: deploy-runtime-cluster
+    description: deploy cluster specifically for testing the app
+    actions:
+      - task: setup:k3d
+      - task: deploy-load
 
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
