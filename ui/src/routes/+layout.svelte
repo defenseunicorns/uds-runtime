@@ -7,6 +7,7 @@
   import { onDestroy, onMount } from 'svelte'
 
   import { afterNavigate } from '$app/navigation'
+  import { page } from '$app/stores'
   import { authenticated } from '$features/api-auth/store'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
@@ -17,6 +18,7 @@
   import { ClusterCheck } from '$lib/utils/cluster-check/cluster-check'
 
   let clusterCheck: ClusterCheck
+  let currRoute: string
 
   // These initiFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
@@ -33,6 +35,10 @@
   $: if ($authenticated) {
     clusterCheck = new ClusterCheck()
   }
+
+  $: {
+    currRoute = $page.route?.id || '/'
+  }
 </script>
 
 <Navbar />
@@ -47,7 +53,7 @@
     ? 'md:ml-64'
     : 'md:ml-16'}"
 >
-  <div class="flex-grow overflow-hidden p-4 pt-6">
+  <div class="flex-grow {currRoute !== '/' ? 'overflow-hidden' : ''} p-4 pt-6">
     <ToastPanel />
     <slot />
   </div>

@@ -5,30 +5,17 @@
   import { onMount } from 'svelte'
 
   import { ProgressBarWidget, WithRightIconWidget } from '$components'
+  import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
+  import { createStore } from '$lib/features/k8s/events/store'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
   import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
-  import { type ChartData, type ChartOptions } from 'chart.js'
   import Chart from 'chart.js/auto'
 
-  import { mebibytesToGigabytes, millicoresToCores } from '../helpers'
+  import { calculatePercentage, formatTime, mebibytesToGigabytes, millicoresToCores } from '../helpers'
+  import type { ClusterData } from '../types'
+  import { chartData, chartOptions } from './chart'
 
   import './styles.postcss'
-
-  type ClusterData = {
-    totalPods: number
-    totalNodes: number
-    cpuCapacity: number
-    memoryCapacity: number
-    currentUsage: {
-      CPU: number
-      Memory: number
-      Timestamp: string
-    }
-    historicalUsage: {
-      CPU: number
-      Memory: number
-      Timestamp: string
-    }[]
-  }
 
   let clusterData: ClusterData = {
     totalPods: 0,
@@ -48,132 +35,10 @@
   let gbUsed = 0
   let gbCapacity = 0
   let cpuUsed = 0
-  let cpuCapacity = 0
-
-  function formatTicks(tick: string | number) {
-    if (typeof tick === 'number') {
-      return tick.toFixed(2)
-    }
-    return tick
-  }
-
-  const formatTime = (timestamp: string) => {
-    let parts = new Date(timestamp).toISOString().split('T')
-    parts.shift()
-    return parts.join('').split('.')[0]
-  }
-
-  function calculatePercentage(usage: number, capacity: number): number {
-    if (capacity <= 0) return 0
-    return Math.min(Math.max((usage / capacity) * 100, 0), 100)
-  }
-
-  let chartjsOptions: ChartOptions<'line'> = {
-    maintainAspectRatio: false,
-    elements: {
-      point: {
-        radius: 0,
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: 'white',
-          maxTicksLimit: 20,
-        },
-      },
-      y: {
-        grid: {
-          color: 'rgba(255, 255, 255, 0.2)',
-        },
-        type: 'linear',
-        display: true,
-        position: 'left',
-        title: {
-          display: true,
-          text: 'CPU Usage (cores)',
-          color: 'white',
-          padding: {
-            bottom: 15,
-          },
-        },
-        ticks: {
-          color: 'white',
-          callback: (value) => `${formatTicks(value)} cores`,
-        },
-      },
-      y1: {
-        grid: {
-          display: false,
-        },
-        type: 'linear',
-        display: true,
-        position: 'right',
-        title: {
-          display: true,
-          text: 'Memory Usage (GB)',
-          color: 'white',
-          padding: {
-            bottom: 10,
-          },
-        },
-        ticks: {
-          color: 'white',
-          callback: (value) => `${formatTicks(value)} GB`,
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          color: 'white',
-          boxHeight: 14,
-          boxWidth: 14,
-          useBorderRadius: true,
-          borderRadius: 7,
-        },
-      },
-      tooltip: {
-        enabled: true,
-        mode: 'index',
-        intersect: false,
-        backgroundColor: '#1F2937',
-        borderColor: 'white',
-        borderWidth: 1,
-      },
-    },
-    hover: {
-      intersect: true,
-    },
-  }
-
+  let formattedCpuCapacity = 0
   let onMessageCount = 0
   let myChart: Chart
-  let chartjsData: ChartData<'line'> = {
-    labels: [],
-    datasets: [
-      {
-        label: 'Memory Usage',
-        data: [],
-        borderColor: '#00D39F',
-        backgroundColor: '#00D39F',
-        yAxisID: 'y1',
-        tension: 0.4,
-      },
-      {
-        label: 'CPU Usage',
-        data: [],
-        borderColor: '#057FDD',
-        backgroundColor: '#057FDD',
-        yAxisID: 'y',
-        tension: 0.4,
-      },
-    ],
-  }
+  const description = resourceDescriptions['Events']
 
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
@@ -183,27 +48,28 @@
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData
 
-      cpuPercentage = calculatePercentage(clusterData.currentUsage.CPU, clusterData.cpuCapacity)
-      memoryPercentage = calculatePercentage(clusterData.currentUsage.Memory, clusterData.memoryCapacity)
-      gbUsed = mebibytesToGigabytes(clusterData.currentUsage.Memory)
-      gbCapacity = mebibytesToGigabytes(clusterData.memoryCapacity)
-      cpuUsed = millicoresToCores(clusterData.currentUsage.CPU)
-      cpuCapacity = millicoresToCores(clusterData.cpuCapacity)
+      if (clusterData && Object.keys(clusterData).length > 0) {
+        const { cpuCapacity, currentUsage, historicalUsage, memoryCapacity } = clusterData
+        const { CPU, Memory } = currentUsage
 
-      if (onMessageCount === 0) {
-        myChart = new Chart(ctx, {
-          type: 'line',
-          data: chartjsData,
-          options: chartjsOptions,
-        })
+        cpuPercentage = calculatePercentage(CPU, cpuCapacity)
+        memoryPercentage = calculatePercentage(Memory, memoryCapacity)
+        gbUsed = mebibytesToGigabytes(Memory)
+        gbCapacity = mebibytesToGigabytes(memoryCapacity)
+        cpuUsed = millicoresToCores(CPU)
+        formattedCpuCapacity = millicoresToCores(cpuCapacity)
+
+        if (onMessageCount === 0) {
+          myChart = new Chart(ctx, { type: 'line', data: chartData, options: chartOptions })
+        }
+
+        // on each message manually update the grap
+        myChart.data.labels = historicalUsage.map((point) => [formatTime(point.Timestamp)])
+        myChart.data.datasets[0].data = historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
+        myChart.data.datasets[1].data = historicalUsage.map((point) => point.CPU / 1000)
+        myChart.update()
+        onMessageCount++
       }
-
-      // on each message manually update the grap
-      myChart.data.labels = clusterData.historicalUsage.map((point) => [formatTime(point.Timestamp)])
-      myChart.data.datasets[0].data = clusterData.historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
-      myChart.data.datasets[1].data = clusterData.historicalUsage.map((point) => point.CPU / 1000)
-      myChart.update()
-      onMessageCount++
     }
 
     Chart.register({})
@@ -237,7 +103,7 @@
     />
 
     <ProgressBarWidget
-      capacity={cpuCapacity}
+      capacity={formattedCpuCapacity}
       progress={cpuUsed}
       statText="CPU Usage"
       unit="Cores"
@@ -252,6 +118,7 @@
       value={memoryPercentage.toFixed(2)}
     />
   </div>
+
   <div class="mt-8">
     <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
 
@@ -259,4 +126,6 @@
       <canvas id="chartjs-el" height={350} />
     </div>
   </div>
+
+  <EventsOverviewWidget {createStore} {description} />
 </div>
