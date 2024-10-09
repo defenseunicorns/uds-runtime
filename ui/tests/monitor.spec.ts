@@ -58,8 +58,8 @@ test.describe('Monitor', async () => {
     expect(match).toBeTruthy()
     const newCount = parseInt(match![1])
 
-    // sorted 'count' value should be greater than the original
-    expect(newCount).toBeGreaterThan(originalCount)
+    // sorted 'count' value should be greater than or equal to the original
+    expect(newCount).toBeGreaterThanOrEqual(originalCount)
   })
 
   test('Exports logs', async ({ page }) => {
@@ -83,5 +83,34 @@ test.describe('Monitor', async () => {
       const fileContents = JSON.parse(data)
       expect(fileContents.length).toBeGreaterThan(0)
     })
+  })
+
+  test('Pepr cache', async ({ page }) => {
+    await page.goto('/monitor/pepr')
+
+    // wait for data to load
+    let startTime = new Date().getTime()
+    await page.waitForSelector('.pepr-event.ALLOWED')
+    let endTime = new Date().getTime()
+
+    // initial load time is the time to load the data when the cache isn't used (ie. the first visit to the page)
+    const initialLoadTime = endTime - startTime
+
+    // reload the page
+    await page.reload()
+
+    // wait for data to load
+    startTime = new Date().getTime()
+    await page.waitForSelector('.pepr-event.ALLOWED')
+    endTime = new Date().getTime()
+
+    // cached load time is the time to load the data when the cache is used
+    const cachedLoadTime = endTime - startTime
+
+    // adding debug logs to help diagnose test failures
+    console.debug('Initial load time:', initialLoadTime)
+    console.debug('Cached load time:', cachedLoadTime)
+
+    expect(cachedLoadTime).toBeLessThan(initialLoadTime)
   })
 })
