@@ -25,6 +25,10 @@ test.describe('Navigation', async () => {
     await expect(card.getByText('Nodes running in cluster')).toBeVisible()
     await expect(card.getByText('CPU Usage')).toBeVisible()
     await expect(card.getByText('Memory Usage')).toBeVisible()
+
+    // Check for Events Widget
+    await expect(page.getByText('Event Logs')).toBeVisible()
+    await expect(page.getByText('VIEW EVENTS')).toBeVisible()
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
@@ -211,7 +215,7 @@ test.describe('Navigation', async () => {
     test('Persistent Volume Claims page', async ({ page }) => {
       await page.getByRole('button', { name: 'Storage' }).click()
       await page.getByRole('link', { name: 'Persistent Volume Claims' }).click()
-      await expect(page.getByText('minio-')).toBeVisible() // ensure pods have rendered
+      await expect(page.getByText('minio-').first()).toBeVisible() // ensure pods have rendered
     })
 
     test('Storage Classes page', async ({ page }) => {
