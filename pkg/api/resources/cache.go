@@ -120,7 +120,7 @@ func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 	}
 
 	// Start metrics collection
-	go c.StartMetricsCollection(ctx, clients.MetricsClient)
+	go c.StartMetricsCollection(ctx, clients.MetricsClient.MetricsV1beta1())
 
 	// Stop the informer when the context is done
 	go func() {
