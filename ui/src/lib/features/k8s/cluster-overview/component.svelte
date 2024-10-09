@@ -36,10 +36,8 @@
   let gbCapacity = 0
   let cpuUsed = 0
   let formattedCpuCapacity = 0
-  let chartjsOptions = chartOptions
   let onMessageCount = 0
   let myChart: Chart
-  let chartjsData = chartData
   const description = resourceDescriptions['Events']
 
   onMount(() => {
@@ -62,7 +60,7 @@
         formattedCpuCapacity = millicoresToCores(cpuCapacity)
 
         if (onMessageCount === 0) {
-          myChart = new Chart(ctx, { type: 'line', data: chartjsData, options: chartjsOptions })
+          myChart = new Chart(ctx, { type: 'line', data: chartData, options: chartOptions })
         }
 
         // on each message manually update the grap
@@ -129,5 +127,5 @@
     </div>
   </div>
 
-  <EventsOverviewWidget title="Event Logs" {createStore} {description} />
+  <EventsOverviewWidget {createStore} {description} />
 </div>
