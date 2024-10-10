@@ -14,16 +14,16 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type InMemoryStorage struct {
+type BrowserSession struct {
 	sessionID string
 	mutex     sync.RWMutex
 }
 
-func NewInMemoryStorage() *InMemoryStorage {
-	return &InMemoryStorage{}
+func NewBrowserSession() *BrowserSession {
+	return &BrowserSession{}
 }
 
-func (s *InMemoryStorage) StoreSession(sessionID string) {
+func (s *BrowserSession) Store(sessionID string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -31,7 +31,7 @@ func (s *InMemoryStorage) StoreSession(sessionID string) {
 	s.sessionID = sessionID
 }
 
-func (s *InMemoryStorage) ValidateSession(sessionID string) bool {
+func (s *BrowserSession) Validate(sessionID string) bool {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
@@ -39,7 +39,7 @@ func (s *InMemoryStorage) ValidateSession(sessionID string) bool {
 	return s.sessionID == sessionID
 }
 
-func (s *InMemoryStorage) RemoveSession() {
+func (s *BrowserSession) Remove() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -47,7 +47,7 @@ func (s *InMemoryStorage) RemoveSession() {
 	s.sessionID = ""
 }
 
-var storage = NewInMemoryStorage()
+var storage = NewBrowserSession()
 
 // LocalAuthHandler handle validating tokens and session cookies for local authentication
 func LocalAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func LocalAuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// valid token, generate session id and set cookie
 		sessionID := generateSessionID()
-		storage.StoreSession(sessionID)
+		storage.Store(sessionID)
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
 			Value:    sessionID,
@@ -88,7 +88,7 @@ func ValidateSessionCookie(next http.Handler, w http.ResponseWriter, r *http.Req
 func validateSessionCookie(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the session cookie
 	cookie, err := r.Cookie("session_id")
-	if err != nil || !storage.ValidateSession(cookie.Value) {
+	if err != nil || !storage.Validate(cookie.Value) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}

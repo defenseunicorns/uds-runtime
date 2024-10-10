@@ -12,9 +12,6 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"os"
-	"strconv"
-
 	"strings"
 
 	"github.com/defenseunicorns/pkg/exec"
@@ -39,7 +36,7 @@ import (
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	// configure config vars for local or in-cluster auth
-	configureAuth()
+	auth.Configure()
 
 	// Create a k8s session
 	k8sSession, err := session.CreateK8sSession()
@@ -60,6 +57,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	// only check JWT token if in-cluster auth is enabled
 	if config.InClusterAuthEnabled {
 		r.Use(auth.RequireJWT)
 	}
@@ -71,8 +69,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	r.Get("/health", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Head("/api-auth", AuthHandler)
-
+		r.Head("/api-auth", authHandler)
 		r.With(udsMiddleware.ValidateLocalAuthSession).Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
@@ -291,39 +288,6 @@ func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error 
 	}
 
 	return nil
-}
-
-func configureAuth() {
-	// check for local auth first
-	localAuthEnabled, err := strconv.ParseBool(strings.ToLower(os.Getenv("LOCAL_AUTH_ENABLED")))
-	if err != nil {
-		slog.Warn("invalid value for LocalAuthEnabled, must be 'true' or 'false'. Defaulting to 'true'")
-		localAuthEnabled = true
-	}
-
-	config.LocalAuthEnabled = localAuthEnabled
-	if localAuthEnabled {
-		slog.Info("Local auth enabled")
-		token, err := auth.RandomString(96)
-		if err != nil {
-			slog.Error("Failed to generate local auth token")
-			os.Exit(1)
-		}
-		config.LocalAuthToken = token
-		return
-	}
-
-	// If local auth is disabled, check for in-cluster auth
-	inClusterAuthEnabled, err := strconv.ParseBool(strings.ToLower(os.Getenv("IN_CLUSTER_AUTH_ENABLED")))
-	if err != nil {
-		slog.Warn("invalid value for InClusterAuthEnabled, must be 'true' or 'false'. Defaulting to 'false'")
-		inClusterAuthEnabled = false
-	}
-
-	if inClusterAuthEnabled {
-		config.InClusterAuthEnabled = inClusterAuthEnabled
-		slog.Info("In-cluster auth enabled")
-	}
 }
 
 // withLatestCache returns a wrapper lambda function, creating a closure that can dynamically access the latest cache
