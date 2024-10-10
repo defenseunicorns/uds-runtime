@@ -47,8 +47,8 @@ func (s *BrowserSession) Remove() {
 	s.sessionID = ""
 }
 
-// todo: where is this used? rename to session or something
-var storage = NewBrowserSession()
+// session is a global variable that holds the current session
+var session = NewBrowserSession()
 
 // LocalAuthHandler handle validating tokens and session cookies for local authentication
 func LocalAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +65,7 @@ func LocalAuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// valid token, generate session id and set cookie
 		sessionID := generateSessionID()
-		storage.Store(sessionID)
+		session.Store(sessionID)
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
 			Value:    sessionID,
@@ -89,7 +89,7 @@ func ValidateSessionCookie(next http.Handler, w http.ResponseWriter, r *http.Req
 func validateSessionCookie(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the session cookie
 	cookie, err := r.Cookie("session_id")
-	if err != nil || !storage.Validate(cookie.Value) {
+	if err != nil || !session.Validate(cookie.Value) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -109,6 +109,7 @@ var allowedGroups = []string{
 	"/UDS Core/Auditor",
 }
 
+// todo: move, separate into in-cluster auth folder/file/pkg
 // RequireJWT is a middleware that checks if the request has a valid JWT token with the required groups.
 func RequireJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
