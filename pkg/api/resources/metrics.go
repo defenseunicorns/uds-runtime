@@ -5,14 +5,14 @@ package resources
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"sync"
 	"time"
 
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
-	"k8s.io/metrics/pkg/client/clientset/versioned"
+	metricsv1beta1 "k8s.io/metrics/pkg/client/clientset/versioned/typed/metrics/v1beta1"
 )
 
 const MAX_HISTORY_LENGTH = 200
@@ -97,7 +97,7 @@ func (pm *PodMetrics) Delete(podUID string) {
 }
 
 // StartMetricsCollection starts a goroutine to collect metrics for all pods in the cache
-func (c *Cache) StartMetricsCollection(ctx context.Context, metricsClient *versioned.Clientset) {
+func (c *Cache) StartMetricsCollection(ctx context.Context, metricsClient metricsv1beta1.MetricsV1beta1Interface) {
 	// Collect metrics immediately
 	c.collectMetrics(ctx, metricsClient)
 
@@ -127,46 +127,67 @@ func (c *Cache) CalculateUsage(metrics *v1beta1.PodMetrics) (float64, float64) {
 	return totalCPU, totalMemory
 }
 
-func (c *Cache) collectMetrics(ctx context.Context, metricsClient *versioned.Clientset) {
-	// Fetch all pods
-	pods := c.Pods.GetSparseResources("", "")
-
+func (c *Cache) collectMetrics(ctx context.Context, metricsClient metricsv1beta1.MetricsV1beta1Interface) {
 	var totalCPU, totalMemory float64
 
-	// Fetch metrics for each pod
-	for _, pod := range pods {
-		// Only collect metrics for running pods
-		phase, _, _ := unstructured.NestedString(pod.Object, "status", "phase")
-		if phase != "Running" {
-			continue
+	// Check for metrics server availability
+	metricsServerAvailable := true
+	_, err := metricsClient.NodeMetricses().List(ctx, metaV1.ListOptions{})
+	if err != nil {
+		metricsServerAvailable = false
+		log.Printf("Metrics server is not available: %v", err)
+	}
+
+	if metricsServerAvailable {
+		// Fetch all pods
+		pods := c.Pods.GetSparseResources("", "")
+
+		// Fetch metrics for each pod
+		for _, pod := range pods {
+			// Only collect metrics for running pods
+			phase, _, _ := unstructured.NestedString(pod.Object, "status", "phase")
+			if phase != "Running" {
+				continue
+			}
+
+			// Fetch metrics for the pod
+			metrics, err := metricsClient.PodMetricses(pod.GetNamespace()).Get(ctx, pod.GetName(), metaV1.GetOptions{})
+			if err != nil {
+				log.Printf("Error fetching metrics for pod %s/%s: %v\n", pod.GetNamespace(), pod.GetName(), err)
+				continue
+			}
+
+			// Calculate the total CPU and memory usage
+			cpu, mem := c.CalculateUsage(metrics)
+			totalCPU += cpu
+			totalMemory += mem
+
+			// Convert the metrics to unstructured
+			converted, err := ToUnstructured(metrics)
+			if err != nil {
+				log.Printf("Error converting metrics for pod %s/%s: %v\n", pod.GetNamespace(), pod.GetName(), err)
+				continue
+			}
+
+			// Update the cache with the new metrics
+			c.PodMetrics.Update(string(pod.GetUID()), converted)
 		}
-
-		// Fetch metrics for the pod
-		metrics, err := metricsClient.MetricsV1beta1().PodMetricses(pod.GetNamespace()).Get(ctx, pod.GetName(), metaV1.GetOptions{})
-		if err != nil {
-			fmt.Printf("Error fetching metrics for pod %s/%s: %v\n", pod.GetNamespace(), pod.GetName(), err)
-			continue
-		}
-
-		// Calculate the total CPU and memory usage
-		cpu, mem := c.CalculateUsage(metrics)
-		totalCPU += cpu
-		totalMemory += mem
-
-		// Convert the metrics to unstructured
-		converted, err := ToUnstructured(metrics)
-		if err != nil {
-			fmt.Printf("Error converting metrics for pod %s/%s: %v\n", pod.GetNamespace(), pod.GetName(), err)
-			continue
-		}
-
-		// Update the cache with the new metrics
-		c.PodMetrics.Update(string(pod.GetUID()), converted)
+	} else {
+		// Set totalCPU and totalMemory to -1 to indicate metrics server is not available
+		totalCPU = -1
+		totalMemory = -1
 	}
 
 	// Add the metrics to the cache and historical usage
 	c.PodMetrics.current.CPU = totalCPU
 	c.PodMetrics.current.Memory = totalMemory
+
+	// Make sure CPU and Memory data for historical usage is not negative for historical data
+	if !metricsServerAvailable {
+		totalCPU = 0
+		totalMemory = 0
+	}
+
 	c.PodMetrics.historical = append(c.PodMetrics.historical, Usage{
 		Timestamp: time.Now(),
 		CPU:       totalCPU,
