@@ -1,13 +1,16 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
+
 <script lang="ts">
   import { DataTable } from '$components'
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
   import { createStore, type Columns } from './store'
 
-  let name = 'CustomResourceDefinitions'
-  const description = resourceDescriptions[name]
+  export let columns: Columns = [['name', 'emphasize'], ['group'], ['kind'], ['versions'], ['scope'], ['age']]
 
-  let columns: Columns = [['name', 'emphasize'], ['group'], ['kind'], ['versions'], ['scope'], ['age']]
+  const name = 'CustomResourceDefinitions'
+  const description = resourceDescriptions[name]
 </script>
 
-<DataTable {columns} {createStore} {name} {description} />
+<DataTable {columns} {createStore} {name} {description} isNamespaced={false} />
