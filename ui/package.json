@@ -52,7 +52,7 @@
     "tslib": "2.7.0",
     "typescript": "5.6.3",
     "typescript-eslint": "8.8.1",
-    "uds-core-types": "defenseunicorns/uds-core#43c98ce",
+    "uds-core-types": "defenseunicorns/uds-core#5df0737",
     "vite": "5.4.8",
     "vitest": "2.1.2",
     "yaml": "2.5.1"
