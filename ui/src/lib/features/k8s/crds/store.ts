@@ -12,7 +12,7 @@ interface Row extends CommonRow {
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/custom-resource-definitions?fields=metadata.name,metadata.creationTimestamp,spec.group,spec.names.kind,spec.versions[].name,spec.scope`
+  const url = `/api/v1/resources/custom-resource-definitions?fields=metadata,spec.group,spec.names.kind,spec.versions[].name,spec.scope`
 
   const transform = transformResource<Resource, Row>((r) => {
     return {
