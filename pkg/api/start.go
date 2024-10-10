@@ -10,8 +10,10 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 
 	"strings"
 
@@ -21,6 +23,7 @@ import (
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/monitor"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
+	"github.com/defenseunicorns/uds-runtime/pkg/config"
 	"github.com/defenseunicorns/uds-runtime/pkg/k8s/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -35,8 +38,8 @@ import (
 // @BasePath /api/v1
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
-	var apiAuth bool
-	var token string
+	// configure config vars for local or in-cluster auth
+	configureAuth()
 
 	// Create a k8s session
 	k8sSession, err := session.CreateK8sSession()
@@ -47,16 +50,9 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	inCluster := k8sSession.InCluster
 
 	if !inCluster {
-		apiAuth, token, err = checkForLocalAuth()
-		if err != nil {
-			return nil, inCluster, fmt.Errorf("failed to set auth: %w", err)
-		}
-
 		// Start the cluster monitoring goroutine
 		go k8sSession.StartClusterMonitoring()
 	}
-
-	authSVC := checkForClusterAuth()
 
 	r := chi.NewRouter()
 
@@ -64,16 +60,8 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	if authSVC {
+	if config.InClusterAuthEnabled {
 		r.Use(auth.RequireJWT)
-	}
-
-	// Middleware chain for api token authentication
-	apiAuthMiddleware := func(next http.Handler) http.Handler {
-		if apiAuth {
-			return udsMiddleware.ValidateSession(next)
-		}
-		return next
 	}
 
 	// Add Swagger UI routes
@@ -81,24 +69,17 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	r.Get("/health", checkClusteConnection(k8sSession))
+	r.Get("/health", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
-		// Require a valid token for API calls
-		if apiAuth {
-			// If api auth is enabled, require a valid token for all routes under /api/v1
-			// authenticate token
-			r.With(auth.TokenAuthenticator(token)).Head("/api-auth", func(_ http.ResponseWriter, _ *http.Request) {})
-		} else {
-			r.Head("/api-auth", func(_ http.ResponseWriter, _ *http.Request) {})
-		}
+		r.Head("/api-auth", AuthHandler)
 
-		r.With(apiAuthMiddleware).Route("/monitor", func(r chi.Router) {
+		r.With(udsMiddleware.ValidateLocalAuthSession).Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
 			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(k8sSession.Cache))
 		})
 
-		r.With(apiAuthMiddleware).Route("/resources", func(r chi.Router) {
+		r.With(udsMiddleware.ValidateLocalAuthSession).Route("/resources", func(r chi.Router) {
 			r.Get("/nodes", withLatestCache(k8sSession, getNodes))
 			r.Get("/nodes/{uid}", withLatestCache(k8sSession, getNode))
 
@@ -206,12 +187,12 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		})
 	})
 
-	if apiAuth {
+	if config.LocalAuthEnabled {
 		port := "8443"
 		host := "runtime-local.uds.dev"
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
-		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, token)
+		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, config.LocalAuthToken)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {
@@ -279,13 +260,14 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error {
 	//nolint:gosec,govet
 	if inCluster {
-		log.Println("Starting server on :8080")
+		slog.Info("Starting server in in-cluster mode on :8080")
 
 		if err := http.ListenAndServe(":8080", r); err != nil {
 			message.WarnErrf(err, "server failed to start: %s", err.Error())
 			return err
 		}
 	} else {
+		slog.Info("Starting server in local mode on :8443")
 		// create tls config from embedded cert and key
 		cert, err := tls.X509KeyPair(localCert, localKey)
 		if err != nil {
@@ -302,7 +284,6 @@ func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error 
 			TLSConfig: tlsConfig,
 		}
 
-		log.Println("Starting server on :8443")
 		if err = server.ListenAndServeTLS("", ""); err != nil {
 			message.WarnErrf(err, "server failed to start: %s", err.Error())
 			return err
@@ -312,33 +293,37 @@ func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error 
 	return nil
 }
 
-func checkForLocalAuth() (bool, string, error) {
-	apiAuth := true
-	if strings.ToLower(os.Getenv("API_AUTH_DISABLED")) == "true" {
-		apiAuth = false
+func configureAuth() {
+	// check for local auth first
+	localAuthEnabled, err := strconv.ParseBool(strings.ToLower(os.Getenv("LOCAL_AUTH_ENABLED")))
+	if err != nil {
+		slog.Warn("invalid value for LocalAuthEnabled, must be 'true' or 'false'. Defaulting to 'true'")
+		localAuthEnabled = true
 	}
 
-	// If the env variable API_TOKEN is set, use that for the API secret
-	token := os.Getenv("API_TOKEN")
-	var err error
-	// Otherwise, generate a random secret
-	if token == "" {
-		token, err = auth.RandomString(96)
+	config.LocalAuthEnabled = localAuthEnabled
+	if localAuthEnabled {
+		slog.Info("Local auth enabled")
+		token, err := auth.RandomString(96)
 		if err != nil {
-			return true, "", fmt.Errorf("failed to generate random string: %w", err)
+			slog.Error("Failed to generate local auth token")
+			os.Exit(1)
 		}
+		config.LocalAuthToken = token
+		return
 	}
 
-	return apiAuth, token, nil
-}
-
-func checkForClusterAuth() bool {
-	authSVC := false
-	if strings.ToLower(os.Getenv("AUTH_SVC_ENABLED")) == "true" {
-		authSVC = true
+	// If local auth is disabled, check for in-cluster auth
+	inClusterAuthEnabled, err := strconv.ParseBool(strings.ToLower(os.Getenv("IN_CLUSTER_AUTH_ENABLED")))
+	if err != nil {
+		slog.Warn("invalid value for InClusterAuthEnabled, must be 'true' or 'false'. Defaulting to 'false'")
+		inClusterAuthEnabled = false
 	}
 
-	return authSVC
+	if inClusterAuthEnabled {
+		config.InClusterAuthEnabled = inClusterAuthEnabled
+		slog.Info("In-cluster auth enabled")
+	}
 }
 
 // withLatestCache returns a wrapper lambda function, creating a closure that can dynamically access the latest cache

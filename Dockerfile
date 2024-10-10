@@ -10,7 +10,7 @@ USER 65532:65532
 # copy binary from local and expose port
 COPY --chown=65532:65532 build/uds-runtime-linux-${TARGETARCH} /app/uds-runtime
 ENV PORT=8080
-ENV API_AUTH_DISABLED=true
+ENV LOCAL_AUTH_ENABLED=false
 EXPOSE 8080
 
 # run binary

@@ -10,7 +10,7 @@ const host = 'runtime-local.uds.dev'
 
 export default defineConfig({
   webServer: {
-    command: 'API_AUTH_DISABLED=true ../build/uds-runtime',
+    command: 'LOCAL_AUTH_ENABLED=false ../build/uds-runtime',
     url: `${protocol}://${host}:${port}`,
     reuseExistingServer: !process.env.CI,
   },

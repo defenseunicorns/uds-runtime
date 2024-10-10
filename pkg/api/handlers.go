@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
@@ -864,6 +865,10 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Produce  json
 // @Success 200
 // @Router /health [get]
-func checkClusteConnection(k8sSession *session.K8sSession) http.HandlerFunc {
+func checkClusterConnection(k8sSession *session.K8sSession) http.HandlerFunc {
 	return k8sSession.ServeConnStatus()
+}
+
+func AuthHandler(w http.ResponseWriter, r *http.Request) {
+	auth.LocalAuthHandler(w, r)
 }
