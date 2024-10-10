@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.6.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.5.0...v0.6.0) (2024-10-10)
+
+
+### Features
+
+* **api:** adds caching layer to pepr endpoints ([#402](https://github.com/defenseunicorns/uds-runtime/issues/402)) ([782d93b](https://github.com/defenseunicorns/uds-runtime/commit/782d93b9b030a0a16191de58ec7c6920982f248a))
+* **api:** use tls when running locally ([#405](https://github.com/defenseunicorns/uds-runtime/issues/405)) ([d4764eb](https://github.com/defenseunicorns/uds-runtime/commit/d4764ebcff0ad5c3b4d3dfaee563429ce07d4e87))
+* **ci:** publish the runtime ui build as a release artifact ([#418](https://github.com/defenseunicorns/uds-runtime/issues/418)) ([ce4a592](https://github.com/defenseunicorns/uds-runtime/commit/ce4a592c615b02e149f2a8b7c0698fb85157b3b6))
+* **ui:** 409 overview dashboard events logs widget ([#415](https://github.com/defenseunicorns/uds-runtime/issues/415)) ([ea47a72](https://github.com/defenseunicorns/uds-runtime/commit/ea47a72b47d60c4b51a9b6ef63cd5853f57d6fd6))
+* **ui:** create stat widget ([#386](https://github.com/defenseunicorns/uds-runtime/issues/386)) ([f1dce2e](https://github.com/defenseunicorns/uds-runtime/commit/f1dce2ebf81a2701267cc76a92a34d9b59293d9a))
+
+
+### Bug Fixes
+
+* closes pepr goroutines when navigating away ([#400](https://github.com/defenseunicorns/uds-runtime/issues/400)) ([95fb845](https://github.com/defenseunicorns/uds-runtime/commit/95fb8453779042f3b695351127d0097162a856cb))
+* reconnection handling after introducing TLS ([#412](https://github.com/defenseunicorns/uds-runtime/issues/412)) ([b89cf16](https://github.com/defenseunicorns/uds-runtime/commit/b89cf16ddba0ec37891aab72876a26f6d5f0b402))
+* storageclass view data ([#425](https://github.com/defenseunicorns/uds-runtime/issues/425)) ([f228e7f](https://github.com/defenseunicorns/uds-runtime/commit/f228e7f2eb619b0a599deff6b519113c51d7a7bd))
+
+
+### Miscellaneous
+
+* **api:** refactor organization of reconnection logic ([#406](https://github.com/defenseunicorns/uds-runtime/issues/406)) ([1dd4a06](https://github.com/defenseunicorns/uds-runtime/commit/1dd4a06153c79301a6ae23001bcd0aef5002e3db))
+* **api:** updates for handling unavailable metrics server ([#421](https://github.com/defenseunicorns/uds-runtime/issues/421)) ([6bb9728](https://github.com/defenseunicorns/uds-runtime/commit/6bb9728d2e01de73b6462b420c384c64580524e7))
+* **deps:** update dependency kubernetes-fluent-client to v3.0.4 ([#403](https://github.com/defenseunicorns/uds-runtime/issues/403)) ([ef35113](https://github.com/defenseunicorns/uds-runtime/commit/ef35113c05ecf881c5077fdea4c9c322febbff66))
+* **deps:** update devdependencies ([#214](https://github.com/defenseunicorns/uds-runtime/issues/214)) ([16f75ed](https://github.com/defenseunicorns/uds-runtime/commit/16f75ed767af5fd2f128044723e6c010b46be576))
+* **deps:** update github actions ([#385](https://github.com/defenseunicorns/uds-runtime/issues/385)) ([ac2797f](https://github.com/defenseunicorns/uds-runtime/commit/ac2797f73abf450e0ba784b269752f61fb322599))
+* **deps:** update module github.com/zarf-dev/zarf to v0.41.0 ([#414](https://github.com/defenseunicorns/uds-runtime/issues/414)) ([aaa2fed](https://github.com/defenseunicorns/uds-runtime/commit/aaa2fed5529f3e78b7b70d500eb4cac371907c06))
+* fix typo in README ([#396](https://github.com/defenseunicorns/uds-runtime/issues/396)) ([ceddd9b](https://github.com/defenseunicorns/uds-runtime/commit/ceddd9ba36ff86454a9cbdba00d40bf8ceb57a8f))
+* fix typo, clean URL, de-dup toast ([#407](https://github.com/defenseunicorns/uds-runtime/issues/407)) ([b8616c6](https://github.com/defenseunicorns/uds-runtime/commit/b8616c619b11feef6a6e3376f7bf8a965c84ff5e))
+* implementation for handling crds that dont exist ([#408](https://github.com/defenseunicorns/uds-runtime/issues/408)) ([d5d7d14](https://github.com/defenseunicorns/uds-runtime/commit/d5d7d14962304b955d8b9a7eff4a78eb9559583d))
+* swap svelte-chartjs for chartjs lib ([#246](https://github.com/defenseunicorns/uds-runtime/issues/246)) ([cedaa43](https://github.com/defenseunicorns/uds-runtime/commit/cedaa43b1b065be77add427777f03a7837a61b15))
+* **ui:** add status colors for event type in events table ([#422](https://github.com/defenseunicorns/uds-runtime/issues/422)) ([e1111e9](https://github.com/defenseunicorns/uds-runtime/commit/e1111e96163eaa67c2f36e9b2dc8cb0501cfbbd5))
+* **ui:** adding convention for figma to front end component naming ([#401](https://github.com/defenseunicorns/uds-runtime/issues/401)) ([f65ec88](https://github.com/defenseunicorns/uds-runtime/commit/f65ec88d95656f7217a5af1320b009816bd99f64))
+
 ## [0.5.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.4.0...v0.5.0) (2024-09-25)
 
 
