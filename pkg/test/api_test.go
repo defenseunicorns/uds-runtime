@@ -384,6 +384,17 @@ func TestTopLevelResourceRoutes(t *testing.T) {
 			url:          "/api/v1/resources/namespaces/{uid}",
 			expectedKind: "Namespace",
 		},
+		// Custom Resource Definitions
+		{
+			name:         "crds",
+			url:          "/api/v1/resources/custom-resource-definitions",
+			expectedKind: "CustomResourceDefinition",
+		},
+		{
+			name:         "crds/{uid}",
+			url:          "/api/v1/resources/custom-resource-definitions/{uid}",
+			expectedKind: "CustomResourceDefinition",
+		},
 	}
 
 	for _, tt := range resource {

@@ -861,9 +861,40 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 
 // @Description Get Cluster Connection Status
 // @Tags cluster-connection-status
-// @Produce  json
+// @Produce text/event-stream
 // @Success 200
 // @Router /health [get]
 func checkClusteConnection(k8sSession *session.K8sSession) http.HandlerFunc {
 	return k8sSession.ServeConnStatus()
+}
+
+// @Description Get Custom Resource Definitions
+// @Tags resources
+// @Accept  html
+// @Produce text/event-stream,json
+// @Success 200
+// @Router /resources/custom-resoure-defintions [get]
+// @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
+// @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
+func getCRDs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
+	return rest.Bind(cache.CRDs)
+}
+
+// @Description Get Custom Resource Definition by UID
+// @Tags resources
+// @Accept  html
+// @Produce text/event-stream,json
+// @Success 200
+// @Router /resources/custom-resoure-defintions [get]
+// @Param uid path string false "Get CRD by uid"
+// @Param once query bool false "Send the data once and close the connection. By default this is set to`false` and will return a text/event-stream. If set to `true` the response content type is application/json."
+// @Param dense query bool false "Send the data in dense format"
+// @Param namespace query string false "Filter by namespace"
+// @Param name query string false "Filter by name (partial match)"
+// @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
+func getCRD(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
+	return rest.Bind(cache.CRDs)
 }

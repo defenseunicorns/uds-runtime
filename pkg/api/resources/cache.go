@@ -81,7 +81,8 @@ type Cache struct {
 	MetricsChanges chan struct{}
 
 	// CustomResourceDefinitions
-	CRDs *CRDs
+	CRDs    *ResourceList
+	UDSCRDs *CRDs
 }
 
 func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
@@ -90,7 +91,7 @@ func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 		stopper:        make(chan struct{}),
 		PodMetrics:     NewPodMetrics(),
 		MetricsChanges: make(chan struct{}, 1),
-		CRDs:           NewCRDs(),
+		UDSCRDs:        NewCRDs(),
 	}
 
 	// Create the dynamic client and factory
@@ -100,7 +101,7 @@ func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 	}
 	c.dynamicFactory = dynamicInformer.NewFilteredDynamicSharedInformerFactory(dynamicClient, time.Minute*10, metaV1.NamespaceAll, nil)
 
-	c.setupCRDInformer()
+	c.setupUDSCRDInformer()
 
 	c.bindCoreResources()
 	c.bindWorkloadResources()
@@ -135,10 +136,17 @@ func (c *Cache) bindCoreResources() {
 	nodeGVK := coreV1.SchemeGroupVersion.WithKind("Node")
 	eventGVK := coreV1.SchemeGroupVersion.WithKind("Event")
 	namespaceGVK := coreV1.SchemeGroupVersion.WithKind("Namespace")
+	crdGVK := schema.FromAPIVersionAndKind("apiextensions.k8s.io/v1", "CustomResourceDefinition")
 
 	c.Nodes = NewResourceList(c.factory.Core().V1().Nodes().Informer(), nodeGVK)
 	c.Events = NewResourceList(c.factory.Core().V1().Events().Informer(), eventGVK)
 	c.Namespaces = NewResourceList(c.factory.Core().V1().Namespaces().Informer(), namespaceGVK)
+	crdGVR := schema.GroupVersionResource{
+		Group:    "apiextensions.k8s.io",
+		Version:  "v1",
+		Resource: "customresourcedefinitions",
+	}
+	c.CRDs = NewResourceList(c.dynamicFactory.ForResource(crdGVR).Informer(), crdGVK)
 }
 
 func (c *Cache) bindWorkloadResources() {
@@ -245,7 +253,7 @@ func (c *Cache) bindUDSResources() {
 // setWatchErrorHandler sets a watch error handler on the provided informer for custom resources
 func (c *Cache) setWatchErrorHandler(informer cache.SharedIndexInformer, resource *ResourceList) {
 	err := informer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
-		if !c.CRDs.Contains(resource.GVR) {
+		if !c.UDSCRDs.Contains(resource.GVR) {
 			resource.CRDExists = false
 		} else {
 			resource.CRDExists = true

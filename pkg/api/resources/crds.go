@@ -23,7 +23,7 @@ func NewCRDs() *CRDs {
 	}
 }
 
-func (c *Cache) setupCRDInformer() {
+func (c *Cache) setupUDSCRDInformer() {
 	crdGVR := schema.GroupVersionResource{
 		Group:    "apiextensions.k8s.io",
 		Version:  "v1",
@@ -32,15 +32,15 @@ func (c *Cache) setupCRDInformer() {
 	crdInformer := c.dynamicFactory.ForResource(crdGVR).Informer()
 	_, err := crdInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
-			c.CRDs.addCRD(obj)
+			c.UDSCRDs.addCRD(obj)
 			notifyDynamicResources(c)
 		},
 		UpdateFunc: func(_, newObj any) {
-			c.CRDs.addCRD(newObj)
+			c.UDSCRDs.addCRD(newObj)
 			notifyDynamicResources(c)
 		},
 		DeleteFunc: func(obj any) {
-			c.CRDs.removeCRD(obj)
+			c.UDSCRDs.removeCRD(obj)
 			notifyDynamicResources(c)
 		},
 	})
@@ -81,8 +81,8 @@ func (c *CRDs) Contains(targetGVR schema.GroupVersionResource) bool {
 }
 
 func notifyDynamicResources(c *Cache) {
-	c.CRDs.mutex.Lock()
-	defer c.CRDs.mutex.Unlock()
+	c.UDSCRDs.mutex.Lock()
+	defer c.UDSCRDs.mutex.Unlock()
 
 	// Send to UDSExemptions channel if initialized
 	if c.UDSExemptions != nil {
