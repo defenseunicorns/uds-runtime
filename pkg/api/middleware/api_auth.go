@@ -7,10 +7,14 @@ import (
 	"net/http"
 
 	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
+	"github.com/defenseunicorns/uds-runtime/pkg/config"
 )
 
-func ValidateSession(next http.Handler) http.Handler {
+func ValidateLocalAuthSession(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		auth.ValidateSessionCookie(next, w, r)
+		if config.LocalAuthEnabled {
+			auth.ValidateSessionCookie(next, w, r)
+		}
+		next.ServeHTTP(w, r)
 	})
 }

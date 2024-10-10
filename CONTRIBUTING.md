@@ -56,7 +56,7 @@ Most of the actions needed for running and testing UDS Runtime are contained in 
 
 To view a complete list of all runnable tasks, run `uds run --list-all`.
 
-API authentication is enabled by default. To disable it, you can set the `API_AUTH_DISABLED` environment variable to true when running the backend. When running the backend and frontend locally with API auth enabled, when you start the backend, it will print a URL to the console with the api token query parameter as well as launch the app in your browser. If you are also running the frontend locally (via `npm run dev`), you will want to grab the token and update the url in your browser to use port `:5173` which is used by default. Example: `http://localhost:5173/auth?token=your-token-here`. More information on API authentication can be found in the [API Auth docs](./docs/api-auth.md).
+Local API authentication is enabled by default. To disable it, you can set the `LOCAL_AUTH_ENABLED` environment variable to false when running the backend. When running the backend and frontend locally with API auth enabled, when you start the backend, it will print a URL to the console with the api token query parameter as well as launch the app in your browser. If you are also running the frontend locally (via `npm run dev`), you will want to grab the token and update the url in your browser to use port `:5173` which is used by default. Example: `http://localhost:5173/auth?token=your-token-here`. More information on API authentication can be found in the [API Auth docs](./docs/api-auth.md).
 
 ### Pre-Commit Hooks and Linting
 

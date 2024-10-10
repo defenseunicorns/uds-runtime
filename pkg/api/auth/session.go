@@ -10,19 +10,20 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/defenseunicorns/uds-runtime/pkg/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type InMemoryStorage struct {
+type BrowserSession struct {
 	sessionID string
 	mutex     sync.RWMutex
 }
 
-func NewInMemoryStorage() *InMemoryStorage {
-	return &InMemoryStorage{}
+func NewBrowserSession() *BrowserSession {
+	return &BrowserSession{}
 }
 
-func (s *InMemoryStorage) StoreSession(sessionID string) {
+func (s *BrowserSession) Store(sessionID string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -30,7 +31,7 @@ func (s *InMemoryStorage) StoreSession(sessionID string) {
 	s.sessionID = sessionID
 }
 
-func (s *InMemoryStorage) ValidateSession(sessionID string) bool {
+func (s *BrowserSession) Validate(sessionID string) bool {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
@@ -38,7 +39,7 @@ func (s *InMemoryStorage) ValidateSession(sessionID string) bool {
 	return s.sessionID == sessionID
 }
 
-func (s *InMemoryStorage) RemoveSession() {
+func (s *BrowserSession) Remove() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -46,48 +47,51 @@ func (s *InMemoryStorage) RemoveSession() {
 	s.sessionID = ""
 }
 
-var storage = NewInMemoryStorage()
+var storage = NewBrowserSession()
 
-// TokenAuthenticator ensures the request has a valid token.
-func TokenAuthenticator(validToken string) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			token := r.URL.Query().Get("token")
-			if token == "" {
-				ValidateSessionCookie(next, w, r)
-			} else if token != validToken {
-				// If a token is passed in and its not valid, return unauthorized
-				w.WriteHeader(http.StatusUnauthorized)
-				return
-			} else {
-				// If a token is passed in and its valid, set the session ID and continue
-				if token != "" && token == validToken {
-					sessionID := generateSessionID()
-					storage.StoreSession(sessionID)
-					http.SetCookie(w, &http.Cookie{
-						Name:     "session_id",
-						Value:    sessionID,
-						HttpOnly: true,
-						Secure:   true,
-						SameSite: http.SameSiteStrictMode,
-						Path:     "/",
-					})
-
-					next.ServeHTTP(w, r)
-				}
-			}
+// LocalAuthHandler handle validating tokens and session cookies for local authentication
+func LocalAuthHandler(w http.ResponseWriter, r *http.Request) {
+	if config.LocalAuthEnabled {
+		token := r.URL.Query().Get("token")
+		if token == "" {
+			// Handle session cookie validation
+			validateSessionCookie(w, r)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		} else if token != config.LocalAuthToken {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		// valid token, generate session id and set cookie
+		sessionID := generateSessionID()
+		storage.Store(sessionID)
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_id",
+			Value:    sessionID,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteStrictMode,
+			Path:     "/",
 		})
+		w.WriteHeader(http.StatusOK)
 	}
+
+	// not using local auth, return ok
+	w.WriteHeader(http.StatusOK)
 }
 
 func ValidateSessionCookie(next http.Handler, w http.ResponseWriter, r *http.Request) {
+	validateSessionCookie(w, r)
+	next.ServeHTTP(w, r)
+}
+
+func validateSessionCookie(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the session cookie
 	cookie, err := r.Cookie("session_id")
-	if err != nil || !storage.ValidateSession(cookie.Value) {
+	if err != nil || !storage.Validate(cookie.Value) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	next.ServeHTTP(w, r)
 }
 
 func generateSessionID() string {
@@ -97,11 +101,6 @@ func generateSessionID() string {
 		return ""
 	}
 	return hex.EncodeToString(bytes)
-}
-
-// Connect is a head-only request to test the connection.
-func Connect(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusOK)
 }
 
 var allowedGroups = []string{

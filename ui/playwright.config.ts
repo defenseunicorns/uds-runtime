@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+
 import { defineConfig } from '@playwright/test'
 import { loadEnv } from 'vite'
 
@@ -10,7 +13,7 @@ const host = 'runtime-local.uds.dev'
 
 export default defineConfig({
   webServer: {
-    command: 'API_AUTH_DISABLED=true ../build/uds-runtime',
+    command: 'LOCAL_AUTH_ENABLED=false ../build/uds-runtime',
     url: `${protocol}://${host}:${port}`,
     reuseExistingServer: !process.env.CI,
   },
