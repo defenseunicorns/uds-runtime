@@ -47,6 +47,7 @@ func (s *BrowserSession) Remove() {
 	s.sessionID = ""
 }
 
+// todo: where is this used? rename to session or something
 var storage = NewBrowserSession()
 
 // LocalAuthHandler handle validating tokens and session cookies for local authentication

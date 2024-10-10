@@ -14,6 +14,7 @@ func ValidateLocalAuthSession(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if config.LocalAuthEnabled {
 			auth.ValidateSessionCookie(next, w, r)
+			return
 		}
 		next.ServeHTTP(w, r)
 	})
