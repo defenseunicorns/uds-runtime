@@ -5,20 +5,20 @@ import type { ColumnWrapper, CommonRow, ResourceStoreInterface } from '$features
 interface Row extends CommonRow {
   group: string
   kind: string
-  versions: string[]
+  versions: string
   scope: string
 }
 
 export type Columns = ColumnWrapper<Row>
 
 export function createStore(): ResourceStoreInterface<Resource, Row> {
-  const url = `/api/v1/resources/cluster-ops/crds?dense=true`
+  const url = `/api/v1/resources/custom-resource-definitions?fields=metadata.name,metadata.creationTimestamp,spec.group,spec.names.kind,spec.versions[].name,spec.scope`
 
   const transform = transformResource<Resource, Row>((r) => {
     return {
       group: r.spec?.group,
-      kind: r.kind ?? '',
-      versions: r.spec?.versions.join(',') ?? [],
+      kind: r.spec?.names.kind ?? '',
+      versions: r.spec?.versions?.map((v) => v.name).join(', ') ?? '',
       scope: r.spec?.scope,
     }
   })

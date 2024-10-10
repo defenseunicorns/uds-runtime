@@ -56,7 +56,6 @@ const baseRoutes: BaseRoute[] = [
       'Limit Ranges',
       'Priority Classes',
       'Runtime Classes',
-      'CRDs',
     ],
   },
   {
@@ -76,6 +75,10 @@ const baseRoutes: BaseRoute[] = [
   {
     name: 'Nodes',
     icon: BareMetalServer,
+  },
+  {
+    name: 'Custom Resources',
+    icon: Layers,
   },
 ]
 

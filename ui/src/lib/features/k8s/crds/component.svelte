@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { DataTable } from '$components'
   import { resourceDescriptions } from '$lib/utils/descriptions'
 
@@ -7,7 +7,7 @@
   let name = 'CustomResourceDefinitions'
   const description = resourceDescriptions[name]
 
-  let columns: Columns = [['name', 'emphasize'], ['group'], ['kind'], ['versions'], ['scope'], ['replicas'], ['age']]
+  let columns: Columns = [['name', 'emphasize'], ['group'], ['kind'], ['versions'], ['scope'], ['age']]
 </script>
 
 <DataTable {columns} {createStore} {name} {description} />

@@ -108,6 +108,9 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 			r.Get("/namespaces", withLatestCache(k8sSession, getNamespaces))
 			r.Get("/namespaces/{uid}", withLatestCache(k8sSession, getNamespace))
 
+			r.Get("/custom-resource-definitions", withLatestCache(k8sSession, getCRDs))
+			r.Get("/custom-resource-definitions/{uid}", withLatestCache(k8sSession, getCRD))
+
 			// Workload resources
 			r.Route("/workloads", func(r chi.Router) {
 				r.Get("/pods", withLatestCache(k8sSession, getPods))
