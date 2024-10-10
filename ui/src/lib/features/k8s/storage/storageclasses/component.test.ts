@@ -70,7 +70,7 @@ suite('StorageClass Component', () => {
   ]
   const store = createStore()
   const start = store.start as unknown as () => ResourceWithTable<V1StorageClass, any>[]
-  expect(store.url).toEqual('/api/v1/resources/storage/storageclasses')
+  expect(store.url).toEqual('/api/v1/resources/storage/storageclasses?dense=true')
   // ignore creationTimestamp because age is not calculated at this point and added to the table
   expectEqualIgnoringFields(start()[0].table, expectedTables[0] as unknown, ['creationTimestamp'])
 })
