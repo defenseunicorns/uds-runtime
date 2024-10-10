@@ -20,16 +20,16 @@
     }
 
     isHovered = true
-    xOffset = event.pageX
-    yOffset = event.pageY
   }
+
   const mouseMove = (event: MouseEventType) => {
     // calculate if the columns is a certain percent off right side and render on the left side
     const diff = ((window.innerWidth - event.pageX) / window.innerWidth) * 100
 
-    const tooltipOffset = diff < 15 ? 500 : 200
+    const tooltipOffset = diff > 40 ? 200 : 500
+
     xOffset = event.pageX - tooltipOffset
-    yOffset = event.pageY - 110
+    yOffset = event.pageY - 75
   }
 
   const mouseLeave = () => (isHovered = false)
