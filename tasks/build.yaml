@@ -2,7 +2,7 @@ variables:
   - name: REF
     description: "reference for the runtime image and zarf package"
     # x-release-please-start-version
-    default: 0.5.0
+    default: 0.6.0
     # x-release-please-end
   - name: DIR
     description: "directory of the zarf.yaml"
