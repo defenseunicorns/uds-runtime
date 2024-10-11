@@ -24,46 +24,26 @@ import (
 )
 
 func TestBindCoreResources(t *testing.T) {
-	scheme := runtime.NewScheme()
-
-	// Register the list kind for the CRD
-	listGVK := schema.GroupVersionKind{
+	// create fake dynamic client
+	runtimeScheme := runtime.NewScheme()
+	runtimeScheme.AddKnownTypeWithName(schema.GroupVersionKind{
 		Group:   "apiextensions.k8s.io",
 		Version: "v1",
 		Kind:    "CustomResourceDefinitionList",
-	}
+	}, &unstructured.Unstructured{})
+	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtimeScheme)
 
-	// Define the GVR (GroupVersionResource)
+	// Define the CRD GVR
 	crdGVR := schema.GroupVersionResource{
 		Group:    "apiextensions.k8s.io",
 		Version:  "v1",
 		Resource: "customresourcedefinitions",
 	}
 
-	dynamicClient := dynamicFake.NewSimpleDynamicClientWithCustomListKinds(scheme, map[schema.GroupVersionResource]string{
-		crdGVR: listGVK.Kind,
-	})
-
 	// Create mock CRD
-	mockCRD := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"apiVersion": "apiextensions.k8s.io/v1",
-			"kind":       "CustomResourceDefinition",
-			"metadata": map[string]interface{}{
-				"name": "test-crd",
-				"uid":  "123e4567-e89b-12d3-a456-426614174CRD",
-			},
-			"spec": map[string]interface{}{
-				"group": "example.com",
-				"versions": []interface{}{
-					map[string]interface{}{
-						"name": "v1",
-					},
-				},
-				"scope": "Namespaced",
-			},
-		},
-	}
+	mockCRD := &unstructured.Unstructured{}
+	mockCRD.SetName("test-crd")
+	mockCRD.SetUID("123e4567-e89b-12d3-a456-426614174CRD")
 
 	// Add the CRD to the fake dynamic client
 	_, err := dynamicClient.Resource(crdGVR).Create(context.Background(), mockCRD, metav1.CreateOptions{})
