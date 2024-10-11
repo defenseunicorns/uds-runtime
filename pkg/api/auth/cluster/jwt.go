@@ -15,7 +15,7 @@ var allowedGroups = []string{
 	"/UDS Core/Auditor",
 }
 
-// ValidateJWT is a middleware that checks if the request has a valid JWT token with the required groups.
+// ValidateJWT checks if the request has a valid JWT token with the required groups.
 func ValidateJWT(w http.ResponseWriter, r *http.Request) bool {
 	authHeader := r.Header.Get("Authorization")
 

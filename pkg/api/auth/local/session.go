@@ -80,13 +80,14 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func ValidateSessionCookie(w http.ResponseWriter, r *http.Request) {
+func ValidateSessionCookie(w http.ResponseWriter, r *http.Request) bool {
 	// Retrieve the session cookie
 	cookie, err := r.Cookie("session_id")
 	if err != nil || !session.Validate(cookie.Value) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
+		return false
 	}
+	return true
 }
 
 func generateSessionID(w http.ResponseWriter) string {
