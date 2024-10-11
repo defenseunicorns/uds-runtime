@@ -4,6 +4,7 @@
 package auth
 
 import (
+	"crypto/rand"
 	"log/slog"
 	"os"
 	"strconv"
@@ -24,7 +25,7 @@ func Configure() {
 	config.LocalAuthEnabled = localAuthEnabled
 	if localAuthEnabled {
 		slog.Info("Local auth enabled")
-		token, err := RandomString(96)
+		token, err := randomString(96)
 		if err != nil {
 			slog.Error("Failed to generate local auth token")
 			os.Exit(1)
@@ -44,4 +45,23 @@ func Configure() {
 		config.InClusterAuthEnabled = inClusterAuthEnabled
 		slog.Info("In-cluster auth enabled")
 	}
+}
+
+// Very limited special chars for git / basic auth
+// https://owasp.org/www-community/password-special-characters has complete list of safe chars.
+const randomStringChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~-"
+
+// randomString generates a secure random string of the specified length.
+func randomString(length int) (string, error) {
+	bytes := make([]byte, length)
+
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+
+	for i, b := range bytes {
+		bytes[i] = randomStringChars[b%byte(len(randomStringChars))]
+	}
+
+	return string(bytes), nil
 }

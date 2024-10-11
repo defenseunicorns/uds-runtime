@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
+	"github.com/defenseunicorns/uds-runtime/pkg/api/auth/local"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
@@ -874,5 +874,5 @@ func checkClusterConnection(k8sSession *session.K8sSession) http.HandlerFunc {
 // @Success 200
 // @Router /auth [head]
 func authHandler(w http.ResponseWriter, r *http.Request) {
-	auth.LocalAuthHandler(w, r)
+	local.AuthHandler(w, r)
 }

@@ -53,14 +53,11 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 
 	r := chi.NewRouter()
 
-	r.Use(udsMiddleware.ConditionalCompress)
+	// Add middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-
-	// only check JWT token if in-cluster auth is enabled
-	if config.InClusterAuthEnabled {
-		r.Use(auth.RequireJWT)
-	}
+	r.Use(udsMiddleware.Auth)
+	r.Use(udsMiddleware.ConditionalCompress)
 
 	// Add Swagger UI routes
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
@@ -70,13 +67,13 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Get("/health", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Head("/auth", authHandler)
-		r.With(udsMiddleware.ValidateLocalAuthSession).Route("/monitor", func(r chi.Router) {
+		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
 			r.Get("/cluster-overview", monitor.BindClusterOverviewHandler(k8sSession.Cache))
 		})
 
-		r.With(udsMiddleware.ValidateLocalAuthSession).Route("/resources", func(r chi.Router) {
+		r.Route("/resources", func(r chi.Router) {
 			r.Get("/nodes", withLatestCache(k8sSession, getNodes))
 			r.Get("/nodes/{uid}", withLatestCache(k8sSession, getNode))
 
