@@ -23,14 +23,8 @@ func NewCRDs() *CRDs {
 	}
 }
 
-func (c *Cache) setupUDSCRDInformer() {
-	crdGVR := schema.GroupVersionResource{
-		Group:    "apiextensions.k8s.io",
-		Version:  "v1",
-		Resource: "customresourcedefinitions",
-	}
-	crdInformer := c.dynamicFactory.ForResource(crdGVR).Informer()
-	_, err := crdInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+func (c *Cache) addExistsListeners(informer cache.SharedIndexInformer) {
+	_, err := informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			c.UDSCRDs.addCRD(obj)
 			notifyDynamicResources(c)

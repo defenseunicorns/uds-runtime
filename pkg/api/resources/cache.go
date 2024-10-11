@@ -101,8 +101,6 @@ func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 	}
 	c.dynamicFactory = dynamicInformer.NewFilteredDynamicSharedInformerFactory(dynamicClient, time.Minute*10, metaV1.NamespaceAll, nil)
 
-	c.setupUDSCRDInformer()
-
 	c.bindCoreResources()
 	c.bindWorkloadResources()
 	c.bindUDSResources()
@@ -146,7 +144,9 @@ func (c *Cache) bindCoreResources() {
 		Version:  "v1",
 		Resource: "customresourcedefinitions",
 	}
-	c.CRDs = NewResourceList(c.dynamicFactory.ForResource(crdGVR).Informer(), crdGVK)
+	crdInformer := c.dynamicFactory.ForResource(crdGVR).Informer()
+	c.CRDs = NewResourceList(crdInformer, crdGVK)
+	c.addExistsListeners(crdInformer)
 }
 
 func (c *Cache) bindWorkloadResources() {
