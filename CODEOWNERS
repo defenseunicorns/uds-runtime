@@ -1,1 +1,5 @@
-* @UncleGedd @jeff-mccoy @decleaver @TristanHoladay @BillyFigueroa
+* @defenseunicorns/uds-runtime
+
+# Additional privileged files
+/CODEOWNERS @jeff-mccoy @UncleGedd @daveworth
+/LICENSE @jeff-mccoy @austenbryan
