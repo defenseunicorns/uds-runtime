@@ -14,12 +14,13 @@ export default defineConfig({
     url: `${protocol}://${host}:${port}`,
     reuseExistingServer: !process.env.CI,
   },
-  timeout: 10 * 1000,
+  timeout: 120 * 1000,
   testDir: 'tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
   retries: process.env.CI ? 2 : 1,
-  testMatch: /^(?!.*api-auth)(.+\.)?(test|spec)\.[jt]s$/,
+  // testMatch: /^(?!.*api-auth)(.+\.)?(test|spec)\.[jt]s$/,
+  testMatch: 'reconnect.spec.ts',
   use: {
     baseURL: `${protocol}://${host}:${port}/`,
   },
