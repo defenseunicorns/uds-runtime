@@ -239,68 +239,90 @@
       </div>
 
       <div class="table-scroll-container">
-        {#if $rows.length === 0 && isFiltering}
-          <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
-            <span>No matching entries found</span>
-          </div>
-        {:else if $rows.length === 0}
-          <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
-            <span>No resources found</span>
-          </div>
-          <!--This case only happens when returning an error when a CRD does not exist in the cluster-->
-        {:else if typeof $rows[0].resource === 'string'}
-          <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
-            <p>The CRD for the resources you are trying to view does not exist in the cluster.</p>
-            <p>Install CRD and refresh page to view resources.</p>
-          </div>
-        {:else}
-          {#each $rows as row}
-            <div class="border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
-              <button
-                class="w-full flex items-center"
-                id={row.resource.metadata?.uid}
-                on:click={() =>
-                  !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
-                class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
-                class:cursor-pointer={!disableRowClick}
-              >
-                {#each columns as [key, style, modifier], idx}
-                  <!-- Check object to avoid issues with `false` values -->
-                  {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
-                  <div
-                    class={`${style} flex` || ''}
-                    data-testid={typeof value !== 'object' ? `${value}-testid-${idx + 1}` : `object-test-id-${idx + 1}`}
-                  >
-                    {#if value.component}
-                      <svelte:component this={value.component} {...value.props} />
-                    {:else if value.list}
-                      <ul class="line-clamp-4 mt-4 text-sm">
-                        {#each value.list as item}
-                          <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
-                        {/each}
-                      </ul>
-                    {:else if modifier === 'link-external'}
-                      <Link href={value.href || ''} text={value.text || ''} target={'_blank'} />
-                    {:else if modifier === 'link-internal'}
-                      <Link href={value.href || ''} text={value.text || ''} target={''} />
-                    {:else if key === 'namespace'}
-                      <button
-                        on:click|stopPropagation={() => namespace.set(value)}
-                        class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left"
-                      >
-                        {value}
-                      </button>
-                    {:else}
-                      <div class={`w-full text-left ${style}`}>
-                        {value.text || (value === 0 ? '0' : value) || '-'}
-                      </div>
-                    {/if}
-                  </div>
-                {/each}
-              </button>
+        <div class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+          <div class="sticky top-0 z-10 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+            <div class="flex items-center">
+              {#each columns as [header, style]}
+                <div class="flex whitespace-nowrap px-4 py-3.5 {style}">
+                  <button class="flex font-bold" on:click={() => rows.sortByKey(header)}>
+                    {header.replaceAll('_', ' ').toUpperCase()}
+                    <ChevronUp
+                      class="sort
+                      {style || ''}
+                      {$sortAsc ? 'rotate-180' : ''}
+                      {$sortBy === header ? 'opacity-100' : 'opacity-0'}"
+                    />
+                  </button>
+                </div>
+              {/each}
             </div>
-          {/each}
-        {/if}
+          </div>
+
+          {#if $rows.length === 0 && isFiltering}
+            <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
+              <span>No matching entries found</span>
+            </div>
+          {:else if $rows.length === 0}
+            <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
+              <span>No resources found</span>
+            </div>
+            <!--This case only happens when returning an error when a CRD does not exist in the cluster-->
+          {:else if typeof $rows[0].resource === 'string'}
+            <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
+              <p>The CRD for the resources you are trying to view does not exist in the cluster.</p>
+              <p>Install CRD and refresh page to view resources.</p>
+            </div>
+          {:else}
+            {#each $rows as row}
+              <div class="border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+                <button
+                  class="w-full flex items-center"
+                  id={row.resource.metadata?.uid}
+                  on:click={() =>
+                    !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
+                  class:active={row.resource.metadata?.uid && pathName.includes(row.resource.metadata?.uid ?? '')}
+                  class:cursor-pointer={!disableRowClick}
+                >
+                  {#each columns as [key, style, modifier], idx}
+                    <!-- Check object to avoid issues with `false` values -->
+                    {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
+                    <div
+                      class={`${style} flex px-4 py-2.5 text-left` || ''}
+                      data-testid={typeof value !== 'object'
+                        ? `${value}-testid-${idx + 1}`
+                        : `object-test-id-${idx + 1}`}
+                    >
+                      {#if value.component}
+                        <svelte:component this={value.component} {...value.props} />
+                      {:else if value.list}
+                        <ul class="line-clamp-4 mt-4 text-sm">
+                          {#each value.list as item}
+                            <li data-testid={`${item}-list-item-test-id`}>- {item}</li>
+                          {/each}
+                        </ul>
+                      {:else if modifier === 'link-external'}
+                        <Link href={value.href || ''} text={value.text || ''} target={'_blank'} />
+                      {:else if modifier === 'link-internal'}
+                        <Link href={value.href || ''} text={value.text || ''} target={''} />
+                      {:else if key === 'namespace'}
+                        <button
+                          on:click|stopPropagation={() => namespace.set(value)}
+                          class="text-blue-600 dark:text-blue-500 hover:underline text-left"
+                        >
+                          {value}
+                        </button>
+                      {:else}
+                        <div class={`w-full text-left ${style}`}>
+                          {value.text || (value === 0 ? '0' : value) || '-'}
+                        </div>
+                      {/if}
+                    </div>
+                  {/each}
+                </button>
+              </div>
+            {/each}
+          {/if}
+        </div>
       </div>
     </div>
   </div>

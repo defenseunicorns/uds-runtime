@@ -9,14 +9,14 @@
 
   export let columns: Columns = [
     ['name', 'emphasize w-3/12 truncate'],
-    ['namespace', 'w-2/12'],
-    ['controlled_by', 'w-1/12'],
-    ['containers', 'w-1/12'],
-    ['status', 'w-1/12'],
-    ['restarts', 'w-1/12'],
-    ['usage', 'w-1/12'],
+    ['namespace', 'w-1/12 truncate'],
+    ['controlled_by', 'w-2/12 truncate'],
+    ['containers', 'w-1/12 truncate'],
+    ['status', 'w-1/12 truncate'],
+    ['restarts', 'w-1/12 truncate'],
+    ['usage', 'w-1/12 truncate'],
     ['node', 'w-1/12 truncate'],
-    ['age', 'w-1/12'],
+    ['age', 'w-1/12 truncate'],
   ]
   const name = 'Pods'
   const description = resourceDescriptions[name]
