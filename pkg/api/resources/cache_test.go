@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-//go:build unit
-
 package resources
 
 import (
@@ -67,6 +65,7 @@ func TestBindCoreResources(t *testing.T) {
 		factory:        informers.NewSharedInformerFactory(clientset, time.Minute*10),
 		dynamicFactory: dynamicinformer.NewDynamicSharedInformerFactory(dynamicClient, time.Minute*10),
 		stopper:        make(chan struct{}),
+		UDSCRDs:        NewCRDs(),
 	}
 
 	// Bind resources
@@ -89,6 +88,7 @@ func TestBindCoreResources(t *testing.T) {
 	<-ctx.Done()
 	defer close(c.stopper)
 
+	// log.Println("got here")
 	require.Equal(t, c.Nodes.GetResources("", mockNodeName)[0].GetName(), mockNode.Name)
 	require.Equal(t, c.CRDs.GetResources("", "test-crd")[0].GetName(), mockCRD.GetName())
 }
