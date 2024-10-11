@@ -11,7 +11,7 @@
     ['name', 'emphasize w-3/12 truncate'],
     ['namespace', 'w-2/12'],
     ['controlled_by', 'w-1/12'],
-    ['containers', '1/12'],
+    ['containers', 'w-1/12'],
     ['status', 'w-1/12'],
     ['restarts', 'w-1/12'],
     ['usage', 'w-1/12'],
