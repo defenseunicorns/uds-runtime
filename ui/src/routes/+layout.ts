@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import { authenticated } from '$features/api-auth/store'
+import { authenticated } from '$features/auth/store'
 import { createStore } from '$features/k8s/namespaces/store'
-import { Auth } from '$lib/utils/api-auth'
+import { Auth } from '$lib/utils/token-auth'
 
 export const ssr = false
 

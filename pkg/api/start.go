@@ -69,7 +69,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	r.Get("/health", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Head("/api-auth", authHandler)
+		r.Head("/auth", authHandler)
 		r.With(udsMiddleware.ValidateLocalAuthSession).Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)

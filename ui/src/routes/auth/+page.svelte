@@ -4,7 +4,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import Unauthenticated from '$components/Auth/component.svelte'
-  import { authenticated } from '$features/api-auth/store'
+  import { authenticated } from '$features/auth/store'
 
   if (authenticated) {
     goto('/')

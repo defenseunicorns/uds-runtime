@@ -3,7 +3,7 @@ includes:
   - build: ./build.yaml
 
 tasks:
-  - name: api-auth
+  - name: local-auth
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
       - task: build:ui
@@ -11,7 +11,7 @@ tasks:
         dir: ui
       - task: build:api
       - task: deploy-runtime-cluster
-      - cmd: npm run test:api-auth
+      - cmd: npm run test:local-auth
         dir: ui
 
   - name: deploy-runtime-cluster

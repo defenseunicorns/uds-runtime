@@ -6,9 +6,9 @@
 
   import { onDestroy, onMount } from 'svelte'
 
-  import { afterNavigate } from '$app/navigation'
+  import { afterNavigate, goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { authenticated } from '$features/api-auth/store'
+  import { authenticated } from '$features/auth/store'
   import { isSidebarExpanded, Navbar, Sidebar } from '$features/navigation'
   import { ToastPanel } from '$features/toast'
   import { initFlowbite } from 'flowbite'
@@ -34,6 +34,8 @@
 
   $: if ($authenticated) {
     clusterCheck = new ClusterCheck()
+  } else {
+    goto('/auth')
   }
 
   $: {
@@ -43,7 +45,7 @@
 
 <Navbar />
 
-<!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
+<!-- Hide Sidebar if local auth is enabled and user is not authenticated-->
 {#if $authenticated}
   <Sidebar />
 {/if}

@@ -17,7 +17,7 @@ The generated api token is used initially by the frontend to authenticate with t
 How does the frontend authenticate?
 - Backend generates a token when it is started up and launches UDS Runtime in the browser.
     - i.e.(Runtime API connection: `http://127.0.0.1:8080?token=r1hrQ9CcuZMKpY2egjsPrzmge3-YqfqOHjmlIOvdKrLGOLnHPgFWt3dzsdkHwzDdXQAfRRHiH~rbGEx7Jc7rTxTd4riCuqGH`)
-- Frontend hits the /api-auth endpoint with the token as a query parameter.
+- Frontend hits the /auth endpoint with the token as a query parameter.
 - The backend validates the token and generates a session ID and sets it in a cookie.
 - Subsequent requests will include the session cookie and the backend will validate the session ID before processing any requests.
 <br><br>

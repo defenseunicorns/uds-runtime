@@ -872,7 +872,7 @@ func checkClusterConnection(k8sSession *session.K8sSession) http.HandlerFunc {
 // @Description Handle auth when running in local mode
 // @Tags auth
 // @Success 200
-// @Router /api-auth [head]
+// @Router /auth [head]
 func authHandler(w http.ResponseWriter, r *http.Request) {
 	auth.LocalAuthHandler(w, r)
 }
