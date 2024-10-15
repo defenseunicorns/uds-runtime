@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.1](https://github.com/defenseunicorns/uds-runtime/compare/v0.6.0...v0.6.1) (2024-10-15)
+
+
+### Miscellaneous
+
+* bump uds-types in package lock ([#455](https://github.com/defenseunicorns/uds-runtime/issues/455)) ([c17a583](https://github.com/defenseunicorns/uds-runtime/commit/c17a58343c94c3c4ea08717ffbaa2f5c10917a66))
+* bumps uds-types version ([#454](https://github.com/defenseunicorns/uds-runtime/issues/454)) ([4c767d5](https://github.com/defenseunicorns/uds-runtime/commit/4c767d5e55a0f698b33ee50335cf11cfa5b5d155))
+* **deps:** update dependency kubernetes-fluent-client to v3.1.1 ([#448](https://github.com/defenseunicorns/uds-runtime/issues/448)) ([abe8583](https://github.com/defenseunicorns/uds-runtime/commit/abe85835dce4e57681cdff3f3a4ec9ec1c787b04))
+* **deps:** update devdependencies ([#446](https://github.com/defenseunicorns/uds-runtime/issues/446)) ([a0f6163](https://github.com/defenseunicorns/uds-runtime/commit/a0f616335d824069ad511c79ebe7d61bb30c6739))
+* license to AGPLv3 and update codeowners ([#444](https://github.com/defenseunicorns/uds-runtime/issues/444)) ([2f0682a](https://github.com/defenseunicorns/uds-runtime/commit/2f0682a57a8b889515096e8c765582b07ae41c12))
+* refactor auth logic ([#426](https://github.com/defenseunicorns/uds-runtime/issues/426)) ([caa7e8f](https://github.com/defenseunicorns/uds-runtime/commit/caa7e8f77dce756a5fae4cfb81eb26d85dadd41d))
+* update license headers ([#450](https://github.com/defenseunicorns/uds-runtime/issues/450)) ([5e3a614](https://github.com/defenseunicorns/uds-runtime/commit/5e3a6148df1acb556acd39914c36ef06a6f6fb72))
+* updates codeowners for both license files ([#453](https://github.com/defenseunicorns/uds-runtime/issues/453)) ([6c4076a](https://github.com/defenseunicorns/uds-runtime/commit/6c4076a086fe4d9b8e67749a60151f17803e5448))
+
 ## [0.6.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.5.0...v0.6.0) (2024-10-10)
 
 
