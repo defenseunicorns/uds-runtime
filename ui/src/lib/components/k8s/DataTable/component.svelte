@@ -8,7 +8,7 @@
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { Drawer, Link, Tooltip } from '$components'
+  import { Drawer, Link } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
@@ -287,7 +287,7 @@
                     <!-- Check object to avoid issues with `false` values -->
                     {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
                     <div
-                      class={`${style} flex px-4 py-2.5 text-left` || ''}
+                      class={`${style} flex px-4 py-2.5 text-left`}
                       data-testid={typeof value !== 'object'
                         ? `${value}-testid-${idx + 1}`
                         : `object-test-id-${idx + 1}`}
