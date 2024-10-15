@@ -1,3 +1,6 @@
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 import { K8s, kind } from 'kubernetes-fluent-client'
 
 const namespace = 'load-test' + Math.floor(Math.random() * 1000);

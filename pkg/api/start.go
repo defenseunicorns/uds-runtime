@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
 package api
 
@@ -30,8 +30,6 @@ import (
 
 // @title UDS Runtime API
 // @version 0.0.0
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, bool, error) {

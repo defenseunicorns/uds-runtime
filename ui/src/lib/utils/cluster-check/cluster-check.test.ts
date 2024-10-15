@@ -1,3 +1,6 @@
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 import { get } from 'svelte/store'
 
 import { toast } from '$features/toast/store'
