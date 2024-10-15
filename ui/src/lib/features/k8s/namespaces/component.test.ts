@@ -40,12 +40,6 @@ vi.mock('svelte/store', () => {
         update: vi.fn(),
       }
     }),
-    get: vi.fn((key) => {
-      if (key === 'apiAuthEnabled') {
-        return false
-      }
-      return true // Default return value for other keys
-    }),
   }
 })
 

@@ -177,12 +177,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
   }
 
   /**
-   * Start the EventSource and update the resources
-   *
-   * @param url The URL to the EventSource
-   * @param createTableCallback The callback to create the table from the resources
-   *
-   * @returns A function to stop the EventSource
+   * Start the store and update resources
    */
   start() {
     if (this.#initialized) {

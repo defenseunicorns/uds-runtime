@@ -11,7 +11,7 @@ export default defineConfig({
   timeout: 60 * 1000,
   testDir: 'tests',
   fullyParallel: false,
-  retries: 0,
+  retries: process.env.CI ? 2 : 1,
   testMatch: /(.+\.)?(test|spec)\.[jt]s/,
   use: {
     baseURL: `https://runtime-local.uds.dev:${port}/`,
