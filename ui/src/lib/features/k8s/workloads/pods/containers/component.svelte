@@ -1,5 +1,5 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
-<!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
+<!-- Copyright 2024 Defense Unicorns -->
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial -->
 
 <script lang="ts">
   import { type V1ContainerStatus } from '@kubernetes/client-node/dist/gen/models/V1ContainerStatus'
