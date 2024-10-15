@@ -65,7 +65,6 @@ func TestBindCoreResources(t *testing.T) {
 		factory:        informers.NewSharedInformerFactory(clientset, time.Minute*10),
 		dynamicFactory: dynamicinformer.NewDynamicSharedInformerFactory(dynamicClient, time.Minute*10),
 		stopper:        make(chan struct{}),
-		UDSCRDs:        NewCRDs(),
 	}
 
 	// Bind resources

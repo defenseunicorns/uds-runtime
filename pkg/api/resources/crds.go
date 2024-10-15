@@ -4,38 +4,36 @@
 package resources
 
 import (
+	"fmt"
 	"log"
-	"sync"
 
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/tools/cache"
 )
 
-// CRDs is a thread-safe struct to store the list of CRDs and notify subscribers of changes.
-type CRDs struct {
-	mutex       sync.RWMutex
-	definitions map[string]bool
-}
+func HasCRD(targetGVR schema.GroupVersionResource, CRDs *ResourceList) bool {
+	crds := CRDs.GetResources("", "")
 
-func NewCRDs() *CRDs {
-	return &CRDs{
-		definitions: make(map[string]bool),
+	for _, crd := range crds {
+		if crd.Object["metadata"].(map[string]interface{})["name"].(string) == fmt.Sprintf("%s.%s", targetGVR.Resource, targetGVR.Group) {
+			return true
+		}
 	}
+
+	return false
 }
 
-func (c *Cache) addExistsListeners(informer cache.SharedIndexInformer) {
+// AddCustomListeners adds additional listeners to a shared informer for updating Custom Resource informers
+func AddCustomListeners(informer cache.SharedIndexInformer, runtimeCache *Cache) {
 	_, err := informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: func(obj interface{}) {
-			c.UDSCRDs.addCRD(obj)
-			notifyDynamicResources(c)
+		AddFunc: func(_ interface{}) {
+			notifyCustomResources(runtimeCache)
 		},
-		UpdateFunc: func(_, newObj any) {
-			c.UDSCRDs.addCRD(newObj)
-			notifyDynamicResources(c)
+		UpdateFunc: func(_, _ any) {
+			notifyCustomResources(runtimeCache)
 		},
-		DeleteFunc: func(obj any) {
-			c.UDSCRDs.removeCRD(obj)
-			notifyDynamicResources(c)
+		DeleteFunc: func(_ any) {
+			notifyCustomResources(runtimeCache)
 		},
 	})
 	if err != nil {
@@ -43,43 +41,11 @@ func (c *Cache) addExistsListeners(informer cache.SharedIndexInformer) {
 	}
 }
 
-func (c *CRDs) addCRD(crd interface{}) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	resource, err := ToUnstructured(crd)
-	if err != nil {
-		log.Printf("Error converting CRD to unstructured: %v", err)
-		return
-	}
-	crdName := resource.Object["metadata"].(map[string]interface{})["name"].(string)
-	c.definitions[crdName] = true
-}
-
-func (c *CRDs) removeCRD(crd interface{}) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	resource, err := ToUnstructured(crd)
-	if err != nil {
-		log.Printf("Error converting CRD to unstructured: %v", err)
-		return
-	}
-	crdName := resource.Object["metadata"].(map[string]interface{})["name"].(string)
-	delete(c.definitions, crdName)
-}
-
-func (c *CRDs) Contains(targetGVR schema.GroupVersionResource) bool {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
-	_, exists := c.definitions[targetGVR.Resource+"."+targetGVR.Group]
-	return exists
-}
-
-func notifyDynamicResources(c *Cache) {
-	c.UDSCRDs.mutex.Lock()
-	defer c.UDSCRDs.mutex.Unlock()
-
+func notifyCustomResources(c *Cache) {
 	// Send to UDSExemptions channel if initialized
 	if c.UDSExemptions != nil {
+		c.UDSExemptions.mutex.Lock()
+		defer c.UDSExemptions.mutex.Unlock()
 		select {
 		case c.UDSExemptions.Changes <- struct{}{}:
 		default:
@@ -90,6 +56,8 @@ func notifyDynamicResources(c *Cache) {
 
 	// Send to UDSPackages channel if initialized
 	if c.UDSPackages != nil {
+		c.UDSPackages.mutex.Lock()
+		defer c.UDSPackages.mutex.Unlock()
 		select {
 		case c.UDSPackages.Changes <- struct{}{}:
 		default:
@@ -100,6 +68,8 @@ func notifyDynamicResources(c *Cache) {
 
 	// Send to VirtualServices channel if initialized
 	if c.VirtualServices != nil {
+		c.VirtualServices.mutex.Lock()
+		defer c.VirtualServices.mutex.Unlock()
 		select {
 		case c.VirtualServices.Changes <- struct{}{}:
 		default:

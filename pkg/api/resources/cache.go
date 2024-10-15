@@ -81,8 +81,7 @@ type Cache struct {
 	MetricsChanges chan struct{}
 
 	// CustomResourceDefinitions
-	CRDs    *ResourceList
-	UDSCRDs *CRDs
+	CRDs *ResourceList
 }
 
 func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
@@ -91,7 +90,6 @@ func NewCache(ctx context.Context, clients *client.Clients) (*Cache, error) {
 		stopper:        make(chan struct{}),
 		PodMetrics:     NewPodMetrics(),
 		MetricsChanges: make(chan struct{}, 1),
-		UDSCRDs:        NewCRDs(),
 	}
 
 	// Create the dynamic client and factory
@@ -146,7 +144,7 @@ func (c *Cache) bindCoreResources() {
 	}
 	crdInformer := c.dynamicFactory.ForResource(crdGVR).Informer()
 	c.CRDs = NewResourceList(crdInformer, crdGVK)
-	c.addExistsListeners(crdInformer)
+	AddCustomListeners(crdInformer, c)
 }
 
 func (c *Cache) bindWorkloadResources() {
@@ -253,7 +251,7 @@ func (c *Cache) bindUDSResources() {
 // setWatchErrorHandler sets a watch error handler on the provided informer for custom resources
 func (c *Cache) setWatchErrorHandler(informer cache.SharedIndexInformer, resource *ResourceList) {
 	err := informer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
-		if !c.UDSCRDs.Contains(resource.GVR) {
+		if !HasCRD(resource.GVR, c.CRDs) {
 			resource.CRDExists = false
 		} else {
 			resource.CRDExists = true
