@@ -31,7 +31,7 @@ suite('PodTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-3/12'],
+      ['name', 'w-3/12'],
       ['namespace', 'w-1/12'],
       ['controlled_by', 'w-2/12'],
       ['containers', 'w-1/12'],

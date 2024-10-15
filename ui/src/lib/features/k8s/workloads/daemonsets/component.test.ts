@@ -28,7 +28,7 @@ suite('DaemonsetTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-3/12'],
+      ['name', 'w-3/12'],
       ['namespace', 'w-2/12'],
       ['desired', 'w-1/12'],
       ['current', 'w-1/12'],

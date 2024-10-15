@@ -239,11 +239,11 @@
       </div>
 
       <div class="table-scroll-container">
-        <div class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-          <div class="sticky top-0 z-10 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+        <div class="table">
+          <div class="thead">
             <div class="flex items-center">
-              {#each columns as [header, style]}
-                <div class="flex whitespace-nowrap px-4 py-3.5 {style}">
+              {#each columns as [header, style], idx}
+                <div class={`th ${style} ${idx === 0 ? 'emphasize' : ''}`}>
                   <button class="flex font-bold" on:click={() => rows.sortByKey(header)}>
                     {header.replaceAll('_', ' ').toUpperCase()}
                     <ChevronUp
@@ -274,7 +274,7 @@
             </div>
           {:else}
             {#each $rows as row}
-              <div class="border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+              <div class="tr">
                 <button
                   class="w-full flex items-center"
                   id={row.resource.metadata?.uid}
@@ -287,7 +287,7 @@
                     <!-- Check object to avoid issues with `false` values -->
                     {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
                     <div
-                      class={`${style} flex px-4 py-2.5 text-left`}
+                      class={`td ${style}  ${idx === 0 ? 'emphasize' : ''}`}
                       data-testid={typeof value !== 'object'
                         ? `${value}-testid-${idx + 1}`
                         : `object-test-id-${idx + 1}`}
