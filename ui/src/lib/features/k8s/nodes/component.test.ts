@@ -27,7 +27,14 @@ suite('NodeTable Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['status'], ['roles'], ['taints'], ['version'], ['age']],
+    columns: [
+      ['name', 'emphasize w-2/12'],
+      ['status', 'w-2/12'],
+      ['roles', 'w-2/12'],
+      ['taints', 'w-2/12'],
+      ['version', 'w-2/12'],
+      ['age', 'w-2/12'],
+    ],
     isNamespaced: false,
     name,
     description,

@@ -7,7 +7,14 @@
 
   import { createStore, type Columns } from './store'
 
-  export let columns: Columns = [['name', 'emphasize'], ['status'], ['roles'], ['taints'], ['version'], ['age']]
+  export let columns: Columns = [
+    ['name', 'emphasize w-2/12'],
+    ['status', 'w-2/12'],
+    ['roles', 'w-2/12'],
+    ['taints', 'w-2/12'],
+    ['version', 'w-2/12'],
+    ['age', 'w-2/12'],
+  ]
   const name = 'Nodes'
   const description = resourceDescriptions[name]
 </script>

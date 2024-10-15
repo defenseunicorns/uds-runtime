@@ -60,7 +60,11 @@ suite('NamespaceTable Component', () => {
   // Use expect.any(Function), because createStore is wrapped
   testK8sTableWithDefaults(Component, {
     createStore: expect.any(Function),
-    columns: [['name', 'emphasize'], ['status'], ['age']],
+    columns: [
+      ['name', 'emphasize w-4/12'],
+      ['status', 'w-4/12'],
+      ['age', 'w-4/12'],
+    ],
     isNamespaced: false,
     name,
     description,
