@@ -186,7 +186,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		host := "runtime-local.uds.dev"
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
-		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, config.LocalAuthToken)
+		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, auth.LocalAuthToken)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {

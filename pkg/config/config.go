@@ -6,6 +6,5 @@ package config
 
 var (
 	LocalAuthEnabled     = true
-	LocalAuthToken       = ""
 	InClusterAuthEnabled = false
 )

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/defenseunicorns/uds-runtime/pkg/api/auth"
 	"github.com/defenseunicorns/uds-runtime/pkg/config"
 )
 
@@ -54,11 +55,10 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		token := r.URL.Query().Get("token")
 		if token == "" {
 			// Handle session cookie validation
-			// todo: revisit this block...
 			ValidateSessionCookie(w, r)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
-		} else if token != config.LocalAuthToken {
+		} else if token != auth.LocalAuthToken {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

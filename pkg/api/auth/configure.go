@@ -13,6 +13,9 @@ import (
 	"github.com/defenseunicorns/uds-runtime/pkg/config"
 )
 
+// LocalAuthToken is the token used for local auth
+var LocalAuthToken = ""
+
 // Configure sets the config vars for local or in-cluster auth
 func Configure() {
 	// check for local auth first
@@ -30,7 +33,7 @@ func Configure() {
 			slog.Error("Failed to generate local auth token")
 			os.Exit(1)
 		}
-		config.LocalAuthToken = token
+		LocalAuthToken = token
 		return
 	}
 
