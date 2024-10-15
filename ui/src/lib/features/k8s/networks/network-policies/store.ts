@@ -24,7 +24,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     ingress_block:
       r.spec?.ingress
         ?.map((i) =>
-          i.from
+          i._from
             ?.map((f) => {
               const cidr = f.ipBlock?.cidr
               const excepts = f.ipBlock?.except?.map((e) => `[${e}]`).join(', ')
