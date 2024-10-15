@@ -28,12 +28,12 @@ suite('CronjobTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-2/12 truncate'],
-      ['namespace', 'w-2/12 truncate'],
-      ['schedule', 'w-2/12 truncate'],
-      ['suspend', 'w-2/12 truncate'],
-      ['last_scheduled', 'w-2/12 truncate'],
-      ['age', 'w-2/12 truncate'],
+      ['name', 'emphasize w-2/12'],
+      ['namespace', 'w-2/12'],
+      ['schedule', 'w-2/12'],
+      ['suspend', 'w-2/12'],
+      ['last_scheduled', 'w-2/12'],
+      ['age', 'w-2/12'],
     ],
     name,
     description,

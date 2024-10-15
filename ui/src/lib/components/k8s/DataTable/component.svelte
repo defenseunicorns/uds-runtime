@@ -312,7 +312,7 @@
                           {value}
                         </button>
                       {:else}
-                        <div class={`w-full text-left ${style}`}>
+                        <div class={`w-full text-left truncate ${style}`}>
                           {value.text || (value === 0 ? '0' : value) || '-'}
                         </div>
                       {/if}

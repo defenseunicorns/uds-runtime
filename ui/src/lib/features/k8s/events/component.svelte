@@ -8,13 +8,13 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['namespace', 'w-2/12 truncate'],
-    ['age', 'w-1/12 truncate'],
-    ['type', 'w-2/12 truncate'],
-    ['reason', 'w-3/12 truncate'],
-    ['object_kind', 'w-2/12 truncate'],
-    ['object_name', 'w-3/12 truncate'],
-    ['count', 'w-1/12 truncate'],
+    ['namespace', 'w-2/12'],
+    ['age', 'w-1/12'],
+    ['type', 'w-2/12'],
+    ['reason', 'w-3/12'],
+    ['object_kind', 'w-2/12'],
+    ['object_name', 'w-3/12'],
+    ['count', 'w-1/12'],
   ]
 
   const name = 'Events'

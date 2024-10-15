@@ -8,11 +8,11 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize w-4/12 truncate'],
-    ['namespace', 'w-3/12 truncate'],
-    ['completions', 'w-2/12 truncate'],
-    ['durations', 'w-2/12 truncate'],
-    ['age', 'w-1/12 truncate'],
+    ['name', 'emphasize w-4/12'],
+    ['namespace', 'w-3/12'],
+    ['completions', 'w-2/12'],
+    ['durations', 'w-2/12'],
+    ['age', 'w-1/12'],
   ]
   const name = 'Jobs'
   const description = resourceDescriptions[name]
