@@ -14,6 +14,9 @@ interface Row extends CommonRow {
 
 export type Columns = ColumnWrapper<Row>
 
+// getFromField is a helper function to handle type differences between kubernetes-client-node and k8s.io/client-go, which uses k8s.io/api/networking/v1
+const getFromField = (i: any) => i._from ?? i.from ?? []
+
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   // Using dense=true due to use of .spec
   const url = `/api/v1/resources/networks/networkpolicies?dense=true`
@@ -24,7 +27,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     ingress_block:
       r.spec?.ingress
         ?.map((i) =>
-          i._from
+          getFromField(i)
             ?.map((f) => {
               const cidr = f.ipBlock?.cidr
               const excepts = f.ipBlock?.except?.map((e) => `[${e}]`).join(', ')
