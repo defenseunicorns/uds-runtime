@@ -19,7 +19,7 @@ suite('LimitRangesTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-1/12'],
+      ['name', 'w-1/12'],
       ['version', ' w-1/12'],
       ['description', 'italic  w-5/12'],
       ['arch', ' w-1/12'],

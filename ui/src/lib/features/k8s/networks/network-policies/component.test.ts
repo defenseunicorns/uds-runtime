@@ -28,7 +28,7 @@ suite('NetworkPolicyTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-5/12'],
+      ['name', 'w-5/12'],
       ['namespace', 'w-2/12'],
       ['ingress_ports', 'w-1/12'],
       ['ingress_block', 'w-1/12'],

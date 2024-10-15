@@ -8,7 +8,7 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize w-3/12'],
+    ['name', 'w-3/12'],
     ['namespace', 'w-2/12'],
     ['storage_class', 'w-2/12'],
     ['capacity', 'w-2/12'],

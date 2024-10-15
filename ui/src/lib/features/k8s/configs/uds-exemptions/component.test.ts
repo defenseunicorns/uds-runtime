@@ -63,7 +63,7 @@ suite('UDSExemptionTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-2/12'],
+      ['name', 'w-2/12'],
       ['namespace', 'w-3/12'],
       ['details', 'w-1/12'],
       ['matcher', 'w-2/12'],

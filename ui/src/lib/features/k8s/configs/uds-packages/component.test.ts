@@ -27,7 +27,7 @@ suite('StatefulsetTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-2/12'],
+      ['name', 'w-2/12'],
       ['namespace', 'w-1/12'],
       ['status', 'w-1/12'],
       ['endpoints', 'w-2/12'],

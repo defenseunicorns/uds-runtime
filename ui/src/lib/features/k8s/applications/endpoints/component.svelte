@@ -7,7 +7,7 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['url', 'emphasize w-3/12', 'link-external'],
+    ['url', 'w-3/12', 'link-external'],
     ['namespace', 'w-3/12'],
     ['status', 'w-3/12'],
     ['age', 'w-3/12'],

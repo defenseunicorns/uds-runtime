@@ -61,7 +61,7 @@ suite('NamespaceTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore: expect.any(Function),
     columns: [
-      ['name', 'emphasize w-4/12'],
+      ['name', 'w-4/12'],
       ['status', 'w-4/12'],
       ['age', 'w-4/12'],
     ],

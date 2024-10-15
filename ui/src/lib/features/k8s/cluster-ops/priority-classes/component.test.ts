@@ -28,7 +28,7 @@ suite('PriorityClassesTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-4/12'],
+      ['name', 'w-4/12'],
       ['value', 'w-1/12'],
       ['global_default', 'w-2/12'],
       ['description', 'w-4/12'],

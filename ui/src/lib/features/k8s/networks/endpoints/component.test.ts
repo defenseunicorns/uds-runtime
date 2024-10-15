@@ -28,7 +28,7 @@ suite('EndpointTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-3/12'],
+      ['name', 'w-3/12'],
       ['namespace', 'w-2/12'],
       ['endpoints', 'w-6/12'],
       ['age', 'w-1/12'],

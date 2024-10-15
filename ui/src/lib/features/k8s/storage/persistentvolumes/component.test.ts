@@ -29,7 +29,7 @@ suite('PersistentVolume Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-4/12'],
+      ['name', 'w-4/12'],
       ['storage_class', 'w-2/12'],
       ['capacity', 'w-2/12'],
       ['claim', 'w-2/12'],

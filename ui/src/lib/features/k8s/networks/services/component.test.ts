@@ -28,7 +28,7 @@ suite('ServiceTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'emphasize w-2/12'],
+      ['name', 'w-2/12'],
       ['namespace', 'w-2/12'],
       ['type', 'w-2/12'],
       ['cluster_ip', 'w-2/12'],
