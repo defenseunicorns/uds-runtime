@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { V1NetworkPolicy as Resource } from '@kubernetes/client-node'
+import type { V1NetworkPolicy as Resource, V1NetworkPolicyPeer } from '@kubernetes/client-node'
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
@@ -14,6 +14,10 @@ interface Row extends CommonRow {
 
 export type Columns = ColumnWrapper<Row>
 
+// getFromField is a helper function to handle type differences between kubernetes-client-node and k8s.io/client-go v0.31.1, which uses k8s.io/api/networking/v1
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getFromField = (i: any) => i._from ?? i.from ?? []
+
 export function createStore(): ResourceStoreInterface<Resource, Row> {
   // Using dense=true due to use of .spec
   const url = `/api/v1/resources/networks/networkpolicies?dense=true`
@@ -24,8 +28,8 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
     ingress_block:
       r.spec?.ingress
         ?.map((i) =>
-          i.from
-            ?.map((f) => {
+          getFromField(i)
+            ?.map((f: V1NetworkPolicyPeer) => {
               const cidr = f.ipBlock?.cidr
               const excepts = f.ipBlock?.except?.map((e) => `[${e}]`).join(', ')
               return excepts ? `${cidr} ${excepts}` : cidr
