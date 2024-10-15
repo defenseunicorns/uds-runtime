@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024-Present The UDS Authors
 
-import type { V1NetworkPolicy as Resource } from '@kubernetes/client-node'
+import type { V1NetworkPolicy as Resource, V1NetworkPolicyPeer } from '@kubernetes/client-node'
 import { ResourceStore, transformResource } from '$features/k8s/store'
 import { type ColumnWrapper, type CommonRow, type ResourceStoreInterface } from '$features/k8s/types'
 
@@ -28,7 +28,7 @@ export function createStore(): ResourceStoreInterface<Resource, Row> {
       r.spec?.ingress
         ?.map((i) =>
           getFromField(i)
-            ?.map((f) => {
+            ?.map((f: V1NetworkPolicyPeer) => {
               const cidr = f.ipBlock?.cidr
               const excepts = f.ipBlock?.except?.map((e) => `[${e}]`).join(', ')
               return excepts ? `${cidr} ${excepts}` : cidr
