@@ -8,13 +8,13 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['type'],
-    ['cluster_ip'],
-    ['external_ip'],
-    ['ports'],
-    ['age'],
+    ['name', 'emphasize w-2/12'],
+    ['namespace', 'w-2/12'],
+    ['type', 'w-2/12'],
+    ['cluster_ip', 'w-2/12'],
+    ['external_ip', 'w-1/12'],
+    ['ports', 'w-2/12'],
+    ['age', 'w-1/12'],
   ]
 
   const name = 'Services'
