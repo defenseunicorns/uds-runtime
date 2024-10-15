@@ -75,6 +75,10 @@ suite('NetworkPolicyTable Component', () => {
         spec: {
           ingress: [
             {
+              _from: [{ ipBlock: { cidr: '0.0.0.0/0', except: ['169.254.169.254/32'] } }],
+              ports: [{ port: 8080, protocol: 'TCP' }],
+            },
+            {
               from: [{ ipBlock: { cidr: '0.0.0.0/0', except: ['169.254.169.254/32'] } }],
               ports: [{ port: 8080, protocol: 'TCP' }],
             },
@@ -102,8 +106,8 @@ suite('NetworkPolicyTable Component', () => {
     {
       egress_block: '-',
       egress_ports: '-',
-      ingress_block: '0.0.0.0/0 [169.254.169.254/32]',
-      ingress_ports: 'TCP:8080',
+      ingress_block: '0.0.0.0/0 [169.254.169.254/32], 0.0.0.0/0 [169.254.169.254/32]',
+      ingress_ports: 'TCP:8080, TCP:8080',
       name: 'allow-keycloak-ingress-keycloak-backchannel-access',
       namespace: 'keycloak',
     },
