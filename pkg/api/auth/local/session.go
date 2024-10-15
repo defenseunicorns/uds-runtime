@@ -55,7 +55,10 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		token := r.URL.Query().Get("token")
 		if token == "" {
 			// Handle session cookie validation
-			ValidateSessionCookie(w, r)
+			if valid := ValidateSessionCookie(w, r); valid {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		} else if token != auth.LocalAuthToken {

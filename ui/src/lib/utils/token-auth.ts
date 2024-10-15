@@ -9,7 +9,7 @@ const headers = new Headers({
 export class TokenAuth {
   // wrapper for handling the request/response cycle.
   async request<T>(token: string): Promise<T> {
-    const hasToken = token != '' ? true : false
+    const hasToken = token != ''
     const url = hasToken ? `${BASE_URL}/auth?token=${token}` : `${BASE_URL}/auth`
 
     const payload: RequestInit = { method: 'HEAD', headers }
