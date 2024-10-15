@@ -13,6 +13,7 @@
     "format": "prettier --write .",
     "test:api-auth": "playwright test tests/api-auth.spec.ts --config=playwright.config.apiauth.ts",
     "test:integration": "playwright test",
+    "test:integration-in-cluster": "playwright test --config=playwright.config.incluster.ts",
     "test:install": "playwright install",
     "test:unit": "vitest run"
   },

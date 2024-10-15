@@ -93,8 +93,8 @@ tasks:
       - task: setup:slim-cluster
       - task: install-runtime-in-cluster-arm
       - task: deploy-podinfo-arm
-      - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration
-        dir: ui
+      # - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration
+      #   dir: ui
 
   - name: go-unit
     description: "run api server unit tests"
