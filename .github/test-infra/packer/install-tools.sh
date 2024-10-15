@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright 2024 Defense Unicorns
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 set -e
 
 # renovate: datasource=github-tags depName=k3d-io/k3d versioning=semver

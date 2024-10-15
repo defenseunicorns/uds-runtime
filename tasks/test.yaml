@@ -1,9 +1,12 @@
+# Copyright 2024 Defense Unicorns
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 includes:
   - setup: ./setup.yaml
   - build: ./build.yaml
 
 tasks:
-  - name: api-auth
+  - name: local-auth
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
       - task: build:ui
@@ -11,7 +14,7 @@ tasks:
         dir: ui
       - task: build:api
       - task: deploy-runtime-cluster
-      - cmd: npm run test:api-auth
+      - cmd: npm run test:local-auth
         dir: ui
 
   - name: deploy-load
@@ -40,7 +43,7 @@ tasks:
         description: deploy minio to test PVCs
 
   - name: deploy-runtime-cluster
-    description: deploy cluster specifically for testing the app
+    description: deploy cluster specifically for testing UDS Runtime
     actions:
       - task: setup:k3d
       - task: deploy-load
