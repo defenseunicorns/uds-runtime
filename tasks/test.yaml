@@ -14,11 +14,52 @@ tasks:
       - cmd: npm run test:api-auth
         dir: ui
 
+  - name: deploy-load
+    description: "deploy some Zarf packages to test against"
+    actions:
+      - task: deploy-min-core
+      - cmd: uds zarf dev deploy
+        dir: ui/tests/packages/podinfo
+
+  - name: deploy-min-core
+    description: install min resources for UDS Core
+    actions:
+      # todo: refactor this with UDS functional layers: https://github.com/defenseunicorns/uds-runtime/issues/172
+      - task: setup:clone-core
+      - cmd: npm ci && npx pepr deploy --confirm
+        description: deploy UDS Core's Pepr module
+        dir: tmp/uds-core
+      - cmd: |
+          helm repo add istio https://istio-release.storage.googleapis.com/charts
+          helm upgrade -i istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
+        description: install Istio CRDs
+      - cmd: |
+          helm repo add minio https://charts.min.io/
+          helm upgrade -i -n uds-dev-stack minio minio/minio --create-namespace --set replicas=1 --set mode=standalone --set persistence.size=1Gi \
+            --set resources.requests.memory=256Mi --set resources.requests.cpu=100m
+        description: deploy minio to test PVCs
+
   - name: deploy-runtime-cluster
     description: deploy cluster specifically for testing the app
     actions:
       - task: setup:k3d
       - task: deploy-load
+
+  - name: deploy-podinfo-amd
+    description: "deploy podinfo to the cluster"
+    actions:
+      - cmd: uds zarf package create -a amd64 --confirm
+        dir: ui/tests/packages/podinfo
+      - cmd: uds zarf package deploy zarf-package-podinfo-test-amd64-0.0.1.tar.zst --confirm
+        dir: ui/tests/packages/podinfo
+
+  - name: deploy-podinfo-arm
+    description: "deploy podinfo to the cluster"
+    actions:
+      - cmd: uds zarf package create -a arm64 --confirm
+        dir: ui/tests/packages/podinfo
+      - cmd: uds zarf package deploy zarf-package-podinfo-test-arm64-0.0.1.tar.zst --confirm
+        dir: ui/tests/packages/podinfo
 
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
@@ -27,9 +68,30 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: build:api
-      - task: setup:k3d
-      - task: deploy-load
+      - task: deploy-runtime-cluster
       - cmd: npm run test:integration
+        dir: ui
+
+  - name: e2e-in-cluster-amd
+    description: "run end-to-end tests against runtime in the cluster"
+    actions:
+      - cmd: npm run test:install # install playwright
+        dir: ui
+      - task: setup:slim-cluster
+      - task: setup:install-runtime-in-cluster-amd
+      - task: deploy-podinfo-amd
+      - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration
+        dir: ui
+
+  - name: e2e-in-cluster-arm
+    description: "run end-to-end tests against runtime in the cluster"
+    actions:
+      - cmd: npm run test:install # install playwright
+        dir: ui
+      - task: setup:slim-cluster
+      - task: setup:install-runtime-in-cluster-arm
+      - task: deploy-podinfo-arm
+      - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration
         dir: ui
 
   - name: go-unit
@@ -64,35 +126,10 @@ tasks:
         description: apply runtime class manually cause KFC is silly
       - cmd: go test -failfast -v -timeout 30m --tags=integration ./...
 
-  - name: deploy-load
-    description: "deploy some Zarf packages to test against"
-    actions:
-      - task: deploy-min-core
-      - cmd: uds zarf dev deploy
-        dir: ui/tests/packages/podinfo
-
-  - name: deploy-min-core
-    description: install min resources for UDS Core
-    actions:
-      # todo: refactor this with UDS functional layers: https://github.com/defenseunicorns/uds-runtime/issues/172
-      - task: setup:clone-core
-      - cmd: npm ci && npx pepr deploy --confirm
-        description: deploy UDS Core's Pepr module
-        dir: tmp/uds-core
-      - cmd: |
-          helm repo add istio https://istio-release.storage.googleapis.com/charts
-          helm upgrade -i istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
-        description: install Istio CRDs
-      - cmd: |
-          helm repo add minio https://charts.min.io/
-          helm upgrade -i -n uds-dev-stack minio minio/minio --create-namespace --set replicas=1 --set mode=standalone --set persistence.size=1Gi \
-            --set resources.requests.memory=256Mi --set resources.requests.cpu=100m
-        description: deploy minio to test PVCs
-
   - name: smoke
     description: "runtime nightly smoke tests"
     actions:
-      - task: build:smoke-img-pkg
+      - task: build:smoke-img-pkg-amd
       - task: setup:slim-cluster
       - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst --confirm
         dir: hack/smoke-test

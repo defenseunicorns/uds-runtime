@@ -233,7 +233,7 @@ test.describe('Navigation', async () => {
   test('navigates to Nodes page', async ({ page }) => {
     await page.getByRole('link', { name: 'Nodes' }).click()
 
-    await expect(page.getByTestId('k3d-runtime-server-0-testid-1')).toHaveText('k3d-runtime-server-0')
+    await expect(page.getByTestId('k3d-uds-server-0-testid-1')).toHaveText('k3d-uds-server-0')
   })
 
   test('navigates to Preferences page', async ({ page }) => {
@@ -251,6 +251,6 @@ test.describe('Navigation', async () => {
   test('navigates to Help page', async ({ page }) => {
     await page.getByTestId('global-sidenav-help').click()
 
-    await expect(page.getByText('Help')).toBeVisible()
+    await expect(page.getByText('Help', { exact: true })).toBeVisible()
   })
 })

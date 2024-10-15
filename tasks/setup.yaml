@@ -1,5 +1,6 @@
 includes:
   - common: https://raw.githubusercontent.com/defenseunicorns/uds-common/v0.13.1/tasks/setup.yaml
+  - build: ./build.yaml
 
 tasks:
   - name: full-core
@@ -23,7 +24,7 @@ tasks:
     description: "start a plain k3d cluster"
     actions:
       - cmd: |
-          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
+          k3d cluster delete uds && k3d cluster create uds --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
 
   - name: golangci
     description: "Install golangci-lint to GOPATH using install.sh"
@@ -47,3 +48,17 @@ tasks:
     actions:
       - cmd: uds zarf package create tmp/uds-core/src/authservice --confirm --flavor upstream -o build/
       - cmd: uds zarf package deploy build/zarf-package-uds-core-authservice*.tar.zst --confirm
+
+  - name: install-runtime-in-cluster-amd
+    description: "Install uds-runtime in the cluster"
+    actions:
+      - task: build:smoke-img-pkg-amd
+      - cmd: uds zarf dev build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst
+        dir: hack/smoke-test
+
+  - name: install-runtime-in-cluster-arm
+    description: "Install uds-runtime in the cluster"
+    actions:
+      - task: build:smoke-img-pkg-arm
+      - cmd: uds zarf dev build/zarf-package-uds-runtime-arm64-smoke-test.tar.zst
+        dir: hack/smoke-test
