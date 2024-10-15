@@ -2,6 +2,7 @@
   "name": "uds-runtime",
   "version": "0.0.1",
   "private": true,
+  "license": "AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
