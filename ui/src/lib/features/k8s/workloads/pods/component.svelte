@@ -9,8 +9,8 @@
 
   export let columns: Columns = [
     ['name', 'w-3/12'],
-    ['namespace', 'w-1/12'],
-    ['controlled_by', 'w-2/12'],
+    ['namespace', 'w-2/12'],
+    ['controlled_by', 'w-1/12'],
     ['containers', 'w-1/12'],
     ['status', 'w-1/12'],
     ['restarts', 'w-1/12'],
