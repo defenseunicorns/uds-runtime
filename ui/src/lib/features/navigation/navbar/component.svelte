@@ -1,8 +1,8 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
-<!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
+<!-- Copyright 2024 Defense Unicorns -->
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial -->
 
 <script lang="ts">
-  import { authenticated } from '$features/api-auth/store'
+  import { authenticated } from '$features/auth/store'
   import { NotificationFilled } from 'carbon-icons-svelte'
 
   import { isSidebarExpanded } from '../store'

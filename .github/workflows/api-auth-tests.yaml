@@ -1,3 +1,6 @@
+# Copyright 2024 Defense Unicorns
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 name: API Auth Tests
 on:
   workflow_call:
@@ -29,7 +32,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run tests
-        run: uds run test:api-auth
+        run: uds run test:local-auth
         timeout-minutes: 30
 
       - name: Debug Output
@@ -39,4 +42,4 @@ jobs:
         if: always()
         uses: defenseunicorns/uds-common/.github/actions/save-logs@e3008473beab00b12a94f9fcc7340124338d5c08 # v0.13.1
         with:
-          suffix: api-auth
+          suffix: local-auth

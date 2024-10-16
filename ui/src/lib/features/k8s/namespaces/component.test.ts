@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
@@ -39,12 +39,6 @@ vi.mock('svelte/store', () => {
         set: vi.fn(),
         update: vi.fn(),
       }
-    }),
-    get: vi.fn((key) => {
-      if (key === 'apiAuthEnabled') {
-        return false
-      }
-      return true // Default return value for other keys
     }),
   }
 })

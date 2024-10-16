@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
 //go:build integration
 
@@ -29,13 +29,13 @@ type TestRoute struct {
 }
 
 func setup() (*chi.Mux, error) {
-	os.Setenv("API_AUTH_DISABLED", "true")
+	os.Setenv("LOCAL_AUTH_ENABLED", "false")
 	r, _, err := api.Setup(nil)
 	return r, err
 }
 
 func teardown() {
-	os.Setenv("API_AUTH_DISABLED", "false")
+	os.Setenv("LOCAL_AUTH_ENABLED", "true")
 }
 
 func TestQueryParams(t *testing.T) {

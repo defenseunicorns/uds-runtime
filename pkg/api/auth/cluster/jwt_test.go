@@ -1,7 +1,9 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
-package auth
+//go:build unit
+
+package cluster
 
 import (
 	"net/http"
@@ -12,47 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStoreSession(t *testing.T) {
-	storage := NewInMemoryStorage()
-	sessionID := "test-session-id"
-
-	storage.StoreSession(sessionID)
-
-	require.Equal(t, sessionID, storage.sessionID, "expected sessionID to be stored correctly")
-}
-
-func TestValidateSession(t *testing.T) {
-	storage := NewInMemoryStorage()
-	sessionID := "test-session-id"
-
-	storage.StoreSession(sessionID)
-
-	require.True(t, storage.ValidateSession(sessionID), "expected sessionID to be valid")
-
-	invalidSessionID := "invalid-session-id"
-	require.False(t, storage.ValidateSession(invalidSessionID), "expected invalid sessionID to be invalid")
-}
-
-func TestRemoveSession(t *testing.T) {
-	storage := NewInMemoryStorage()
-	sessionID := "test-session-id"
-
-	storage.StoreSession(sessionID)
-	storage.RemoveSession()
-
-	require.Empty(t, storage.sessionID, "expected sessionID to be empty after removal")
-	require.False(t, storage.ValidateSession(sessionID), "expected sessionID to be invalid after removal")
-}
-
-func TestRequireJWT(t *testing.T) {
-	// Create a sample handler that the middleware will wrap
-	nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
-
-	// Create the middleware
-	middleware := RequireJWT(nextHandler)
-
+func TestValidateJWT(t *testing.T) {
 	// Helper function to create a JWT token without signing
 	createToken := func(groups []string) string {
 		claims := jwt.MapClaims{
@@ -71,6 +33,11 @@ func TestRequireJWT(t *testing.T) {
 		{
 			name:           "Valid token with allowed group",
 			token:          createToken([]string{"/UDS Core/Admin"}),
+			expectedStatus: http.StatusOK,
+		},
+		{
+			name:           "Valid token with another allowed group",
+			token:          createToken([]string{"/UDS Core/Auditor"}),
 			expectedStatus: http.StatusOK,
 		},
 		{
@@ -106,11 +73,15 @@ func TestRequireJWT(t *testing.T) {
 			// Create a ResponseRecorder to record the response
 			rr := httptest.NewRecorder()
 
-			// Call the middleware
-			middleware.ServeHTTP(rr, req)
+			// Call the function directly
+			result := ValidateJWT(rr, req)
 
 			// Check the status code
 			require.Equal(t, tt.expectedStatus, rr.Code, "handler returned wrong status code")
+
+			// Check the return value
+			expectedResult := tt.expectedStatus == http.StatusOK
+			require.Equal(t, expectedResult, result, "ValidateJWT returned unexpected result")
 		})
 	}
 }

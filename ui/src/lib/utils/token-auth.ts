@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 const BASE_URL = '/api/v1'
 
 const headers = new Headers({
   'Content-Type': 'application/json',
 })
 
-export class APIAuth {
+export class TokenAuth {
   // wrapper for handling the request/response cycle.
   async request<T>(token: string): Promise<T> {
-    const hasToken = token != '' ? true : false
-    const url = hasToken ? `${BASE_URL}/api-auth?token=${token}` : `${BASE_URL}/api-auth`
+    const hasToken = token != ''
+    const url = hasToken ? `${BASE_URL}/auth?token=${token}` : `${BASE_URL}/auth`
 
     const payload: RequestInit = { method: 'HEAD', headers }
 
@@ -26,10 +26,10 @@ export class APIAuth {
   }
 }
 
-const apiAuth = new APIAuth()
+const tokenAuth = new TokenAuth()
 const Auth = {
   connect: async (token: string) => {
-    return await apiAuth.request(token)
+    return await tokenAuth.request(token)
   },
 }
 

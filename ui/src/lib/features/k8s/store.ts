@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
 import { derived, writable, type Writable } from 'svelte/store'
 
@@ -177,12 +177,7 @@ export class ResourceStore<T extends KubernetesObject, U extends CommonRow> impl
   }
 
   /**
-   * Start the EventSource and update the resources
-   *
-   * @param url The URL to the EventSource
-   * @param createTableCallback The callback to create the table from the resources
-   *
-   * @returns A function to stop the EventSource
+   * Start the store and update resources
    */
   start() {
     if (this.#initialized) {

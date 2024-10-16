@@ -1,5 +1,5 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
-<!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
+<!-- Copyright 2024 Defense Unicorns -->
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial -->
 
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
@@ -81,7 +81,6 @@
       } catch (e) {
         // If an error occurs, set the resource to null
         resource = null
-
         // Display an error toast if the fetch fails
         addToast({
           timeoutSecs: 5,
