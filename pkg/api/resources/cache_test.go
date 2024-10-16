@@ -87,7 +87,6 @@ func TestBindCoreResources(t *testing.T) {
 	<-ctx.Done()
 	defer close(c.stopper)
 
-	// log.Println("got here")
 	require.Equal(t, c.Nodes.GetResources("", mockNodeName)[0].GetName(), mockNode.Name)
 	require.Equal(t, c.CRDs.GetResources("", "test-crd")[0].GetName(), mockCRD.GetName())
 }
