@@ -8,7 +8,6 @@ function execCommand(command: string) {
   try {
     execSync(command, { stdio: 'inherit' })
   } catch (error) {
-    console.error(`Error running command: ${command}`)
     throw error
   }
 }
