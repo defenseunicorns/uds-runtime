@@ -195,6 +195,8 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Network Policies' }).click()
 
+      await page.waitForSelector('[data-testid="allow-podinfo-egress-dns-lookup-via-coredns-testid-1"]')
+
       await expect(page.getByTestId('allow-podinfo-egress-dns-lookup-via-coredns-testid-1')).toHaveText(
         'allow-podinfo-egress-dns-lookup-via-coredns',
       )

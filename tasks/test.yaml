@@ -13,7 +13,8 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: build:api
-      - task: deploy-runtime-cluster
+      - task: setup:k3d
+      - task: deploy-load
       - cmd: npm run test:local-auth
         dir: ui
 
@@ -42,12 +43,6 @@ tasks:
             --set resources.requests.memory=256Mi --set resources.requests.cpu=100m
         description: deploy minio to test PVCs
 
-  - name: deploy-runtime-cluster
-    description: deploy cluster specifically for testing UDS Runtime
-    actions:
-      - task: setup:k3d
-      - task: deploy-load
-
   - name: deploy-podinfo-amd
     description: "deploy podinfo to the cluster"
     actions:
@@ -71,33 +66,42 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: build:api
-      - task: deploy-runtime-cluster
+      - task: setup:k3d
+      - task: deploy-load
       - cmd: npm run test:integration
         dir: ui
 
   - name: e2e-in-cluster-amd
     description: "run end-to-end tests against runtime in the cluster"
     actions:
-      - task: build:ui
+      # - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
-      - task: setup:slim-cluster
+      - task: setup:k3d-port-forward
+      - task: deploy-min-core
+      - description: "Initialize the cluster with Zarf"
+        # renovate: datasource=github-tags depName=zarf-dev/zarf versioning=semver
+        cmd: "uds zarf package deploy oci://ghcr.io/zarf-dev/packages/init:v0.41.0 --confirm --no-progress"
       - task: install-runtime-in-cluster-amd
       - task: deploy-podinfo-amd
-      - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration
+      - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration-in-cluster
         dir: ui
 
   - name: e2e-in-cluster-arm
     description: "run end-to-end tests against runtime in the cluster"
     actions:
-      - task: build:ui
+      # - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
-      - task: setup:slim-cluster
+      - task: setup:k3d-port-forward
+      - task: deploy-min-core
+      - description: "Initialize the cluster with Zarf"
+        # renovate: datasource=github-tags depName=zarf-dev/zarf versioning=semver
+        cmd: "uds zarf package deploy oci://ghcr.io/zarf-dev/packages/init:v0.41.0 --confirm --no-progress"
       - task: install-runtime-in-cluster-arm
       - task: deploy-podinfo-arm
-      # - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration
-      #   dir: ui
+      - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration-in-cluster
+        dir: ui
 
   - name: go-unit
     description: "run api server unit tests"
@@ -136,8 +140,8 @@ tasks:
     actions:
       - task: build:smoke-img-pkg-amd
       - task: setup:slim-cluster
-      - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst --confirm
-        dir: hack/smoke-test
+      - cmd: uds zarf package deploy build/smoke/zarf-package-uds-runtime-amd64-test.tar.zst --confirm
+        dir: hack/test
       - description: Validate Runtime Pod
         wait:
           cluster:
@@ -173,13 +177,13 @@ tasks:
   - name: install-runtime-in-cluster-amd
     description: "Install uds-runtime in the cluster"
     actions:
-      - task: build:smoke-img-pkg-amd
-      - cmd: uds zarf package deploy build/zarf-package-uds-runtime-amd64-smoke-test.tar.zst --confirm
-        dir: hack/smoke-test
+      - task: build:e2e-img-pkg-amd
+      - cmd: uds zarf package deploy build/e2e/zarf-package-uds-runtime-amd64-test.tar.zst --confirm
+        dir: hack/test
 
   - name: install-runtime-in-cluster-arm
     description: "Install uds-runtime in the cluster"
     actions:
-      - task: build:smoke-img-pkg-arm
-      - cmd: uds zarf package deploy build/zarf-package-uds-runtime-arm64-smoke-test.tar.zst --confirm
-        dir: hack/smoke-test
+      - task: build:e2e-img-pkg-arm
+      - cmd: uds zarf package deploy build/e2e/zarf-package-uds-runtime-arm64-test.tar.zst --confirm
+        dir: hack/test

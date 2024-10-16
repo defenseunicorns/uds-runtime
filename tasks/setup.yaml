@@ -28,6 +28,12 @@ tasks:
       - cmd: |
           k3d cluster delete uds && k3d cluster create uds --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
 
+  - name: k3d-port-forward
+    description: "start a plain k3d cluster and forward traffic from port 8080"
+    actions:
+      - cmd: |
+          k3d cluster delete uds && k3d cluster create uds --port '8080:80@loadbalancer' --port '8443:443@loadbalancer'
+
   - name: golangci
     description: "Install golangci-lint to GOPATH using install.sh"
     actions:
