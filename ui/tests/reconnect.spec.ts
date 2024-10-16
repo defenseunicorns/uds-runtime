@@ -5,11 +5,7 @@ import { K8s, kind } from 'kubernetes-fluent-client'
 
 // Utility function to run shell commands
 function execCommand(command: string) {
-  try {
-    execSync(command, { stdio: 'inherit' })
-  } catch (error) {
-    throw error
-  }
+  execSync(command, { stdio: 'inherit' })
 }
 
 async function createPod() {
