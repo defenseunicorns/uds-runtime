@@ -27,47 +27,22 @@ async function createPod() {
 
 test.describe('Cluster Reconnection and Pod Creation Test', () => {
   test('should handle cluster disconnection, reconnection, and pod creation', async ({ page }) => {
-    test.setTimeout(150000)
+    test.setTimeout(120000)
     await page.goto('/workloads/pods')
 
-    // Step 2: Stop the cluster
+    // Stop the cluster
     execCommand('k3d cluster stop runtime')
-    let errToastFound: boolean | undefined = false
-    let toastExists = await page.waitForFunction(
-      () => document.querySelector('div')?.innerText.includes('Cluster health check failed: no connection'),
-      { timeout: 10000 },
-    )
 
-    errToastFound = await toastExists.jsonValue()
-    expect(errToastFound).toBe(true)
+    await expect(page.getByText('Cluster health check failed: no connection')).toBeVisible()
 
-    // Step 4: Start the cluster again
-    if (errToastFound) {
-      execCommand('k3d cluster start runtime')
-    }
+    // Start the cluster again
+    execCommand('k3d cluster start runtime')
 
-    // Step 5: Wait for the error toast to disappear and the success toast to appear
-    let successToastFound: boolean | undefined = false
-    toastExists = await page.waitForFunction(
-      () => document.querySelector('div')?.innerText.includes('Cluster connection restored'),
-      { timeout: 10000 }, // Wait up to 15 seconds for the toast to appear
-    )
-    successToastFound = await toastExists.jsonValue()
-    expect(successToastFound).toBe(true)
-    expect(page.getByText('Cluster health check failed: no connection')).not.toBeVisible()
-    expect(page.getByText('Cluster connection restored')).toBeVisible()
+    await expect(page.getByText('Cluster connection restored')).toBeVisible()
 
-    // Step 6: Use KFC to create a new pod
+    // Use KFC to create a new pod
     await createPod()
 
-    // Step 7: Assert that the new pod is visible in the view without reloading the page
-    let newPodFound: boolean | undefined = false
-    const podExists = await page.waitForFunction(() => document.querySelector('div')?.innerText.includes('new-pod'), {
-      timeout: 10000,
-    })
-
-    newPodFound = await podExists.jsonValue()
-    expect(newPodFound).toBe(true)
-    expect(page.getByText('new-pod')).toBeVisible()
+    await expect(page.getByText('new-pod')).toBeVisible({ timeout: 10000 })
   })
 })

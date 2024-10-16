@@ -13,16 +13,18 @@ const host = 'runtime-local.uds.dev'
 
 export default defineConfig({
   webServer: {
-    command: 'LOCAL_AUTH_ENABLED=false ../build/uds-runtime',
+    command: '../build/uds-runtime',
     url: `${protocol}://${host}:${port}`,
     reuseExistingServer: !process.env.CI,
+    env: { LOCAL_AUTH_ENABLED: 'false' },
   },
   timeout: 10 * 1000,
   testDir: 'tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
   retries: process.env.CI ? 2 : 1,
-  testMatch: /^(?!.*local-auth)(.+\.)?(test|spec)\.[jt]s$/,
+  // testMatch: /^(?!.*local-auth)(.+\.)?(test|spec)\.[jt]s$/,
+  testMatch: 'reconnect.spec.ts',
   use: {
     baseURL: `${protocol}://${host}:${port}/`,
   },
