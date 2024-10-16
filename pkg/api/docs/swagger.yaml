@@ -1,9 +1,24 @@
-# Copyright 2024 Defense Unicorns
-# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
-
 info:
   contact: {}
 paths:
+  /auth:
+    head:
+      description: Handle auth when running in local mode
+      responses:
+        "200":
+          description: OK
+      tags:
+      - auth
+  /health:
+    get:
+      description: Get Cluster Connection Status
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster-connection-status
   /monitor/pepr/{stream}:
     get:
       consumes:
@@ -857,6 +872,46 @@ paths:
           description: OK
       tags:
       - configs
+  /resources/custom-resoure-defintions:
+    get:
+      consumes:
+      - text/html
+      description: Get Custom Resource Definition by UID
+      parameters:
+      - description: Get CRD by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - resources
   /resources/events:
     get:
       consumes:

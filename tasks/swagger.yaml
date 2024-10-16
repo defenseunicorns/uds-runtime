@@ -12,7 +12,7 @@ tasks:
     actions:
       - task: generate
       - cmd: |
-          if [ -z "$(git status -s "docs")" ]; then
+          if [ -z "$(git status -s "pkg/api/docs/docs.go")" ]; then
               echo "Success!"
           else
               echo "Swagger docs changes found, please regenerate docs"
