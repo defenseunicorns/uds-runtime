@@ -80,26 +80,33 @@ func CreateK8sSession() (*K8sSession, error) {
 	return session, nil
 }
 
+func pingCluster(ks *K8sSession) {
+	// Perform cluster health check
+	_, err := ks.Clients.Clientset.ServerVersion()
+	if err != nil {
+		ks.Status <- "error"
+		lastStatus = "error"
+		ks.HandleReconnection()
+	} else {
+		ks.Status <- "success"
+		lastStatus = "success"
+	}
+}
+
 // StartClusterMonitoring is a goroutine that checks the connection to the cluster
 func (ks *K8sSession) StartClusterMonitoring() {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
+
+	// Initial cluster health check
+	pingCluster(ks)
 
 	for range ticker.C {
 		// Skip if not ready, e.g. during reconnection
 		if !ks.ready {
 			continue
 		}
-		// Perform cluster health check
-		_, err := ks.Clients.Clientset.ServerVersion()
-		if err != nil {
-			ks.Status <- "error"
-			lastStatus = "error"
-			ks.HandleReconnection()
-		} else {
-			ks.Status <- "success"
-			lastStatus = "success"
-		}
+		pingCluster(ks)
 	}
 }
 
