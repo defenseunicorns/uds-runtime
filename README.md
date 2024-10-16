@@ -37,7 +37,7 @@ Assumes a K8s cluster is running and the appropriate K8s context has been select
 uds zarf package deploy oci://ghcr.io/defenseunicorns/packages/uds/uds-runtime:<tag> --confirm
 ```
 
-\*_See [all tags](https://github.com/defenseunicorns/uds-runtime/pkgs/container/packages%2Fuds%2Fuds-runtime)_
+\*_See [all tags](https://github.com/defenseunicorns/uds-runtime/src/pkgs/container/packages%2Fuds%2Fuds-runtime)_
 
 #### Resource Requirements
 
