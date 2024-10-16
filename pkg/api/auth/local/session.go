@@ -13,11 +13,14 @@ import (
 	"github.com/defenseunicorns/uds-runtime/pkg/config"
 )
 
+// BrowserSession is a struct that holds the session ID of the current session
+// The session ID is generated once tokens are validated during local auth mode and is stored in a cookie
 type BrowserSession struct {
 	sessionID string
 	mutex     sync.RWMutex
 }
 
+// NewBrowserSession creates a new BrowserSession
 func NewBrowserSession() *BrowserSession {
 	return &BrowserSession{}
 }
@@ -46,8 +49,8 @@ func (s *BrowserSession) Remove() {
 	s.sessionID = ""
 }
 
-// session is a global variable that holds the current session
-var session = NewBrowserSession()
+// Session is a global variable that holds the current session
+var Session = NewBrowserSession()
 
 // AuthHandler handle validating tokens and session cookies for local authentication
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +70,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// valid token, generate session id and set cookie
 		sessionID := generateSessionID(w)
-		session.Store(sessionID)
+		Session.Store(sessionID)
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
 			Value:    sessionID,
@@ -86,7 +89,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 func ValidateSessionCookie(w http.ResponseWriter, r *http.Request) bool {
 	// Retrieve the session cookie
 	cookie, err := r.Cookie("session_id")
-	if err != nil || !session.Validate(cookie.Value) {
+	if err != nil || !Session.Validate(cookie.Value) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return false
 	}
