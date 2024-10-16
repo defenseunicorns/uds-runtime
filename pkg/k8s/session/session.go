@@ -33,6 +33,8 @@ type K8sSession struct {
 type createClient func() (*client.Clients, error)
 type createCache func(ctx context.Context, client *client.Clients) (*resources.Cache, error)
 
+var lastStatus string
+
 // CreateK8sSession creates a new k8s session
 func CreateK8sSession() (*K8sSession, error) {
 	k8sClient, err := client.NewClient()
@@ -62,7 +64,6 @@ func CreateK8sSession() (*K8sSession, error) {
 		}
 	}
 
-	// K8sResources struct to hold references
 	session := &K8sSession{
 		Clients:        k8sClient,
 		Cache:          cache,
@@ -85,7 +86,7 @@ func (ks *K8sSession) StartClusterMonitoring() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		// Skip if not ready, prevents race conditions using new cache
+		// Skip if not ready, e.g. during reconnection
 		if !ks.ready {
 			continue
 		}
@@ -93,9 +94,11 @@ func (ks *K8sSession) StartClusterMonitoring() {
 		_, err := ks.Clients.Clientset.ServerVersion()
 		if err != nil {
 			ks.Status <- "error"
+			lastStatus = "error"
 			ks.HandleReconnection()
 		} else {
 			ks.Status <- "success"
+			lastStatus = "success"
 		}
 	}
 }
@@ -141,8 +144,11 @@ func (ks *K8sSession) HandleReconnection() {
 		ks.Clients = k8sClient
 		ks.Cache = cache
 		ks.Cancel = cancel
-
 		ks.ready = true
+
+		// immediately send success status to client now that cache is recreated
+		ks.Status <- "success"
+		lastStatus = "success"
 		log.Println("Successfully reconnected to cluster and recreated cache")
 
 		break
@@ -183,13 +189,7 @@ func (ks *K8sSession) ServeConnStatus() http.HandlerFunc {
 			flusher.Flush()
 		}
 
-		// To mitigate timing between connection start and getting status updates, immediately check cluster connection
-		_, err := ks.Clients.Clientset.ServerVersion()
-		if err != nil {
-			sendStatus("error")
-		} else {
-			sendStatus("success")
-		}
+		sendStatus(lastStatus)
 
 		// Listen for updates and send them to the client
 		for {
