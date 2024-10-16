@@ -32,7 +32,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run tests
-        run: uds run test:api-auth
+        run: uds run test:local-auth
         timeout-minutes: 30
 
       - name: Debug Output
@@ -42,4 +42,4 @@ jobs:
         if: always()
         uses: defenseunicorns/uds-common/.github/actions/save-logs@e3008473beab00b12a94f9fcc7340124338d5c08 # v0.13.1
         with:
-          suffix: api-auth
+          suffix: local-auth

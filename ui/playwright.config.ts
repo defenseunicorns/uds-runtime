@@ -13,7 +13,7 @@ const host = 'runtime-local.uds.dev'
 
 export default defineConfig({
   webServer: {
-    command: 'API_AUTH_DISABLED=true ../build/uds-runtime',
+    command: 'LOCAL_AUTH_ENABLED=false ../build/uds-runtime',
     url: `${protocol}://${host}:${port}`,
     reuseExistingServer: !process.env.CI,
   },
@@ -22,7 +22,7 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   retries: process.env.CI ? 2 : 1,
-  testMatch: /^(?!.*api-auth)(.+\.)?(test|spec)\.[jt]s$/,
+  testMatch: /^(?!.*local-auth)(.+\.)?(test|spec)\.[jt]s$/,
   use: {
     baseURL: `${protocol}://${host}:${port}/`,
   },
