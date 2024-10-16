@@ -6,6 +6,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/defenseunicorns/uds-runtime/pkg/api/auth/local"
 	_ "github.com/defenseunicorns/uds-runtime/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/pkg/api/rest"
@@ -867,7 +868,7 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Produce text/event-stream
 // @Success 200
 // @Router /health [get]
-func checkClusteConnection(k8sSession *session.K8sSession) http.HandlerFunc {
+func checkClusterConnection(k8sSession *session.K8sSession) http.HandlerFunc {
 	return k8sSession.ServeConnStatus()
 }
 
@@ -900,4 +901,12 @@ func getCRDs(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request
 // @Param fields query string false "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status"
 func getCRD(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return rest.Bind(cache.CRDs)
+}
+
+// @Description Handle auth when running in local mode
+// @Tags auth
+// @Success 200
+// @Router /auth [head]
+func authHandler(w http.ResponseWriter, r *http.Request) {
+	local.AuthHandler(w, r)
 }

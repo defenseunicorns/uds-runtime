@@ -29,13 +29,13 @@ type TestRoute struct {
 }
 
 func setup() (*chi.Mux, error) {
-	os.Setenv("API_AUTH_DISABLED", "true")
+	os.Setenv("LOCAL_AUTH_ENABLED", "false")
 	r, _, err := api.Setup(nil)
 	return r, err
 }
 
 func teardown() {
-	os.Setenv("API_AUTH_DISABLED", "false")
+	os.Setenv("LOCAL_AUTH_ENABLED", "true")
 }
 
 func TestQueryParams(t *testing.T) {

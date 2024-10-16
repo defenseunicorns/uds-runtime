@@ -81,7 +81,6 @@
       } catch (e) {
         // If an error occurs, set the resource to null
         resource = null
-
         // Display an error toast if the fetch fails
         addToast({
           timeoutSecs: 5,

@@ -3,7 +3,7 @@
 
 <script lang="ts">
   import Unauthenticated from '$components/Auth/component.svelte'
-  import { authenticated } from '$features/api-auth/store'
+  import { authenticated } from '$features/auth/store'
   import { ClusterOverview } from '$features/k8s'
 
   // remove token param from URL if it exists
