@@ -1,8 +1,6 @@
 // Copyright 2024 Defense Unicorns
 // SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
-//go:build unit
-
 package resources
 
 import (
@@ -24,6 +22,31 @@ import (
 )
 
 func TestBindCoreResources(t *testing.T) {
+	// create fake dynamic client
+	runtimeScheme := runtime.NewScheme()
+	runtimeScheme.AddKnownTypeWithName(schema.GroupVersionKind{
+		Group:   "apiextensions.k8s.io",
+		Version: "v1",
+		Kind:    "CustomResourceDefinitionList",
+	}, &unstructured.Unstructured{})
+	dynamicClient := dynamicFake.NewSimpleDynamicClient(runtimeScheme)
+
+	// Define the CRD GVR
+	crdGVR := schema.GroupVersionResource{
+		Group:    "apiextensions.k8s.io",
+		Version:  "v1",
+		Resource: "customresourcedefinitions",
+	}
+
+	// Create mock CRD
+	mockCRD := &unstructured.Unstructured{}
+	mockCRD.SetName("test-crd")
+	mockCRD.SetUID("123e4567-e89b-12d3-a456-426614174CRD")
+
+	// Add the CRD to the fake dynamic client
+	_, err := dynamicClient.Resource(crdGVR).Create(context.Background(), mockCRD, metav1.CreateOptions{})
+	require.NoError(t, err)
+
 	// create fake client
 	clientset := fake.NewSimpleClientset()
 
@@ -34,13 +57,14 @@ func TestBindCoreResources(t *testing.T) {
 	mockNode.SetUID("123e4567-e89b-12d3-a456-426614174N0D3")
 
 	// Add the mocks to the fake clientset
-	_, err := clientset.CoreV1().Nodes().Create(context.Background(), mockNode, metav1.CreateOptions{})
+	_, err = clientset.CoreV1().Nodes().Create(context.Background(), mockNode, metav1.CreateOptions{})
 	require.NoError(t, err)
 
 	// Create Cache instance
 	c := &Cache{
-		factory: informers.NewSharedInformerFactory(clientset, time.Minute*10),
-		stopper: make(chan struct{}),
+		factory:        informers.NewSharedInformerFactory(clientset, time.Minute*10),
+		dynamicFactory: dynamicinformer.NewDynamicSharedInformerFactory(dynamicClient, time.Minute*10),
+		stopper:        make(chan struct{}),
 	}
 
 	// Bind resources
@@ -53,15 +77,18 @@ func TestBindCoreResources(t *testing.T) {
 	// Start informer factory
 	go func(ctx context.Context) {
 		c.factory.Start(c.stopper)
+		c.dynamicFactory.Start(c.stopper)
 	}(ctx)
 
 	c.factory.WaitForCacheSync(c.stopper)
+	c.dynamicFactory.WaitForCacheSync(c.stopper)
 
 	// wait for the context to be done
 	<-ctx.Done()
 	defer close(c.stopper)
 
 	require.Equal(t, c.Nodes.GetResources("", mockNodeName)[0].GetName(), mockNode.Name)
+	require.Equal(t, c.CRDs.GetResources("", "test-crd")[0].GetName(), mockCRD.GetName())
 }
 
 func TestBindWorkloadResources(t *testing.T) {

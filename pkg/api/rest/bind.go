@@ -73,7 +73,7 @@ func Bind(resource *resources.ResourceList) func(w http.ResponseWriter, r *http.
 func BindCustomResource(resource *resources.ResourceList, cache *resources.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//check crd exists in cluster
-		resource.CRDExists = cache.CRDs.Contains(resource.GVR)
+		resource.CRDExists = resources.HasCRD(resource.GVR, cache.CRDs)
 		handleRequest(w, r, resource)
 	}
 }

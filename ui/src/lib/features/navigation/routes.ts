@@ -76,6 +76,10 @@ const baseRoutes: BaseRoute[] = [
     name: 'Nodes',
     icon: BareMetalServer,
   },
+  {
+    name: 'Custom Resources',
+    icon: Layers,
+  },
 ]
 
 // Convert the path to a URL-friendly format
