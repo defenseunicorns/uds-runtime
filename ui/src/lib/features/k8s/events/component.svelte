@@ -10,8 +10,8 @@
   export let columns: Columns = [
     ['namespace', 'w-2/12'],
     ['age', 'w-1/12'],
-    ['type', 'w-2/12'],
-    ['reason', 'w-3/12'],
+    ['type', 'w-1/12'],
+    ['reason', 'w-2/12'],
     ['object_kind', 'w-2/12'],
     ['object_name', 'w-3/12'],
     ['count', 'w-1/12'],
