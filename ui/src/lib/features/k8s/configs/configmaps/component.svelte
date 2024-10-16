@@ -10,7 +10,7 @@
   export let columns: Columns = [
     ['name', 'w-2/12'],
     ['namespace', 'w-2/12'],
-    ['keys', 'line-clamp-3 max-w-screen-md w-7/12'],
+    ['keys', 'w-7/12 max-w-screen-md truncate'],
     ['age', 'w-1/12'],
   ]
   const name = 'ConfigMaps'
