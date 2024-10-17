@@ -13,6 +13,7 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "test:local-auth": "playwright test tests/local-auth.spec.ts --config=playwright.config.local-auth.ts",
+    "test:reconnect": "playwright test tests/reconnect.spec.ts --config=playwright.reconnect.config.ts",
     "test:integration": "playwright test",
     "test:install": "playwright install",
     "test:unit": "vitest run"
