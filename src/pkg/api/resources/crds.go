@@ -15,7 +15,8 @@ func HasCRD(targetGVR schema.GroupVersionResource, CRDs *ResourceList) bool {
 	crds := CRDs.GetResources("", "")
 
 	for _, crd := range crds {
-		if crd.Object["metadata"].(map[string]interface{})["name"].(string) == fmt.Sprintf("%s.%s", targetGVR.Resource, targetGVR.Group) {
+		name := crd.GetName()
+		if name == fmt.Sprintf("%s.%s", targetGVR.Resource, targetGVR.Group) {
 			return true
 		}
 	}
