@@ -3,7 +3,7 @@
 
 import { ChildProcess, exec } from 'child_process'
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
 
 let serverProcess: ChildProcess
 const serverLogs: string[] = []
@@ -67,7 +67,7 @@ test.describe.serial('Authentication Tests', () => {
     await page.goto(`/auth?token=${extractedToken}`)
     await page.waitForSelector('role=link[name="Overview"]', { state: 'visible', timeout: 10000 })
 
-    const nodeCountEl = page.getByTestId('resource-count-nodes')
+    const nodeCountEl = await page.getByTestId('resource-count-nodes').textContent()
     expect(nodeCountEl).toBe('1')
   })
 
