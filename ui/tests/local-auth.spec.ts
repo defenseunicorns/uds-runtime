@@ -3,7 +3,7 @@
 
 import { ChildProcess, exec } from 'child_process'
 
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
 
 let serverProcess: ChildProcess
 const serverLogs: string[] = []
@@ -78,7 +78,8 @@ test.describe.serial('Authentication Tests', () => {
     await expect(element).toBeVisible()
 
     // Check details view
-    await page.getByRole('cell', { name: 'podinfo-' }).click()
+    await page.locator('.table .tr').filter({ hasText: /^podinfo-/}).click()
+
     let drawerEl = page.getByTestId('drawer')
     await expect(drawerEl).toBeVisible()
     await expect(drawerEl.getByText('Created')).toBeVisible()
