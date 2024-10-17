@@ -6,6 +6,12 @@ includes:
   - build: ./build.yaml
 
 tasks:
+  - name: deploy-runtime-cluster
+    description: deploy cluster specifically for testing UDS Runtime
+    actions:
+      - task: setup:k3d
+      - task: deploy-load
+
   - name: local-auth
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
@@ -82,9 +88,19 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: build:api
-      - task: setup:k3d
-      - task: deploy-load
+      - task: deploy-runtime-cluster
       - cmd: npm run test:integration
+        dir: ui
+
+  - name: e2e-reconnect
+    description: "run end-to-end tests for cluster disconnect and reconnect"
+    actions:
+      - task: build:ui
+      - cmd: npm run test:install # install playwright
+        dir: ui
+      - task: build:api
+      - task: setup:k3d
+      - cmd: npm run test:reconnect
         dir: ui
 
   - name: e2e-in-cluster-amd
@@ -122,7 +138,7 @@ tasks:
   - name: go-unit
     description: "run api server unit tests"
     actions:
-      - cmd: go test -failfast -v -timeout 30m --tags=unit ./...
+      - cmd: go test -failfast -v -timeout 30m ./src/pkg/...
 
   - name: ui-unit
     description: "run frontend unit tests"
@@ -139,7 +155,7 @@ tasks:
       - task: ui-unit
 
   - name: api
-    description: "run api server tests"
+    description: "run e2e api server tests"
     actions:
       - description: "build ui since embedded in main.go"
         task: build:ui

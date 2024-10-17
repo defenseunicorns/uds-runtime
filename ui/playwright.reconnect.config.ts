@@ -20,12 +20,11 @@ export default defineConfig({
   },
   timeout: 10 * 1000,
   testDir: 'tests',
-  /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   retries: process.env.CI ? 2 : 1,
-  testMatch: /^(?!.*local-auth|.*reconnect)(.+\.)?(test|spec)\.[jt]s$/,
+  testMatch: 'reconnect.spec.ts',
   use: {
-    baseURL: `${protocol}://${host}:${port}/`,
+    baseURL: `https://runtime-local.uds.dev:${port}/`,
   },
 })
 

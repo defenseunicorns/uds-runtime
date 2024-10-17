@@ -7,7 +7,7 @@ import (
 	"embed"
 	"os"
 
-	"github.com/defenseunicorns/uds-runtime/pkg/api"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/api"
 	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
