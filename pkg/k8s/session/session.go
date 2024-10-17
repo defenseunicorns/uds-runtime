@@ -80,9 +80,8 @@ func CreateK8sSession() (*K8sSession, error) {
 	return session, nil
 }
 
-func pingCluster(ks *K8sSession) {
+func handleConnStatus(ks *K8sSession, err error) {
 	// Perform cluster health check
-	_, err := ks.Clients.Clientset.ServerVersion()
 	if err != nil {
 		ks.Status <- "error"
 		lastStatus = "error"
@@ -99,14 +98,16 @@ func (ks *K8sSession) StartClusterMonitoring() {
 	defer ticker.Stop()
 
 	// Initial cluster health check
-	pingCluster(ks)
+	_, err := ks.Clients.Clientset.ServerVersion()
+	handleConnStatus(ks, err)
 
 	for range ticker.C {
 		// Skip if not ready, e.g. during reconnection
 		if !ks.ready {
 			continue
 		}
-		pingCluster(ks)
+		_, err := ks.Clients.Clientset.ServerVersion()
+		handleConnStatus(ks, err)
 	}
 }
 
