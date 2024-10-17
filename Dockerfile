@@ -16,6 +16,8 @@ ENV PORT=8080
 ENV LOCAL_AUTH_ENABLED=false
 EXPOSE 8080
 
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD nc -z localhost 8080 || exit 1
+
 # run binary
-# Disable API auth when running UDS Runtime in-cluster
 CMD ["./app/uds-runtime"]

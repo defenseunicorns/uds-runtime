@@ -4,6 +4,7 @@
 package api
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/local"
@@ -916,5 +917,6 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 // @Success 200
 // @Router /healthz [get]
 func healthz(w http.ResponseWriter, _ *http.Request) {
+	slog.Debug("Health check called")
 	w.WriteHeader(http.StatusOK)
 }
