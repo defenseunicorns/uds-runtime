@@ -74,7 +74,7 @@ tasks:
   - name: e2e-in-cluster-amd
     description: "run end-to-end tests against runtime in the cluster"
     actions:
-      # - task: build:ui
+      - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: setup:k3d-port-forward
@@ -90,7 +90,7 @@ tasks:
   - name: e2e-in-cluster-arm
     description: "run end-to-end tests against runtime in the cluster"
     actions:
-      # - task: build:ui
+      - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: setup:k3d-port-forward
