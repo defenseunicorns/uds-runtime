@@ -1,0 +1,41 @@
+# Copyright 2024 Defense Unicorns
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
+kind: ZarfPackageConfig
+metadata:
+  name: uds-runtime
+  version: test
+
+variables:
+  - name: DOMAIN
+    default: "uds.dev"
+
+components:
+  - name: uds-runtime
+    required: true
+    description: smoke test of nightly release of uds-runtime
+    only:
+      flavor: smoke
+    images:
+      - uds-runtime:test # local copy of uds-runtime
+    charts:
+      - name: uds-runtime
+        localPath: ../../chart
+        namespace: uds-runtime
+        version: 0.1.0
+        valuesFiles:
+          - smoke-values.yaml
+  - name: uds-runtime
+    required: true
+    description: e2e test of uds-runtime running in cluster
+    only:
+      flavor: e2e
+    images:
+      - uds-runtime:test # local copy of uds-runtime
+    charts:
+      - name: uds-runtime
+        localPath: ../../chart
+        namespace: uds-runtime
+        version: 0.1.0
+        valuesFiles:
+          - e2e-values.yaml

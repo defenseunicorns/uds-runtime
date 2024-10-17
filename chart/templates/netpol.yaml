@@ -1,0 +1,29 @@
+# Copyright 2024 Defense Unicorns
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
+{{- if .Values.test.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-from-traefik-in-k3d
+  namespace: uds-runtime
+spec:
+  podSelector:
+    matchLabels:
+      app: uds-runtime
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchExpressions:
+          - key: kubernetes.io/metadata.name
+            operator: In
+            values:
+              - kube-system
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: traefik
+          app.kubernetes.io/instance: traefik-kube-system  # Use only consistent labels
+    ports:
+    - protocol: TCP
+      port: 8080
+{{- end }}
