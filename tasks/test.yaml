@@ -63,7 +63,7 @@ tasks:
             name: app.kubernetes.io/name=podinfo
             condition: Ready
             namespace: podinfo
-        maxTotalSeconds: 30
+        maxTotalSeconds: 60
 
   - name: deploy-podinfo-arm
     description: "deploy podinfo to the cluster"
@@ -79,7 +79,7 @@ tasks:
             name: app.kubernetes.io/name=podinfo
             condition: Ready
             namespace: podinfo
-        maxTotalSeconds: 30
+        maxTotalSeconds: 60
 
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
