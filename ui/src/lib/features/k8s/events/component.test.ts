@@ -4,8 +4,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
-import type { CoreV1Event } from '@kubernetes/client-node'
 import { resourceDescriptions } from '$lib/utils/descriptions'
+import type { CoreV1Event } from '@kubernetes/client-node'
 
 import {
   expectEqualIgnoringFields,
@@ -30,8 +30,8 @@ suite('EventTable Component', () => {
     columns: [
       ['namespace', 'w-2/12'],
       ['age', 'w-1/12'],
-      ['type', 'w-2/12'],
-      ['reason', 'w-3/12'],
+      ['type', 'w-1/12'],
+      ['reason', 'w-2/12'],
       ['object_kind', 'w-2/12'],
       ['object_name', 'w-3/12'],
       ['count', 'w-1/12'],

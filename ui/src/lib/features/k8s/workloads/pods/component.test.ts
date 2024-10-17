@@ -4,7 +4,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SvelteComponent } from 'svelte'
 
-import type { V1Pod } from '@kubernetes/client-node'
 import StatusComponent from '$components/k8s/Status/component.svelte'
 import {
   expectEqualIgnoringFields,
@@ -15,6 +14,7 @@ import {
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
+import type { V1Pod } from '@kubernetes/client-node'
 import { beforeEach, vi } from 'vitest'
 
 import Component from './component.svelte'
@@ -32,8 +32,8 @@ suite('PodTable Component', () => {
     createStore,
     columns: [
       ['name', 'w-3/12'],
-      ['namespace', 'w-1/12'],
-      ['controlled_by', 'w-2/12'],
+      ['namespace', 'w-2/12'],
+      ['controlled_by', 'w-1/12'],
       ['containers', 'w-1/12'],
       ['status', 'w-1/12'],
       ['restarts', 'w-1/12'],

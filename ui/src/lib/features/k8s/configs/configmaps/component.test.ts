@@ -4,7 +4,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom'
 
-import type { V1ConfigMap } from '@kubernetes/client-node'
 import {
   expectEqualIgnoringFields,
   MockResourceStore,
@@ -13,6 +12,7 @@ import {
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
+import type { V1ConfigMap } from '@kubernetes/client-node'
 
 import Component from './component.svelte'
 import { createStore } from './store'
@@ -30,7 +30,7 @@ suite('EventTable Component', () => {
     columns: [
       ['name', 'w-2/12'],
       ['namespace', 'w-2/12'],
-      ['keys', 'line-clamp-3 max-w-screen-md w-7/12'],
+      ['keys', 'w-7/12 max-w-screen-md truncate'],
       ['age', 'w-1/12'],
     ],
     name,
