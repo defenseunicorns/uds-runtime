@@ -324,7 +324,7 @@ func TestClusterHealth(t *testing.T) {
 		defer cancel()
 
 		rr := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/health", nil)
+		req := httptest.NewRequest("GET", "/cluster-check", nil)
 
 		// Start serving the request for 1 second
 		go func(ctx context.Context) {
