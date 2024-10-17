@@ -93,7 +93,7 @@ func TestAuthMiddleware(t *testing.T) {
 			},
 		},
 		{
-			name:                 "non-api path (swagger)",
+			name:                 "swagger is behind auth",
 			localAuthEnabled:     true,
 			inClusterAuthEnabled: false,
 			path:                 "/swagger",
