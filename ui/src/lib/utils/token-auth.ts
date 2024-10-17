@@ -1,16 +1,13 @@
 // Copyright 2024 Defense Unicorns
 // SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
-const BASE_URL = '/api/v1'
-
-const headers = new Headers({
-  'Content-Type': 'application/json',
-})
-
-const request = async (token: string): Promise<boolean> => {
+export async function tokenAuth(token: string): Promise<boolean> {
   const hasToken = token != ''
+  const BASE_URL = '/api/v1'
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+  })
   const url = hasToken ? `${BASE_URL}/auth?token=${token}` : `${BASE_URL}/auth`
-
   const payload: RequestInit = { method: 'HEAD', headers }
 
   try {
@@ -23,11 +20,3 @@ const request = async (token: string): Promise<boolean> => {
     return Promise.reject(e)
   }
 }
-
-const Auth = {
-  connect: async (token: string) => {
-    return await request(token)
-  },
-}
-
-export { Auth }

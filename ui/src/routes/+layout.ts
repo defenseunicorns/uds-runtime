@@ -3,7 +3,7 @@
 
 import { authenticated } from '$features/auth/store'
 import { createStore } from '$features/k8s/namespaces/store'
-import { Auth } from '$lib/utils/token-auth'
+import { tokenAuth } from '$lib/utils/token-auth'
 
 export const ssr = false
 
@@ -15,7 +15,7 @@ export const load = async () => {
   const token = url.searchParams.get('token') || ''
 
   // validate token
-  if (await Auth.connect(token)) {
+  if (await tokenAuth(token)) {
     namespaces.start()
     authenticated.set(true)
   } else {
