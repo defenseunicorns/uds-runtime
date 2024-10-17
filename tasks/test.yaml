@@ -48,7 +48,7 @@ tasks:
   - name: go-unit
     description: "run api server unit tests"
     actions:
-      - cmd: go test -failfast -v -timeout 30m --tags=unit ./...
+      - cmd: go test -failfast -v -timeout 30m ./src/pkg/...
 
   - name: ui-unit
     description: "run frontend unit tests"
@@ -65,7 +65,7 @@ tasks:
       - task: ui-unit
 
   - name: api
-    description: "run api server tests"
+    description: "run e2e api server tests"
     actions:
       - description: "build ui since embedded in main.go"
         task: build:ui
@@ -75,7 +75,7 @@ tasks:
         dir: hack/load-test
       - cmd: uds zarf tools kubectl apply -f hack/load-test/rc.yaml
         description: apply runtime class manually cause KFC is silly
-      - cmd: go test -failfast -v -timeout 30m --tags=integration ./...
+      - cmd: go test -failfast -v -timeout 30m ./src/test/e2e/...
 
   - name: deploy-load
     description: "deploy some Zarf packages to test against"
