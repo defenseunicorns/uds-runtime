@@ -93,7 +93,7 @@ tasks:
       - task: ui
       - task: api-linux-amd64
       - task: api-linux-arm64
-      - cmd: docker buildx build --platform linux/amd64,linux/arm64 -t uds-runtime:test -f ./Dockerfile .
+      - cmd: docker buildx build --platform linux/amd64,linux/arm64 -t uds-runtime:test -f ./Dockerfile --load .
       - cmd: uds zarf package create -o build/smoke --flavor smoke --confirm
         dir: hack/test
 
@@ -103,7 +103,6 @@ tasks:
       - task: ui
       - task: api-linux-amd64
       - task: api-linux-arm64
-      - cmd: docker buildx build --platform linux/amd64,linux/arm64 -t uds-runtime:test -f ./Dockerfile .
-      - cmd: docker images
+      - cmd: docker buildx build --platform linux/amd64,linux/arm64 -t uds-runtime:test -f ./Dockerfile --load .
       - cmd: uds zarf package create -o build/e2e --flavor e2e --confirm
         dir: hack/test
