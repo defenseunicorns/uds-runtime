@@ -25,13 +25,14 @@ export const load = async () => {
   }
 }
 
+// tokenAuth is a helper function that checks if a token is valid for local auth
 async function tokenAuth(token: string): Promise<boolean> {
   const hasToken = token != ''
-  const BASE_URL = '/api/v1'
+  const baseURL = '/api/v1'
   const headers = new Headers({
     'Content-Type': 'application/json',
   })
-  const url = hasToken ? `${BASE_URL}/auth?token=${token}` : `${BASE_URL}/auth`
+  const url = hasToken ? `${baseURL}/auth?token=${token}` : `${baseURL}/auth`
   const payload: RequestInit = { method: 'HEAD', headers }
 
   try {
