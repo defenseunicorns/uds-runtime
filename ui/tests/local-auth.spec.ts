@@ -68,7 +68,7 @@ test.describe.serial('Authentication Tests', () => {
     await page.waitForSelector('role=link[name="Overview"]', { state: 'visible', timeout: 10000 })
 
     const nodeCountEl = page.getByTestId('resource-count-nodes')
-    expect(nodeCountEl).toEqual('1')
+    expect(nodeCountEl).toBe('1')
   })
 
   test('data is visible on load, refresh, and new tab', async ({ page, context }) => {
