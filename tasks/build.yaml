@@ -87,38 +87,22 @@ tasks:
       - cmd: ./uds zarf p publish build/zarf-package-uds-runtime-arm64-${REF}.tar.zst oci://ghcr.io/defenseunicorns/packages/uds
         dir: ${DIR}
 
-  - name: smoke-img-pkg-amd
-    description: "build docker image and zarf package for nightly smoke test"
+  - name: smoke-img-pkg
+    description: "build multi-arch docker image and zarf package for nightly smoke test"
     actions:
       - task: ui
       - task: api-linux-amd64
-      - cmd: docker build --build-arg TARGETARCH=amd64 -t uds-runtime:test -f ./Dockerfile .
-      - cmd: uds zarf package create -o build/smoke --flavor smoke --confirm
-        dir: hack/test
-
-  - name: smoke-img-pkg-arm
-    description: "build docker image and zarf package for nightly smoke test"
-    actions:
-      - task: ui
       - task: api-linux-arm64
-      - cmd: docker buildx build --build-arg TARGETARCH=arm64 -t uds-runtime:test -f ./Dockerfile .
+      - cmd: docker buildx build --platform linux/amd64,linux/arm64 -t uds-runtime:test -f ./Dockerfile .
       - cmd: uds zarf package create -o build/smoke --flavor smoke --confirm
         dir: hack/test
 
-  - name: e2e-img-pkg-amd
-    description: "build docker image and zarf package for e2e in cluster tests"
+  - name: e2e-img-pkg
+    description: "build multi-arch docker image and zarf package for e2e in cluster tests"
     actions:
       - task: ui
       - task: api-linux-amd64
-      - cmd: docker build --build-arg TARGETARCH=amd64 -t uds-runtime:test -f ./Dockerfile .
-      - cmd: uds zarf package create -o build/e2e --flavor e2e --confirm
-        dir: hack/test
-
-  - name: e2e-img-pkg-arm
-    description: "build docker image and zarf package for e2e in cluster tests"
-    actions:
-      - task: ui
       - task: api-linux-arm64
-      - cmd: docker buildx build --build-arg TARGETARCH=arm64 -t uds-runtime:test -f ./Dockerfile .
+      - cmd: docker buildx build --platform linux/amd64,linux/arm64 -t uds-runtime:test -f ./Dockerfile .
       - cmd: uds zarf package create -o build/e2e --flavor e2e --confirm
         dir: hack/test
