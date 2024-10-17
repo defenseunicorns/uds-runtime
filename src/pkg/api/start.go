@@ -62,7 +62,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	r.Get("/health", checkClusterConnection(k8sSession))
+	r.Get("/cluster-check", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Head("/auth", authHandler)
 		r.Route("/monitor", func(r chi.Router) {
