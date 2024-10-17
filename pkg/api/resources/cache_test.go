@@ -19,6 +19,7 @@ import (
 	dynamicFake "k8s.io/client-go/dynamic/fake"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes/fake"
+	"k8s.io/client-go/tools/cache"
 )
 
 func TestBindCoreResources(t *testing.T) {
@@ -462,4 +463,51 @@ func TestSimpleAndDynamicClient(t *testing.T) {
 
 	require.Equal(t, c.Pods.GetResources("default", mockPodName)[0].GetName(), mockPod.Name)
 	require.Equal(t, c.UDSPackages.GetResources("", mockUDSPackageName)[0].GetName(), mockUDSPackage.GetName())
+}
+
+func TestSetWatchErrorHandler(t *testing.T) {
+	// Create a ResourceList for CRDs
+	crdGVR := schema.GroupVersionResource{Group: "apiextensions.k8s.io", Version: "v1", Resource: "customresourcedefinitions"}
+	crdResource := &ResourceList{
+		Resources:       make(map[string]*unstructured.Unstructured),
+		SparseResources: make(map[string]*unstructured.Unstructured),
+		Changes:         make(chan struct{}, 1),
+		GVR:             crdGVR,
+		CRDExists:       true,
+	}
+
+	c := &Cache{
+		CRDs: crdResource,
+	}
+
+	mockInformer := &mockSharedIndexInformer{
+		setWatchErrorHandlerFunc: func(handler cache.WatchErrorHandler) error {
+			// Immediately call the handler to simulate a watch error
+			handler(nil, nil)
+			return nil
+		},
+	}
+
+	c.setWatchErrorHandler(mockInformer, crdResource)
+
+	// Confirm SetWatchErrorHandler sets CRDExists to false
+	require.False(t, crdResource.CRDExists)
+
+	// Check if a change was sent to the Changes channel
+	select {
+	case <-crdResource.Changes:
+		// This is the expected behavior
+	case <-time.After(time.Second):
+		t.Errorf("Expected a change to be sent to the Changes channel, but none was received")
+	}
+}
+
+// Mock SharedIndexInformer for testing
+type mockSharedIndexInformer struct {
+	cache.SharedIndexInformer
+	setWatchErrorHandlerFunc func(handler cache.WatchErrorHandler) error
+}
+
+func (m *mockSharedIndexInformer) SetWatchErrorHandler(handler cache.WatchErrorHandler) error {
+	return m.setWatchErrorHandlerFunc(handler)
 }
