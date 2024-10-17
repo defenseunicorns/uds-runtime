@@ -1,0 +1,2031 @@
+info:
+  contact: {}
+paths:
+  /auth:
+    head:
+      description: Handle auth when running in local mode
+      responses:
+        "200":
+          description: OK
+      tags:
+      - auth
+  /health:
+    get:
+      description: Get Cluster Connection Status
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster-connection-status
+  /monitor/pepr/{stream}:
+    get:
+      consumes:
+      - text/html
+      description: Get Pepr data
+      parameters:
+      - description: stream type to filter on, all streams by default
+        enum:
+        - AnyStream
+        - PolicyStream
+        - OperatorStream
+        - AllowStream
+        - DenyStream
+        - MutateStream
+        - FailureStream
+        in: path
+        name: stream
+        type: string
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+      tags:
+      - monitor
+  /resources/cluster-ops/hpas:
+    get:
+      consumes:
+      - text/html
+      description: Get HPAs
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/hpas/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get HPA by UID
+      parameters:
+      - description: Get hpa by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/limit-ranges:
+    get:
+      consumes:
+      - text/html
+      description: Get LimitRanges
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/limit-ranges/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get LimitRange by UID
+      parameters:
+      - description: Get limit-range by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/mutatingwebhooks:
+    get:
+      consumes:
+      - text/html
+      description: Get MutatingWebhooks
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/mutatingwebhooks/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get MutatingWebhook by UID
+      parameters:
+      - description: Get mutatingwebhook by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/poddisruptionbudgets:
+    get:
+      consumes:
+      - text/html
+      description: Get PodDisruptionBudgets
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/poddisruptionbudgets/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get PodDisruptionBudget by UID
+      parameters:
+      - description: Get poddisruptionbudget by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/priority-classes:
+    get:
+      consumes:
+      - text/html
+      description: Get PriorityClasses
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/priority-classes/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get PriorityClass by UID
+      parameters:
+      - description: Get priority-class by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/resource-quotas:
+    get:
+      consumes:
+      - text/html
+      description: Get ResourceQuotas
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/resource-quotas/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get ResourceQuota by UID
+      parameters:
+      - description: Get resource-quota by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/runtime-classes:
+    get:
+      consumes:
+      - text/html
+      description: Get RuntimeClasses
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/runtime-classes/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get RuntimeClass by UID
+      parameters:
+      - description: Get runtime-class by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/validatingwebhooks:
+    get:
+      consumes:
+      - text/html
+      description: Get ValidatingWebhooks
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/cluster-ops/validatingwebhooks/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get ValidatingWebhook by UID
+      parameters:
+      - description: Get validatingwebhook by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster ops
+  /resources/configs/configmaps:
+    get:
+      consumes:
+      - text/html
+      description: Get ConfigMaps
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - configs
+  /resources/configs/configmaps/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get ConfigMap by UID
+      parameters:
+      - description: Get configmap by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - configs
+  /resources/configs/secrets:
+    get:
+      consumes:
+      - text/html
+      description: Get Secrets
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - configs
+  /resources/configs/secrets/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Secret by UID
+      parameters:
+      - description: Get secret by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - configs
+  /resources/configs/uds-exemptions:
+    get:
+      consumes:
+      - text/html
+      description: Get UDS Exemptions
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - configs
+  /resources/configs/uds-exemptions/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get UDS Exemption by UID
+      parameters:
+      - description: Get uds exemption by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - configs
+  /resources/configs/uds-packages:
+    get:
+      consumes:
+      - text/html
+      description: Get UDS Packages
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - configs
+  /resources/configs/uds-packages/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get UDS Package by UID
+      parameters:
+      - description: Get uds package by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - configs
+  /resources/custom-resoure-defintions:
+    get:
+      consumes:
+      - text/html
+      description: Get Custom Resource Definition by UID
+      parameters:
+      - description: Get CRD by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - resources
+  /resources/events:
+    get:
+      consumes:
+      - text/html
+      description: Get Events
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - resources
+  /resources/events/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Event by UID
+      parameters:
+      - description: Get event by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - resources
+  /resources/namespaces:
+    get:
+      consumes:
+      - text/html
+      description: Get Namespaces
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - resources
+  /resources/namespaces/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Namespace by UID
+      parameters:
+      - description: Get namespace by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - resources
+  /resources/networks/endpoints:
+    get:
+      consumes:
+      - text/html
+      description: Get Endpoints
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - networks
+  /resources/networks/endpoints/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Endpoint by UID
+      parameters:
+      - description: Get endpoint by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - networks
+  /resources/networks/networkpolicies:
+    get:
+      consumes:
+      - text/html
+      description: Get NetworkPolicies
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - networks
+  /resources/networks/networkpolicies/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get NetworkPolicy by UID
+      parameters:
+      - description: Get networkpolicy by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - networks
+  /resources/networks/services:
+    get:
+      consumes:
+      - text/html
+      description: Get Services
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - networks
+  /resources/networks/services/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Service by UID
+      parameters:
+      - description: Get service by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - networks
+  /resources/networks/virtualservices:
+    get:
+      consumes:
+      - text/html
+      description: Get VirtualServices
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - networks
+  /resources/networks/virtualservices/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get VirtualService by UID
+      parameters:
+      - description: Get virtualservice by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - networks
+  /resources/nodes:
+    get:
+      consumes:
+      - text/html
+      description: Get Nodes
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - resources
+  /resources/nodes/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Node by UID
+      parameters:
+      - description: Get node by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - resources
+  /resources/storage/persistentvolumeclaims:
+    get:
+      consumes:
+      - text/html
+      description: Get PersistentVolumeClaims
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - storage
+  /resources/storage/persistentvolumeclaims/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get PersistentVolumeClaim by UID
+      parameters:
+      - description: Get persistentvolumeclaim by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - storage
+  /resources/storage/persistentvolumes:
+    get:
+      consumes:
+      - text/html
+      description: Get PersistentVolumes
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - storage
+  /resources/storage/persistentvolumes/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get PersistentVolume by UID
+      parameters:
+      - description: Get persistentvolume by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - storage
+  /resources/storage/storageclasses:
+    get:
+      consumes:
+      - text/html
+      description: Get StorageClasses
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - storage
+  /resources/storage/storageclasses/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get StorageClass by UID
+      parameters:
+      - description: Get storageclass by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - storage
+  /resources/workloads/cronjobs:
+    get:
+      consumes:
+      - text/html
+      description: Get CronJobs
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/cronjobs/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get CronJob by UID
+      parameters:
+      - description: Get cronjob by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/daemonsets:
+    get:
+      consumes:
+      - text/html
+      description: Get Daemonsets
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/daemonsets/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Daemonset by UID
+      parameters:
+      - description: Get daemonset by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/deployments:
+    get:
+      consumes:
+      - text/html
+      description: Get Deployments
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/deployments/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Deployment by UID
+      parameters:
+      - description: Get deployment by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/jobs:
+    get:
+      consumes:
+      - text/html
+      description: Get Jobs
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/jobs/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Job by UID
+      parameters:
+      - description: Get job by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/podmetrics:
+    get:
+      consumes:
+      - text/html
+      description: Get PodMetrics
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/pods:
+    get:
+      consumes:
+      - text/html
+      description: Get Pods
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/pods/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Pod by UID
+      parameters:
+      - description: Get pod by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/statefulsets:
+    get:
+      consumes:
+      - text/html
+      description: Get Statefulsets
+      parameters:
+      - description: Send the data once and close the connection. By default this
+          is set to`false` and will return a text/event-stream. If set to `true` the
+          response content type is application/json.
+        in: query
+        name: once
+        type: boolean
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - text/event-stream
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+  /resources/workloads/statefulsets/{uid}:
+    get:
+      consumes:
+      - text/html
+      description: Get Statefulset by UID
+      parameters:
+      - description: Get statefulset by uid
+        in: path
+        name: uid
+        type: string
+      - description: Send the data in dense format
+        in: query
+        name: dense
+        type: boolean
+      - description: Filter by namespace
+        in: query
+        name: namespace
+        type: string
+      - description: Filter by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - workloads
+swagger: "2.0"

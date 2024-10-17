@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
 import {
   AudioConsole,
@@ -75,6 +75,10 @@ const baseRoutes: BaseRoute[] = [
   {
     name: 'Nodes',
     icon: BareMetalServer,
+  },
+  {
+    name: 'Custom Resources',
+    icon: Layers,
   },
 ]
 

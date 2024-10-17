@@ -1,9 +1,10 @@
-// SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2024-Present The UDS Authors
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
 export { default as ClusterOverview } from './cluster-overview/component.svelte'
 
 // Core Resources
+export { default as CRDsTable } from './crds/component.svelte'
 export { default as EventTable } from './events/component.svelte'
 export { default as NamespaceTable } from './namespaces/component.svelte'
 export { default as NodeTable } from './nodes/component.svelte'

@@ -1,9 +1,18 @@
+# Copyright 2024 Defense Unicorns
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 includes:
   - setup: ./setup.yaml
   - build: ./build.yaml
 
 tasks:
-  - name: api-auth
+  - name: deploy-runtime-cluster
+    description: deploy cluster specifically for testing UDS Runtime
+    actions:
+      - task: setup:k3d
+      - task: deploy-load
+
+  - name: local-auth
     description: "run end-to-end tests (assumes api server is running on port 8080)"
     actions:
       - task: build:ui
@@ -11,14 +20,8 @@ tasks:
         dir: ui
       - task: build:api
       - task: deploy-runtime-cluster
-      - cmd: npm run test:api-auth
+      - cmd: npm run test:local-auth
         dir: ui
-
-  - name: deploy-runtime-cluster
-    description: deploy cluster specifically for testing the app
-    actions:
-      - task: setup:k3d
-      - task: deploy-load
 
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
@@ -27,15 +30,25 @@ tasks:
       - cmd: npm run test:install # install playwright
         dir: ui
       - task: build:api
-      - task: setup:k3d
-      - task: deploy-load
+      - task: deploy-runtime-cluster
       - cmd: npm run test:integration
+        dir: ui
+
+  - name: e2e-reconnect
+    description: "run end-to-end tests for cluster disconnect and reconnect"
+    actions:
+      - task: build:ui
+      - cmd: npm run test:install # install playwright
+        dir: ui
+      - task: build:api
+      - task: setup:k3d
+      - cmd: npm run test:reconnect
         dir: ui
 
   - name: go-unit
     description: "run api server unit tests"
     actions:
-      - cmd: go test -failfast -v -timeout 30m --tags=unit ./...
+      - cmd: go test -failfast -v -timeout 30m ./src/pkg/...
 
   - name: ui-unit
     description: "run frontend unit tests"
@@ -52,7 +65,7 @@ tasks:
       - task: ui-unit
 
   - name: api
-    description: "run api server tests"
+    description: "run e2e api server tests"
     actions:
       - description: "build ui since embedded in main.go"
         task: build:ui
@@ -62,7 +75,7 @@ tasks:
         dir: hack/load-test
       - cmd: uds zarf tools kubectl apply -f hack/load-test/rc.yaml
         description: apply runtime class manually cause KFC is silly
-      - cmd: go test -failfast -v -timeout 30m --tags=integration ./...
+      - cmd: go test -failfast -v -timeout 30m ./src/test/e2e/...
 
   - name: deploy-load
     description: "deploy some Zarf packages to test against"

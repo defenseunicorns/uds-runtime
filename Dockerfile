@@ -1,3 +1,6 @@
+# Copyright 2024 Defense Unicorns
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 FROM cgr.dev/chainguard/static:latest
 
 # grab auto platform arg
@@ -10,7 +13,7 @@ USER 65532:65532
 # copy binary from local and expose port
 COPY --chown=65532:65532 build/uds-runtime-linux-${TARGETARCH} /app/uds-runtime
 ENV PORT=8080
-ENV API_AUTH_DISABLED=true
+ENV LOCAL_AUTH_ENABLED=false
 EXPOSE 8080
 
 # run binary

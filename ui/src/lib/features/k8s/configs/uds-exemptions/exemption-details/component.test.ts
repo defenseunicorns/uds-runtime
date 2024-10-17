@@ -1,3 +1,6 @@
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 import { render } from '@testing-library/svelte'
 import { Information } from 'carbon-icons-svelte'
 import type { ExemptionElement } from 'uds-core-types/src/pepr/operator/crd/generated/exemption-v1alpha1'

@@ -1,5 +1,5 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
-<!-- SPDX-FileCopyrightText: 2024-Present The UDS Authors -->
+<!-- Copyright 2024 Defense Unicorns -->
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial -->
 
 <script lang="ts">
   import { onMount } from 'svelte'
@@ -179,7 +179,8 @@
         <!-- YAML tab -->
         <div class="text-gray-200 p-4">
           <code class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre w-full block">
-            <!-- We turned off svelte/no-at-html-tags eslint rule because we are using DOMPurify to sanitize -->
+            <!-- Disable svelte/no-at-html-tags eslint rule here because we are using DOMPurify to sanitize -->
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html DOMPurify.sanitize(hljs.highlight(YAML.stringify(resource), { language: 'yaml' }).value)}
           </code>
         </div>

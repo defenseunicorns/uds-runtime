@@ -1,15 +1,18 @@
+# Copyright 2024 Defense Unicorns
+# SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 tasks:
   - name: generate
     description: "Generate Swagger docs"
     actions:
-      - cmd: swag init --o pkg/api/docs
+      - cmd: swag init --o src/pkg/api/docs
 
   - name: test
     description: "Ensure no changes to Swagger docs"
     actions:
       - task: generate
       - cmd: |
-          if [ -z "$(git status -s "docs")" ]; then
+          if [ -z "$(git status -s "src/pkg/api/docs/docs.go")" ]; then
               echo "Success!"
           else
               echo "Swagger docs changes found, please regenerate docs"
