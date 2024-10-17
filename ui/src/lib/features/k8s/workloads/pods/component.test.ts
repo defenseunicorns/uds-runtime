@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SvelteComponent } from 'svelte'
 
+import type { V1Pod } from '@kubernetes/client-node'
 import StatusComponent from '$components/k8s/Status/component.svelte'
 import {
   expectEqualIgnoringFields,
@@ -14,7 +15,6 @@ import {
 } from '$features/k8s/test-helper'
 import type { ResourceWithTable } from '$features/k8s/types'
 import { resourceDescriptions } from '$lib/utils/descriptions'
-import type { V1Pod } from '@kubernetes/client-node'
 import { beforeEach, vi } from 'vitest'
 
 import Component from './component.svelte'
