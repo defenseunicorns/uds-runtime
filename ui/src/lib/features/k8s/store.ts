@@ -241,7 +241,7 @@ export function transformResource<T extends KubernetesObject, U extends CommonRo
   // Return a function to transform KubernetesObject resources
 
   return (resources: T[]) => {
-    // If we don't have resoure return empty array to avoid 'Cannot read properties of null (reading 'map')' error
+    // If we don't have resource return empty array to avoid 'Cannot read properties of null (reading 'map')' error
     if (!resources) {
       return []
     }
