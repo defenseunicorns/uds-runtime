@@ -23,3 +23,11 @@ resources:
   limits:
     memory: "1Gi"
     cpu: "750m"
+
+# add user and group for static chainguard image
+podSecurityContext:
+  runAsUser: 65532
+  runAsGroup: 65532
+containerSecurityContext:
+  runAsUser: 65532
+  runAsGroup: 65532

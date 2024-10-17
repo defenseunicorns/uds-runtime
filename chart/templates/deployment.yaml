@@ -17,10 +17,14 @@ spec:
         app: uds-runtime
     spec:
       serviceAccountName: uds-runtime-sa
+      securityContext:
+          {{- .Values.podSecurityContext | toYaml | nindent 8 }}
       containers:
         - name: uds-runtime
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
           ports:
             - containerPort: 8080
           resources:
