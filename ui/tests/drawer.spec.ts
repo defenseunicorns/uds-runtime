@@ -7,7 +7,10 @@ test.describe('Drawer', async () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/workloads/pods')
 
-    page.locator('.table .tr').filter({ hasText: /^podinfo-/}).click()
+    page
+      .locator('.table .tr')
+      .filter({ hasText: /^podinfo-/ })
+      .click()
   })
 
   test.describe('is opened when clicking on a table row and', async () => {

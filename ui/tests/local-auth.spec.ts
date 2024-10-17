@@ -78,7 +78,10 @@ test.describe.serial('Authentication Tests', () => {
     await expect(element).toBeVisible()
 
     // Check details view
-    await page.locator('.table .tr').filter({ hasText: /^podinfo-/}).click()
+    await page
+      .locator('.table .tr')
+      .filter({ hasText: /^podinfo-/ })
+      .click()
 
     let drawerEl = page.getByTestId('drawer')
     await expect(drawerEl).toBeVisible()
