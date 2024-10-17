@@ -28,7 +28,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/health": {
+        "/cluster-check": {
             "get": {
                 "description": "Get Cluster Connection Status",
                 "produces": [

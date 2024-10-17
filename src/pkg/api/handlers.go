@@ -910,3 +910,11 @@ func getCRD(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 func authHandler(w http.ResponseWriter, r *http.Request) {
 	local.AuthHandler(w, r)
 }
+
+// @Description check the health of the application
+// @Tags health
+// @Success 200
+// @Router /healthz [get]
+func healthz(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}

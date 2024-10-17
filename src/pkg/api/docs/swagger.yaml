@@ -9,7 +9,7 @@ paths:
           description: OK
       tags:
       - auth
-  /health:
+  /cluster-check:
     get:
       description: Get Cluster Connection Status
       produces:
