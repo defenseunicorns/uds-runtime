@@ -28,9 +28,9 @@ func Auth(next http.Handler) http.Handler {
 						return
 					}
 				}
-				if valid := localAuth.ValidateSessionCookie(w, r); valid {
-					next.ServeHTTP(w, r)
-				}
+			}
+			if valid := localAuth.ValidateSessionCookie(w, r); valid {
+				next.ServeHTTP(w, r)
 			}
 		} else if config.InClusterAuthEnabled {
 			if valid := clusterAuth.ValidateJWT(w, r); valid {

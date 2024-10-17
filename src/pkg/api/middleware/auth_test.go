@@ -93,6 +93,14 @@ func TestAuthMiddleware(t *testing.T) {
 			},
 		},
 		{
+			name:                 "non-api path (swagger)",
+			localAuthEnabled:     true,
+			inClusterAuthEnabled: false,
+			path:                 "/swagger",
+			expectedStatusCode:   http.StatusUnauthorized,
+			setup:                func(r *http.Request) {},
+		},
+		{
 			name:                 "In-cluster auth - Invalid JWT",
 			localAuthEnabled:     false,
 			inClusterAuthEnabled: true,
