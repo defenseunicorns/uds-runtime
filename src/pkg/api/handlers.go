@@ -4,6 +4,7 @@
 package api
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/local"
@@ -867,7 +868,7 @@ func getStorageClass(cache *resources.Cache) func(w http.ResponseWriter, r *http
 // @Tags cluster-connection-status
 // @Produce text/event-stream
 // @Success 200
-// @Router /health [get]
+// @Router /cluster-check [get]
 func checkClusterConnection(k8sSession *session.K8sSession) http.HandlerFunc {
 	return k8sSession.ServeConnStatus()
 }
@@ -909,4 +910,13 @@ func getCRD(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 // @Router /auth [head]
 func authHandler(w http.ResponseWriter, r *http.Request) {
 	local.AuthHandler(w, r)
+}
+
+// @Description check the health of the application
+// @Tags health
+// @Success 200
+// @Router /healthz [get]
+func healthz(w http.ResponseWriter, _ *http.Request) {
+	slog.Debug("Health check called")
+	w.WriteHeader(http.StatusOK)
 }

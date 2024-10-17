@@ -18,7 +18,8 @@ components:
     required: true
     # x-release-please-start-version
     images:
-      - ghcr.io/defenseunicorns/uds-runtime:0.6.1
+      - uds-runtime:dev
+#      - ghcr.io/defenseunicorns/uds-runtime:0.6.1
     # x-release-please-end
     charts:
       - name: uds-runtime
