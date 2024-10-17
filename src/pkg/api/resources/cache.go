@@ -251,7 +251,7 @@ func (c *Cache) bindUDSResources() {
 // setWatchErrorHandler sets a watch error handler on the provided informer for custom resources
 func (c *Cache) setWatchErrorHandler(informer cache.SharedIndexInformer, resource *ResourceList) {
 	err := informer.SetWatchErrorHandler(func(_ *cache.Reflector, _ error) {
-		resource.CRDExists = !HasCRD(resource.GVR, c.CRDs)
+		resource.CRDExists = HasCRD(resource.GVR, c.CRDs)
 		resource.Changes <- struct{}{}
 	})
 	if err != nil {
