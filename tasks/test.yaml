@@ -50,6 +50,14 @@ tasks:
         dir: ui/tests/packages/podinfo
       - cmd: uds zarf package deploy zarf-package-podinfo-test-amd64-0.0.1.tar.zst --confirm
         dir: ui/tests/packages/podinfo
+      - description: Validate podinfo pod
+        wait:
+          cluster:
+            kind: Pod
+            name: app.kubernetes.io/name=podinfo
+            condition: Ready
+            namespace: podinfo
+        maxTotalSeconds: 30
 
   - name: deploy-podinfo-arm
     description: "deploy podinfo to the cluster"
@@ -58,6 +66,14 @@ tasks:
         dir: ui/tests/packages/podinfo
       - cmd: uds zarf package deploy zarf-package-podinfo-test-arm64-0.0.1.tar.zst --confirm
         dir: ui/tests/packages/podinfo
+      - description: Validate podinfo pod
+        wait:
+          cluster:
+            kind: Pod
+            name: app.kubernetes.io/name=podinfo
+            condition: Ready
+            namespace: podinfo
+        maxTotalSeconds: 30
 
   - name: e2e
     description: "run end-to-end tests (assumes api server is running on port 8080)"
