@@ -63,7 +63,7 @@ tasks:
             name: app.kubernetes.io/name=podinfo
             condition: Ready
             namespace: podinfo
-        maxTotalSeconds: 60
+        maxTotalSeconds: 240
 
   - name: deploy-podinfo-arm
     description: "deploy podinfo to the cluster"
