@@ -31,10 +31,12 @@ func Auth(next http.Handler) http.Handler {
 			}
 			if valid := localAuth.ValidateSessionCookie(w, r); valid {
 				next.ServeHTTP(w, r)
+				return
 			}
 		} else if config.InClusterAuthEnabled {
 			if valid := clusterAuth.ValidateJWT(w, r); valid {
 				next.ServeHTTP(w, r)
+				return
 			}
 		}
 		next.ServeHTTP(w, r)
