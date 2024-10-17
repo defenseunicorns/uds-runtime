@@ -3,7 +3,7 @@
 
 import { ChildProcess, exec } from 'child_process'
 
-import { test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 let serverProcess: ChildProcess
 const serverLogs: string[] = []
