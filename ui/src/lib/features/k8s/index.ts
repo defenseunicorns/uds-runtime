@@ -4,6 +4,7 @@
 export { default as ClusterOverview } from './cluster-overview/component.svelte'
 
 // Core Resources
+export { default as CRDsTable } from './crds/component.svelte'
 export { default as EventTable } from './events/component.svelte'
 export { default as NamespaceTable } from './namespaces/component.svelte'
 export { default as NodeTable } from './nodes/component.svelte'
