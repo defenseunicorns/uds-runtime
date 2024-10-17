@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/auth": {
+        "/auth": {
             "head": {
                 "description": "Handle auth when running in local mode",
                 "tags": [
@@ -28,7 +28,59 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/hpas": {
+        "/cluster-check": {
+            "get": {
+                "description": "Get Cluster Connection Status",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "cluster-connection-status"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/monitor/pepr/{stream}": {
+            "get": {
+                "description": "Get Pepr data",
+                "consumes": [
+                    "text/html"
+                ],
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "monitor"
+                ],
+                "parameters": [
+                    {
+                        "enum": [
+                            "AnyStream",
+                            "PolicyStream",
+                            "OperatorStream",
+                            "AllowStream",
+                            "DenyStream",
+                            "MutateStream",
+                            "FailureStream"
+                        ],
+                        "type": "string",
+                        "description": "stream type to filter on, all streams by default",
+                        "name": "stream",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/resources/cluster-ops/hpas": {
             "get": {
                 "description": "Get HPAs",
                 "consumes": [
@@ -80,7 +132,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/hpas/{uid}": {
+        "/resources/cluster-ops/hpas/{uid}": {
             "get": {
                 "description": "Get HPA by UID",
                 "consumes": [
@@ -131,7 +183,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/limit-ranges": {
+        "/resources/cluster-ops/limit-ranges": {
             "get": {
                 "description": "Get LimitRanges",
                 "consumes": [
@@ -183,7 +235,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/limit-ranges/{uid}": {
+        "/resources/cluster-ops/limit-ranges/{uid}": {
             "get": {
                 "description": "Get LimitRange by UID",
                 "consumes": [
@@ -234,7 +286,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/mutatingwebhooks": {
+        "/resources/cluster-ops/mutatingwebhooks": {
             "get": {
                 "description": "Get MutatingWebhooks",
                 "consumes": [
@@ -286,7 +338,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/mutatingwebhooks/{uid}": {
+        "/resources/cluster-ops/mutatingwebhooks/{uid}": {
             "get": {
                 "description": "Get MutatingWebhook by UID",
                 "consumes": [
@@ -337,7 +389,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/poddisruptionbudgets": {
+        "/resources/cluster-ops/poddisruptionbudgets": {
             "get": {
                 "description": "Get PodDisruptionBudgets",
                 "consumes": [
@@ -389,7 +441,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/poddisruptionbudgets/{uid}": {
+        "/resources/cluster-ops/poddisruptionbudgets/{uid}": {
             "get": {
                 "description": "Get PodDisruptionBudget by UID",
                 "consumes": [
@@ -440,7 +492,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/priority-classes": {
+        "/resources/cluster-ops/priority-classes": {
             "get": {
                 "description": "Get PriorityClasses",
                 "consumes": [
@@ -492,7 +544,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/priority-classes/{uid}": {
+        "/resources/cluster-ops/priority-classes/{uid}": {
             "get": {
                 "description": "Get PriorityClass by UID",
                 "consumes": [
@@ -543,7 +595,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/resource-quotas": {
+        "/resources/cluster-ops/resource-quotas": {
             "get": {
                 "description": "Get ResourceQuotas",
                 "consumes": [
@@ -595,7 +647,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/resource-quotas/{uid}": {
+        "/resources/cluster-ops/resource-quotas/{uid}": {
             "get": {
                 "description": "Get ResourceQuota by UID",
                 "consumes": [
@@ -646,7 +698,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/runtime-classes": {
+        "/resources/cluster-ops/runtime-classes": {
             "get": {
                 "description": "Get RuntimeClasses",
                 "consumes": [
@@ -698,7 +750,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/runtime-classes/{uid}": {
+        "/resources/cluster-ops/runtime-classes/{uid}": {
             "get": {
                 "description": "Get RuntimeClass by UID",
                 "consumes": [
@@ -749,7 +801,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/validatingwebhooks": {
+        "/resources/cluster-ops/validatingwebhooks": {
             "get": {
                 "description": "Get ValidatingWebhooks",
                 "consumes": [
@@ -801,7 +853,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/cluster-ops/validatingwebhooks/{uid}": {
+        "/resources/cluster-ops/validatingwebhooks/{uid}": {
             "get": {
                 "description": "Get ValidatingWebhook by UID",
                 "consumes": [
@@ -852,7 +904,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/configs/configmaps": {
+        "/resources/configs/configmaps": {
             "get": {
                 "description": "Get ConfigMaps",
                 "consumes": [
@@ -904,7 +956,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/configs/configmaps/{uid}": {
+        "/resources/configs/configmaps/{uid}": {
             "get": {
                 "description": "Get ConfigMap by UID",
                 "consumes": [
@@ -955,7 +1007,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/configs/secrets": {
+        "/resources/configs/secrets": {
             "get": {
                 "description": "Get Secrets",
                 "consumes": [
@@ -1007,7 +1059,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/configs/secrets/{uid}": {
+        "/resources/configs/secrets/{uid}": {
             "get": {
                 "description": "Get Secret by UID",
                 "consumes": [
@@ -1058,7 +1110,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/configs/uds-exemptions": {
+        "/resources/configs/uds-exemptions": {
             "get": {
                 "description": "Get UDS Exemptions",
                 "consumes": [
@@ -1110,7 +1162,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/configs/uds-exemptions/{uid}": {
+        "/resources/configs/uds-exemptions/{uid}": {
             "get": {
                 "description": "Get UDS Exemption by UID",
                 "consumes": [
@@ -1161,7 +1213,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/configs/uds-packages": {
+        "/resources/configs/uds-packages": {
             "get": {
                 "description": "Get UDS Packages",
                 "consumes": [
@@ -1213,7 +1265,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/configs/uds-packages/{uid}": {
+        "/resources/configs/uds-packages/{uid}": {
             "get": {
                 "description": "Get UDS Package by UID",
                 "consumes": [
@@ -1264,59 +1316,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/custom-resource-defintions": {
-            "get": {
-                "description": "Get Custom Resource Definitions",
-                "consumes": [
-                    "text/html"
-                ],
-                "produces": [
-                    "text/event-stream",
-                    "application/json"
-                ],
-                "tags": [
-                    "resources"
-                ],
-                "parameters": [
-                    {
-                        "type": "boolean",
-                        "description": "Send the data once and close the connection. By default this is set to` + "`" + `false` + "`" + ` and will return a text/event-stream. If set to ` + "`" + `true` + "`" + ` the response content type is application/json.",
-                        "name": "once",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Send the data in dense format",
-                        "name": "dense",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Filter by namespace",
-                        "name": "namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Filter by name (partial match)",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
-                        "name": "fields",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/api/v1/resources/custom-resource-defintions/{uid}": {
+        "/resources/custom-resoure-defintions": {
             "get": {
                 "description": "Get Custom Resource Definition by UID",
                 "consumes": [
@@ -1374,7 +1374,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/events": {
+        "/resources/events": {
             "get": {
                 "description": "Get Events",
                 "consumes": [
@@ -1426,7 +1426,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/events/{uid}": {
+        "/resources/events/{uid}": {
             "get": {
                 "description": "Get Event by UID",
                 "consumes": [
@@ -1477,7 +1477,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/namespaces": {
+        "/resources/namespaces": {
             "get": {
                 "description": "Get Namespaces",
                 "consumes": [
@@ -1529,7 +1529,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/namespaces/{uid}": {
+        "/resources/namespaces/{uid}": {
             "get": {
                 "description": "Get Namespace by UID",
                 "consumes": [
@@ -1580,7 +1580,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/networks/endpoints": {
+        "/resources/networks/endpoints": {
             "get": {
                 "description": "Get Endpoints",
                 "consumes": [
@@ -1632,7 +1632,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/networks/endpoints/{uid}": {
+        "/resources/networks/endpoints/{uid}": {
             "get": {
                 "description": "Get Endpoint by UID",
                 "consumes": [
@@ -1683,7 +1683,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/networks/networkpolicies": {
+        "/resources/networks/networkpolicies": {
             "get": {
                 "description": "Get NetworkPolicies",
                 "consumes": [
@@ -1735,7 +1735,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/networks/networkpolicies/{uid}": {
+        "/resources/networks/networkpolicies/{uid}": {
             "get": {
                 "description": "Get NetworkPolicy by UID",
                 "consumes": [
@@ -1786,7 +1786,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/networks/services": {
+        "/resources/networks/services": {
             "get": {
                 "description": "Get Services",
                 "consumes": [
@@ -1838,7 +1838,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/networks/services/{uid}": {
+        "/resources/networks/services/{uid}": {
             "get": {
                 "description": "Get Service by UID",
                 "consumes": [
@@ -1889,7 +1889,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/networks/virtualservices": {
+        "/resources/networks/virtualservices": {
             "get": {
                 "description": "Get VirtualServices",
                 "consumes": [
@@ -1941,7 +1941,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/networks/virtualservices/{uid}": {
+        "/resources/networks/virtualservices/{uid}": {
             "get": {
                 "description": "Get VirtualService by UID",
                 "consumes": [
@@ -1992,7 +1992,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/nodes": {
+        "/resources/nodes": {
             "get": {
                 "description": "Get Nodes",
                 "consumes": [
@@ -2044,7 +2044,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/nodes/{uid}": {
+        "/resources/nodes/{uid}": {
             "get": {
                 "description": "Get Node by UID",
                 "consumes": [
@@ -2095,7 +2095,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/storage/persistentvolumeclaims": {
+        "/resources/storage/persistentvolumeclaims": {
             "get": {
                 "description": "Get PersistentVolumeClaims",
                 "consumes": [
@@ -2147,7 +2147,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/storage/persistentvolumeclaims/{uid}": {
+        "/resources/storage/persistentvolumeclaims/{uid}": {
             "get": {
                 "description": "Get PersistentVolumeClaim by UID",
                 "consumes": [
@@ -2198,7 +2198,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/storage/persistentvolumes": {
+        "/resources/storage/persistentvolumes": {
             "get": {
                 "description": "Get PersistentVolumes",
                 "consumes": [
@@ -2250,7 +2250,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/storage/persistentvolumes/{uid}": {
+        "/resources/storage/persistentvolumes/{uid}": {
             "get": {
                 "description": "Get PersistentVolume by UID",
                 "consumes": [
@@ -2301,7 +2301,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/storage/storageclasses": {
+        "/resources/storage/storageclasses": {
             "get": {
                 "description": "Get StorageClasses",
                 "consumes": [
@@ -2353,7 +2353,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/storage/storageclasses/{uid}": {
+        "/resources/storage/storageclasses/{uid}": {
             "get": {
                 "description": "Get StorageClass by UID",
                 "consumes": [
@@ -2404,7 +2404,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/cronjobs": {
+        "/resources/workloads/cronjobs": {
             "get": {
                 "description": "Get CronJobs",
                 "consumes": [
@@ -2456,7 +2456,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/cronjobs/{uid}": {
+        "/resources/workloads/cronjobs/{uid}": {
             "get": {
                 "description": "Get CronJob by UID",
                 "consumes": [
@@ -2507,7 +2507,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/daemonsets": {
+        "/resources/workloads/daemonsets": {
             "get": {
                 "description": "Get Daemonsets",
                 "consumes": [
@@ -2559,7 +2559,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/daemonsets/{uid}": {
+        "/resources/workloads/daemonsets/{uid}": {
             "get": {
                 "description": "Get Daemonset by UID",
                 "consumes": [
@@ -2610,7 +2610,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/deployments": {
+        "/resources/workloads/deployments": {
             "get": {
                 "description": "Get Deployments",
                 "consumes": [
@@ -2662,7 +2662,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/deployments/{uid}": {
+        "/resources/workloads/deployments/{uid}": {
             "get": {
                 "description": "Get Deployment by UID",
                 "consumes": [
@@ -2713,7 +2713,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/jobs": {
+        "/resources/workloads/jobs": {
             "get": {
                 "description": "Get Jobs",
                 "consumes": [
@@ -2765,7 +2765,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/jobs/{uid}": {
+        "/resources/workloads/jobs/{uid}": {
             "get": {
                 "description": "Get Job by UID",
                 "consumes": [
@@ -2816,7 +2816,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/podmetrics": {
+        "/resources/workloads/podmetrics": {
             "get": {
                 "description": "Get PodMetrics",
                 "consumes": [
@@ -2835,7 +2835,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/pods": {
+        "/resources/workloads/pods": {
             "get": {
                 "description": "Get Pods",
                 "consumes": [
@@ -2887,7 +2887,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/pods/{uid}": {
+        "/resources/workloads/pods/{uid}": {
             "get": {
                 "description": "Get Pod by UID",
                 "consumes": [
@@ -2938,7 +2938,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/statefulsets": {
+        "/resources/workloads/statefulsets": {
             "get": {
                 "description": "Get Statefulsets",
                 "consumes": [
@@ -2990,7 +2990,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/workloads/statefulsets/{uid}": {
+        "/resources/workloads/statefulsets/{uid}": {
             "get": {
                 "description": "Get Statefulset by UID",
                 "consumes": [
@@ -3032,58 +3032,6 @@ const docTemplate = `{
                         "description": "Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status",
                         "name": "fields",
                         "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/health": {
-            "get": {
-                "description": "Get Cluster Connection Status",
-                "produces": [
-                    "text/event-stream"
-                ],
-                "tags": [
-                    "cluster-connection-status"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/monitor/pepr/{stream}": {
-            "get": {
-                "description": "Get Pepr data",
-                "consumes": [
-                    "text/html"
-                ],
-                "produces": [
-                    "text/event-stream"
-                ],
-                "tags": [
-                    "monitor"
-                ],
-                "parameters": [
-                    {
-                        "enum": [
-                            "AnyStream",
-                            "PolicyStream",
-                            "OperatorStream",
-                            "AllowStream",
-                            "DenyStream",
-                            "MutateStream",
-                            "FailureStream"
-                        ],
-                        "type": "string",
-                        "description": "stream type to filter on, all streams by default",
-                        "name": "stream",
-                        "in": "path"
                     }
                 ],
                 "responses": {

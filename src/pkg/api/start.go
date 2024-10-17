@@ -57,7 +57,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Use(udsMiddleware.Auth)
 	r.Use(udsMiddleware.ConditionalCompress)
 
-	// Add Swagger UI routes
+	r.Get("/healthz", healthz)
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})

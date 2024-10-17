@@ -1,7 +1,7 @@
 info:
   contact: {}
 paths:
-  /api/v1/auth:
+  /auth:
     head:
       description: Handle auth when running in local mode
       responses:
@@ -9,7 +9,42 @@ paths:
           description: OK
       tags:
       - auth
-  /api/v1/resources/cluster-ops/hpas:
+  /cluster-check:
+    get:
+      description: Get Cluster Connection Status
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cluster-connection-status
+  /monitor/pepr/{stream}:
+    get:
+      consumes:
+      - text/html
+      description: Get Pepr data
+      parameters:
+      - description: stream type to filter on, all streams by default
+        enum:
+        - AnyStream
+        - PolicyStream
+        - OperatorStream
+        - AllowStream
+        - DenyStream
+        - MutateStream
+        - FailureStream
+        in: path
+        name: stream
+        type: string
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+      tags:
+      - monitor
+  /resources/cluster-ops/hpas:
     get:
       consumes:
       - text/html
@@ -45,7 +80,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/hpas/{uid}:
+  /resources/cluster-ops/hpas/{uid}:
     get:
       consumes:
       - text/html
@@ -78,7 +113,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/limit-ranges:
+  /resources/cluster-ops/limit-ranges:
     get:
       consumes:
       - text/html
@@ -114,7 +149,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/limit-ranges/{uid}:
+  /resources/cluster-ops/limit-ranges/{uid}:
     get:
       consumes:
       - text/html
@@ -147,7 +182,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/mutatingwebhooks:
+  /resources/cluster-ops/mutatingwebhooks:
     get:
       consumes:
       - text/html
@@ -183,7 +218,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/mutatingwebhooks/{uid}:
+  /resources/cluster-ops/mutatingwebhooks/{uid}:
     get:
       consumes:
       - text/html
@@ -216,7 +251,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/poddisruptionbudgets:
+  /resources/cluster-ops/poddisruptionbudgets:
     get:
       consumes:
       - text/html
@@ -252,7 +287,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/poddisruptionbudgets/{uid}:
+  /resources/cluster-ops/poddisruptionbudgets/{uid}:
     get:
       consumes:
       - text/html
@@ -285,7 +320,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/priority-classes:
+  /resources/cluster-ops/priority-classes:
     get:
       consumes:
       - text/html
@@ -321,7 +356,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/priority-classes/{uid}:
+  /resources/cluster-ops/priority-classes/{uid}:
     get:
       consumes:
       - text/html
@@ -354,7 +389,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/resource-quotas:
+  /resources/cluster-ops/resource-quotas:
     get:
       consumes:
       - text/html
@@ -390,7 +425,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/resource-quotas/{uid}:
+  /resources/cluster-ops/resource-quotas/{uid}:
     get:
       consumes:
       - text/html
@@ -423,7 +458,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/runtime-classes:
+  /resources/cluster-ops/runtime-classes:
     get:
       consumes:
       - text/html
@@ -459,7 +494,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/runtime-classes/{uid}:
+  /resources/cluster-ops/runtime-classes/{uid}:
     get:
       consumes:
       - text/html
@@ -492,7 +527,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/validatingwebhooks:
+  /resources/cluster-ops/validatingwebhooks:
     get:
       consumes:
       - text/html
@@ -528,7 +563,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/cluster-ops/validatingwebhooks/{uid}:
+  /resources/cluster-ops/validatingwebhooks/{uid}:
     get:
       consumes:
       - text/html
@@ -561,7 +596,7 @@ paths:
           description: OK
       tags:
       - cluster ops
-  /api/v1/resources/configs/configmaps:
+  /resources/configs/configmaps:
     get:
       consumes:
       - text/html
@@ -597,7 +632,7 @@ paths:
           description: OK
       tags:
       - configs
-  /api/v1/resources/configs/configmaps/{uid}:
+  /resources/configs/configmaps/{uid}:
     get:
       consumes:
       - text/html
@@ -630,7 +665,7 @@ paths:
           description: OK
       tags:
       - configs
-  /api/v1/resources/configs/secrets:
+  /resources/configs/secrets:
     get:
       consumes:
       - text/html
@@ -666,7 +701,7 @@ paths:
           description: OK
       tags:
       - configs
-  /api/v1/resources/configs/secrets/{uid}:
+  /resources/configs/secrets/{uid}:
     get:
       consumes:
       - text/html
@@ -699,7 +734,7 @@ paths:
           description: OK
       tags:
       - configs
-  /api/v1/resources/configs/uds-exemptions:
+  /resources/configs/uds-exemptions:
     get:
       consumes:
       - text/html
@@ -735,7 +770,7 @@ paths:
           description: OK
       tags:
       - configs
-  /api/v1/resources/configs/uds-exemptions/{uid}:
+  /resources/configs/uds-exemptions/{uid}:
     get:
       consumes:
       - text/html
@@ -768,7 +803,7 @@ paths:
           description: OK
       tags:
       - configs
-  /api/v1/resources/configs/uds-packages:
+  /resources/configs/uds-packages:
     get:
       consumes:
       - text/html
@@ -804,7 +839,7 @@ paths:
           description: OK
       tags:
       - configs
-  /api/v1/resources/configs/uds-packages/{uid}:
+  /resources/configs/uds-packages/{uid}:
     get:
       consumes:
       - text/html
@@ -837,43 +872,7 @@ paths:
           description: OK
       tags:
       - configs
-  /api/v1/resources/custom-resource-defintions:
-    get:
-      consumes:
-      - text/html
-      description: Get Custom Resource Definitions
-      parameters:
-      - description: Send the data once and close the connection. By default this
-          is set to`false` and will return a text/event-stream. If set to `true` the
-          response content type is application/json.
-        in: query
-        name: once
-        type: boolean
-      - description: Send the data in dense format
-        in: query
-        name: dense
-        type: boolean
-      - description: Filter by namespace
-        in: query
-        name: namespace
-        type: string
-      - description: Filter by name (partial match)
-        in: query
-        name: name
-        type: string
-      - description: 'Filter by fields. Format: .metadata.labels.app,.metadata.name,.spec.containers[].name,.status'
-        in: query
-        name: fields
-        type: string
-      produces:
-      - text/event-stream
-      - application/json
-      responses:
-        "200":
-          description: OK
-      tags:
-      - resources
-  /api/v1/resources/custom-resource-defintions/{uid}:
+  /resources/custom-resoure-defintions:
     get:
       consumes:
       - text/html
@@ -913,7 +912,7 @@ paths:
           description: OK
       tags:
       - resources
-  /api/v1/resources/events:
+  /resources/events:
     get:
       consumes:
       - text/html
@@ -949,7 +948,7 @@ paths:
           description: OK
       tags:
       - resources
-  /api/v1/resources/events/{uid}:
+  /resources/events/{uid}:
     get:
       consumes:
       - text/html
@@ -982,7 +981,7 @@ paths:
           description: OK
       tags:
       - resources
-  /api/v1/resources/namespaces:
+  /resources/namespaces:
     get:
       consumes:
       - text/html
@@ -1018,7 +1017,7 @@ paths:
           description: OK
       tags:
       - resources
-  /api/v1/resources/namespaces/{uid}:
+  /resources/namespaces/{uid}:
     get:
       consumes:
       - text/html
@@ -1051,7 +1050,7 @@ paths:
           description: OK
       tags:
       - resources
-  /api/v1/resources/networks/endpoints:
+  /resources/networks/endpoints:
     get:
       consumes:
       - text/html
@@ -1087,7 +1086,7 @@ paths:
           description: OK
       tags:
       - networks
-  /api/v1/resources/networks/endpoints/{uid}:
+  /resources/networks/endpoints/{uid}:
     get:
       consumes:
       - text/html
@@ -1120,7 +1119,7 @@ paths:
           description: OK
       tags:
       - networks
-  /api/v1/resources/networks/networkpolicies:
+  /resources/networks/networkpolicies:
     get:
       consumes:
       - text/html
@@ -1156,7 +1155,7 @@ paths:
           description: OK
       tags:
       - networks
-  /api/v1/resources/networks/networkpolicies/{uid}:
+  /resources/networks/networkpolicies/{uid}:
     get:
       consumes:
       - text/html
@@ -1189,7 +1188,7 @@ paths:
           description: OK
       tags:
       - networks
-  /api/v1/resources/networks/services:
+  /resources/networks/services:
     get:
       consumes:
       - text/html
@@ -1225,7 +1224,7 @@ paths:
           description: OK
       tags:
       - networks
-  /api/v1/resources/networks/services/{uid}:
+  /resources/networks/services/{uid}:
     get:
       consumes:
       - text/html
@@ -1258,7 +1257,7 @@ paths:
           description: OK
       tags:
       - networks
-  /api/v1/resources/networks/virtualservices:
+  /resources/networks/virtualservices:
     get:
       consumes:
       - text/html
@@ -1294,7 +1293,7 @@ paths:
           description: OK
       tags:
       - networks
-  /api/v1/resources/networks/virtualservices/{uid}:
+  /resources/networks/virtualservices/{uid}:
     get:
       consumes:
       - text/html
@@ -1327,7 +1326,7 @@ paths:
           description: OK
       tags:
       - networks
-  /api/v1/resources/nodes:
+  /resources/nodes:
     get:
       consumes:
       - text/html
@@ -1363,7 +1362,7 @@ paths:
           description: OK
       tags:
       - resources
-  /api/v1/resources/nodes/{uid}:
+  /resources/nodes/{uid}:
     get:
       consumes:
       - text/html
@@ -1396,7 +1395,7 @@ paths:
           description: OK
       tags:
       - resources
-  /api/v1/resources/storage/persistentvolumeclaims:
+  /resources/storage/persistentvolumeclaims:
     get:
       consumes:
       - text/html
@@ -1432,7 +1431,7 @@ paths:
           description: OK
       tags:
       - storage
-  /api/v1/resources/storage/persistentvolumeclaims/{uid}:
+  /resources/storage/persistentvolumeclaims/{uid}:
     get:
       consumes:
       - text/html
@@ -1465,7 +1464,7 @@ paths:
           description: OK
       tags:
       - storage
-  /api/v1/resources/storage/persistentvolumes:
+  /resources/storage/persistentvolumes:
     get:
       consumes:
       - text/html
@@ -1501,7 +1500,7 @@ paths:
           description: OK
       tags:
       - storage
-  /api/v1/resources/storage/persistentvolumes/{uid}:
+  /resources/storage/persistentvolumes/{uid}:
     get:
       consumes:
       - text/html
@@ -1534,7 +1533,7 @@ paths:
           description: OK
       tags:
       - storage
-  /api/v1/resources/storage/storageclasses:
+  /resources/storage/storageclasses:
     get:
       consumes:
       - text/html
@@ -1570,7 +1569,7 @@ paths:
           description: OK
       tags:
       - storage
-  /api/v1/resources/storage/storageclasses/{uid}:
+  /resources/storage/storageclasses/{uid}:
     get:
       consumes:
       - text/html
@@ -1603,7 +1602,7 @@ paths:
           description: OK
       tags:
       - storage
-  /api/v1/resources/workloads/cronjobs:
+  /resources/workloads/cronjobs:
     get:
       consumes:
       - text/html
@@ -1639,7 +1638,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/cronjobs/{uid}:
+  /resources/workloads/cronjobs/{uid}:
     get:
       consumes:
       - text/html
@@ -1672,7 +1671,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/daemonsets:
+  /resources/workloads/daemonsets:
     get:
       consumes:
       - text/html
@@ -1708,7 +1707,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/daemonsets/{uid}:
+  /resources/workloads/daemonsets/{uid}:
     get:
       consumes:
       - text/html
@@ -1741,7 +1740,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/deployments:
+  /resources/workloads/deployments:
     get:
       consumes:
       - text/html
@@ -1777,7 +1776,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/deployments/{uid}:
+  /resources/workloads/deployments/{uid}:
     get:
       consumes:
       - text/html
@@ -1810,7 +1809,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/jobs:
+  /resources/workloads/jobs:
     get:
       consumes:
       - text/html
@@ -1846,7 +1845,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/jobs/{uid}:
+  /resources/workloads/jobs/{uid}:
     get:
       consumes:
       - text/html
@@ -1879,7 +1878,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/podmetrics:
+  /resources/workloads/podmetrics:
     get:
       consumes:
       - text/html
@@ -1891,7 +1890,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/pods:
+  /resources/workloads/pods:
     get:
       consumes:
       - text/html
@@ -1927,7 +1926,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/pods/{uid}:
+  /resources/workloads/pods/{uid}:
     get:
       consumes:
       - text/html
@@ -1960,7 +1959,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/statefulsets:
+  /resources/workloads/statefulsets:
     get:
       consumes:
       - text/html
@@ -1996,7 +1995,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /api/v1/resources/workloads/statefulsets/{uid}:
+  /resources/workloads/statefulsets/{uid}:
     get:
       consumes:
       - text/html
@@ -2029,39 +2028,4 @@ paths:
           description: OK
       tags:
       - workloads
-  /health:
-    get:
-      description: Get Cluster Connection Status
-      produces:
-      - text/event-stream
-      responses:
-        "200":
-          description: OK
-      tags:
-      - cluster-connection-status
-  /monitor/pepr/{stream}:
-    get:
-      consumes:
-      - text/html
-      description: Get Pepr data
-      parameters:
-      - description: stream type to filter on, all streams by default
-        enum:
-        - AnyStream
-        - PolicyStream
-        - OperatorStream
-        - AllowStream
-        - DenyStream
-        - MutateStream
-        - FailureStream
-        in: path
-        name: stream
-        type: string
-      produces:
-      - text/event-stream
-      responses:
-        "200":
-          description: OK
-      tags:
-      - monitor
 swagger: "2.0"
