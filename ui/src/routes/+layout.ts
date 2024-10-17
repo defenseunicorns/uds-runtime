@@ -3,7 +3,6 @@
 
 import { authenticated } from '$features/auth/store'
 import { createStore } from '$features/k8s/namespaces/store'
-import { tokenAuth } from '$lib/utils/token-auth'
 
 export const ssr = false
 
@@ -23,5 +22,25 @@ export const load = async () => {
   }
   return {
     namespaces,
+  }
+}
+
+async function tokenAuth(token: string): Promise<boolean> {
+  const hasToken = token != ''
+  const BASE_URL = '/api/v1'
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+  })
+  const url = hasToken ? `${BASE_URL}/auth?token=${token}` : `${BASE_URL}/auth`
+  const payload: RequestInit = { method: 'HEAD', headers }
+
+  try {
+    // Actually make the request
+    const response = await fetch(url, payload)
+    return response.ok
+  } catch (e) {
+    // Something went wrong--abort the request.
+    console.error(e)
+    return Promise.reject(e)
   }
 }
