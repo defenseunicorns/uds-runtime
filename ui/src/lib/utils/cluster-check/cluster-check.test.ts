@@ -77,7 +77,7 @@ describe('cluster check', () => {
 
     new ClusterCheck()
 
-    expect(urlAssertionMock).toHaveBeenCalledWith('/health')
+    expect(urlAssertionMock).toHaveBeenCalledWith('/cluster-check')
 
     vi.advanceTimersByTime(1000)
     expect(get(toast)).toHaveLength(0)
