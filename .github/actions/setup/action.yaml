@@ -18,12 +18,12 @@ runs:
         node-version: 22.9.0
 
     - name: Set up Homebrew
-      uses: Homebrew/actions/setup-homebrew@ee7a7f1327e53b078a90e8f92f78b9f91f18cc38 # master
+      uses: Homebrew/actions/setup-homebrew@d060b6d6ebec27463122d09b327f7b8a2260fb34 # master
 
     - name: Install UDS CLI
       shell: bash
       # renovate: datasource=github-tags depName=defenseunicorns/uds-cli versioning=semver
-      run: brew install defenseunicorns/tap/uds@0.17.0
+      run: brew install defenseunicorns/tap/uds@0.18.0
 
     - name: Install Swagger CLI
       shell: bash
