@@ -1,9 +1,9 @@
 // Copyright 2024 Defense Unicorns
 // SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
+import { CRDIcon } from '$lib/assets'
 import {
   AudioConsole,
-  BareMetalServer,
   ChartCombo,
   DataTableReference,
   Db2Database,
@@ -11,6 +11,7 @@ import {
   Layers,
   Network_2,
   SearchLocate,
+  Share,
   WorkflowAutomation,
 } from 'carbon-icons-svelte'
 
@@ -74,11 +75,11 @@ const baseRoutes: BaseRoute[] = [
   },
   {
     name: 'Nodes',
-    icon: BareMetalServer,
+    icon: Share,
   },
   {
     name: 'Custom Resources',
-    icon: Layers,
+    icon: CRDIcon,
   },
 ]
 
