@@ -49,28 +49,12 @@ tasks:
             --set resources.requests.memory=256Mi --set resources.requests.cpu=100m
         description: deploy minio to test PVCs
 
-  - name: deploy-podinfo-amd
+  - name: deploy-podinfo
     description: "deploy podinfo to the cluster"
     actions:
-      - cmd: uds zarf package create -a amd64 --confirm
+      - cmd: uds zarf package create --confirm
         dir: ui/tests/packages/podinfo
-      - cmd: uds zarf package deploy zarf-package-podinfo-test-amd64-0.0.1.tar.zst --confirm
-        dir: ui/tests/packages/podinfo
-      - description: Validate podinfo pod
-        wait:
-          cluster:
-            kind: Pod
-            name: app.kubernetes.io/name=podinfo
-            condition: Ready
-            namespace: podinfo
-        maxTotalSeconds: 240
-
-  - name: deploy-podinfo-arm
-    description: "deploy podinfo to the cluster"
-    actions:
-      - cmd: uds zarf package create -a arm64 --confirm
-        dir: ui/tests/packages/podinfo
-      - cmd: uds zarf package deploy zarf-package-podinfo-test-arm64-0.0.1.tar.zst --confirm
+      - cmd: uds zarf package deploy zarf-package-podinfo-test-$UDS_ARCH-0.0.1.tar.zst --confirm
         dir: ui/tests/packages/podinfo
       - description: Validate podinfo pod
         wait:
@@ -103,27 +87,15 @@ tasks:
       - cmd: npm run test:reconnect
         dir: ui
 
-  - name: e2e-in-cluster-amd
+  - name: e2e-in-cluster
     description: "run end-to-end tests against runtime in the cluster"
     actions:
       - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
       - cmd: uds deploy k3d-core-slim-dev:0.29.0 --confirm
-      - task: deploy-podinfo-amd
-      - task: install-runtime-in-cluster-amd
-      - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration-in-cluster
-        dir: ui
-
-  - name: e2e-in-cluster-arm
-    description: "run end-to-end tests against runtime in the cluster"
-    actions:
-      - task: build:ui
-      - cmd: npm run test:install # install playwright
-        dir: ui
-      - cmd: uds deploy k3d-core-slim-dev:0.29.0 --confirm
-      - task: deploy-podinfo-arm
-      - task: install-runtime-in-cluster-arm
+      - task: deploy-podinfo
+      - task: install-runtime-in-cluster
       - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration-in-cluster
         dir: ui
 
@@ -198,16 +170,9 @@ tasks:
               ;;
           esac
 
-  - name: install-runtime-in-cluster-amd
+  - name: install-runtime-in-cluster
     description: "Install uds-runtime in the cluster"
     actions:
-      - task: build:e2e-img-pkg-amd
-      - cmd: uds zarf package deploy build/e2e/zarf-package-uds-runtime-amd64-test.tar.zst --confirm
-        dir: hack/test
-
-  - name: install-runtime-in-cluster-arm
-    description: "Install uds-runtime in the cluster"
-    actions:
-      - task: build:e2e-img-pkg-arm
-      - cmd: uds zarf package deploy build/e2e/zarf-package-uds-runtime-arm64-test.tar.zst --confirm
+      - task: build:e2e-img-pkg
+      - cmd: uds zarf package deploy build/e2e/zarf-package-uds-runtime-$UDS_ARCH-test.tar.zst --confirm
         dir: hack/test
