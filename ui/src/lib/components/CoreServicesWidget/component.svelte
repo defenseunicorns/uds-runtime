@@ -56,7 +56,7 @@
             <div class="truncate">{coreServicesMapping[name]}</div>
           </div>
 
-          <div class="w-2/12 text-green-600">Running</div>
+          <div class="w-2/12 text-green-400">Running</div>
         </div>
       {/each}
     </div>
