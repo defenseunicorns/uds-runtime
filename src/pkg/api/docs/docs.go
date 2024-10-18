@@ -3060,12 +3060,19 @@ const docTemplate = `{
         "/healthz": {
             "get": {
                 "description": "check the health of the application",
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "health"
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     }
                 }
             }
