@@ -7,6 +7,7 @@
   import { CoreServicesWidget, ProgressBarWidget, WithRightIconWidget } from '$components'
   import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
   import { createStore } from '$lib/features/k8s/events/store'
+  import { type CoreServiceType } from '$lib/types'
   import { resourceDescriptions } from '$lib/utils/descriptions'
   import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
   import Chart from 'chart.js/auto'
@@ -39,11 +40,18 @@
   let onMessageCount = 0
   let myChart: Chart
   const description = resourceDescriptions['Events']
+  let services: CoreServiceType[] = []
 
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
-    const path: string = `/api/v1/monitor/cluster-overview`
-    const overview = new EventSource(path)
+    const overviewPath: string = '/api/v1/monitor/cluster-overview'
+    const servicesPath: string = '/api/v1/resources/configs/uds-packages?fields=.metadata.name'
+    const overview = new EventSource(overviewPath)
+    const servicesEvent = new EventSource(servicesPath)
+
+    servicesEvent.onmessage = (event) => {
+      services = JSON.parse(event.data) as CoreServiceType[]
+    }
 
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData
@@ -71,7 +79,7 @@
           myChart = new Chart(ctx, { type: 'line', data: chartData, options: chartOptions })
         }
 
-        // on each message manually update the grap
+        // on each message manually update the graph
         myChart.data.labels = historicalUsage.map((point) => [formatTime(point.Timestamp)])
         myChart.data.datasets[0].data = historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
         myChart.data.datasets[1].data = historicalUsage.map((point) => point.CPU / 1000)
@@ -94,7 +102,7 @@
 </script>
 
 <div class="p-4 dark:text-white pt-0">
-  <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
+  <h1 class="text-xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 min-[1024px]:grid-cols-2 min-[1510px]:grid-cols-4 gap-4">
     <WithRightIconWidget
       statText={clusterData.totalPods.toString()}
@@ -127,16 +135,16 @@
     />
   </div>
 
-  <div class="mt-8 flex space-x-4">
-    <div class="w-1/2">
+  <div class="mt-8 flex flex-col xl:flex-row xl:space-x-4">
+    <div class="w-full xl:w-1/2">
       <div class="flex p-5 bg-gray-800 rounded-lg overflow-hidden shadow h-full items-center justify-center">
         Packages Widget Coming Soon...
       </div>
     </div>
 
-    <div class="w-1/2">
+    <div class="w-full xl:w-1/2 max-xl:mt-4">
       <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow">
-        <CoreServicesWidget />
+        <CoreServicesWidget {services} />
       </div>
     </div>
   </div>

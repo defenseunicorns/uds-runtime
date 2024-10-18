@@ -1,54 +1,38 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
-  import { ChevronRight, Cube, Information } from 'carbon-icons-svelte'
+  import { type CoreServiceType } from '$lib/types'
+  import { Cube, Information } from 'carbon-icons-svelte'
 
-  const services: Record<string, string>[] = [
-    {
-      name: 'Authorization',
-      status: 'Running',
-      path: '',
-    },
-    {
-      name: 'Monitoring',
-      status: 'Running',
-      path: '',
-    },
-    {
-      name: 'Service Mesh',
-      status: 'Running',
-      path: '',
-    },
-    {
-      name: 'Healthy Access Management',
-      status: 'Running',
-      path: '',
-    },
-    {
-      name: 'Log Aggregation',
-      status: 'Running',
-      path: '',
-    },
-    {
-      name: 'Metrics',
-      status: 'Running',
-      path: '',
-    },
-    {
-      name: 'Container Security',
-      status: 'Running',
-      path: '',
-    },
-    {
-      name: 'Policy Engine & Operator',
-      status: 'Running',
-      path: '',
-    },
-    {
-      name: 'Backup & Restore',
-      status: 'Running',
-      path: '',
-    },
-  ]
+  export let services: CoreServiceType[] = []
+
+  const coreServicesMapping: Record<string, string> = {
+    authservice: 'Authservice',
+    grafana: 'Grafana',
+    keycloak: 'KeyCloak',
+    loki: 'Loki',
+    'metrics-server': 'Metrics Server',
+    neuvector: 'Neuvector',
+    'prometheus-stack': 'Prometheus Stack',
+    vector: 'Vector',
+    velero: 'Velero',
+    'uds-runtime': 'UDS Runtime',
+  }
+
+  const hasNoCoreServices = () =>
+    services.every((service) => !Object.keys(coreServicesMapping).includes(service.metadata.name))
+
+  const sortServices = (a: CoreServiceType, b: CoreServiceType) => {
+    if (a.metadata.name < b.metadata.name) {
+      return -1
+    }
+
+    if (a.metadata.name > b.metadata.name) {
+      return 1
+    }
+
+    return 0
+  }
+
+  $: services.sort(sortServices)
 </script>
 
 <div class="core-services">
@@ -59,25 +43,22 @@
   </div>
 
   <div class="core-services__rows">
-    {#each services as { name, status, path }}
-      <div class="core-services__rows-item">
-        <div class="w-7/12 flex items-center space-x-2">
-          <span class="core-services__name-icon">
-            <Cube size={16} class="text-gray-400" />
-          </span>
+    {#each services as { metadata: { name } }}
+      {#if hasNoCoreServices()}
+        <span class="flex self-center">No Core Services running</span>
+      {:else}
+        <div class="core-services__rows-item">
+          <div class="w-10/12 flex items-center space-x-2">
+            <div class="core-services__name-icon">
+              <Cube size={16} class="text-gray-400" />
+            </div>
 
-          <span>{name}</span>
+            <div class="truncate">{coreServicesMapping[name]}</div>
+          </div>
+
+          <div class="w-2/12 text-green-600">Running</div>
         </div>
-
-        <div class="w-2/12">{status}</div>
-
-        <div class="w-3/12 flex justify-end">
-          <button class="core-services__button-link" on:click={() => goto(path)}>
-            <span>View Service</span>
-            <ChevronRight />
-          </button>
-        </div>
-      </div>
+      {/if}
     {/each}
   </div>
 </div>
