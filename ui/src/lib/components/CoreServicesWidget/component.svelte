@@ -3,6 +3,7 @@
   import { Cube, Information } from 'carbon-icons-svelte'
 
   export let services: CoreServiceType[] = []
+  export let sortedCoreServices: CoreServiceType[] = []
 
   const coreServicesMapping: Record<string, string> = {
     authservice: 'Authservice',
@@ -17,8 +18,10 @@
     'uds-runtime': 'UDS Runtime',
   }
 
-  const hasNoCoreServices = () =>
-    services.every((service) => !Object.keys(coreServicesMapping).includes(service.metadata.name))
+  const coreServiceKeys = Object.keys(coreServicesMapping)
+
+  let hasNoCoreServices: boolean = false
+  $: hasNoCoreServices = services.every((service) => !coreServiceKeys.includes(service.metadata.name))
 
   const sortServices = (a: CoreServiceType, b: CoreServiceType) => {
     if (a.metadata.name < b.metadata.name) {
@@ -32,7 +35,11 @@
     return 0
   }
 
-  $: services.sort(sortServices)
+  $: {
+    sortedCoreServices = services
+      .filter((service) => coreServiceKeys.includes(service.metadata.name))
+      .sort(sortServices)
+  }
 </script>
 
 <div class="core-services">
@@ -42,11 +49,11 @@
     <Information class="ml-2 w-4 h-4 dark:text-gray-400 text-blue-500" />
   </div>
 
-  {#if hasNoCoreServices()}
+  {#if hasNoCoreServices}
     <span class="flex self-center">No Core Services running</span>
   {:else}
     <div class="core-services__rows">
-      {#each services as { metadata: { name } }}
+      {#each sortedCoreServices as { metadata: { name } }}
         <div class="core-services__rows-item">
           <div class="w-10/12 flex items-center space-x-2">
             <div class="core-services__name-icon">
