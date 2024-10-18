@@ -31,7 +31,7 @@ test.describe('Navigation', async () => {
     await expect(page.getByText('VIEW EVENTS')).toBeVisible()
 
     // Check for the Core Services
-    await expect(page.getByText('Core Services')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Core Services' })).toBeVisible()
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
