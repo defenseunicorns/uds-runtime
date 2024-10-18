@@ -2029,7 +2029,7 @@ paths:
           description: OK
       tags:
       - workloads
-  /health:
+  /cluster-check:
     get:
       description: Get Cluster Connection Status
       produces:
@@ -2039,6 +2039,19 @@ paths:
           description: OK
       tags:
       - cluster-connection-status
+  /healthz:
+    get:
+      description: check the health of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      tags:
+      - health
   /monitor/pepr/{stream}:
     get:
       consumes:

@@ -3041,7 +3041,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/health": {
+        "/cluster-check": {
             "get": {
                 "description": "Get Cluster Connection Status",
                 "produces": [
@@ -3053,6 +3053,26 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                }
+            }
+        },
+        "/healthz": {
+            "get": {
+                "description": "check the health of the application",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     }
                 }
             }
