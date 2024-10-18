@@ -14,7 +14,7 @@ test.describe('DataTable', async () => {
     await page.getByRole('button', { name: 'podinfo' }).last().click()
 
     if (isInCluster) {
-      expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 16)')
+      expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 20)')
     } else {
       expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 8)')
     }
@@ -24,7 +24,7 @@ test.describe('DataTable', async () => {
     await page.getByRole('button', { name: 'kube-system' }).first().click()
 
     if (isInCluster) {
-      expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 7 of 16)')
+      expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 20)')
     } else {
       expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 3 of 8)')
     }
@@ -34,7 +34,7 @@ test.describe('DataTable', async () => {
     await page.getByTestId('table-filter-namespace-select').selectOption({ label: 'podinfo' })
 
     if (isInCluster) {
-      await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 1 of 16)")')
+      await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 1 of 20)")')
     } else {
       await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 1 of 8)")')
     }
@@ -42,7 +42,7 @@ test.describe('DataTable', async () => {
     await page.getByTestId('table-filter-namespace-select').selectOption({ label: 'kube-system' })
 
     if (isInCluster) {
-      expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 7 of 16)')
+      expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 20)')
     } else {
       expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 3 of 8)')
     }
@@ -52,7 +52,7 @@ test.describe('DataTable', async () => {
     await page.getByTestId('datatable-search').fill('pepr')
 
     if (isInCluster) {
-      await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 5 of 16)")')
+      await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 7 of 20)")')
     } else {
       await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 4 of 8)")')
     }
@@ -60,7 +60,7 @@ test.describe('DataTable', async () => {
     await page.getByTestId('datatable-search').fill('podinfo')
 
     if (isInCluster) {
-      expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 16)')
+      expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 9 of 20)')
     } else {
       expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 8)')
     }
@@ -73,7 +73,7 @@ test.describe('DataTable', async () => {
     await page.getByTestId('datatable-search').fill('pepr')
 
     if (isInCluster) {
-      await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 5 of 16)")')
+      await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 7 of 20)")')
     } else {
       await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 4 of 8)")')
     }
@@ -86,7 +86,7 @@ test.describe('DataTable', async () => {
     await page.getByTestId('datatable-search').fill('pepr')
 
     if (isInCluster) {
-      await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 3 of 16)")')
+      await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 3 of 20)")')
     } else {
       await page.waitForSelector('[data-testid="table-header-results"]:has-text("(showing 3 of 8)")')
     }
