@@ -18,6 +18,10 @@ export default defineConfig(({ mode }) => ({
         target: 'https://runtime-local.uds.dev:8443',
         changeOrigin: true,
       },
+      '/cluster-check': {
+        target: 'https://runtime-local.uds.dev:8443',
+        changeOrigin: true,
+      },
     },
   },
   test: {

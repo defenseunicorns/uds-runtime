@@ -20,8 +20,9 @@ func Auth(next http.Handler) http.Handler {
 			"/api/v1/auth",
 		}
 		if config.LocalAuthEnabled {
-			// check if the request is in the allow list
-			if strings.HasPrefix(r.URL.Path, "/api/") {
+			// only /api/ and /swagger behind auth
+			if strings.HasPrefix(r.URL.Path, "/api/") || strings.HasPrefix(r.URL.Path, "/swagger") {
+				// check if the request is in the allow list
 				for _, path := range apiAllowList {
 					if r.URL.Path == path {
 						next.ServeHTTP(w, r) // path allowed
@@ -30,7 +31,10 @@ func Auth(next http.Handler) http.Handler {
 				}
 				if valid := localAuth.ValidateSessionCookie(w, r); valid {
 					next.ServeHTTP(w, r)
+					return
 				}
+				// session invalid
+				return
 			}
 		} else if config.InClusterAuthEnabled {
 			if valid := clusterAuth.ValidateJWT(w, r); valid {
