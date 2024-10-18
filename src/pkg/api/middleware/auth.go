@@ -39,6 +39,7 @@ func Auth(next http.Handler) http.Handler {
 		} else if config.InClusterAuthEnabled {
 			if valid := clusterAuth.ValidateJWT(w, r); valid {
 				next.ServeHTTP(w, r)
+				return
 			}
 		}
 		next.ServeHTTP(w, r)
