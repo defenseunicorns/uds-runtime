@@ -255,9 +255,9 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error {
 	//nolint:gosec,govet
 	if inCluster {
-		slog.Info("Starting server in in-cluster mode on 127.0.0.1:8080")
+		slog.Info("Starting server in in-cluster mode on 0.0.0.0:8080")
 
-		if err := http.ListenAndServe("127.0.0.1:8080", r); err != nil {
+		if err := http.ListenAndServe("0.0.0.0:8080", r); err != nil {
 			message.WarnErrf(err, "server failed to start: %s", err.Error())
 			return err
 		}
