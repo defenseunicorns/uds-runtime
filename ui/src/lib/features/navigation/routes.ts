@@ -1,7 +1,7 @@
 // Copyright 2024 Defense Unicorns
 // SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
-import { CRDIcon } from '$lib/assets'
+import { CRDIcon } from '$lib/Icons/CRD'
 import {
   AudioConsole,
   ChartCombo,
