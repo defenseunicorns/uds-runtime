@@ -66,8 +66,9 @@ test.describe.serial('Authentication Tests', () => {
   test('authenticated access', async ({ page }) => {
     await page.goto(`/auth?token=${extractedToken}`)
     await page.waitForSelector('role=link[name="Overview"]', { state: 'visible', timeout: 10000 })
-    const nodeCountEl = page.getByTestId('resource-count-nodes')
-    await expect(nodeCountEl).toHaveText('1')
+
+    const nodeCountEl = await page.getByTestId('resource-count-nodes').textContent()
+    expect(nodeCountEl).toBe('1')
   })
 
   test('data is visible on load, refresh, and new tab', async ({ page, context }) => {
@@ -75,24 +76,31 @@ test.describe.serial('Authentication Tests', () => {
     await page.getByRole('button', { name: 'Workloads' }).click()
     await page.getByRole('link', { name: 'Pods' }).click()
     const element = page.locator(`.emphasize:has-text("podinfo")`).first()
-    await expect(element).toBeVisible()
+
+    expect(element).toBeVisible()
 
     // Check details view
-    await page.getByRole('cell', { name: 'podinfo-' }).click()
+    await page
+      .locator('.table .tr')
+      .filter({ hasText: /^podinfo-/ })
+      .click()
+
     let drawerEl = page.getByTestId('drawer')
-    await expect(drawerEl).toBeVisible()
-    await expect(drawerEl.getByText('Created')).toBeVisible()
-    await expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
-    await expect(drawerEl.getByText('Annotations')).toBeVisible()
-    await expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
+
+    expect(drawerEl).toBeVisible()
+    expect(drawerEl.getByText('Created')).toBeVisible()
+    expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
+    expect(drawerEl.getByText('Annotations')).toBeVisible()
+    expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
 
     // test data still visible after reload (drawer should still be open)
     await page.reload()
     const reloadedElement = page.locator(`.emphasize:has-text("podinfo")`).first()
-    await expect(reloadedElement).toBeVisible()
+    expect(reloadedElement).toBeVisible()
+
     drawerEl = page.getByTestId('drawer')
-    await expect(drawerEl).toBeVisible()
-    await expect(drawerEl.getByText('Created')).toBeVisible()
+    expect(drawerEl).toBeVisible()
+    expect(drawerEl.getByText('Created')).toBeVisible()
 
     // Test opening in a new tab
     const deploymentsLink = page.getByText('Deployments')
@@ -102,7 +110,7 @@ test.describe.serial('Authentication Tests', () => {
     ])
     await newPage.waitForLoadState()
     const newPageElement = newPage.locator(`.emphasize:has-text("podinfo")`).first()
-    await expect(newPageElement).toBeVisible()
+    expect(newPageElement).toBeVisible()
 
     await newPage.close()
   })
@@ -110,6 +118,7 @@ test.describe.serial('Authentication Tests', () => {
   test('unauthenticated access', async ({ page }) => {
     await page.goto(`/auth?token=insecure`)
     const unauthenticated = page.getByText('Could not authenticate')
-    await expect(unauthenticated).toBeVisible()
+
+    expect(unauthenticated).toBeVisible()
   })
 })

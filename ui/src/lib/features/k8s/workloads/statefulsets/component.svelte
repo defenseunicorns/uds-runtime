@@ -8,12 +8,12 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['ready'],
-    ['up_to_date'],
-    ['available'],
-    ['age'],
+    ['name', 'w-4/12'],
+    ['namespace', 'w-3/12'],
+    ['ready', 'w-1/12'],
+    ['up_to_date', 'w-2/12'],
+    ['available', 'w-1/12'],
+    ['age', 'w-1/12'],
   ]
   const name = 'StatefulSets'
   const description = resourceDescriptions[name]
