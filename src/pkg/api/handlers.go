@@ -4,8 +4,10 @@
 package api
 
 import (
+	"encoding/json"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/local"
 	_ "github.com/defenseunicorns/uds-runtime/src/pkg/api/docs" //nolint:staticcheck
@@ -914,9 +916,22 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 
 // @Description check the health of the application
 // @Tags health
-// @Success 200
+// @Produce json
+// @Success 200 {object} map[string]interface{}
 // @Router /healthz [get]
 func healthz(w http.ResponseWriter, _ *http.Request) {
 	slog.Debug("Health check called")
+
+	response := map[string]interface{}{
+		"status":    "UP",
+		"timestamp": time.Now().UTC().Format(time.RFC3339),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		slog.Error("Failed to encode health response", "error", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
 }

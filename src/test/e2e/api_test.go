@@ -334,6 +334,7 @@ func TestClusterHealth(t *testing.T) {
 		// wait for the context to be done
 		<-ctx.Done()
 		require.Equal(t, http.StatusOK, rr.Code)
+		require.Contains(t, rr.Body.String(), "\"status\":\"UP\"")
 	})
 
 	t.Run("cluster connected", func(t *testing.T) {
