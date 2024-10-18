@@ -255,14 +255,14 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error {
 	//nolint:gosec,govet
 	if inCluster {
-		slog.Info("Starting server in in-cluster mode on :8080")
+		slog.Info("Starting server in in-cluster mode on 127.0.0.1:8080")
 
-		if err := http.ListenAndServe(":8080", r); err != nil {
+		if err := http.ListenAndServe("127.0.0.1:8080", r); err != nil {
 			message.WarnErrf(err, "server failed to start: %s", err.Error())
 			return err
 		}
 	} else {
-		slog.Info("Starting server in local mode on :8443")
+		slog.Info("Starting server in local mode on 127.0.0.1:8443")
 		// create tls config from embedded cert and key
 		cert, err := tls.X509KeyPair(localCert, localKey)
 		if err != nil {
@@ -274,7 +274,7 @@ func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error 
 
 		// Create a server with TLS config
 		server := &http.Server{
-			Addr:      ":8443",
+			Addr:      "127.0.0.1:8443",
 			Handler:   r,
 			TLSConfig: tlsConfig,
 		}
