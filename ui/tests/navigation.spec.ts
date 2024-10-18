@@ -29,6 +29,9 @@ test.describe('Navigation', async () => {
     // Check for Events Widget
     await expect(page.getByText('Event Logs')).toBeVisible()
     await expect(page.getByText('VIEW EVENTS')).toBeVisible()
+
+    // Check for the Core Services
+    await expect(page.getByText('Core Services')).toBeVisible()
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {

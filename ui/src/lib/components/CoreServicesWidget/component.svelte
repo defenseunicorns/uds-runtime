@@ -42,11 +42,11 @@
     <Information class="ml-2 w-4 h-4 dark:text-gray-400 text-blue-500" />
   </div>
 
-  <div class="core-services__rows">
-    {#each services as { metadata: { name } }}
-      {#if hasNoCoreServices()}
-        <span class="flex self-center">No Core Services running</span>
-      {:else}
+  {#if hasNoCoreServices()}
+    <span class="flex self-center">No Core Services running</span>
+  {:else}
+    <div class="core-services__rows">
+      {#each services as { metadata: { name } }}
         <div class="core-services__rows-item">
           <div class="w-10/12 flex items-center space-x-2">
             <div class="core-services__name-icon">
@@ -58,9 +58,9 @@
 
           <div class="w-2/12 text-green-600">Running</div>
         </div>
-      {/if}
-    {/each}
-  </div>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style lang="postcss">
