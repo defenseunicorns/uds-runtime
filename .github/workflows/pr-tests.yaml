@@ -45,10 +45,10 @@ jobs:
 
       - name: Debug Output
         if: ${{ matrix.type == 'e2e'}}
-        uses: defenseunicorns/uds-common/.github/actions/debug-output@e3008473beab00b12a94f9fcc7340124338d5c08 # v0.13.1
+        uses: defenseunicorns/uds-common/.github/actions/debug-output@97fc3a00fb2b9897316131cd210026691e160d5a # v1.1.1
 
       - name: Save logs
         if: always()
-        uses: defenseunicorns/uds-common/.github/actions/save-logs@e3008473beab00b12a94f9fcc7340124338d5c08 # v0.13.1
+        uses: defenseunicorns/uds-common/.github/actions/save-logs@97fc3a00fb2b9897316131cd210026691e160d5a # v1.1.1
         with:
           suffix: ${{ matrix.type }}
