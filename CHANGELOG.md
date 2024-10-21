@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.8.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.7.0...v0.8.0) (2024-10-21)
+
+
+### Features
+
+* adds health check ([#465](https://github.com/defenseunicorns/uds-runtime/issues/465)) ([9e14fc2](https://github.com/defenseunicorns/uds-runtime/commit/9e14fc263ddbfd699edf8a909e588287adb96ae9))
+
+
+### Bug Fixes
+
+* ensure swagger is behind local auth ([#466](https://github.com/defenseunicorns/uds-runtime/issues/466)) ([a6a3958](https://github.com/defenseunicorns/uds-runtime/commit/a6a3958ab9208cc5ae16a1941a46eaca0da8bc28))
+
+
+### Miscellaneous
+
+* **api:** bind only to localhost interface on serve ([#474](https://github.com/defenseunicorns/uds-runtime/issues/474)) ([da577ff](https://github.com/defenseunicorns/uds-runtime/commit/da577ff7f29a2058dc129c3712c79bf03a01f913))
+* **deps:** update dependency kubernetes-fluent-client to v3.1.3 ([#463](https://github.com/defenseunicorns/uds-runtime/issues/463)) ([844e9bc](https://github.com/defenseunicorns/uds-runtime/commit/844e9bc2c5f82bdf630c5c602df25a357f555daf))
+* **ui:** update node and custom resource sidebar icons ([#469](https://github.com/defenseunicorns/uds-runtime/issues/469)) ([a7e9f53](https://github.com/defenseunicorns/uds-runtime/commit/a7e9f53167fcff18322c174c7531e377a43cb1ac))
+
 ## [0.7.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.6.1...v0.7.0) (2024-10-17)
 
 
