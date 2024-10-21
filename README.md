@@ -14,7 +14,6 @@
 UDS Runtime is the frontend for all things UDS, providing views and insights into your UDS cluster.
 
 <br><br>
-<br><br>
 
 ## Quickstart Deploy
 
