@@ -3,29 +3,35 @@
   import { Cube, Information } from 'carbon-icons-svelte'
 
   export let services: CoreServiceType[] = []
-  export let sortedCoreServices: CoreServiceType[] = []
 
   const coreServicesMapping: Record<string, string> = {
-    authservice: 'Authservice',
-    grafana: 'Grafana',
-    keycloak: 'KeyCloak',
-    loki: 'Loki',
-    'metrics-server': 'Metrics Server',
-    neuvector: 'Neuvector',
-    'prometheus-stack': 'Prometheus Stack',
-    vector: 'Vector',
-    velero: 'Velero',
-    'uds-runtime': 'UDS Runtime',
+    authservice: 'Authorization',
+    grafana: 'Monitoring',
+    istrio: 'Service Mesh',
+    keycloak: 'Identity Access Management',
+    loki: 'Log Aggregation',
+    'metrics-server': 'Metrics',
+    neuvector: 'Container Security',
+    'prometheus-stack': 'Monitoring',
+    vector: 'Log Aggregation',
+    velero: 'Backup & Restore',
+    'uds-runtime': 'Frontend Views & Insights',
   }
 
   const coreServiceKeys = Object.keys(coreServicesMapping)
 
   let hasNoCoreServices: boolean = false
+  let uniqueServices: string[] = []
+
   $: hasNoCoreServices = services.every((service) => !coreServiceKeys.includes(service.metadata.name))
   $: {
-    sortedCoreServices = services
-      .filter((service) => coreServiceKeys.includes(service.metadata.name))
-      .sort((a, b) => a.metadata.name.charCodeAt(0) - b.metadata.name.charCodeAt(0))
+    services.forEach((service) => {
+      let serviceName = coreServicesMapping[service.metadata.name]
+
+      if (!uniqueServices.includes(serviceName)) {
+        uniqueServices.push(serviceName)
+      }
+    })
   }
 </script>
 
@@ -39,15 +45,16 @@
   {#if hasNoCoreServices}
     <span class="flex self-center">No Core Services running</span>
   {:else}
+    {@const sortedServices = uniqueServices.sort((a, b) => a.charCodeAt(0) - b.charCodeAt(0))}
     <div class="core-services__rows">
-      {#each sortedCoreServices as { metadata: { name } }}
+      {#each sortedServices as serviceName}
         <div class="core-services__rows-item">
           <div class="w-10/12 flex items-center space-x-2">
             <div class="core-services__name-icon">
               <Cube size={16} class="text-gray-400" />
             </div>
 
-            <div class="truncate">{coreServicesMapping[name]}</div>
+            <div class="truncate">{serviceName}</div>
           </div>
 
           <div class="w-2/12 text-green-400">Running</div>
