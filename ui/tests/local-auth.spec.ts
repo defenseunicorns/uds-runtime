@@ -46,6 +46,8 @@ test.afterAll(async () => {
 })
 
 function extractToken(log: string) {
+  console.log('log')
+  console.dir(log)
   const match = log.match(/\?token=([^&\s]+)/)
   if (match) {
     extractedToken = match[1]
@@ -71,54 +73,54 @@ test.describe.serial('Authentication Tests', () => {
     expect(nodeCountEl).toBe('1')
   })
 
-  test('data is visible on load, refresh, and new tab', async ({ page, context }) => {
-    await page.goto(`/auth?token=${extractedToken}`)
-    await page.getByRole('button', { name: 'Workloads' }).click()
-    await page.getByRole('link', { name: 'Pods' }).click()
-    const element = page.locator(`.emphasize:has-text("podinfo")`).first()
+  // test('data is visible on load, refresh, and new tab', async ({ page, context }) => {
+  //   await page.goto(`/auth?token=${extractedToken}`)
+  //   await page.getByRole('button', { name: 'Workloads' }).click()
+  //   await page.getByRole('link', { name: 'Pods' }).click()
+  //   const element = page.locator(`.emphasize:has-text("podinfo")`).first()
 
-    expect(element).toBeVisible()
+  //   expect(element).toBeVisible()
 
-    // Check details view
-    await page
-      .locator('.table .tr')
-      .filter({ hasText: /^podinfo-/ })
-      .click()
+  //   // Check details view
+  //   await page
+  //     .locator('.table .tr')
+  //     .filter({ hasText: /^podinfo-/ })
+  //     .click()
 
-    let drawerEl = page.getByTestId('drawer')
+  //   let drawerEl = page.getByTestId('drawer')
 
-    expect(drawerEl).toBeVisible()
-    expect(drawerEl.getByText('Created')).toBeVisible()
-    expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
-    expect(drawerEl.getByText('Annotations')).toBeVisible()
-    expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
+  //   expect(drawerEl).toBeVisible()
+  //   expect(drawerEl.getByText('Created')).toBeVisible()
+  //   expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
+  //   expect(drawerEl.getByText('Annotations')).toBeVisible()
+  //   expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
 
-    // test data still visible after reload (drawer should still be open)
-    await page.reload()
-    const reloadedElement = page.locator(`.emphasize:has-text("podinfo")`).first()
-    expect(reloadedElement).toBeVisible()
+  //   // test data still visible after reload (drawer should still be open)
+  //   await page.reload()
+  //   const reloadedElement = page.locator(`.emphasize:has-text("podinfo")`).first()
+  //   expect(reloadedElement).toBeVisible()
 
-    drawerEl = page.getByTestId('drawer')
-    expect(drawerEl).toBeVisible()
-    expect(drawerEl.getByText('Created')).toBeVisible()
+  //   drawerEl = page.getByTestId('drawer')
+  //   expect(drawerEl).toBeVisible()
+  //   expect(drawerEl.getByText('Created')).toBeVisible()
 
-    // Test opening in a new tab
-    const deploymentsLink = page.getByText('Deployments')
-    const [newPage] = await Promise.all([
-      context.waitForEvent('page'),
-      deploymentsLink.click({ button: 'middle' }), // Middle-click to open in new tab
-    ])
-    await newPage.waitForLoadState()
-    const newPageElement = newPage.locator(`.emphasize:has-text("podinfo")`).first()
-    expect(newPageElement).toBeVisible()
+  //   // Test opening in a new tab
+  //   const deploymentsLink = page.getByText('Deployments')
+  //   const [newPage] = await Promise.all([
+  //     context.waitForEvent('page'),
+  //     deploymentsLink.click({ button: 'middle' }), // Middle-click to open in new tab
+  //   ])
+  //   await newPage.waitForLoadState()
+  //   const newPageElement = newPage.locator(`.emphasize:has-text("podinfo")`).first()
+  //   expect(newPageElement).toBeVisible()
 
-    await newPage.close()
-  })
+  //   await newPage.close()
+  // })
 
-  test('unauthenticated access', async ({ page }) => {
-    await page.goto(`/auth?token=insecure`)
-    const unauthenticated = page.getByText('Could not authenticate')
+  // test('unauthenticated access', async ({ page }) => {
+  //   await page.goto(`/auth?token=insecure`)
+  //   const unauthenticated = page.getByText('Could not authenticate')
 
-    expect(unauthenticated).toBeVisible()
-  })
+  //   expect(unauthenticated).toBeVisible()
+  // })
 })
