@@ -13,7 +13,7 @@
 
   import { calculatePercentage, formatTime, mebibytesToGigabytes, millicoresToCores } from '../helpers'
   import type { ClusterData } from '../types'
-  import { chartData, chartOptions } from './chart'
+  import { getChartData, getChartOptions } from './chart'
 
   import './styles.postcss'
 
@@ -39,6 +39,7 @@
   let onMessageCount = 0
   let myChart: Chart
   const description = resourceDescriptions['Events']
+  let metricsServerAvailable = true
 
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
@@ -52,6 +53,9 @@
         const { cpuCapacity, currentUsage, historicalUsage, memoryCapacity } = clusterData
         let { CPU, Memory } = currentUsage
 
+        if (CPU === -1 && Memory === -1) {
+          metricsServerAvailable = false
+        }
         // Handle case where CPU or Memory is -1 indicating metrics server is not available. Don't want to display negative values
         if (CPU == -1) {
           CPU = 0
@@ -68,13 +72,21 @@
         formattedCpuCapacity = millicoresToCores(cpuCapacity)
 
         if (onMessageCount === 0) {
-          myChart = new Chart(ctx, { type: 'line', data: chartData, options: chartOptions })
+          myChart = new Chart(ctx, {
+            type: 'line',
+            data: getChartData(metricsServerAvailable),
+            options: getChartOptions(metricsServerAvailable),
+          })
         }
 
-        // on each message manually update the grap
+        // on each message manually update the graph
         myChart.data.labels = historicalUsage.map((point) => [formatTime(point.Timestamp)])
-        myChart.data.datasets[0].data = historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
-        myChart.data.datasets[1].data = historicalUsage.map((point) => point.CPU / 1000)
+
+        // If CPU and Memory are both 0, don't update the graph
+        if (metricsServerAvailable) {
+          myChart.data.datasets[0].data = historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
+          myChart.data.datasets[1].data = historicalUsage.map((point) => point.CPU / 1000)
+        }
         myChart.update()
         onMessageCount++
       }
@@ -128,7 +140,9 @@
   </div>
 
   <div class="mt-8">
-    <h2 class="text-xl font-bold mb-4">Resource Usage Over Time</h2>
+    <h2 class="text-xl font-bold mb-4" style="color: {metricsServerAvailable ? 'inherit' : 'grey'};">
+      Resource Usage Over Time
+    </h2>
 
     <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow" style:position="relative" style:margin="auto">
       <canvas id="chartjs-el" height={350} />
