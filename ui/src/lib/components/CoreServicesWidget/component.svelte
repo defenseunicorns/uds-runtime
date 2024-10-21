@@ -22,23 +22,10 @@
 
   let hasNoCoreServices: boolean = false
   $: hasNoCoreServices = services.every((service) => !coreServiceKeys.includes(service.metadata.name))
-
-  const sortServices = (a: CoreServiceType, b: CoreServiceType) => {
-    if (a.metadata.name < b.metadata.name) {
-      return -1
-    }
-
-    if (a.metadata.name > b.metadata.name) {
-      return 1
-    }
-
-    return 0
-  }
-
   $: {
     sortedCoreServices = services
       .filter((service) => coreServiceKeys.includes(service.metadata.name))
-      .sort(sortServices)
+      .sort((a, b) => a.metadata.name.charCodeAt(0) - b.metadata.name.charCodeAt(0))
   }
 </script>
 
