@@ -96,7 +96,7 @@ tasks:
       - cmd: uds deploy k3d-core-slim-dev:0.29.0 --confirm
       - task: deploy-podinfo
       - task: install-runtime-in-cluster
-      - cmd: RUNTIME_ENVIRONMENT=in-cluster npm run test:integration-in-cluster
+      - cmd: npm run test:integration-in-cluster
         dir: ui
 
   - name: go-unit
