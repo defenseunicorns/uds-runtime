@@ -46,8 +46,6 @@ test.afterAll(async () => {
 })
 
 function extractToken(log: string) {
-  console.log('log')
-  console.dir(log)
   const match = log.match(/\?token=([^&\s]+)/)
   if (match) {
     extractedToken = match[1]
@@ -68,59 +66,53 @@ test.describe.serial('Authentication Tests', () => {
   test('authenticated access', async ({ page }) => {
     await page.goto(`/auth?token=${extractedToken}`)
     await page.waitForSelector('role=link[name="Overview"]', { state: 'visible', timeout: 10000 })
-
-    const nodeCountEl = await page.getByTestId('resource-count-nodes').textContent()
-    expect(nodeCountEl).toBe('1')
+    const nodeCountEl = page.getByTestId('resource-count-nodes')
+    await expect(nodeCountEl).toHaveText('1')
   })
 
-  // test('data is visible on load, refresh, and new tab', async ({ page, context }) => {
-  //   await page.goto(`/auth?token=${extractedToken}`)
-  //   await page.getByRole('button', { name: 'Workloads' }).click()
-  //   await page.getByRole('link', { name: 'Pods' }).click()
-  //   const element = page.locator(`.emphasize:has-text("podinfo")`).first()
+  test('data is visible on load, refresh, and new tab', async ({ page, context }) => {
+    await page.goto(`/auth?token=${extractedToken}`)
+    await page.getByRole('button', { name: 'Workloads' }).click()
+    await page.getByRole('link', { name: 'Pods' }).click()
+    const element = page.locator(`.emphasize:has-text("podinfo")`).first()
+    await expect(element).toBeVisible()
 
-  //   expect(element).toBeVisible()
+    // Check details view
+    await page
+      .locator('.table .tr')
+      .filter({ hasText: /^podinfo-/ })
+      .click()
+    let drawerEl = page.getByTestId('drawer')
+    await expect(drawerEl).toBeVisible()
+    await expect(drawerEl.getByText('Created')).toBeVisible()
+    await expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
+    await expect(drawerEl.getByText('Annotations')).toBeVisible()
+    await expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
 
-  //   // Check details view
-  //   await page
-  //     .locator('.table .tr')
-  //     .filter({ hasText: /^podinfo-/ })
-  //     .click()
+    // test data still visible after reload (drawer should still be open)
+    await page.reload()
+    const reloadedElement = page.locator(`.emphasize:has-text("podinfo")`).first()
+    await expect(reloadedElement).toBeVisible()
+    drawerEl = page.getByTestId('drawer')
+    await expect(drawerEl).toBeVisible()
+    await expect(drawerEl.getByText('Created')).toBeVisible()
 
-  //   let drawerEl = page.getByTestId('drawer')
+    // Test opening in a new tab
+    const deploymentsLink = page.getByText('Deployments')
+    const [newPage] = await Promise.all([
+      context.waitForEvent('page'),
+      deploymentsLink.click({ button: 'middle' }), // Middle-click to open in new tab
+    ])
+    await newPage.waitForLoadState()
+    const newPageElement = newPage.locator(`.emphasize:has-text("podinfo")`).first()
+    await expect(newPageElement).toBeVisible()
 
-  //   expect(drawerEl).toBeVisible()
-  //   expect(drawerEl.getByText('Created')).toBeVisible()
-  //   expect(drawerEl.getByText('Name', { exact: true })).toBeVisible()
-  //   expect(drawerEl.getByText('Annotations')).toBeVisible()
-  //   expect(drawerEl.getByText('podinfo', { exact: true })).toBeVisible()
+    await newPage.close()
+  })
 
-  //   // test data still visible after reload (drawer should still be open)
-  //   await page.reload()
-  //   const reloadedElement = page.locator(`.emphasize:has-text("podinfo")`).first()
-  //   expect(reloadedElement).toBeVisible()
-
-  //   drawerEl = page.getByTestId('drawer')
-  //   expect(drawerEl).toBeVisible()
-  //   expect(drawerEl.getByText('Created')).toBeVisible()
-
-  //   // Test opening in a new tab
-  //   const deploymentsLink = page.getByText('Deployments')
-  //   const [newPage] = await Promise.all([
-  //     context.waitForEvent('page'),
-  //     deploymentsLink.click({ button: 'middle' }), // Middle-click to open in new tab
-  //   ])
-  //   await newPage.waitForLoadState()
-  //   const newPageElement = newPage.locator(`.emphasize:has-text("podinfo")`).first()
-  //   expect(newPageElement).toBeVisible()
-
-  //   await newPage.close()
-  // })
-
-  // test('unauthenticated access', async ({ page }) => {
-  //   await page.goto(`/auth?token=insecure`)
-  //   const unauthenticated = page.getByText('Could not authenticate')
-
-  //   expect(unauthenticated).toBeVisible()
-  // })
+  test('unauthenticated access', async ({ page }) => {
+    await page.goto(`/auth?token=insecure`)
+    const unauthenticated = page.getByText('Could not authenticate')
+    await expect(unauthenticated).toBeVisible()
+  })
 })
