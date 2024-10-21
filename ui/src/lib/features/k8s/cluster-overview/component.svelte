@@ -136,13 +136,7 @@
   </div>
 
   <div class="mt-8 flex flex-col xl:flex-row xl:space-x-4">
-    <div class="w-full xl:w-1/2">
-      <div class="flex p-5 bg-gray-800 rounded-lg overflow-hidden shadow h-full items-center justify-center">
-        Packages Widget Coming Soon...
-      </div>
-    </div>
-
-    <div class="w-full xl:w-1/2 max-xl:mt-4">
+    <div class="w-full mt-4">
       <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow">
         <CoreServicesWidget {services} />
       </div>
