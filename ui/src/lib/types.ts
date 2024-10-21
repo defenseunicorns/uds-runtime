@@ -27,3 +27,9 @@ export type PeprEvent = {
   res?: Record<string, unknown>
   details?: PeprDetails | undefined
 }
+
+export type CoreServiceType = {
+  metadata: {
+    name: string
+  }
+}
