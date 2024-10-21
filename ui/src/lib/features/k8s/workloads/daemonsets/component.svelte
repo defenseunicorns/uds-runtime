@@ -8,15 +8,15 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['desired'],
-    ['current'],
-    ['ready'],
-    ['up_to_date'],
-    ['available'],
-    ['node_selector'],
-    ['age'],
+    ['name', 'w-3/12'],
+    ['namespace', 'w-2/12'],
+    ['desired', 'w-1/12'],
+    ['current', 'w-1/12'],
+    ['ready', 'w-1/12'],
+    ['up_to_date', 'w-1/12'],
+    ['available', 'w-1/12'],
+    ['node_selector', 'w-2/12'],
+    ['age', 'w-1/12'],
   ]
   const name = 'DaemonSets'
   const description = resourceDescriptions[name]

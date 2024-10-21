@@ -7,13 +7,13 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['version'],
-    ['description', 'italic'],
-    ['arch'],
-    ['flavor'],
-    ['components'],
-    ['age'],
+    ['name', 'w-1/12'],
+    ['version', ' w-1/12'],
+    ['description', 'italic  w-5/12'],
+    ['arch', ' w-1/12'],
+    ['flavor', ' w-1/12'],
+    ['components', ' w-2/12'],
+    ['age', ' w-1/12'],
   ]
   const name = 'Application Packages'
   const description = 'Packages are either UDS or Zarf packages that are deployed in the cluster.'

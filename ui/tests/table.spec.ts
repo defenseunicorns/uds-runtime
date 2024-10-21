@@ -13,9 +13,7 @@ test.describe('DataTable', async () => {
 
     expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 1 of 8)')
 
-    await page.getByTestId('table-filter-namespace-select').selectOption({ label: 'All Namespaces' })
-
-    await page.getByRole('button', { name: 'kube-system' }).first().click()
+    await page.getByTestId('table-filter-namespace-select').selectOption({ label: 'kube-system' })
 
     expect(await page.getByTestId('table-header-results').textContent()).toBe('(showing 3 of 8)')
   })

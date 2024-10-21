@@ -251,6 +251,6 @@ test.describe('Navigation', async () => {
   test('navigates to Help page', async ({ page }) => {
     await page.getByTestId('global-sidenav-help').click()
 
-    await expect(page.getByText('Help')).toBeVisible()
+    await expect(page.getByText(/Help/)).toBeVisible()
   })
 })

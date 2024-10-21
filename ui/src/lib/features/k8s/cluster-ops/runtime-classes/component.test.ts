@@ -27,7 +27,11 @@ suite('RuntimeClassesTable Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['handler'], ['age']],
+    columns: [
+      ['name', 'w-4/12'],
+      ['handler', 'w-4/12'],
+      ['age', 'w-4/12'],
+    ],
     name,
     description,
     isNamespaced: false,
