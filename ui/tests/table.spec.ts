@@ -47,9 +47,9 @@ test.describe('DataTable', async () => {
 
 // Checks to see if the table header results are as expected. For example: "Showing 1 of 8"
 async function checkTableHeaderResults(page: Page, expectedActual: number, expectedTotal: number) {
-  let tableHeaderResults = page.getByTestId('table-header-results')
+  const tableHeaderResults = page.getByTestId('table-header-results')
   await tableHeaderResults.waitFor()
-  let textContent = await tableHeaderResults.textContent()
+  const textContent = await tableHeaderResults.textContent()
 
   console.log('textContent:', textContent)
   const regex = /showing (\d+) of (\d+)/
