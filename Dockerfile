@@ -17,5 +17,4 @@ ENV LOCAL_AUTH_ENABLED=false
 EXPOSE 8080
 
 # run binary
-# Disable API auth when running UDS Runtime in-cluster
 CMD ["./app/uds-runtime"]

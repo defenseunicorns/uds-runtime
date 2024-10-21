@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.7.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.6.1...v0.7.0) (2024-10-17)
+
+
+### Features
+
+* adds security context to Helm chart ([#468](https://github.com/defenseunicorns/uds-runtime/issues/468)) ([665fde1](https://github.com/defenseunicorns/uds-runtime/commit/665fde1472427bce5f985e82ec1ff96e261f04ae))
+* **ui:** view all cluster CRDs ([#423](https://github.com/defenseunicorns/uds-runtime/issues/423)) ([010a320](https://github.com/defenseunicorns/uds-runtime/commit/010a32024d252fdf419654823fe5961e624948ef))
+
+
+### Miscellaneous
+
+* **ci:** e2e test for cluster disconnection and reconnection ([#447](https://github.com/defenseunicorns/uds-runtime/issues/447)) ([b4847d4](https://github.com/defenseunicorns/uds-runtime/commit/b4847d4daab19eecf33098b5445af27b8501a21a))
+* more auth refactors, move Go code into src, remove build tags ([#461](https://github.com/defenseunicorns/uds-runtime/issues/461)) ([f14dcce](https://github.com/defenseunicorns/uds-runtime/commit/f14dcce11ea1ba2639dcd482bc1c5bc2030da839))
+* **ui:** re-enable svelte/no-at-html-tags rule ([#464](https://github.com/defenseunicorns/uds-runtime/issues/464)) ([0137419](https://github.com/defenseunicorns/uds-runtime/commit/013741996aa525dd0490684cfd35ce62d4d683c7))
+* watch error handler test ([#462](https://github.com/defenseunicorns/uds-runtime/issues/462)) ([a4fc5a2](https://github.com/defenseunicorns/uds-runtime/commit/a4fc5a239dfc46aa0f014075eb670986800bdeaa))
+
 ## [0.6.1](https://github.com/defenseunicorns/uds-runtime/compare/v0.6.0...v0.6.1) (2024-10-15)
 
 

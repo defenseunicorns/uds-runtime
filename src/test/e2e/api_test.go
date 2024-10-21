@@ -318,13 +318,32 @@ func TestClusterHealth(t *testing.T) {
 
 	defer teardown()
 
+	t.Run("healthz", func(t *testing.T) {
+		// Create a new context with a timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/healthz", nil)
+
+		// Start serving the request for 1 second
+		go func(ctx context.Context) {
+			r.ServeHTTP(rr, req)
+		}(ctx)
+
+		// wait for the context to be done
+		<-ctx.Done()
+		require.Equal(t, http.StatusOK, rr.Code)
+		require.Contains(t, rr.Body.String(), "\"status\":\"UP\"")
+	})
+
 	t.Run("cluster connected", func(t *testing.T) {
 		// Create a new context with a timeout
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 		defer cancel()
 
 		rr := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/health", nil)
+		req := httptest.NewRequest("GET", "/cluster-check", nil)
 
 		// Start serving the request for 1 second
 		go func(ctx context.Context) {
@@ -335,6 +354,39 @@ func TestClusterHealth(t *testing.T) {
 		<-ctx.Done()
 		require.Equal(t, http.StatusOK, rr.Code)
 		require.Contains(t, rr.Body.String(), "success")
+	})
+}
+
+func TestSwagger(t *testing.T) {
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	t.Run("swagger", func(t *testing.T) {
+		// Create a new context with a timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/swagger", nil)
+
+		// Start serving the request for 1 second
+		go func(ctx context.Context) {
+			r.ServeHTTP(rr, req)
+		}(ctx)
+
+		// wait for the context to be done
+		<-ctx.Done()
+
+		// follow redirect
+		require.Equal(t, http.StatusMovedPermanently, rr.Code)
+		req = httptest.NewRequest("GET", rr.Header().Get("Location"), nil)
+		rr = httptest.NewRecorder()
+		r.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusOK, rr.Code)
+		require.Contains(t, rr.Body.String(), "Swagger")
 	})
 }
 
