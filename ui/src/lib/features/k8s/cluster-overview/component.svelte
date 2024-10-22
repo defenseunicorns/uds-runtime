@@ -8,7 +8,7 @@
   import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
   import { createStore } from '$lib/features/k8s/events/store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
-  import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
+  import { Analytics, DataVis_1, Information } from 'carbon-icons-svelte'
   import Chart from 'chart.js/auto'
 
   import { calculatePercentage, formatTime, mebibytesToGigabytes, millicoresToCores } from '../helpers'
@@ -127,7 +127,8 @@
       progress={cpuUsed}
       statText="CPU Usage"
       unit="Cores"
-      value={cpuPercentage.toFixed(2)}
+      value={metricsServerAvailable ? `${cpuPercentage.toFixed(2)}%` : 'Unavailable'}
+      deactivated={!metricsServerAvailable}
     />
 
     <ProgressBarWidget
@@ -135,14 +136,35 @@
       progress={gbUsed}
       statText="Memory Usage"
       unit="GB"
-      value={memoryPercentage.toFixed(2)}
+      value={metricsServerAvailable ? `${memoryPercentage.toFixed(2)}%` : 'Unavailable'}
+      deactivated={!metricsServerAvailable}
     />
   </div>
 
   <div class="mt-8">
-    <h2 class="text-xl font-bold mb-4" style="color: {metricsServerAvailable ? 'inherit' : 'grey'};">
-      Resource Usage Over Time
-    </h2>
+    <div class="flex items-center">
+      <h2 class="text-xl font-bold mb-4" style="color: {metricsServerAvailable ? 'inherit' : 'grey'};">
+        Resource Usage Over Time
+      </h2>
+      <div class="relative group ml-2 flex items-center" style="margin-bottom: 1rem;">
+        <span
+          class="bg-gray-100 text-gray-500 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-gray-100 dark:text-gray-500 border border-gray-500"
+          data-testid="unavailable-tag"
+        >
+          <div class="relative group mr-2">
+            <Information class="w-4 h-4 text-grey-500" />
+            <div class="tooltip tooltip-right min-w-56">
+              <div class="whitespace-normal">
+                Metrics Server is unavailable.
+                <br />
+                Ensure Metrics Server is running in the cluster.
+              </div>
+            </div>
+          </div>
+          Unavailable
+        </span>
+      </div>
+    </div>
 
     <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow" style:position="relative" style:margin="auto">
       <canvas id="chartjs-el" height={350} />
