@@ -1,8 +1,10 @@
 <script lang="ts">
+  import type { V1Pod } from '@kubernetes/client-node'
   import { type CoreServiceType } from '$lib/types'
   import { Cube, Information } from 'carbon-icons-svelte'
 
   export let services: CoreServiceType[] = []
+  export let pods: V1Pod[] = []
 
   const coreServicesMapping: Record<string, string> = {
     authservice: 'Authorization',
@@ -21,15 +23,21 @@
   const coreServiceKeys = Object.keys(coreServicesMapping)
 
   let hasNoCoreServices: boolean = false
-  let uniqueServices: string[] = []
+  let uniqueServiceList: string[] = []
+  let hasPolicyEngineOperator: boolean = false
 
   $: hasNoCoreServices = services.every((service) => !coreServiceKeys.includes(service.metadata.name))
   $: {
+    hasPolicyEngineOperator = pods.filter((pod: V1Pod) => pod?.metadata?.name?.match(/^pepr-uds-core/)).length > 0
+
     services.forEach((service) => {
       let serviceName = coreServicesMapping[service.metadata.name]
 
-      if (!uniqueServices.includes(serviceName)) {
-        uniqueServices.push(serviceName)
+      uniqueServiceList.push(serviceName)
+      uniqueServiceList = Array.from(new Set([...uniqueServiceList]))
+
+      if (hasPolicyEngineOperator && !uniqueServiceList.includes('Policy Engine & Operator')) {
+        uniqueServiceList.push('Policy Engine & Operator')
       }
     })
   }
@@ -45,7 +53,7 @@
   {#if hasNoCoreServices}
     <span class="flex self-center">No Core Services running</span>
   {:else}
-    {@const sortedServices = uniqueServices.sort((a, b) => a.charCodeAt(0) - b.charCodeAt(0))}
+    {@const sortedServices = uniqueServiceList.sort((a, b) => a.charCodeAt(0) - b.charCodeAt(0))}
     <div class="core-services__rows">
       {#each sortedServices as serviceName}
         <div class="core-services__rows-item">

@@ -4,6 +4,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
+  import type { V1Pod } from '@kubernetes/client-node'
   import { CoreServicesWidget, ProgressBarWidget, WithRightIconWidget } from '$components'
   import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
   import { createStore } from '$lib/features/k8s/events/store'
@@ -41,16 +42,24 @@
   let myChart: Chart
   const description = resourceDescriptions['Events']
   let services: CoreServiceType[] = []
+  let pods: V1Pod[] = []
 
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
     const overviewPath: string = '/api/v1/monitor/cluster-overview'
     const servicesPath: string = '/api/v1/resources/configs/uds-packages?fields=.metadata.name'
+    const podsPath: string = '/api/v1/resources/workloads/pods?fields=.metadata.name'
+
     const overview = new EventSource(overviewPath)
     const servicesEvent = new EventSource(servicesPath)
+    const podsEvent = new EventSource(podsPath)
 
     servicesEvent.onmessage = (event) => {
       services = JSON.parse(event.data) as CoreServiceType[]
+    }
+
+    podsEvent.onmessage = (event) => {
+      pods = JSON.parse(event.data) as V1Pod[]
     }
 
     overview.onmessage = (event) => {
@@ -93,6 +102,8 @@
     return () => {
       onMessageCount = 0
       overview.close()
+      servicesEvent.close()
+      podsEvent.close()
       myChart.destroy()
     }
   })
@@ -138,7 +149,7 @@
   <div class="mt-8 flex flex-col xl:flex-row xl:space-x-4">
     <div class="w-full mt-4">
       <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow">
-        <CoreServicesWidget {services} />
+        <CoreServicesWidget {services} {pods} />
       </div>
     </div>
   </div>
