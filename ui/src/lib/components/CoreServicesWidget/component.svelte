@@ -9,7 +9,7 @@
   const coreServicesMapping: Record<string, string> = {
     authservice: 'Authorization',
     grafana: 'Monitoring',
-    istrio: 'Service Mesh',
+    istio: 'Service Mesh',
     keycloak: 'Identity Access Management',
     loki: 'Log Aggregation',
     'metrics-server': 'Metrics',
