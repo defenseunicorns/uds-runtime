@@ -60,4 +60,6 @@ export const resourceDescriptions: { [key: string]: string } = {
   VolumeAttachments:
     'A VolumeAttachment captures the intent to attach or detach the specified volume to/from the specified node.',
   'Zarf Packages': 'Artifact containing a set of components and configurations for air-gapped workloads.',
+  UDSPackage:
+    'UDS Core service layers power the platform, maintaining security, stability, and performance to keep the cluster running smoothly.',
 }

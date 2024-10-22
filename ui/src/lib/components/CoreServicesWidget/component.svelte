@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { V1Pod } from '@kubernetes/client-node'
   import { type CoreServiceType } from '$lib/types'
+  import { resourceDescriptions } from '$lib/utils/descriptions'
   import { Cube, Information } from 'carbon-icons-svelte'
 
   export let coreServices: CoreServiceType[] = []
@@ -47,7 +48,12 @@
   <div class="core-services__header">
     <h2 class="core-services__header-title">Core Services</h2>
 
-    <Information class="ml-2 w-4 h-4 dark:text-gray-400 text-blue-500" />
+    <div class="relative group">
+      <Information class="ml-2 w-4 h-4 text-gray-400" />
+      <div class="tooltip tooltip-right min-w-72">
+        <div class="whitespace-normal">{resourceDescriptions['UDSPackage']}</div>
+      </div>
+    </div>
   </div>
 
   {#if hasNoCoreServices}
