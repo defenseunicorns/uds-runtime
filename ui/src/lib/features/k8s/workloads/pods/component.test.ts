@@ -31,13 +31,13 @@ suite('PodTable Component', () => {
   testK8sTableWithDefaults(Component, {
     createStore,
     columns: [
-      ['name', 'w-3/12'],
+      ['name', 'w-2/12 xl:w-3/12'],
       ['namespace', 'w-2/12'],
       ['controlled_by', 'w-1/12'],
       ['containers', 'w-1/12'],
       ['status', 'w-1/12'],
       ['restarts', 'w-1/12'],
-      ['usage', 'w-1/12'],
+      ['usage', 'w-2/12 xl:w-1/12'],
       ['node', 'w-1/12'],
       ['age', 'w-1/12'],
     ],

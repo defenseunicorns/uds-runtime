@@ -143,6 +143,12 @@
       stop()
     }
   })
+
+  const shouldTruncate = (classes: string = '') => {
+    const hasLineClamp = classes.split(' ').filter((cls) => cls.match(/^line-clamp/))
+
+    return hasLineClamp?.length > 0 ? '' : 'truncate'
+  }
 </script>
 
 {#if resource}
@@ -311,7 +317,7 @@
                           {value}
                         </button>
                       {:else}
-                        <div class={`w-full text-left truncate ${style}`}>
+                        <div class={`w-full text-left ${shouldTruncate(style)}`}>
                           {value.text || (value === 0 ? '0' : value) || '-'}
                         </div>
                       {/if}
