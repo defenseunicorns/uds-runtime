@@ -97,8 +97,4 @@
   .core-services__name-icon {
     @apply h-7 w-7 rounded-lg bg-gray-700 flex items-center justify-center my-2;
   }
-
-  .core-services__button-link {
-    @apply text-sm text-blue-500 dark:text-blue-400 flex items-center space-x-1;
-  }
 </style>
