@@ -146,24 +146,26 @@
       <h2 class="text-xl font-bold mb-4" style="color: {metricsServerAvailable ? 'inherit' : 'grey'};">
         Resource Usage Over Time
       </h2>
-      <div class="relative group ml-2 flex items-center" style="margin-bottom: 1rem;">
-        <span
-          class="bg-gray-100 text-gray-500 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-gray-100 dark:text-gray-500 border border-gray-500"
-          data-testid="unavailable-tag"
-        >
-          <div class="relative group mr-2">
-            <Information class="w-4 h-4 text-grey-500" />
-            <div class="tooltip tooltip-right min-w-56">
-              <div class="whitespace-normal">
-                Metrics Server is unavailable.
-                <br />
-                Ensure Metrics Server is running in the cluster.
+      {#if !metricsServerAvailable}
+        <div class="relative group ml-2 flex items-center" style="margin-bottom: 1rem;">
+          <span
+            class="bg-gray-100 text-gray-500 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-gray-100 dark:text-gray-500 border border-gray-500"
+            data-testid="unavailable-tag"
+          >
+            <div class="relative group mr-2">
+              <Information class="w-4 h-4 text-grey-500" />
+              <div class="tooltip tooltip-right min-w-56">
+                <div class="whitespace-normal">
+                  Metrics Server is unavailable.
+                  <br />
+                  Ensure Metrics Server is running in the cluster.
+                </div>
               </div>
             </div>
-          </div>
-          Unavailable
-        </span>
-      </div>
+            Unavailable
+          </span>
+        </div>
+      {/if}
     </div>
 
     <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow" style:position="relative" style:margin="auto">
