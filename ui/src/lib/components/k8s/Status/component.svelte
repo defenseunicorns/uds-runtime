@@ -11,7 +11,7 @@
 </script>
 
 {#if status}
-  <span class={statusClass}>
+  <span class={`${statusClass} truncate`}>
     {status}
   </span>
 {:else}
