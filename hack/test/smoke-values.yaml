@@ -3,5 +3,5 @@
 
 image:
   repository: uds-runtime
-  tag: smoke-test
+  tag: test
   pullPolicy: Always
