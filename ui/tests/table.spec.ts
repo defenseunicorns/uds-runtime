@@ -51,7 +51,6 @@ async function checkTableHeaderResults(page: Page, expectedActual: number, expec
   await tableHeaderResults.waitFor()
   const textContent = await tableHeaderResults.textContent()
 
-  console.log('textContent:', textContent)
   const regex = /showing (\d+) of (\d+)/
   const match = textContent?.match(regex)
   if (match) {
