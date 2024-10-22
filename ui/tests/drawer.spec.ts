@@ -8,7 +8,7 @@ test.describe('Drawer', async () => {
     await page.goto('/workloads/pods')
 
     page
-      .locator('.table .tr')
+      .locator('.datatable .tr')
       .filter({ hasText: /^podinfo-/ })
       .click()
   })
