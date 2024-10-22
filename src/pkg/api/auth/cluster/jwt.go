@@ -4,6 +4,8 @@
 package cluster
 
 import (
+	"context"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -15,13 +17,26 @@ var allowedGroups = []string{
 	"/UDS Core/Auditor",
 }
 
+type contextKey string
+
+const (
+	groupKey contextKey = "group"
+	userKey  contextKey = "preferred_username"
+)
+
 // ValidateJWT checks if the request has a valid JWT token with the required groups.
-func ValidateJWT(w http.ResponseWriter, r *http.Request) bool {
+func ValidateJWT(w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
+	// debug log the request
+	for k, v := range r.Header {
+		slog.Debug("Request header", "key", k, "value", v)
+	}
+	slog.Debug("Request body", "body", r.Body)
+
 	authHeader := r.Header.Get("Authorization")
 
 	if authHeader == "" {
 		http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
-		return false
+		return r, false
 	}
 
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
@@ -30,7 +45,7 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) bool {
 	token, _, err := jwt.NewParser(jwt.WithoutClaimsValidation()).ParseUnverified(tokenString, jwt.Claims(jwt.MapClaims{}))
 	if err != nil {
 		http.Error(w, "Invalid token", http.StatusUnauthorized)
-		return false
+		return r, false
 	}
 
 	// Check if the token contains a "groups" claim
@@ -39,16 +54,25 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) bool {
 		for _, group := range groups {
 			for _, allowedGroup := range allowedGroups {
 				if group == allowedGroup {
-					// Group is allowed
-					return true
+					// Group is allowed, add group and username to requestcontext
+					// todo: handle multiple groups
+					// set context values on request
+					r = r.WithContext(context.WithValue(r.Context(), groupKey, group))
+					if preferredUsername, ok := token.Claims.(jwt.MapClaims)["preferred_username"].(string); ok {
+						r = r.WithContext(context.WithValue(r.Context(), userKey, preferredUsername))
+					} else {
+						http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+						return r, false
+					}
+					return r, true
 				}
 			}
 		}
 		// If we reach here, no matching group was found
 		http.Error(w, "Insufficient permissions", http.StatusForbidden)
-		return false
+		return r, false
 	}
 
 	http.Error(w, "Invalid token claims", http.StatusUnauthorized)
-	return false
+	return r, false
 }

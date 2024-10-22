@@ -4,6 +4,7 @@
 package middleware
 
 import (
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -34,14 +35,20 @@ func Auth(next http.Handler) http.Handler {
 					return
 				}
 				// session invalid
+				slog.Debug("Session invalid")
 				return
 			}
 		} else if config.InClusterAuthEnabled {
-			if valid := clusterAuth.ValidateJWT(w, r); valid {
-				next.ServeHTTP(w, r)
+			req, valid := clusterAuth.ValidateJWT(w, r)
+			if valid {
+				next.ServeHTTP(w, req)
 				return
 			}
+			// token invalid
+			slog.Debug("Token invalid")
+			return
 		}
+		// no auth enabled
 		next.ServeHTTP(w, r)
 	})
 }

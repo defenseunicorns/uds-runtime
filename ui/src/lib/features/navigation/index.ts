@@ -3,5 +3,6 @@
 
 export { default as Navbar } from './navbar/component.svelte'
 export { default as Sidebar } from './sidebar/component.svelte'
+export { default as UserMenu } from './navbar/usermenu/component.svelte'
 
 export { isSidebarExpanded } from './store'

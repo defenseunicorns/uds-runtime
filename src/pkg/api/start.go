@@ -58,6 +58,18 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Use(udsMiddleware.ConditionalCompress)
 
 	r.Get("/healthz", healthz)
+	// todo: only allow this endpoint if in-cluster
+	// todo: how to let the frontend know if it's in-cluster or local?
+	r.Get("/user", func(w http.ResponseWriter, r *http.Request) {
+		group := r.Context().Value("group")
+		username := r.Context().Value("preferred_username")
+		// return user and group in response as JSON
+		_, err := w.Write([]byte(fmt.Sprintf(`{"group": "%s", "username": "%s"}`, group, username)))
+		if err != nil {
+			message.WarnErrf(err, "failed to write response: %s", err.Error())
+		}
+	})
+	// Add Swagger UI routes
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
@@ -230,7 +242,7 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	}
 
 	// Create a new file server handler
-	fs := http.FileServer(root)
+	fsHandler := http.FileServer(root)
 
 	// Serve the index.html file if the requested file doesn't exist
 	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
@@ -246,7 +258,7 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 		file.Close()
 
 		// If the file exists, serve it using the http.FileServer
-		fs.ServeHTTP(w, r)
+		fsHandler.ServeHTTP(w, r)
 	})
 
 	return nil

@@ -5,6 +5,7 @@ package main
 
 import (
 	"embed"
+	"log/slog"
 	"os"
 
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api"
@@ -21,7 +22,8 @@ var localCert []byte
 var localKey []byte
 
 func main() {
-	message.SetLogLevel(message.DebugLevel)
+	// set log level slog
+	slog.SetLogLoggerLevel(slog.LevelDebug)
 
 	r, inCluster, err := api.Setup(&assets)
 	if err != nil {

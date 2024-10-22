@@ -1,8 +1,6 @@
-<!-- Copyright 2024 Defense Unicorns -->
-<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial -->
-
 <script lang="ts">
   import { authenticated } from '$features/auth/store'
+  import { UserMenu } from '$features/navigation'
   import { NotificationFilled } from 'carbon-icons-svelte'
 
   import { isSidebarExpanded } from '../store'
@@ -56,7 +54,7 @@
           data-dropdown-toggle="notification-dropdown"
           class="mr-1 rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:ring-4 focus:ring-gray-300 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-600"
         >
-          <NotificationFilled class="h-f6 w-6" />
+          <NotificationFilled class="h-6 w-6" />
         </button>
         <!-- Dropdown menu -->
         <div
@@ -69,6 +67,7 @@
             Notifications
           </div>
         </div>
+        <UserMenu />
       </div>
     </div>
   </nav>

@@ -5,6 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch Package with Kubernetes",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "main.go",
+      "preLaunchTask": "bridge-to-kubernetes.resource",
+      "env": {
+        "GRPC_DNS_RESOLVER": "native"
+      }
+    },
+    {
       "name": "Launch Package",
       "type": "go",
       "request": "launch",
