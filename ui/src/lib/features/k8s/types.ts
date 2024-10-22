@@ -65,6 +65,7 @@ export type ConfigMapStatus = 'Active'
 export type SecretStatus = 'Active'
 export type NamespaceStatus = 'Active' | 'Terminating'
 export type LogTypeStatus = 'Normal' | 'Warning'
+export type UDSPackageStatus = 'Pending' | 'Ready' | 'Failed' | 'Retrying'
 
 type K8TypeFields = { color: string }
 
@@ -83,6 +84,7 @@ export type K8StatusMapping = {
   Secrets: Record<SecretStatus, K8TypeFields>
   Namespaces: Record<NamespaceStatus, K8TypeFields>
   Logs: Record<LogTypeStatus, K8TypeFields>
+  UDSPackage: Record<UDSPackageStatus, K8TypeFields>
 }
 
 export type ClusterData = {

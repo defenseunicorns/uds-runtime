@@ -47,7 +47,7 @@
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
     const overviewPath: string = '/api/v1/monitor/cluster-overview'
-    const coreServicesPath: string = '/api/v1/resources/configs/uds-packages?fields=.metadata.name'
+    const coreServicesPath: string = '/api/v1/resources/configs/uds-packages?fields=.metadata.name,.status.phase'
     const podsPath: string = '/api/v1/resources/workloads/pods?fields=.metadata.name'
 
     const overview = new EventSource(overviewPath)

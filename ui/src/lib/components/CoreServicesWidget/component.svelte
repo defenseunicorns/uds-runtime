@@ -1,8 +1,11 @@
 <script lang="ts">
   import type { V1Pod } from '@kubernetes/client-node'
+  import type { UDSPackageStatus } from '$features/k8s/types'
+  import { getColorForStatus } from '$lib/features/k8s/helpers'
   import { type CoreServiceType } from '$lib/types'
   import { resourceDescriptions } from '$lib/utils/descriptions'
   import { Cube, Information } from 'carbon-icons-svelte'
+  import * as _ from 'lodash'
 
   export let coreServices: CoreServiceType[] = []
   export let pods: V1Pod[] = []
@@ -22,9 +25,8 @@
   }
 
   const coreServiceKeys = Object.keys(coreServicesMapping)
-
   let hasNoCoreServices: boolean = false
-  let uniqueServiceList: string[] = []
+  let transformedCoreServiceList: { name: string; status: UDSPackageStatus }[] = []
   let hasPolicyEngineOperator: boolean = false
 
   $: hasNoCoreServices = coreServices.every((service) => !coreServiceKeys.includes(service.metadata.name))
@@ -32,17 +34,21 @@
     hasPolicyEngineOperator = pods.filter((pod: V1Pod) => pod?.metadata?.name?.match(/^pepr-uds-core/)).length > 0
 
     coreServices.forEach((service) => {
-      let serviceName = coreServicesMapping[service.metadata.name]
+      let name = coreServicesMapping[service.metadata.name]
+      let status = service.status.phase
 
-      uniqueServiceList.push(serviceName)
-
-      // If we have pepr uds core pods then we have a Policy Engine & Operator in the cluster
-      if (hasPolicyEngineOperator) {
-        uniqueServiceList.push('Policy Engine & Operator')
-      }
-
-      uniqueServiceList = Array.from(new Set([...uniqueServiceList]))
+      transformedCoreServiceList.push({
+        name,
+        status,
+      })
     })
+
+    if (hasPolicyEngineOperator) {
+      transformedCoreServiceList.push({
+        name: 'Policy Engine & Operator',
+        status: 'Ready',
+      })
+    }
   }
 </script>
 
@@ -61,19 +67,21 @@
   {#if hasNoCoreServices}
     <span class="flex self-center">No Core Services running</span>
   {:else}
-    {@const sortedServices = uniqueServiceList.sort((a, b) => a.charCodeAt(0) - b.charCodeAt(0))}
     <div class="core-services__rows">
-      {#each sortedServices as serviceName}
+      <!-- Remove duplicates and sort by name -->
+      {#each _.sortBy(_.uniqBy(transformedCoreServiceList, 'name'), 'name') as { name, status }}
         <div class="core-services__rows-item">
-          <div class="w-10/12 flex items-center space-x-2">
+          <div class="w-11/12 flex items-center space-x-2">
             <div class="core-services__name-icon">
               <Cube size={16} class="text-gray-400" />
             </div>
 
-            <div class="truncate">{serviceName}</div>
+            <div class="truncate">{name}</div>
           </div>
 
-          <div class="w-2/12 text-green-400">Running</div>
+          <div class={`w-1/12 ${getColorForStatus('UDSPackage', status)}`}>
+            {status}
+          </div>
         </div>
       {/each}
     </div>
