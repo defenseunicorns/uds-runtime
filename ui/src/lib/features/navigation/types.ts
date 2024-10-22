@@ -26,7 +26,8 @@ export interface RouteChild {
 
 // UserData is the shape of the user data returned from /user
 export interface UserData {
-  username: string
+  name: string
+  preferredUsername: string
   group: string
   inClusterAuth: boolean
 }

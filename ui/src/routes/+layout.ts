@@ -14,10 +14,13 @@ export const load = async () => {
   const userResp = await fetch('user')
   const userJSON = await userResp.json()
   const userData: UserData = {
-    username: userJSON['username'],
+    name: userJSON['name'],
+    preferredUsername: userJSON['preferred-username'],
     group: userJSON['group'],
     inClusterAuth: userJSON['in-cluster-auth'],
   }
+
+  // todo: ^ test the above serialization
 
   const namespaces = createStore()
 

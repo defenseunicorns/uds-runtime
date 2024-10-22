@@ -17,6 +17,7 @@ import (
 
 	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/cluster"
 	_ "github.com/defenseunicorns/uds-runtime/src/pkg/api/docs" //nolint:staticcheck
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/src/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/monitor"
@@ -59,26 +60,39 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Use(udsMiddleware.ConditionalCompress)
 
 	r.Get("/healthz", healthz)
+
 	// todo: only allow this endpoint if in-cluster?
-	// todo: how to let the frontend know if it's in-cluster or local?
 	r.Get("/user", func(w http.ResponseWriter, r *http.Request) {
+		// debug log the context values
+		slog.Debug(fmt.Sprintf("handler: %v", r.Context()))
+
 		type userResponse struct {
-			Group         string `json:"group"`
-			Username      string `json:"username"`
-			InClusterAuth bool   `json:"in-cluster-auth"`
+			Group             string `json:"group"`
+			PreferredUsername string `json:"preferred-username"`
+			Name              string `json:"name"`
+			InClusterAuth     bool   `json:"in-cluster-auth"`
 		}
-		group := r.Context().Value("group")
-		username := r.Context().Value("preferred_username")
-		inCluster := config.InClusterAuthEnabled
-		var response userResponse
-		if group != nil && username != nil {
-			response = userResponse{
-				Group:    group.(string),
-				Username: username.(string),
-			}
+		group := r.Context().Value(cluster.GroupKey) // todo: type these keys better
+		username := r.Context().Value(cluster.PreferredUserNameKey)
+		name := r.Context().Value(cluster.NameKey)
+
+		response := userResponse{
+			InClusterAuth: config.InClusterAuthEnabled,
 		}
-		response.InClusterAuth = inCluster
+		if group != nil && username != nil && name != nil {
+			response.Group = group.(string)
+			response.Name = name.(string)
+			response.PreferredUsername = username.(string)
+		} else {
+			slog.Warn("Failed to get group and username from context")
+			http.Error(w, "authorization failure", http.StatusInternalServerError)
+		}
+
+		slog.Debug(fmt.Sprintf("response: %v", response))
+
 		responseBytes, err := json.Marshal(response)
+
+		slog.Debug(fmt.Sprintf("responseBytes: %s", string(responseBytes)))
 		if err != nil {
 			slog.Debug(fmt.Sprintf("failed to marshal response: %s", err.Error()))
 			http.Error(w, "failed to marshal response", http.StatusInternalServerError)

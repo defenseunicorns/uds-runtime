@@ -76,7 +76,7 @@
           </div>
         </div>
         {#if inClusterAuth}
-          <UserMenu />
+          <UserMenu {userData} />
         {/if}
       </div>
     </div>

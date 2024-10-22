@@ -6,7 +6,10 @@
   import { fade } from 'svelte/transition'
 
   import { goto } from '$app/navigation'
+  import type { UserData } from '$features/navigation/types'
   import { ChevronDown, ChevronUp, UserAvatarFilled } from 'carbon-icons-svelte'
+
+  export let userData: UserData
 
   let dropdownContainer: HTMLElement
   let isOpen = false
@@ -26,12 +29,6 @@
     }
   })
 
-  // Placeholder user data - replace with actual user data from your auth system
-  let userData = {
-    name: 'Gedd Johnson',
-    group: 'My Group',
-  }
-
   function toggleMenu() {
     isOpen = !isOpen
   }
@@ -39,6 +36,8 @@
   function signOut() {
     goto('/logout')
   }
+
+  // todo: test overflow of usermenu with a long email or group, add hover if necessary?
 </script>
 
 <div class="relative inline-block text-left" bind:this={dropdownContainer}>
@@ -65,7 +64,7 @@
     >
       <div class="py-1">
         <div class="px-4 py-2 text-sm text-white border-b border-gray-700">
-          <p>{userData.name}</p>
+          <p>{userData.preferredUsername}</p>
           <p class="text-gray-400">{userData.group}</p>
         </div>
         <button on:click={signOut} class="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-600">

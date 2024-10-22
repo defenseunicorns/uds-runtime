@@ -18,6 +18,7 @@ func TestValidateJWT(t *testing.T) {
 		claims := jwt.MapClaims{
 			"groups":             groups,
 			"preferred_username": "testuser",
+			"name":               "Test User",
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodNone, claims)
 		tokenString, _ := token.SignedString(jwt.UnsafeAllowNoneSignatureType)
@@ -34,13 +35,13 @@ func TestValidateJWT(t *testing.T) {
 			name:            "Valid token with allowed group",
 			token:           createToken([]string{"/UDS Core/Admin"}),
 			expectedStatus:  http.StatusOK,
-			expectedContext: map[contextKey]string{groupKey: "/UDS Core/Admin", userKey: "testuser"},
+			expectedContext: map[contextKey]string{GroupKey: "/UDS Core/Admin", PreferredUserNameKey: "testuser", NameKey: "Test User"},
 		},
 		{
 			name:            "Valid token with another allowed group",
 			token:           createToken([]string{"/UDS Core/Auditor"}),
 			expectedStatus:  http.StatusOK,
-			expectedContext: map[contextKey]string{groupKey: "/UDS Core/Auditor", userKey: "testuser"},
+			expectedContext: map[contextKey]string{GroupKey: "/UDS Core/Auditor", PreferredUserNameKey: "testuser", NameKey: "Test User"},
 		},
 		{
 			name:           "Valid token without allowed group",
@@ -78,8 +79,9 @@ func TestValidateJWT(t *testing.T) {
 			// Call the function directly
 			request, result := ValidateJWT(rr, req)
 			if len(tt.expectedContext) > 0 {
-				require.Equal(t, request.Context().Value(groupKey), tt.expectedContext[groupKey], "group and user not set together")
-				require.Equal(t, request.Context().Value(userKey), tt.expectedContext[userKey], "group and user not set together")
+				require.Equal(t, request.Context().Value(GroupKey), tt.expectedContext[GroupKey], "group and user not set together")
+				require.Equal(t, request.Context().Value(PreferredUserNameKey), tt.expectedContext[PreferredUserNameKey], "group and user not set together")
+				require.Equal(t, request.Context().Value(NameKey), tt.expectedContext[NameKey], "group and user not set together")
 			}
 
 			// Check the status code

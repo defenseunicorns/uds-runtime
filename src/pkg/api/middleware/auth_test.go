@@ -88,6 +88,7 @@ func TestAuthMiddleware(t *testing.T) {
 				jot.Claims = jwt.MapClaims{
 					"groups":             []string{"/UDS Core/Admin"},
 					"preferred_username": "testuser",
+					"name":               "Test User",
 				}
 				token, _ := jot.SignedString(jwt.UnsafeAllowNoneSignatureType)
 				r.Header.Set("Authorization", token)
