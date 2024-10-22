@@ -57,12 +57,12 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Use(udsMiddleware.Auth)
 	r.Use(udsMiddleware.ConditionalCompress)
 
-	// Add Swagger UI routes
+	r.Get("/healthz", healthz)
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	r.Get("/health", checkClusterConnection(k8sSession))
+	r.Get("/cluster-check", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Head("/auth", authHandler)
 		r.Route("/monitor", func(r chi.Router) {
@@ -255,14 +255,14 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error {
 	//nolint:gosec,govet
 	if inCluster {
-		slog.Info("Starting server in in-cluster mode on :8080")
+		slog.Info("Starting server in in-cluster mode on 0.0.0.0:8080")
 
-		if err := http.ListenAndServe(":8080", r); err != nil {
+		if err := http.ListenAndServe("0.0.0.0:8080", r); err != nil {
 			message.WarnErrf(err, "server failed to start: %s", err.Error())
 			return err
 		}
 	} else {
-		slog.Info("Starting server in local mode on :8443")
+		slog.Info("Starting server in local mode on 127.0.0.1:8443")
 		// create tls config from embedded cert and key
 		cert, err := tls.X509KeyPair(localCert, localKey)
 		if err != nil {
@@ -274,7 +274,7 @@ func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error 
 
 		// Create a server with TLS config
 		server := &http.Server{
-			Addr:      ":8443",
+			Addr:      "127.0.0.1:8443",
 			Handler:   r,
 			TLSConfig: tlsConfig,
 		}

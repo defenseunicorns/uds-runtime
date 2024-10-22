@@ -10,7 +10,7 @@ export class ClusterCheck {
   #disconnected = false
 
   constructor() {
-    this.#clusterCheck = new EventSource('/health')
+    this.#clusterCheck = new EventSource('/cluster-check')
 
     this.#clusterCheck.addEventListener('close', function () {
       this.close()

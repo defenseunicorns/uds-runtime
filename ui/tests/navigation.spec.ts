@@ -195,6 +195,8 @@ test.describe('Navigation', async () => {
       await page.getByRole('button', { name: 'Network' }).click()
       await page.getByRole('link', { name: 'Network Policies' }).click()
 
+      await page.waitForSelector('[data-testid="allow-podinfo-egress-dns-lookup-via-coredns-testid-1"]')
+
       await expect(page.getByTestId('allow-podinfo-egress-dns-lookup-via-coredns-testid-1')).toHaveText(
         'allow-podinfo-egress-dns-lookup-via-coredns',
       )
@@ -233,7 +235,7 @@ test.describe('Navigation', async () => {
   test('navigates to Nodes page', async ({ page }) => {
     await page.getByRole('link', { name: 'Nodes' }).click()
 
-    await expect(page.getByTestId('k3d-runtime-server-0-testid-1')).toHaveText('k3d-runtime-server-0')
+    await expect(page.getByTestId('control-plane, master-testid-3')).toHaveText('control-plane, master')
   })
 
   test('navigates to Preferences page', async ({ page }) => {
@@ -251,6 +253,6 @@ test.describe('Navigation', async () => {
   test('navigates to Help page', async ({ page }) => {
     await page.getByTestId('global-sidenav-help').click()
 
-    await expect(page.getByText('Help')).toBeVisible()
+    await expect(page.getByText('Help', { exact: true })).toBeVisible()
   })
 })
