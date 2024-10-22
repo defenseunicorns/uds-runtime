@@ -35,11 +35,13 @@
       let serviceName = coreServicesMapping[service.metadata.name]
 
       uniqueServiceList.push(serviceName)
-      uniqueServiceList = Array.from(new Set([...uniqueServiceList]))
 
-      if (hasPolicyEngineOperator && !uniqueServiceList.includes('Policy Engine & Operator')) {
+      // If we have pepr uds core pods then we have a Policy Engine & Operator in the cluster
+      if (hasPolicyEngineOperator) {
         uniqueServiceList.push('Policy Engine & Operator')
       }
+
+      uniqueServiceList = Array.from(new Set([...uniqueServiceList]))
     })
   }
 </script>
