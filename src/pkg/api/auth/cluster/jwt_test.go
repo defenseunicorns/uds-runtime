@@ -16,7 +16,8 @@ func TestValidateJWT(t *testing.T) {
 	// Helper function to create a JWT token without signing
 	createToken := func(groups []string) string {
 		claims := jwt.MapClaims{
-			"groups": groups,
+			"groups":             groups,
+			"preferred_username": "testuser",
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodNone, claims)
 		tokenString, _ := token.SignedString(jwt.UnsafeAllowNoneSignatureType)
@@ -24,19 +25,22 @@ func TestValidateJWT(t *testing.T) {
 	}
 
 	tests := []struct {
-		name           string
-		token          string
-		expectedStatus int
+		name            string
+		token           string
+		expectedStatus  int
+		expectedContext map[contextKey]string
 	}{
 		{
-			name:           "Valid token with allowed group",
-			token:          createToken([]string{"/UDS Core/Admin"}),
-			expectedStatus: http.StatusOK,
+			name:            "Valid token with allowed group",
+			token:           createToken([]string{"/UDS Core/Admin"}),
+			expectedStatus:  http.StatusOK,
+			expectedContext: map[contextKey]string{groupKey: "/UDS Core/Admin", userKey: "testuser"},
 		},
 		{
-			name:           "Valid token with another allowed group",
-			token:          createToken([]string{"/UDS Core/Auditor"}),
-			expectedStatus: http.StatusOK,
+			name:            "Valid token with another allowed group",
+			token:           createToken([]string{"/UDS Core/Auditor"}),
+			expectedStatus:  http.StatusOK,
+			expectedContext: map[contextKey]string{groupKey: "/UDS Core/Auditor", userKey: "testuser"},
 		},
 		{
 			name:           "Valid token without allowed group",
@@ -72,7 +76,11 @@ func TestValidateJWT(t *testing.T) {
 			rr := httptest.NewRecorder()
 
 			// Call the function directly
-			result := ValidateJWT(rr, req)
+			request, result := ValidateJWT(rr, req)
+			if len(tt.expectedContext) > 0 {
+				require.Equal(t, request.Context().Value(groupKey), tt.expectedContext[groupKey], "group and user not set together")
+				require.Equal(t, request.Context().Value(userKey), tt.expectedContext[userKey], "group and user not set together")
+			}
 
 			// Check the status code
 			require.Equal(t, tt.expectedStatus, rr.Code, "handler returned wrong status code")

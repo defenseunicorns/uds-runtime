@@ -12,6 +12,7 @@
   let isOpen = false
 
   onMount(() => {
+    // todo: test this all sorts of ways
     const handleWindowClick = (event: MouseEvent) => {
       if (dropdownContainer && !dropdownContainer.contains(event.target as Node)) {
         isOpen = false
@@ -36,7 +37,6 @@
   }
 
   function signOut() {
-    // Implement sign out logic here
     goto('/logout')
   }
 </script>
