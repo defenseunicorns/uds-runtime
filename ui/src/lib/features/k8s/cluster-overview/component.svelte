@@ -40,6 +40,7 @@
   let myChart: Chart
   const description = resourceDescriptions['Events']
   let metricsServerAvailable = true
+  let metricsServerNewlyAvailable = false
 
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
@@ -55,13 +56,11 @@
 
         if (CPU === -1 && Memory === -1) {
           metricsServerAvailable = false
-        }
-        // Handle case where CPU or Memory is -1 indicating metrics server is not available. Don't want to display negative values
-        if (CPU == -1) {
-          CPU = 0
-        }
-        if (Memory == -1) {
-          Memory = 0
+        } else {
+          if (!metricsServerAvailable) {
+            metricsServerNewlyAvailable = true
+          }
+          metricsServerAvailable = true
         }
 
         cpuPercentage = calculatePercentage(CPU, cpuCapacity)
@@ -79,13 +78,24 @@
           })
         }
 
+        // handle case when metrics server becomes available while page is up
+        if (metricsServerNewlyAvailable) {
+          metricsServerNewlyAvailable = false
+          myChart.data = getChartData(metricsServerAvailable)
+          myChart.options = getChartOptions(metricsServerAvailable)
+        }
+
         // on each message manually update the graph
         myChart.data.labels = historicalUsage.map((point) => [formatTime(point.Timestamp)])
 
-        // If CPU and Memory are both 0, don't update the graph
+        // If metrics server is not available, dont update the graph
         if (metricsServerAvailable) {
           myChart.data.datasets[0].data = historicalUsage.map((point) => point.Memory / (1024 * 1024 * 1024))
           myChart.data.datasets[1].data = historicalUsage.map((point) => point.CPU / 1000)
+        } else {
+          // handle case where metrics server was available and now is not
+          myChart.data = getChartData(false)
+          myChart.options = getChartOptions(false)
         }
         myChart.update()
         onMessageCount++
