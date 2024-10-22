@@ -238,7 +238,7 @@
       </div>
 
       <div class="table-scroll-container">
-        <div class="table">
+        <div class="datatable">
           <div class="thead">
             <div class="flex items-center">
               {#each columns as [header, style], idx}
@@ -306,7 +306,7 @@
                       {:else if key === 'namespace'}
                         <button
                           on:click|stopPropagation={() => namespace.set(value)}
-                          class="text-blue-600 dark:text-blue-500 hover:underline text-left"
+                          class="text-blue-600 dark:text-blue-500 hover:underline text-left truncate"
                         >
                           {value}
                         </button>
