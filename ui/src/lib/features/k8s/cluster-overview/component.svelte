@@ -41,21 +41,21 @@
   let onMessageCount = 0
   let myChart: Chart
   const description = resourceDescriptions['Events']
-  let services: CoreServiceType[] = []
+  let coreServices: CoreServiceType[] = []
   let pods: V1Pod[] = []
 
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
     const overviewPath: string = '/api/v1/monitor/cluster-overview'
-    const servicesPath: string = '/api/v1/resources/configs/uds-packages?fields=.metadata.name'
+    const coreServicesPath: string = '/api/v1/resources/configs/uds-packages?fields=.metadata.name'
     const podsPath: string = '/api/v1/resources/workloads/pods?fields=.metadata.name'
 
     const overview = new EventSource(overviewPath)
-    const servicesEvent = new EventSource(servicesPath)
+    const coreServicesEvent = new EventSource(coreServicesPath)
     const podsEvent = new EventSource(podsPath)
 
-    servicesEvent.onmessage = (event) => {
-      services = JSON.parse(event.data) as CoreServiceType[]
+    coreServicesEvent.onmessage = (event) => {
+      coreServices = JSON.parse(event.data) as CoreServiceType[]
     }
 
     podsEvent.onmessage = (event) => {
@@ -102,7 +102,7 @@
     return () => {
       onMessageCount = 0
       overview.close()
-      servicesEvent.close()
+      coreServicesEvent.close()
       podsEvent.close()
       myChart.destroy()
     }
@@ -149,7 +149,7 @@
   <div class="mt-8 flex flex-col xl:flex-row xl:space-x-4">
     <div class="w-full mt-4">
       <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow">
-        <CoreServicesWidget {services} {pods} />
+        <CoreServicesWidget {coreServices} {pods} />
       </div>
     </div>
   </div>

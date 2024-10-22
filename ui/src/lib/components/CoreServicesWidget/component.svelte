@@ -3,7 +3,7 @@
   import { type CoreServiceType } from '$lib/types'
   import { Cube, Information } from 'carbon-icons-svelte'
 
-  export let services: CoreServiceType[] = []
+  export let coreServices: CoreServiceType[] = []
   export let pods: V1Pod[] = []
 
   const coreServicesMapping: Record<string, string> = {
@@ -26,11 +26,11 @@
   let uniqueServiceList: string[] = []
   let hasPolicyEngineOperator: boolean = false
 
-  $: hasNoCoreServices = services.every((service) => !coreServiceKeys.includes(service.metadata.name))
+  $: hasNoCoreServices = coreServices.every((service) => !coreServiceKeys.includes(service.metadata.name))
   $: {
     hasPolicyEngineOperator = pods.filter((pod: V1Pod) => pod?.metadata?.name?.match(/^pepr-uds-core/)).length > 0
 
-    services.forEach((service) => {
+    coreServices.forEach((service) => {
       let serviceName = coreServicesMapping[service.metadata.name]
 
       uniqueServiceList.push(serviceName)
