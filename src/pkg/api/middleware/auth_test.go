@@ -86,19 +86,12 @@ func TestAuthMiddleware(t *testing.T) {
 				// create jwt for test and set header
 				jot := jwt.New(jwt.SigningMethodNone)
 				jot.Claims = jwt.MapClaims{
-					"groups": []string{"/UDS Core/Admin"},
+					"groups":             []string{"/UDS Core/Admin"},
+					"preferred_username": "testuser",
 				}
 				token, _ := jot.SignedString(jwt.UnsafeAllowNoneSignatureType)
 				r.Header.Set("Authorization", token)
 			},
-		},
-		{
-			name:                 "swagger is behind auth",
-			localAuthEnabled:     true,
-			inClusterAuthEnabled: false,
-			path:                 "/swagger",
-			expectedStatusCode:   http.StatusUnauthorized,
-			setup:                func(r *http.Request) {},
 		},
 		{
 			name:                 "In-cluster auth - Invalid JWT",
@@ -131,6 +124,14 @@ func TestAuthMiddleware(t *testing.T) {
 			path:                 "/api/v1/workloads/pods",
 			expectedStatusCode:   http.StatusOK,
 			setup:                func(*http.Request) {},
+		},
+		{
+			name:                 "Swagger is behind auth",
+			localAuthEnabled:     true,
+			inClusterAuthEnabled: false,
+			path:                 "/swagger",
+			expectedStatusCode:   http.StatusUnauthorized,
+			setup:                func(r *http.Request) {},
 		},
 	}
 
