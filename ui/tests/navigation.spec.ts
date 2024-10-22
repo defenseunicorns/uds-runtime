@@ -31,9 +31,7 @@ test.describe('Navigation', async () => {
     await expect(page.getByText('VIEW EVENTS')).toBeVisible()
 
     // Check for no unavailable tags when metrics server is available
-    const tags = page.getByTestId('unavailable-tag')
-    const tagCount = await tags.count()
-    expect(tagCount).toBe(0)
+    await expect(page.getByTestId('unavailable-tag')).toHaveCount(0)
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
