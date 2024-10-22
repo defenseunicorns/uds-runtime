@@ -5,7 +5,6 @@ package cluster
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
 	"strings"
 
@@ -26,12 +25,6 @@ const (
 
 // ValidateJWT checks if the request has a valid JWT token with the required groups.
 func ValidateJWT(w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
-	// debug log the request
-	for k, v := range r.Header {
-		slog.Debug("Request header", "key", k, "value", v)
-	}
-	slog.Debug("Request body", "body", r.Body)
-
 	authHeader := r.Header.Get("Authorization")
 
 	if authHeader == "" {
