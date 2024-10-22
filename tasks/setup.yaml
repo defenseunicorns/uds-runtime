@@ -50,9 +50,3 @@ tasks:
     actions:
       - cmd: uds zarf package create tmp/uds-core/src/authservice --confirm --flavor upstream -o build/
       - cmd: uds zarf package deploy build/zarf-package-uds-core-authservice*.tar.zst --confirm
-
-  - name: core-metrics-server
-    description: "Build and deploy core-metrics-server bundle which contains core base and metrics server"
-    actions:
-      - cmd: uds create hack/test --confirm
-      - cmd: uds deploy hack/test/uds-bundle-core-metrics-server-$UDS_ARCH-0.0.1.tar.zst --confirm

@@ -129,7 +129,7 @@ tasks:
         dir: hack/load-test
       - cmd: uds zarf tools kubectl apply -f hack/load-test/rc.yaml
         description: apply runtime class manually cause KFC is silly
-      - cmd: go test -failfast -v -timeout 30m --tags=integration ./...
+      - cmd: go test -failfast -v -timeout 30m ./src/test/e2e/...
 
   - name: smoke
     description: "runtime nightly smoke tests"

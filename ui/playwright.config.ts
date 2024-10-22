@@ -10,8 +10,10 @@ const { VITE_PORT_ENV } = loadEnv('dev', process.cwd())
 const port = VITE_PORT_ENV ?? '8443'
 const protocol = 'https'
 const host = 'runtime-local.uds.dev'
+const adminHost = 'runtime.admin.uds.dev'
 
-export default defineConfig({
+const main = {
+  name: 'main',
   webServer: {
     command: '../build/uds-runtime',
     url: `${protocol}://${host}:${port}`,
@@ -27,6 +29,19 @@ export default defineConfig({
   use: {
     baseURL: `${protocol}://${host}:${port}/`,
   },
-})
+}
 
-export { port }
+const inCluster = {
+  name: 'in-cluster',
+  timeout: 10 * 1000,
+  testDir: 'tests',
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  retries: process.env.CI ? 2 : 1,
+  testMatch: /^(?!.*local-auth|.*reconnect)(.+\.)?(test|spec)\.[jt]s$/,
+  use: {
+    baseURL: `${protocol}://${adminHost}/`,
+  },
+}
+
+export default defineConfig({ projects: [main, inCluster] })
