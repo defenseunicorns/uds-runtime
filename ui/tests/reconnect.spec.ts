@@ -31,13 +31,13 @@ test.describe('Cluster Reconnection and Pod Creation Test', () => {
     await page.goto('/workloads/pods')
 
     // Stop the cluster
-    execCommand('k3d cluster stop uds')
+    execCommand('k3d cluster stop runtime')
 
     // Wait for disconnection to be detected
     await expect(page.getByText('Cluster health check failed: no connection')).toBeVisible({ timeout: 15000 })
 
     // Start the cluster again
-    execCommand('k3d cluster start uds')
+    execCommand('k3d cluster start runtime')
 
     // Wait for the reconnection to be detected
     await expect(page.getByText('Cluster connection restored')).toBeVisible({ timeout: 15000 })
