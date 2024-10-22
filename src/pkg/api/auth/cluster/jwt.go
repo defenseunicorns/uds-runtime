@@ -53,11 +53,10 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
 					r = r.WithContext(context.WithValue(r.Context(), groupKey, group))
 					if preferredUsername, ok := token.Claims.(jwt.MapClaims)["preferred_username"].(string); ok {
 						r = r.WithContext(context.WithValue(r.Context(), userKey, preferredUsername))
-					} else {
-						http.Error(w, "Invalid token claims", http.StatusUnauthorized)
-						return r, false
+						return r, true
 					}
-					return r, true
+					http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+					return r, false
 				}
 			}
 		}
