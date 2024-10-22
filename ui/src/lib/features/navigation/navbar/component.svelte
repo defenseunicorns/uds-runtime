@@ -4,9 +4,14 @@
 <script lang="ts">
   import { authenticated } from '$features/auth/store'
   import { UserMenu } from '$features/navigation'
+  import type { UserData } from '$features/navigation/types'
   import { NotificationFilled } from 'carbon-icons-svelte'
 
   import { isSidebarExpanded } from '../store'
+
+  export let userData: UserData
+
+  const inClusterAuth = userData.inClusterAuth
 
   // Don't expand sidebar if api auth is enabled and user is unauthenticated
   $: {
@@ -70,7 +75,9 @@
             Notifications
           </div>
         </div>
-        <UserMenu />
+        {#if inClusterAuth}
+          <UserMenu />
+        {/if}
       </div>
     </div>
   </nav>

@@ -19,8 +19,9 @@
 
   let clusterCheck: ClusterCheck
   let currRoute: string
+  export let data
 
-  // These initiFlowbite calls help load the js necessary to target components which use flowbite js
+  // These initFlowbite calls help load the js necessary to target components which use flowbite js
   // i.e. data-dropdown-toggle
   onMount(() => {
     initFlowbite()
@@ -43,7 +44,7 @@
   }
 </script>
 
-<Navbar />
+<Navbar userData={data.userData} />
 
 <!-- Hide Sidebar if local auth is enabled and user is not authenticated-->
 {#if $authenticated}

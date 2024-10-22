@@ -6,6 +6,7 @@ package api
 import (
 	"crypto/tls"
 	"embed"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
@@ -58,15 +59,35 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Use(udsMiddleware.ConditionalCompress)
 
 	r.Get("/healthz", healthz)
-	// todo: only allow this endpoint if in-cluster
+	// todo: only allow this endpoint if in-cluster?
 	// todo: how to let the frontend know if it's in-cluster or local?
 	r.Get("/user", func(w http.ResponseWriter, r *http.Request) {
+		type userResponse struct {
+			Group         string `json:"group"`
+			Username      string `json:"username"`
+			InClusterAuth bool   `json:"in-cluster-auth"`
+		}
 		group := r.Context().Value("group")
 		username := r.Context().Value("preferred_username")
-		// return user and group in response as JSON
-		_, err := w.Write([]byte(fmt.Sprintf(`{"group": "%s", "username": "%s"}`, group, username)))
+		inCluster := config.InClusterAuthEnabled
+		var response userResponse
+		if group != nil && username != nil {
+			response = userResponse{
+				Group:    group.(string),
+				Username: username.(string),
+			}
+		}
+		response.InClusterAuth = inCluster
+		responseBytes, err := json.Marshal(response)
 		if err != nil {
-			message.WarnErrf(err, "failed to write response: %s", err.Error())
+			slog.Debug(fmt.Sprintf("failed to marshal response: %s", err.Error()))
+			http.Error(w, "failed to marshal response", http.StatusInternalServerError)
+		}
+		_, err = w.Write(responseBytes)
+		if err != nil {
+			slog.Debug(fmt.Sprintf("failed to write response: %s", err.Error()))
+			http.Error(w, "failed to write response", http.StatusInternalServerError)
+			return
 		}
 	})
 	// Add Swagger UI routes

@@ -3,18 +3,29 @@
 
 import { authenticated } from '$features/auth/store'
 import { createStore } from '$features/k8s/namespaces/store'
+import type { UserData } from '$features/navigation/types'
 
 export const ssr = false
 
 // Provide shared access to the cluster namespace store
 export const load = async () => {
+  // load user data
+  // todo: don't use a /user endpoint, piggyback off of auth
+  const userResp = await fetch('user')
+  const userJSON = await userResp.json()
+  const userData: UserData = {
+    username: userJSON['username'],
+    group: userJSON['group'],
+    inClusterAuth: userJSON['in-cluster-auth'],
+  }
+
   const namespaces = createStore()
 
   const url = new URL(window.location.href)
-  const token = url.searchParams.get('token') || ''
+  const localAuthToken = url.searchParams.get('token') || ''
 
-  // validate token
-  if (await tokenAuth(token)) {
+  // validate token (noting this is a local auth check only)
+  if (await tokenAuth(localAuthToken)) {
     namespaces.start()
     authenticated.set(true)
   } else {
@@ -22,6 +33,7 @@ export const load = async () => {
   }
   return {
     namespaces,
+    userData,
   }
 }
 
