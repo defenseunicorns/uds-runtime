@@ -43,6 +43,7 @@
       })
     })
 
+    // If we have pepr uds core pods then we have a Policy Engine & Operator in the cluster
     if (hasPolicyEngineOperator) {
       transformedCoreServiceList.push({
         name: 'Policy Engine & Operator',
