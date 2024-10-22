@@ -4,6 +4,8 @@
 includes:
   - setup: ./setup.yaml
   - build: ./build.yaml
+  - core-utils: https://raw.githubusercontent.com/defenseunicorns/uds-core/refs/tags/v0.29.1/tasks/utils.yaml
+  - common-setup: https://raw.githubusercontent.com/defenseunicorns/uds-common/refs/tags/v0.13.1/tasks/setup.yaml
 
 tasks:
   - name: deploy-runtime-cluster
@@ -176,3 +178,9 @@ tasks:
       - task: build:e2e-img-pkg
       - cmd: uds zarf package deploy build/e2e/zarf-package-uds-runtime-$UDS_ARCH-test.tar.zst --confirm
         dir: hack/test
+
+  - name: create-test-keycloak-user
+    description: creates a doug user in keycloak
+    actions:
+      - task: core-utils:keycloak-admin-user
+      - cmd: uds run -f tasks/test.yaml common-setup:create-doug-user --set KEYCLOAK_GROUP="/UDS Core/Admin"
