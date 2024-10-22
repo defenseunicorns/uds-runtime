@@ -26,7 +26,7 @@ tasks:
     description: "start a plain k3d cluster"
     actions:
       - cmd: |
-          k3d cluster delete uds && k3d cluster create uds --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
+          k3d cluster delete runtime && k3d cluster create runtime --k3s-arg "--disable=traefik@server:*" --k3s-arg "--disable=servicelb@server:*"
 
   - name: golangci
     description: "Install golangci-lint to GOPATH using install.sh"

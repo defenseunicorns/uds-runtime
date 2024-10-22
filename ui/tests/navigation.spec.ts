@@ -235,7 +235,7 @@ test.describe('Navigation', async () => {
   test('navigates to Nodes page', async ({ page }) => {
     await page.getByRole('link', { name: 'Nodes' }).click()
 
-    await expect(page.getByTestId('k3d-uds-server-0-testid-1')).toHaveText('k3d-uds-server-0')
+    await expect(page.getByTestId('control-plane, master-testid-3')).toHaveText('control-plane, master')
   })
 
   test('navigates to Preferences page', async ({ page }) => {
