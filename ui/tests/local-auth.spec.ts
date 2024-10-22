@@ -79,7 +79,7 @@ test.describe.serial('Authentication Tests', () => {
 
     // Check details view
     await page
-      .locator('.table .tr')
+      .locator('.datatable .tr')
       .filter({ hasText: /^podinfo-/ })
       .click()
     let drawerEl = page.getByTestId('drawer')
