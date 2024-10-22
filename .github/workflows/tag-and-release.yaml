@@ -50,7 +50,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: smoke-test
-        run: uds run test:smoke --set DIR=hack/smoke-test
+        run: uds run test:smoke --set DIR=hack/test
 
       - name: Publish
         run: |
