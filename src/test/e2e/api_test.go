@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 )
@@ -733,6 +734,40 @@ func TestClusterOpsRoutes(t *testing.T) {
 	for _, tt := range clusterOpsTests {
 		testRoutesHelper(t, tt, uidMap, r)
 	}
+}
+
+func TestAuth(t *testing.T) {
+	// assuming local mode!
+	r, err := setup()
+	require.NoError(t, err)
+
+	defer teardown()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(1)*time.Second)
+	defer cancel()
+
+	rr := httptest.NewRecorder()
+
+	req := httptest.NewRequest("GET", "/api/v1/auth", nil)
+
+	// Start serving the request for 1 second
+	go func(ctx context.Context) {
+		r.ServeHTTP(rr, req)
+	}(ctx)
+
+	// wait for the context to be done
+	<-ctx.Done()
+
+	require.Equal(t, http.StatusOK, rr.Code)
+
+	// unmarshal body and check values
+	var userResp auth.UserResponse
+	err = json.Unmarshal(rr.Body.Bytes(), &userResp)
+	require.NoError(t, err)
+	require.Equal(t, false, userResp.InClusterAuth)
+	require.Equal(t, "", userResp.Group)
+	require.Equal(t, "", userResp.Name)
+	require.Equal(t, "", userResp.PreferredUsername)
 }
 
 // testRoutesHelper handles logic for testing getResources and getResource routes (e.g. /pods and /pods/{uid})

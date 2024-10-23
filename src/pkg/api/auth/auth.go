@@ -22,7 +22,7 @@ import (
 // https://owasp.org/www-community/password-special-characters has complete list of safe chars.
 const randomStringChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~-"
 
-type userResponse struct {
+type UserResponse struct {
 	Group             string `json:"group"`
 	PreferredUsername string `json:"preferred-username"`
 	Name              string `json:"name"`
@@ -63,10 +63,10 @@ func Configure() {
 	}
 }
 
-// RequestHandler is the main handler for the /auth endpoint
-// todo: test this handler function
+// RequestHandler is the main handler for the /auth endpoint; it returns a userResponse struct
+// indicating whether the request was authenticated via local or in-cluster auth, and relevant user data
 func RequestHandler(w http.ResponseWriter, r *http.Request) {
-	resp := userResponse{
+	resp := UserResponse{
 		InClusterAuth: false,
 	}
 	if config.LocalAuthEnabled && !local.Auth(w, r) {

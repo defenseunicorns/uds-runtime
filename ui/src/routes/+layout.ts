@@ -20,7 +20,8 @@ async function auth(token: string): Promise<AuthResponse> {
   })
 
   try {
-    const response = await fetch(`${baseURL}/auth?token=${token}`, {
+    const url = token ? `${baseURL}/auth?token=${token}` : `${baseURL}/auth`
+    const response = await fetch(url, {
       method: 'GET',
       headers,
     })

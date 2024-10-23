@@ -53,7 +53,6 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r := chi.NewRouter()
 
 	// Add middleware
-	// todo: should Chi middleware write to the client, return, or both?
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(udsMiddleware.Auth)
