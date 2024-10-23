@@ -8,7 +8,7 @@
   import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
   import { createStore } from '$lib/features/k8s/events/store'
   import { resourceDescriptions } from '$lib/utils/descriptions'
-  import { Analytics, DataVis_1, Information } from 'carbon-icons-svelte'
+  import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
   import Chart from 'chart.js/auto'
 
   import { calculatePercentage, formatTime, mebibytesToGigabytes, millicoresToCores } from '../helpers'

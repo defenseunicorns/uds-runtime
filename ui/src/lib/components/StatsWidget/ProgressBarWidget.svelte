@@ -3,7 +3,6 @@
 
 <script lang="ts">
   import { Card, InactiveBadge, ProgressBar } from '$components'
-  import { Information } from 'carbon-icons-svelte'
 
   import type { BarSizeType, UnitType } from './types.ts'
 
