@@ -82,10 +82,26 @@ export const getChartOptions = (metricsServerAvailable: boolean): ChartOptions<'
     },
     plugins: {
       legend: {
+        position: 'bottom',
         labels: {
           color: styles.textColor,
+          boxHeight: 14,
+          boxWidth: 14,
+          useBorderRadius: true,
+          borderRadius: 7,
         },
       },
+      tooltip: {
+        enabled: true,
+        mode: 'index',
+        intersect: false,
+        backgroundColor: '#1F2937',
+        borderColor: styles.textColor,
+        borderWidth: 1,
+      },
+    },
+    hover: {
+      intersect: true,
     },
   }
 }
