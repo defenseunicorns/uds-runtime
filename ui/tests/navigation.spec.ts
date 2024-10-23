@@ -245,7 +245,7 @@ test.describe('Navigation', async () => {
   })
 
   test('navigates to Nodes page', async ({ page }) => {
-    await page.getByRole('link', { name: 'Nodes' }).click()
+    await page.getByRole('link', { name: /^Nodes$/ }).click()
 
     await expect(page.getByTestId('control-plane, master-testid-3')).toHaveText('control-plane, master')
   })
