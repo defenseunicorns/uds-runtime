@@ -87,7 +87,7 @@ test.describe('Navigation', async () => {
   test.describe('navigates to Workloads', async () => {
     test('Pods page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
-      await page.getByRole('link', { name: 'Pods' }).click()
+      await page.getByRole('link', { name: /^Pods$/ }).click()
 
       const element = page.locator(`.emphasize:has-text("podinfo")`).first()
       await expect(element).toBeVisible()

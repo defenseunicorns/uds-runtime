@@ -73,7 +73,7 @@ test.describe.serial('Authentication Tests', () => {
   test('data is visible on load, refresh, and new tab', async ({ page, context }) => {
     await page.goto(`/auth?token=${extractedToken}`)
     await page.getByRole('button', { name: 'Workloads' }).click()
-    await page.getByRole('link', { name: 'Pods' }).click()
+    await page.getByRole('link', { name: /^Pods$/ }).click()
     const element = page.locator(`.emphasize:has-text("podinfo")`).first()
     await expect(element).toBeVisible()
 
