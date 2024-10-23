@@ -24,5 +24,4 @@ export type ProgressBarType = {
   value: string | number
 }
 
-// todo: is this used?
 export type StatType = VariantType & (WithRightIconType | ProgressBarType)

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/incluster"
@@ -13,12 +14,105 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestConfigure(t *testing.T) {
+	// Helper function to reset environment and config state
+	reset := func() {
+		os.Unsetenv("LOCAL_AUTH_ENABLED")
+		os.Unsetenv("IN_CLUSTER_AUTH_ENABLED")
+		config.LocalAuthEnabled = false
+		config.InClusterAuthEnabled = false
+		local.AuthToken = ""
+	}
+
+	tests := []struct {
+		name                  string
+		localAuthEnv          string
+		inClusterAuthEnv      string
+		expectedLocalAuth     bool
+		expectedInClusterAuth bool
+		shouldHaveLocalToken  bool
+	}{
+		{
+			name:                  "Default values when env vars not set",
+			localAuthEnv:          "",
+			inClusterAuthEnv:      "",
+			expectedLocalAuth:     true,
+			expectedInClusterAuth: false,
+			shouldHaveLocalToken:  true,
+		},
+		{
+			name:                  "Local auth explicitly enabled",
+			localAuthEnv:          "true",
+			inClusterAuthEnv:      "",
+			expectedLocalAuth:     true,
+			expectedInClusterAuth: false,
+			shouldHaveLocalToken:  true,
+		},
+		{
+			name:                  "Local auth disabled, in-cluster auth enabled",
+			localAuthEnv:          "false",
+			inClusterAuthEnv:      "true",
+			expectedLocalAuth:     false,
+			expectedInClusterAuth: true,
+			shouldHaveLocalToken:  false,
+		},
+		{
+			name:                  "Invalid local auth value defaults to true",
+			localAuthEnv:          "invalid",
+			inClusterAuthEnv:      "",
+			expectedLocalAuth:     true,
+			expectedInClusterAuth: false,
+			shouldHaveLocalToken:  true,
+		},
+		{
+			name:                  "Invalid in-cluster auth value defaults to false",
+			localAuthEnv:          "false",
+			inClusterAuthEnv:      "invalid",
+			expectedLocalAuth:     false,
+			expectedInClusterAuth: false,
+			shouldHaveLocalToken:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Reset state before each test
+			reset()
+
+			// Set environment variables for test
+			if tt.localAuthEnv != "" {
+				os.Setenv("LOCAL_AUTH_ENABLED", tt.localAuthEnv)
+			}
+			if tt.inClusterAuthEnv != "" {
+				os.Setenv("IN_CLUSTER_AUTH_ENABLED", tt.inClusterAuthEnv)
+			}
+
+			// Run the configuration
+			Configure()
+
+			// Check local auth configuration
+			require.Equal(t, tt.expectedLocalAuth, config.LocalAuthEnabled)
+
+			// Check in-cluster auth configuration
+			require.Equal(t, tt.expectedInClusterAuth, config.InClusterAuthEnabled)
+
+			// Check local auth token
+			if tt.shouldHaveLocalToken {
+				require.NotEmpty(t, local.AuthToken)
+				require.Len(t, local.AuthToken, 96)
+			} else {
+				require.Empty(t, local.AuthToken)
+			}
+		})
+	}
+}
+
 func TestLocalAuthRequestHandler(t *testing.T) {
 	config.LocalAuthEnabled = true
 	local.AuthToken = "test-token"
 
 	// Expected response in local mode unless an error has occurred
-	userResp := &userResponse{
+	userResp := &UserResponse{
 		InClusterAuth: false,
 	}
 
@@ -26,7 +120,7 @@ func TestLocalAuthRequestHandler(t *testing.T) {
 		name           string
 		token          string
 		expectedStatus int
-		expectedResp   *userResponse
+		expectedResp   *UserResponse
 		withCookie     bool
 	}{
 		{
@@ -87,7 +181,7 @@ func TestLocalAuthRequestHandler(t *testing.T) {
 
 			// Verify response body
 			if tt.expectedResp != nil {
-				var resp userResponse
+				var resp UserResponse
 				err = json.Unmarshal(rr.Body.Bytes(), &resp)
 				require.NoError(t, err, "failed to unmarshal response")
 				require.Equal(t, tt.expectedResp, &resp,
@@ -105,7 +199,7 @@ func TestInClusterRequestHandler(t *testing.T) {
 		name           string
 		setupContext   func(context.Context) context.Context
 		expectedStatus int
-		expectedResp   *userResponse
+		expectedResp   *UserResponse
 	}{
 		{
 			name: "InCluster auth success",
@@ -116,10 +210,10 @@ func TestInClusterRequestHandler(t *testing.T) {
 				return ctx
 			},
 			expectedStatus: http.StatusOK,
-			expectedResp: &userResponse{
+			expectedResp: &UserResponse{
 				InClusterAuth:     true,
 				Group:             "admin-group",
-				Name:              "Dough Unicorn",
+				Name:              "Doug Unicorn",
 				PreferredUsername: "doug@defenseunicorns.com",
 			},
 		},
@@ -153,7 +247,7 @@ func TestInClusterRequestHandler(t *testing.T) {
 
 			// Verify response body
 			if tt.expectedResp != nil {
-				var resp userResponse
+				var resp UserResponse
 				err = json.Unmarshal(rr.Body.Bytes(), &resp)
 				require.NoError(t, err, "failed to unmarshal response")
 				require.Equal(t, tt.expectedResp, &resp,
@@ -176,5 +270,3 @@ func TestNoAuthEnabled(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, rr.Code)
 }
-
-// todo: test configure?

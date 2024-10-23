@@ -22,6 +22,7 @@ import (
 // https://owasp.org/www-community/password-special-characters has complete list of safe chars.
 const randomStringChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~-"
 
+// UserResponse is the response for the /auth endpoint
 type UserResponse struct {
 	Group             string `json:"group"`
 	PreferredUsername string `json:"preferred-username"`

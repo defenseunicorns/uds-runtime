@@ -49,7 +49,6 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
 			for _, allowedGroup := range allowedGroups {
 				if group == allowedGroup {
 					// Group is allowed, add group and username to request context
-					// todo: handle multiple groups?
 					// set context values on request
 					r = r.WithContext(context.WithValue(r.Context(), GroupKey, group))
 					preferredUsername, preferredUsernameOk := token.Claims.(jwt.MapClaims)["preferred_username"].(string)
