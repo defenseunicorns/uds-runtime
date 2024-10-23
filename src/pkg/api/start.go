@@ -6,7 +6,6 @@ package api
 import (
 	"crypto/tls"
 	"embed"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
@@ -17,7 +16,7 @@ import (
 
 	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth"
-	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/cluster"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/local"
 	_ "github.com/defenseunicorns/uds-runtime/src/pkg/api/docs" //nolint:staticcheck
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/src/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/monitor"
@@ -54,64 +53,21 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r := chi.NewRouter()
 
 	// Add middleware
+	// todo: should Chi middleware write to the client, return, or both?
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(udsMiddleware.Auth)
 	r.Use(udsMiddleware.ConditionalCompress)
 
+	// add routes
 	r.Get("/healthz", healthz)
-
-	// todo: only allow this endpoint if in-cluster?
-	r.Get("/user", func(w http.ResponseWriter, r *http.Request) {
-		// debug log the context values
-		slog.Debug(fmt.Sprintf("handler: %v", r.Context()))
-
-		type userResponse struct {
-			Group             string `json:"group"`
-			PreferredUsername string `json:"preferred-username"`
-			Name              string `json:"name"`
-			InClusterAuth     bool   `json:"in-cluster-auth"`
-		}
-		group := r.Context().Value(cluster.GroupKey) // todo: type these keys better
-		username := r.Context().Value(cluster.PreferredUserNameKey)
-		name := r.Context().Value(cluster.NameKey)
-
-		response := userResponse{
-			InClusterAuth: config.InClusterAuthEnabled,
-		}
-		if group != nil && username != nil && name != nil {
-			response.Group = group.(string)
-			response.Name = name.(string)
-			response.PreferredUsername = username.(string)
-		} else {
-			slog.Warn("Failed to get group and username from context")
-			http.Error(w, "authorization failure", http.StatusInternalServerError)
-		}
-
-		slog.Debug(fmt.Sprintf("response: %v", response))
-
-		responseBytes, err := json.Marshal(response)
-
-		slog.Debug(fmt.Sprintf("responseBytes: %s", string(responseBytes)))
-		if err != nil {
-			slog.Debug(fmt.Sprintf("failed to marshal response: %s", err.Error()))
-			http.Error(w, "failed to marshal response", http.StatusInternalServerError)
-		}
-		_, err = w.Write(responseBytes)
-		if err != nil {
-			slog.Debug(fmt.Sprintf("failed to write response: %s", err.Error()))
-			http.Error(w, "failed to write response", http.StatusInternalServerError)
-			return
-		}
-	})
-	// Add Swagger UI routes
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	r.Get("/cluster-check", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Head("/auth", authHandler)
+		r.Get("/auth", authHandler)
 		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
@@ -234,7 +190,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		host := "runtime-local.uds.dev"
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
-		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, auth.LocalAuthToken)
+		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, local.AuthToken)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {

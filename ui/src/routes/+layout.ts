@@ -7,56 +7,70 @@ import type { UserData } from '$features/navigation/types'
 
 export const ssr = false
 
-// Provide shared access to the cluster namespace store
-export const load = async () => {
-  // load user data
-  // todo: don't use a /user endpoint, piggyback off of auth
-  const userResp = await fetch('/user')
-  const userJSON = await userResp.json()
-  const userData: UserData = {
-    name: userJSON['name'],
-    preferredUsername: userJSON['preferred-username'],
-    group: userJSON['group'],
-    inClusterAuth: userJSON['in-cluster-auth'],
-  }
-
-  // todo: ^ test the above serialization
-
-  const namespaces = createStore()
-
-  const url = new URL(window.location.href)
-  const localAuthToken = url.searchParams.get('token') || ''
-
-  // validate token (noting this is a local auth check only)
-  if (await tokenAuth(localAuthToken)) {
-    namespaces.start()
-    authenticated.set(true)
-  } else {
-    authenticated.set(false)
-  }
-  return {
-    namespaces,
-    userData,
-  }
+interface AuthResponse {
+  authenticated: boolean
+  userData: UserData | null
 }
 
-// tokenAuth is a helper function that checks if a token is valid for local auth
-async function tokenAuth(token: string): Promise<boolean> {
-  const hasToken = token != ''
+// auth function that returns both auth status and user data
+async function auth(token: string): Promise<AuthResponse> {
   const baseURL = '/api/v1'
   const headers = new Headers({
     'Content-Type': 'application/json',
   })
-  const url = hasToken ? `${baseURL}/auth?token=${token}` : `${baseURL}/auth`
-  const payload: RequestInit = { method: 'HEAD', headers }
 
   try {
-    // Actually make the request
-    const response = await fetch(url, payload)
-    return response.ok
-  } catch (e) {
-    // Something went wrong--abort the request.
-    console.error(e)
-    return Promise.reject(e)
+    const response = await fetch(`${baseURL}/auth?token=${token}`, {
+      method: 'GET',
+      headers,
+    })
+    if (response.ok) {
+      const json = await response.json()
+      return {
+        authenticated: response.ok,
+        userData: {
+          name: json['name'],
+          preferredUsername: json['preferred-username'],
+          group: json['group'],
+          inClusterAuth: json['in-cluster-auth'],
+        },
+      }
+    } else {
+      return {
+        authenticated: false,
+        userData: null,
+      }
+    }
+  } catch (error) {
+    console.error('Authentication error:', error)
+    throw error // Let the caller handle the error
+  }
+}
+
+// load namespace and auth data before rendering the app
+export const load = async () => {
+  const namespaces = createStore()
+  const url = new URL(window.location.href)
+  const localAuthToken = url.searchParams.get('token') || ''
+  let userData: UserData | null = null
+
+  try {
+    const authResult = await auth(localAuthToken)
+
+    if (authResult.authenticated) {
+      namespaces.start()
+      authenticated.set(true)
+      userData = authResult.userData
+    } else {
+      authenticated.set(false)
+    }
+  } catch (error) {
+    console.error('Load error:', error)
+    authenticated.set(false)
+  }
+
+  return {
+    namespaces,
+    userData,
   }
 }

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	clusterAuth "github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/cluster"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/incluster"
 	localAuth "github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/local"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/config"
 )
@@ -39,7 +39,7 @@ func Auth(next http.Handler) http.Handler {
 				return
 			}
 		} else if config.InClusterAuthEnabled {
-			req, valid := clusterAuth.ValidateJWT(w, r)
+			req, valid := incluster.ValidateJWT(w, r)
 			if valid {
 				next.ServeHTTP(w, req)
 				return

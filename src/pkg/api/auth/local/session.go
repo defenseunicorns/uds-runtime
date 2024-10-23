@@ -8,9 +8,6 @@ import (
 	"encoding/hex"
 	"net/http"
 	"sync"
-
-	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth"
-	"github.com/defenseunicorns/uds-runtime/src/pkg/config"
 )
 
 // BrowserSession is a struct that holds the session ID of the current session
@@ -19,6 +16,9 @@ type BrowserSession struct {
 	sessionID string
 	mutex     sync.RWMutex
 }
+
+// AuthToken is the token used for local auth
+var AuthToken = ""
 
 // NewBrowserSession creates a new BrowserSession
 func NewBrowserSession() *BrowserSession {
@@ -52,44 +52,36 @@ func (s *BrowserSession) Remove() {
 // Session is a global variable that holds the current session
 var Session = NewBrowserSession()
 
-// todo: start here
-// - change configure.go -> auth.go
-// - Keep the function body of AuthHandler here (in between the if block)
-// - Make another function that does what /user does now
-// AuthHandler handle validating tokens and session cookies for local authentication
-func AuthHandler(w http.ResponseWriter, r *http.Request) {
-	if config.LocalAuthEnabled {
-		token := r.URL.Query().Get("token")
-		if token == "" {
-			// Handle session cookie validation
-			if valid := ValidateSessionCookie(w, r); valid {
-				w.WriteHeader(http.StatusOK)
-				return
-			}
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		} else if token != auth.LocalAuthToken {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
+// Auth validates tokens and session cookies for local authentication
+func Auth(w http.ResponseWriter, r *http.Request) bool {
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		// Handle session cookie validation
+		if valid := ValidateSessionCookie(w, r); valid {
+			w.WriteHeader(http.StatusOK)
+			return false
 		}
-		// valid token, generate session id and set cookie
-		sessionID := generateSessionID(w)
-		Session.Store(sessionID)
-		http.SetCookie(w, &http.Cookie{
-			Name:     "session_id",
-			Value:    sessionID,
-			HttpOnly: true,
-			Secure:   true,
-			SameSite: http.SameSiteStrictMode,
-			Path:     "/",
-		})
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusUnauthorized)
+		return false
+	} else if token != AuthToken {
+		w.WriteHeader(http.StatusUnauthorized)
+		return false
 	}
-
-	// not using local auth, return ok
-	w.WriteHeader(http.StatusOK)
+	// valid token, generate session id and set cookie
+	sessionID := GenerateSessionID(w)
+	Session.Store(sessionID)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    sessionID,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",
+	})
+	return true
 }
 
+// ValidateSessionCookie validates the session cookie in the request
 func ValidateSessionCookie(w http.ResponseWriter, r *http.Request) bool {
 	// Retrieve the session cookie
 	cookie, err := r.Cookie("session_id")
@@ -100,7 +92,8 @@ func ValidateSessionCookie(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-func generateSessionID(w http.ResponseWriter) string {
+// GenerateSessionID is a util function to generate a random session ID
+func GenerateSessionID(w http.ResponseWriter) string {
 	bytes := make([]byte, 16) // 16 bytes = 128 bits
 	if _, err := rand.Read(bytes); err != nil {
 		http.Error(w, "Failed to generate session ID", http.StatusInternalServerError)

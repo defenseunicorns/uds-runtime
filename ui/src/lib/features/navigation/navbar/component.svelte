@@ -11,7 +11,7 @@
 
   export let userData: UserData
 
-  const inClusterAuth = userData.inClusterAuth
+  const inClusterAuth = (userData && userData.inClusterAuth) ?? false
 
   // Don't expand sidebar if api auth is enabled and user is unauthenticated
   $: {
