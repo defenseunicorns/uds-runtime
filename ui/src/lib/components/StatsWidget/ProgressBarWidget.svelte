@@ -20,7 +20,11 @@
     <div class="w-full">
       {#if deactivated}
         <div class="flex justify-end">
-          <InactiveBadge tooltipDirection="tooltip-left" />
+          <InactiveBadge
+            tooltipDirection="tooltip-left"
+            tooltipText="Metrics Server is unavailable.
+            Ensure Metrics Server is running in the cluster."
+          />
         </div>
       {/if}
       <div class="flex items-center">

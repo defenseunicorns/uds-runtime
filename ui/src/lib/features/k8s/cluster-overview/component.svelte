@@ -158,7 +158,11 @@
       </h2>
       {#if !metricsServerAvailable}
         <div class="relative group ml-2 flex items-center" style="margin-bottom: 1rem;">
-          <InactiveBadge tooltipDirection="tooltip-right" />
+          <InactiveBadge
+            tooltipDirection="tooltip-right"
+            tooltipText="Metrics Server is unavailable.
+            Ensure Metrics Server is running in the cluster."
+          />
         </div>
       {/if}
     </div>

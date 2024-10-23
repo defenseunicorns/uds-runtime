@@ -5,6 +5,7 @@
   import { Information } from 'carbon-icons-svelte'
 
   export let tooltipDirection = 'tooltip-right'
+  export let tooltipText = ''
 </script>
 
 <span
@@ -15,9 +16,7 @@
     <Information class="w-4 h-4 text-grey-500" />
     <div class={`tooltip ${tooltipDirection} min-w-56`}>
       <div class="whitespace-normal">
-        Metrics Server is unavailable.
-        <br />
-        Ensure Metrics Server is running in the cluster.
+        {tooltipText}
       </div>
     </div>
   </div>
