@@ -48,6 +48,18 @@ test.describe('Navigation', async () => {
     await expect(overviewPodCount).toEqual(podCount)
   })
 
+  test('Navigate to page when click on Pod and Node Cards', async ({ page }) => {
+    const podsCard = page.getByTestId('card-container').filter({ hasText: 'Pods running in Cluster' })
+    await podsCard.click()
+    expect(await page.getByTestId('table-header').textContent()).toEqual('Pods')
+
+    await page.goto('/')
+
+    const nodesCard = page.getByTestId('card-container').filter({ hasText: 'Nodes running in Cluster' })
+    await nodesCard.click()
+    expect(await page.getByTestId('table-header').textContent()).toEqual('Nodes')
+  })
+
   test.describe('navigates to Applications', async () => {
     test('Packages page', async ({ page }) => {
       await page.getByRole('button', { name: 'Applications' }).click()
