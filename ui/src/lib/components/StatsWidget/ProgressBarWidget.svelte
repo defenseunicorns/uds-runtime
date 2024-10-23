@@ -2,7 +2,7 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial -->
 
 <script lang="ts">
-  import { Card, ProgressBar } from '$components'
+  import { Card, InactiveBadge, ProgressBar } from '$components'
   import { Information } from 'carbon-icons-svelte'
 
   import type { BarSizeType, UnitType } from './types.ts'
@@ -21,22 +21,7 @@
     <div class="w-full">
       {#if deactivated}
         <div class="flex justify-end">
-          <span
-            class="bg-gray-100 text-gray-500 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-gray-100 dark:text-gray-500 border border-gray-500"
-            data-testid="unavailable-tag"
-          >
-            <div class="relative group mr-2">
-              <Information class="w-4 h-4 text-grey-500" />
-              <div class="tooltip tooltip-left min-w-56">
-                <div class="whitespace-normal">
-                  Metrics Server is unavailable.
-                  <br />
-                  Ensure Metrics Server is running in the cluster.
-                </div>
-              </div>
-            </div>
-            Unavailable
-          </span>
+          <InactiveBadge tooltipDirection="tooltip-left" />
         </div>
       {/if}
       <div class="flex items-center">
