@@ -95,8 +95,9 @@ tasks:
       - task: build:ui
       - cmd: npm run test:install # install playwright
         dir: ui
-      - cmd: uds deploy k3d-core-slim-dev:0.29.0 --confirm
+      - cmd: uds deploy k3d-core-slim-dev:latest --confirm
       - task: deploy-podinfo
+      - task: create-test-keycloak-user
       - task: install-runtime-in-cluster
       - cmd: npm run test:integration-in-cluster
         dir: ui

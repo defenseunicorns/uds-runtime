@@ -11,7 +11,7 @@ export const ssr = false
 export const load = async () => {
   // load user data
   // todo: don't use a /user endpoint, piggyback off of auth
-  const userResp = await fetch('user')
+  const userResp = await fetch('/user')
   const userJSON = await userResp.json()
   const userData: UserData = {
     name: userJSON['name'],
