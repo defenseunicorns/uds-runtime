@@ -52,6 +52,10 @@ func (s *BrowserSession) Remove() {
 // Session is a global variable that holds the current session
 var Session = NewBrowserSession()
 
+// todo: start here
+// - change configure.go -> auth.go
+// - Keep the function body of AuthHandler here (in between the if block)
+// - Make another function that does what /user does now
 // AuthHandler handle validating tokens and session cookies for local authentication
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	if config.LocalAuthEnabled {

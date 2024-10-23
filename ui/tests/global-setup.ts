@@ -1,3 +1,6 @@
+// Copyright 2024 Defense Unicorns
+// SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
+
 import { chromium, expect, type FullConfig } from '@playwright/test'
 
 // Before running the in-cluster e2e tests, log into the app using
