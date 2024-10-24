@@ -3,6 +3,8 @@
 
 import type { SvelteComponent } from 'svelte'
 
+import type { UDSPackageStatus } from '$features/k8s/types'
+
 export type PatchOperation = {
   op: string
   path: string
@@ -26,4 +28,14 @@ export type PeprEvent = {
   msg: string
   res?: Record<string, unknown>
   details?: PeprDetails | undefined
+}
+
+export type CoreServiceType = {
+  metadata: {
+    name: string
+    namespace: string
+  }
+  status: {
+    phase: UDSPackageStatus
+  }
 }

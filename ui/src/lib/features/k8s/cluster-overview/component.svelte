@@ -4,9 +4,11 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { InactiveBadge, ProgressBarWidget, WithRightIconWidget } from '$components'
+  import type { V1Pod } from '@kubernetes/client-node'
+  import { CoreServicesWidget, InactiveBadge, ProgressBarWidget, WithRightIconWidget } from '$components'
   import EventsOverviewWidget from '$components/k8s/Event/EventsOverviewWidget.svelte'
   import { createStore } from '$lib/features/k8s/events/store'
+  import { type CoreServiceType } from '$lib/types'
   import { resourceDescriptions } from '$lib/utils/descriptions'
   import { Analytics, DataVis_1 } from 'carbon-icons-svelte'
   import Chart from 'chart.js/auto'
@@ -39,13 +41,28 @@
   let onMessageCount = 0
   let myChart: Chart
   const description = resourceDescriptions['Events']
+  let coreServices: CoreServiceType[] = []
+  let pods: V1Pod[] = []
   let metricsServerAvailable = true
   let metricsServerNewlyAvailable = false
 
   onMount(() => {
     let ctx = document.getElementById('chartjs-el') as HTMLCanvasElement
-    const path: string = `/api/v1/monitor/cluster-overview`
-    const overview = new EventSource(path)
+    const overviewPath: string = '/api/v1/monitor/cluster-overview'
+    const coreServicesPath: string = '/api/v1/resources/configs/uds-packages?fields=.metadata.name,.status.phase'
+    const podsPath: string = '/api/v1/resources/workloads/pods?fields=.metadata.name,.metadata.namespace,.status.phase'
+
+    const overview = new EventSource(overviewPath)
+    const coreServicesEvent = new EventSource(coreServicesPath)
+    const podsEvent = new EventSource(podsPath)
+
+    coreServicesEvent.onmessage = (event) => {
+      coreServices = JSON.parse(event.data) as CoreServiceType[]
+    }
+
+    podsEvent.onmessage = (event) => {
+      pods = JSON.parse(event.data) as V1Pod[]
+    }
 
     overview.onmessage = (event) => {
       clusterData = JSON.parse(event.data) as ClusterData
@@ -107,6 +124,8 @@
     return () => {
       onMessageCount = 0
       overview.close()
+      coreServicesEvent.close()
+      podsEvent.close()
       myChart.destroy()
     }
   })
@@ -116,7 +135,7 @@
 </script>
 
 <div class="p-4 dark:text-white pt-0">
-  <h1 class="text-2xl font-bold mb-4">Cluster Overview</h1>
+  <h1 class="text-xl font-bold mb-4">Cluster Overview</h1>
   <div class="grid grid-cols-1 min-[1024px]:grid-cols-2 min-[1510px]:grid-cols-4 gap-4">
     <WithRightIconWidget
       statText={clusterData.totalPods.toString()}
@@ -149,6 +168,14 @@
       value={metricsServerAvailable ? `${memoryPercentage.toFixed(2)}%` : 'Unavailable'}
       deactivated={!metricsServerAvailable}
     />
+  </div>
+
+  <div class="mt-8 flex flex-col xl:flex-row xl:space-x-4">
+    <div class="w-full mt-4">
+      <div class="p-5 bg-gray-800 rounded-lg overflow-hidden shadow">
+        <CoreServicesWidget {coreServices} {pods} />
+      </div>
+    </div>
   </div>
 
   <div class="mt-8">

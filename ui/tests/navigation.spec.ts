@@ -30,6 +30,9 @@ test.describe('Navigation', async () => {
     await expect(page.getByText('Event Logs')).toBeVisible()
     await expect(page.getByText('VIEW EVENTS')).toBeVisible()
 
+    // Check for the Core Services
+    await expect(page.getByRole('heading', { name: 'Core Services' })).toBeVisible()
+
     // Check for no unavailable tags when metrics server is available
     const count = await page.getByTestId('unavailable-tag').count()
     const overviewPodCount = await page.getByTestId('resource-count-pods').textContent()

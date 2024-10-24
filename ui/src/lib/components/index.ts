@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
 export { default as AnsiDisplay } from './AnsiDisplay/component.svelte'
+export { default as CoreServicesWidget } from './CoreServicesWidget/component.svelte'
 export { default as Card } from './k8s/Card/component.svelte'
 export { default as DataTable } from './k8s/DataTable/component.svelte'
 export { default as Drawer } from './k8s/Drawer/component.svelte'

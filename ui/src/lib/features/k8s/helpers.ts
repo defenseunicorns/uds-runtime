@@ -74,6 +74,12 @@ const k8StatusMapping: K8StatusMapping = {
     Normal: { color: statusColors.success },
     Warning: { color: statusColors.warning },
   },
+  UDSPackage: {
+    Pending: { color: statusColors.warning },
+    Ready: { color: statusColors.success },
+    Failed: { color: statusColors.error },
+    Retrying: { color: statusColors.warning },
+  },
 }
 
 // Function to get the color and status for a specific type and status
