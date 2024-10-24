@@ -3,11 +3,11 @@
 
 replicaCount: 1
 image:
-  repository: uds-runtime
+  repository: ghcr.io/defenseunicorns/uds-runtime
   # x-release-please-start-version
-  tag: dev
+  tag: 0.7.0
   # x-release-please-end
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 sso:
   enabled: true
 package:
