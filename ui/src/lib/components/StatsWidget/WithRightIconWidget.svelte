@@ -2,7 +2,6 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial -->
 
 <script lang="ts">
-  import { goto } from '$app/navigation'
   import { Card } from '$components'
   import { type CarbonIcon } from 'carbon-icons-svelte'
 
@@ -35,24 +34,22 @@
   $: iconThemeOption = themeMapping[iconTheme]
 </script>
 
-<Card>
-  <button on:click={() => goto(link)}>
-    <div class="flex items-center justify-start space-x-4">
-      <div class="{iconThemeOption['bgColor']} {iconThemeOption['bgColorDark']} p-3 rounded-md">
-        <svelte:component this={icon} size={24} color={iconThemeOption['iconColor']} />
-      </div>
-
-      <div class="flex flex-col items-start">
-        <dt
-          class="text-3xl font-semibold text-black dark:text-white truncate"
-          data-testid={`resource-count-${helperText.split(' ')[0].toLowerCase()}`}
-        >
-          {statText}
-        </dt>
-        <dd class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {helperText}
-        </dd>
-      </div>
+<Card {link}>
+  <div class="flex items-center justify-start space-x-4">
+    <div class="{iconThemeOption['bgColor']} {iconThemeOption['bgColorDark']} p-3 rounded-md">
+      <svelte:component this={icon} size={24} color={iconThemeOption['iconColor']} />
     </div>
-  </button>
+
+    <div class="flex flex-col items-start">
+      <dt
+        class="text-3xl font-semibold text-black dark:text-white truncate"
+        data-testid={`resource-count-${helperText.split(' ')[0].toLowerCase()}`}
+      >
+        {statText}
+      </dt>
+      <dd class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        {helperText}
+      </dd>
+    </div>
+  </div>
 </Card>
