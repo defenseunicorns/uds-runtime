@@ -29,6 +29,17 @@ test.describe('Navigation', async () => {
     // Check for Events Widget
     await expect(page.getByText('Event Logs')).toBeVisible()
     await expect(page.getByText('VIEW EVENTS')).toBeVisible()
+
+    // Check for no unavailable tags when metrics server is available
+    const count = await page.getByTestId('unavailable-tag').count()
+    const overviewPodCount = await page.getByTestId('resource-count-pods').textContent()
+    // indicates running in cluster e2e tests and metrics server in not available
+    if (overviewPodCount === '20') {
+      expect(count === 3).toBe(true)
+      // indicates running other e2e tests where metrics server is available
+    } else {
+      expect(count === 0).toBe(true)
+    }
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
