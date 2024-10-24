@@ -11,7 +11,8 @@ const port = VITE_PORT_ENV ?? '8443'
 const protocol = 'https'
 const host = 'runtime-local.uds.dev'
 
-export default defineConfig({
+const defaultConfig = {
+  name: 'default',
   webServer: {
     command: '../build/uds-runtime',
     url: `${protocol}://${host}:${port}`,
@@ -27,6 +28,51 @@ export default defineConfig({
   use: {
     baseURL: `${protocol}://${host}:${port}/`,
   },
-})
+}
+
+const localAuth = {
+  name: 'local-auth',
+  timeout: 60 * 1000,
+  testDir: 'tests',
+  fullyParallel: false,
+  retries: process.env.CI ? 2 : 1,
+  testMatch: /(.+\.)?(test|spec)\.[jt]s/,
+  use: {
+    baseURL: `https://runtime-local.uds.dev:${port}/`,
+  },
+}
+
+const inCluster = {
+  name: 'in-cluster',
+  timeout: 10 * 1000,
+  testDir: 'tests',
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  retries: process.env.CI ? 2 : 1,
+  testMatch: /^(?!.*local-auth|.*reconnect)(.+\.)?(test|spec)\.[jt]s$/,
+  use: {
+    baseURL: `${protocol}://${host}/`,
+  },
+}
+
+const reconnect = {
+  name: 'reconnect',
+  webServer: {
+    command: '../build/uds-runtime',
+    url: `${protocol}://${host}:${port}`,
+    reuseExistingServer: !process.env.CI,
+    env: { LOCAL_AUTH_ENABLED: 'false' },
+  },
+  timeout: 10 * 1000,
+  testDir: 'tests',
+  fullyParallel: false,
+  retries: process.env.CI ? 2 : 1,
+  testMatch: 'reconnect.spec.ts',
+  use: {
+    baseURL: `https://runtime-local.uds.dev:${port}/`,
+  },
+}
+
+export default defineConfig({ projects: [defaultConfig, localAuth, inCluster, reconnect] })
 
 export { port }
