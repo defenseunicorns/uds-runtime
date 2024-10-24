@@ -26,7 +26,7 @@ func main() {
 
 	r, inCluster, err := api.Setup(&assets)
 	if err != nil {
-		slog.Warn(fmt.Sprintf("failed to start the API server: %s", err))
+		slog.Warn("failed to start the API server", "error", err)
 		os.Exit(1)
 	}
 
