@@ -21,6 +21,8 @@ async function auth(token: string): Promise<AuthResponse> {
 
   try {
     const url = token ? `${baseURL}/auth?token=${token}` : `${baseURL}/auth`
+    console.log('token', token)
+    console.log('url', url)
     const response = await fetch(url, {
       method: 'GET',
       headers,

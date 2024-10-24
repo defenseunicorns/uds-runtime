@@ -59,7 +59,7 @@ func Auth(w http.ResponseWriter, r *http.Request) bool {
 		// Handle session cookie validation
 		if valid := ValidateSessionCookie(w, r); valid {
 			w.WriteHeader(http.StatusOK)
-			return false
+			return true
 		}
 		w.WriteHeader(http.StatusUnauthorized)
 		return false
