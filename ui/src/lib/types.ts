@@ -33,6 +33,7 @@ export type PeprEvent = {
 export type CoreServiceType = {
   metadata: {
     name: string
+    namespace: string
   }
   status: {
     phase: UDSPackageStatus

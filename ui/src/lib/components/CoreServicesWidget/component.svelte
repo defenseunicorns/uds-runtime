@@ -28,10 +28,12 @@
   let hasNoCoreServices: boolean = false
   let transformedCoreServiceList: { name: string; status: UDSPackageStatus }[] = []
   let hasPolicyEngineOperator: boolean = false
+  let hasServiceMesh: boolean = false
 
   $: hasNoCoreServices = coreServices.every((service) => !coreServiceKeys.includes(service.metadata.name))
   $: {
     hasPolicyEngineOperator = pods.filter((pod: V1Pod) => pod?.metadata?.name?.match(/^pepr-uds-core/)).length > 0
+    hasServiceMesh = pods.filter((pod: V1Pod) => pod?.metadata?.namespace?.match(/^istio/)).length === 4
 
     coreServices.forEach((service) => {
       let name = coreServicesMapping[service.metadata.name]
@@ -47,6 +49,13 @@
     if (hasPolicyEngineOperator) {
       transformedCoreServiceList.push({
         name: 'Policy Engine & Operator',
+        status: 'Ready',
+      })
+    }
+
+    if (hasServiceMesh) {
+      transformedCoreServiceList.push({
+        name: 'Service Mesh',
         status: 'Ready',
       })
     }
