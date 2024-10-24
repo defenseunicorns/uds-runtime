@@ -9,7 +9,7 @@ export const ssr = false
 
 interface AuthResponse {
   authenticated: boolean
-  userData: UserData | null
+  userData: UserData
 }
 
 // auth function that returns both auth status and user data
@@ -41,7 +41,12 @@ async function auth(token: string): Promise<AuthResponse> {
     } else {
       return {
         authenticated: false,
-        userData: null,
+        userData: {
+          name: '',
+          preferredUsername: '',
+          group: '',
+          inClusterAuth: false,
+        },
       }
     }
   } catch (error) {
@@ -55,7 +60,12 @@ export const load = async () => {
   const namespaces = createStore()
   const url = new URL(window.location.href)
   const localAuthToken = url.searchParams.get('token') || ''
-  let userData: UserData | null = null
+  let userData: UserData = {
+    name: '',
+    preferredUsername: '',
+    group: '',
+    inClusterAuth: false,
+  }
 
   try {
     const authResult = await auth(localAuthToken)

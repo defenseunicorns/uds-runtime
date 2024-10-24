@@ -24,6 +24,7 @@ vite.config.ts.timestamp-*
 # # Playwright/ Vitest
 /ui/test-results
 screenshot.png
+page-load-failure-*.png
 
 # Dev
 zarf-sbom

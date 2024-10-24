@@ -99,7 +99,7 @@ tasks:
       - task: deploy-podinfo
       - task: create-test-keycloak-user
       - task: install-runtime-in-cluster
-      - cmd: npm run test:integration-in-cluster
+      - cmd: npm run test:e2e-in-cluster
         dir: ui
 
   - name: go-unit

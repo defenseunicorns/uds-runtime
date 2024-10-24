@@ -9,7 +9,62 @@ async function globalSetup(config: FullConfig) {
   const { baseURL, storageState } = config.projects[0].use
   const browser = await chromium.launch()
   const page = await browser.newPage()
-  await page.goto(baseURL!)
+
+  const maxRetries = 3
+  let attempt = 0
+
+  // logging in is flaky (especially in CI), so we retry a few times
+  while (attempt < maxRetries) {
+    try {
+      // Navigate to the page
+      await page.goto(baseURL!, {
+        waitUntil: 'networkidle',
+        timeout: 30000, // 30 seconds timeout
+      })
+
+      // Wait for a reliable indicator that the page is ready
+      await Promise.all([
+        page.waitForLoadState('domcontentloaded'),
+        page.waitForLoadState('networkidle'),
+        page.waitForSelector('#username', {
+          state: 'visible',
+          timeout: 10000,
+        }),
+      ])
+
+      // If we reach here, the page loaded successfully
+      console.log('Page loaded successfully')
+      break
+    } catch (error) {
+      attempt++
+      console.log(`Page load attempt ${attempt} failed: ${error.message}`)
+      await page.screenshot({ path: `page-load-failure-${attempt}.png` })
+
+      if (attempt === maxRetries) {
+        throw new Error(`Failed to load page after ${maxRetries} attempts`)
+      }
+
+      // Before retrying, check if the page is in a bad state
+      const isPageHealthy = await page
+        .evaluate(() => {
+          return document.readyState === 'complete' && !document.querySelector('.error-message') // Add any error indicators specific to your app
+        })
+        .catch(() => false)
+
+      if (!isPageHealthy) {
+        console.log('Page appears to be in a bad state, reloading...')
+        await page.reload({
+          waitUntil: 'networkidle',
+          timeout: 30000,
+        })
+      }
+
+      // Wait before retrying
+      await page.waitForTimeout(2000)
+    }
+  }
+
+  // perform login
   await page.getByLabel('username').fill('doug')
   await page.getByLabel('password').fill('unicorn123!@#UN')
   await page.getByText('Log In').click()

@@ -116,5 +116,5 @@ tasks:
       - task: ui
       - task: api-linux
       - cmd: docker build --build-arg TARGETARCH=$UDS_ARCH -t uds-runtime:test -f ./Dockerfile .
-      - cmd: uds zarf package create -o build/e2e --flavor e2e --confirm
+      - cmd: uds zarf package create -o build/e2e --confirm
         dir: hack/test

@@ -9,7 +9,7 @@
 
   import { isSidebarExpanded } from '../store'
 
-  export let userData: UserData | null
+  export let userData: UserData
 
   const inClusterAuth = (userData && userData.inClusterAuth) ?? false
 
