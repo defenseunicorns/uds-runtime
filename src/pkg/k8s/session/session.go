@@ -57,7 +57,7 @@ func CreateK8sSession() (*K8sSession, error) {
 
 	var currentCtx, currentCluster string
 	if !inCluster { // get the current context and cluster
-		currentCtx, currentCluster, err = client.GetCurrentContext()
+		currentCtx, currentCluster, err = client.CurrentContext()
 		if err != nil {
 			cancel()
 			return nil, fmt.Errorf("failed to get current context: %w", err)
@@ -123,7 +123,7 @@ func (ks *K8sSession) HandleReconnection() {
 		ks.Cancel()
 		time.Sleep(getRetryInterval())
 
-		currentCtx, currentCluster, err := client.GetCurrentContext()
+		currentCtx, currentCluster, err := client.CurrentContext()
 		if err != nil {
 			log.Printf("Error fetching current context: %v\n", err)
 			continue
