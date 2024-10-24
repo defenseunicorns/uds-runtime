@@ -28,7 +28,14 @@ suite('PersistentVolume Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['storage_class'], ['capacity'], ['claim'], ['age'], ['status']],
+    columns: [
+      ['name', 'w-4/12'],
+      ['storage_class', 'w-2/12'],
+      ['capacity', 'w-2/12'],
+      ['claim', 'w-2/12'],
+      ['age', 'w-1/12'],
+      ['status', 'w-1/12'],
+    ],
     name,
     description,
     isNamespaced: false,

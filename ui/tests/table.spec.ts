@@ -11,8 +11,7 @@ test.describe('DataTable', async () => {
   test('filters rows when we click the namespace link in a row', async ({ page }) => {
     await page.getByRole('button', { name: 'podinfo' }).last().click()
     await checkTableHeaderResults(page, 1, 8)
-    await page.getByTestId('table-filter-namespace-select').selectOption({ label: 'All Namespaces' })
-    await page.getByRole('button', { name: 'kube-system' }).first().click()
+    await page.getByTestId('table-filter-namespace-select').selectOption({ label: 'kube-system' })
     await checkTableHeaderResults(page, 1, 8)
   })
 

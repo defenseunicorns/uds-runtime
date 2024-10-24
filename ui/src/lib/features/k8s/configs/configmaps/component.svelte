@@ -8,10 +8,10 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['keys', 'line-clamp-3 max-w-screen-md'],
-    ['age'],
+    ['name', 'w-2/12'],
+    ['namespace', 'w-2/12'],
+    ['keys', 'w-7/12 max-w-screen-md line-clamp-4'],
+    ['age', 'w-1/12'],
   ]
   const name = 'ConfigMaps'
   const description = resourceDescriptions[name]

@@ -8,14 +8,14 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['status'],
-    ['endpoints'],
-    ['monitors'],
-    ['ssoClients'],
-    ['networkPolicies'],
-    ['age'],
+    ['name', 'w-2/12'],
+    ['namespace', 'w-1/12'],
+    ['status', 'w-1/12'],
+    ['endpoints', 'w-2/12'],
+    ['monitors', 'w-2/12'],
+    ['ssoClients', 'w-1/12'],
+    ['networkPolicies', 'w-2/12'],
+    ['age', 'w-1/12'],
   ]
 
   const name = 'Packages'

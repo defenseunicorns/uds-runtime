@@ -7,7 +7,10 @@ test.describe('Drawer', async () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/workloads/pods')
 
-    await page.getByRole('cell', { name: 'podinfo-' }).click()
+    page
+      .locator('.datatable .tr')
+      .filter({ hasText: /^podinfo-/ })
+      .click()
   })
 
   test.describe('is opened when clicking on a table row and', async () => {

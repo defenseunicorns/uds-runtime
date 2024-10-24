@@ -8,14 +8,14 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['metrics'],
-    ['min_pods'],
-    ['max_pods'],
-    ['replicas'],
-    ['age'],
-    ['status'],
+    ['name', 'w-2/12'],
+    ['namespace', 'w-2/12'],
+    ['metrics', 'w-2/12'],
+    ['min_pods', 'w-1/12'],
+    ['max_pods', 'w-1/12'],
+    ['replicas', 'w-1/12'],
+    ['age', 'w-1/12'],
+    ['status', 'w-2/12'],
   ]
 
   const name = 'HorizontalPodAutoscalers'

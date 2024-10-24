@@ -6,7 +6,12 @@
 
   import { createStore, type Columns } from './store'
 
-  export let columns: Columns = [['url', 'emphasize', 'link-external'], ['namespace'], ['status'], ['age']]
+  export let columns: Columns = [
+    ['url', 'w-3/12', 'link-external'],
+    ['namespace', 'w-3/12'],
+    ['status', 'w-3/12'],
+    ['age', 'w-3/12'],
+  ]
 
   const name = 'Application Endpoints'
   const description = 'Application Endpoints are exposed by the UDS Operator via a UDS Package CR.'

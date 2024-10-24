@@ -8,13 +8,13 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['min_available'],
-    ['max_unavailable'],
-    ['current_healthy'],
-    ['desired_healthy'],
-    ['age'],
+    ['name', 'w-3/12'],
+    ['namespace', 'w-1/12'],
+    ['min_available', 'w-2/12'],
+    ['max_unavailable', 'w-2/12'],
+    ['current_healthy', 'w-2/12'],
+    ['desired_healthy', 'w-2/12'],
+    ['age', 'w-1/12'],
   ]
   const name = 'PodDisruptionBudgets'
   const description = resourceDescriptions[name]

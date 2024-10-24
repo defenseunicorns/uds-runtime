@@ -8,7 +8,7 @@
   import type { KubernetesObject } from '@kubernetes/client-node'
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-  import { Drawer, Link, Tooltip } from '$components'
+  import { Drawer, Link } from '$components'
   import type { Row as NamespaceRow } from '$features/k8s/namespaces/store'
   import { type ResourceStoreInterface } from '$features/k8s/types'
   import { addToast } from '$features/toast'
@@ -143,6 +143,12 @@
       stop()
     }
   })
+
+  const shouldTruncate = (classes: string = '') => {
+    const hasLineClamp = classes.split(' ').filter((cls) => cls.match(/^line-clamp/))
+
+    return hasLineClamp?.length > 0 ? '' : 'truncate'
+  }
 </script>
 
 {#if resource}
@@ -161,6 +167,7 @@
         {:else}
           <span class="dark:text-gray-500 pl-2" data-testid="table-header-results">({$numResources})</span>
         {/if}
+
         <div class="relative group">
           <Information class="ml-2 w-4 h-4 text-gray-400" />
           <div class="tooltip tooltip-right min-w-72">
@@ -168,11 +175,13 @@
           </div>
         </div>
       </div>
+
       <div class="table-filter-section">
         <div class="relative lg:w-96">
           <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <Search class="h-5 w-5 text-gray-400" />
           </div>
+
           <input
             type="text"
             name="input-search"
@@ -183,6 +192,7 @@
             bind:value={$search}
           />
         </div>
+
         <button
           id="filterDropdownButton"
           data-dropdown-toggle="filterDropdown"
@@ -194,6 +204,7 @@
           {$searchBy}
           <ChevronDown class="ml-2 h-4 w-4 text-gray-400" />
         </button>
+
         <div id="filterDropdown" class="z-10 hidden w-48 rounded-lg bg-white p-3 shadow dark:bg-gray-700">
           <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Search By</h6>
           <ul class="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
@@ -214,7 +225,9 @@
             {/each}
           </ul>
         </div>
+
         <div class="flex-grow"></div>
+
         <div>
           {#if isNamespaced}
             <select id="stream" bind:value={$namespace} data-testid="table-filter-namespace-select">
@@ -229,14 +242,15 @@
           {/if}
         </div>
       </div>
+
       <div class="table-scroll-container">
-        <table>
-          <thead>
-            <tr>
-              {#each columns as [header, style]}
-                <th>
-                  <button on:click={() => rows.sortByKey(header)}>
-                    {header.replaceAll('_', ' ')}
+        <div class="datatable">
+          <div class="thead">
+            <div class="flex items-center">
+              {#each columns as [header, style], idx}
+                <div class={`th ${style} ${idx === 0 ? 'emphasize' : ''}`}>
+                  <button class="flex font-bold" on:click={() => rows.sortByKey(header)}>
+                    {header.replaceAll('_', ' ').toUpperCase()}
                     <ChevronUp
                       class="sort
                       {style || ''}
@@ -244,31 +258,30 @@
                       {$sortBy === header ? 'opacity-100' : 'opacity-0'}"
                     />
                   </button>
-                </th>
+                </div>
               {/each}
-            </tr>
-          </thead>
-          <tbody>
-            {#if $rows.length === 0 && isFiltering}
-              <tr class="!pointer-events-none !border-b-0">
-                <td class="text-center" colspan="9">No matching entries found</td>
-              </tr>
-            {:else if $rows.length === 0}
-              <tr class="!pointer-events-none !border-b-0">
-                <td class="text-center" colspan="9">No resources found</td>
-              </tr>
-              <!--This case only happens when returning an error when a CRD does not exist in the cluster-->
-            {:else if typeof $rows[0].resource === 'string'}
-              <tr class="!pointer-events-none !border-b-0">
-                <td class="text-center" colspan="9">
-                  The CRD for the resources you are trying to view does not exist in the cluster.
-                  <br />
-                  Install CRD and refresh page to view resources.
-                </td>
-              </tr>
-            {:else}
-              {#each $rows as row}
-                <tr
+            </div>
+          </div>
+
+          {#if $rows.length === 0 && isFiltering}
+            <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
+              <span>No matching entries found</span>
+            </div>
+          {:else if $rows.length === 0}
+            <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
+              <span>No resources found</span>
+            </div>
+            <!--This case only happens when returning an error when a CRD does not exist in the cluster-->
+          {:else if typeof $rows[0].resource === 'string'}
+            <div class="!pointer-events-none !border-b-0 flex h-12 justify-center items-center">
+              <p>The CRD for the resources you are trying to view does not exist in the cluster.</p>
+              <p>Install CRD and refresh page to view resources.</p>
+            </div>
+          {:else}
+            {#each $rows as row}
+              <div class="tr">
+                <button
+                  class="w-full flex items-center"
                   id={row.resource.metadata?.uid}
                   on:click={() =>
                     !disableRowClick && row.resource.metadata?.uid && goto(`${baseURL}/${row.resource.metadata?.uid}`)}
@@ -278,8 +291,8 @@
                   {#each columns as [key, style, modifier], idx}
                     <!-- Check object to avoid issues with `false` values -->
                     {@const value = Object.hasOwn(row.table, key) ? row.table[key] : ''}
-                    <td
-                      class={style || ''}
+                    <div
+                      class={`td ${style}  ${idx === 0 ? 'emphasize' : ''}`}
                       data-testid={typeof value !== 'object'
                         ? `${value}-testid-${idx + 1}`
                         : `object-test-id-${idx + 1}`}
@@ -299,26 +312,22 @@
                       {:else if key === 'namespace'}
                         <button
                           on:click|stopPropagation={() => namespace.set(value)}
-                          class="text-blue-600 dark:text-blue-500 hover:underline pr-4 text-left"
+                          class="text-blue-600 dark:text-blue-500 hover:underline text-left truncate"
                         >
                           {value}
                         </button>
-                      {:else if style?.includes('truncate')}
-                        <Tooltip title={value}>
-                          <div class={`w-full ${style}`}>
-                            {value}
-                          </div>
-                        </Tooltip>
                       {:else}
-                        {value.text || (value === 0 ? '0' : value) || '-'}
+                        <div class={`w-full text-left ${shouldTruncate(style)}`}>
+                          {value.text || (value === 0 ? '0' : value) || '-'}
+                        </div>
                       {/if}
-                    </td>
+                    </div>
                   {/each}
-                </tr>
-              {/each}
-            {/if}
-          </tbody>
-        </table>
+                </button>
+              </div>
+            {/each}
+          {/if}
+        </div>
       </div>
     </div>
   </div>

@@ -27,7 +27,13 @@ suite('StorageClass Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['provisioner'], ['reclaim_policy'], ['default'], ['age']],
+    columns: [
+      ['name', 'w-3/12'],
+      ['provisioner', 'w-3/12'],
+      ['reclaim_policy', 'w-2/12'],
+      ['default', 'w-2/12'],
+      ['age', 'w-2/12'],
+    ],
     name,
     description,
     isNamespaced: false,

@@ -78,7 +78,10 @@ test.describe.serial('Authentication Tests', () => {
     await expect(element).toBeVisible()
 
     // Check details view
-    await page.getByRole('cell', { name: 'podinfo-' }).click()
+    await page
+      .locator('.datatable .tr')
+      .filter({ hasText: /^podinfo-/ })
+      .click()
     let drawerEl = page.getByTestId('drawer')
     await expect(drawerEl).toBeVisible()
     await expect(drawerEl.getByText('Created')).toBeVisible()

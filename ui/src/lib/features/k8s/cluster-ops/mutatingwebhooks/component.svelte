@@ -7,7 +7,11 @@
 
   import { createStore, type Columns } from './store'
 
-  export let columns: Columns = [['name', 'emphasize'], ['webhooks'], ['age']]
+  export let columns: Columns = [
+    ['name', 'w-4/12'],
+    ['webhooks', 'w-4/12'],
+    ['age', 'w-4/12'],
+  ]
   const name = 'MutatingWebhookConfigurations'
   const description = resourceDescriptions[name]
 </script>

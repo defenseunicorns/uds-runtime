@@ -8,13 +8,13 @@
   import { createStore, type Columns } from './store'
 
   export let columns: Columns = [
-    ['name', 'emphasize'],
-    ['namespace'],
-    ['storage_class'],
-    ['capacity'],
-    ['pods'],
-    ['age'],
-    ['status'],
+    ['name', 'w-3/12'],
+    ['namespace', 'w-2/12'],
+    ['storage_class', 'w-2/12'],
+    ['capacity', 'w-2/12'],
+    ['pods', 'w-3/12'],
+    ['age', 'w-1/12'],
+    ['status', 'w-1/12'],
   ]
   const name = 'PersistentVolumeClaims'
   const description = resourceDescriptions[name]

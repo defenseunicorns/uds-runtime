@@ -25,7 +25,12 @@ suite('StatefulsetTable Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['url', 'emphasize', 'link-external'], ['namespace'], ['status'], ['age']],
+    columns: [
+      ['url', 'w-3/12', 'link-external'],
+      ['namespace', 'w-3/12'],
+      ['status', 'w-3/12'],
+      ['age', 'w-3/12'],
+    ],
     name,
     description,
     disableRowClick: true,

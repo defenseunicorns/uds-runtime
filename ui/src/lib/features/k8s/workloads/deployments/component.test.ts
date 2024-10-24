@@ -28,7 +28,14 @@ suite('DeploymentTable Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['name', 'emphasize'], ['namespace'], ['ready'], ['up_to_date'], ['available'], ['age']],
+    columns: [
+      ['name', 'w-4/12'],
+      ['namespace', 'w-4/12'],
+      ['ready', 'w-1/12'],
+      ['up_to_date', 'w-1/12'],
+      ['available', 'w-1/12'],
+      ['age', 'w-1/12'],
+    ],
     name,
     description,
   })

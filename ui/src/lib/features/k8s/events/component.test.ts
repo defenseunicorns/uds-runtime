@@ -27,7 +27,15 @@ suite('EventTable Component', () => {
 
   testK8sTableWithDefaults(Component, {
     createStore,
-    columns: [['namespace'], ['age'], ['type'], ['reason'], ['object_kind'], ['object_name'], ['count']],
+    columns: [
+      ['namespace', 'w-2/12'],
+      ['age', 'w-1/12'],
+      ['type', 'w-1/12'],
+      ['reason', 'w-2/12'],
+      ['object_kind', 'w-2/12'],
+      ['object_name', 'w-3/12'],
+      ['count', 'w-1/12'],
+    ],
     name,
     description,
   })
