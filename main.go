@@ -5,7 +5,6 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"log/slog"
 	"os"
 
