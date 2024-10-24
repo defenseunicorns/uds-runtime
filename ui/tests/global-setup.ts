@@ -44,21 +44,6 @@ async function globalSetup(config: FullConfig) {
         throw new Error(`Failed to load page after ${maxRetries} attempts`)
       }
 
-      // Before retrying, check if the page is in a bad state
-      const isPageHealthy = await page
-        .evaluate(() => {
-          return document.readyState === 'complete' && !document.querySelector('.error-message') // Add any error indicators specific to your app
-        })
-        .catch(() => false)
-
-      if (!isPageHealthy) {
-        console.log('Page appears to be in a bad state, reloading...')
-        await page.reload({
-          waitUntil: 'networkidle',
-          timeout: 30000,
-        })
-      }
-
       // Wait before retrying
       await page.waitForTimeout(2000)
     }

@@ -147,7 +147,12 @@ describe('load function', () => {
     // Verify return value
     expect(result).toEqual({
       namespaces: expect.any(Object),
-      userData: null,
+      userData: {
+        name: '',
+        preferredUsername: '',
+        group: '',
+        inClusterAuth: false,
+      },
     })
   })
 
@@ -169,7 +174,12 @@ describe('load function', () => {
     // Verify return value
     expect(result).toEqual({
       namespaces: expect.any(Object),
-      userData: null,
+      userData: {
+        name: '',
+        preferredUsername: '',
+        group: '',
+        inClusterAuth: false,
+      },
     })
 
     consoleSpy.mockRestore()
@@ -195,7 +205,12 @@ describe('load function', () => {
     // Verify return value
     expect(result).toEqual({
       namespaces: expect.any(Object),
-      userData: null,
+      userData: {
+        name: '',
+        preferredUsername: '',
+        group: '',
+        inClusterAuth: false,
+      },
     })
   })
 })
