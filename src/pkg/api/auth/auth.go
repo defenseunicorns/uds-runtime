@@ -103,7 +103,7 @@ func RequestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = w.Write(bodyBytes)
 	if err != nil {
-		slog.Debug(fmt.Sprintf("failed to write response: %s", err.Error()))
+		slog.Debug("failed to write response", "error", err)
 		http.Error(w, "failed to write response", http.StatusInternalServerError)
 		return
 	}
