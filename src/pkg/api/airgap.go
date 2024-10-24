@@ -22,6 +22,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// serveAirgap starts a server assuming airgap and uses self-signed certificates
 func serveAirgap(r *chi.Mux) error {
 	err := generateCerts()
 	if err != nil {
@@ -63,7 +64,7 @@ func isAirgapped(timeout time.Duration) bool {
 	return !(googleErr == nil && cloudflareErr == nil)
 }
 
-// generateCerts creates self-signed certificates for local development
+// generateCerts creates self-signed certificates for running locally in the airgap
 func generateCerts() error {
 	// Generate private key
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
