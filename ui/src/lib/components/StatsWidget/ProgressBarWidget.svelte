@@ -17,7 +17,7 @@
 
 <Card>
   <div class="w-full">
-    <div class="flex flex-col items-start">
+    <div class="w-full">
       {#if deactivated}
         <div class="flex justify-end">
           <InactiveBadge
