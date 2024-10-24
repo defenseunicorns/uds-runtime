@@ -33,7 +33,10 @@
   $: hasNoCoreServices = coreServices.every((service) => !coreServiceKeys.includes(service.metadata.name))
   $: {
     hasPolicyEngineOperator = pods.filter((pod: V1Pod) => pod?.metadata?.name?.match(/^pepr-uds-core/)).length > 0
-    hasServiceMesh = pods.filter((pod: V1Pod) => pod?.metadata?.namespace?.match(/^istio/)).length === 4
+    hasServiceMesh =
+      pods
+        .filter((pod: V1Pod) => pod?.metadata?.name?.match(/^istiod/))
+        .filter((pod) => pod.status?.phase === 'Running').length === 1
 
     coreServices.forEach((service) => {
       let name = coreServicesMapping[service.metadata.name]
@@ -47,17 +50,23 @@
 
     // If we have pepr uds core pods then we have a Policy Engine & Operator in the cluster
     if (hasPolicyEngineOperator) {
-      transformedCoreServiceList.push({
-        name: 'Policy Engine & Operator',
-        status: 'Ready',
-      })
+      transformedCoreServiceList = [
+        ...transformedCoreServiceList,
+        {
+          name: 'Policy Engine & Operator',
+          status: 'Ready',
+        },
+      ]
     }
 
     if (hasServiceMesh) {
-      transformedCoreServiceList.push({
-        name: 'Service Mesh',
-        status: 'Ready',
-      })
+      transformedCoreServiceList = [
+        ...transformedCoreServiceList,
+        {
+          name: 'Service Mesh',
+          status: 'Ready',
+        },
+      ]
     }
   }
 </script>
