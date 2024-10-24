@@ -35,7 +35,10 @@ import (
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	// configure config vars for local or in-cluster auth
-	auth.Configure()
+	err := auth.Configure()
+	if err != nil {
+		return nil, false, fmt.Errorf("failed to configure auth: %w", err)
+	}
 
 	// Create a k8s session
 	k8sSession, err := session.CreateK8sSession()

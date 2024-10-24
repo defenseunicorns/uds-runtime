@@ -30,7 +30,7 @@ type UserResponse struct {
 }
 
 // Configure sets the config vars for local or in-cluster auth
-func Configure() {
+func Configure() error {
 	// check for local auth first
 	localAuthEnabled, err := strconv.ParseBool(strings.ToLower(os.Getenv("LOCAL_AUTH_ENABLED")))
 	if err != nil {
@@ -44,10 +44,9 @@ func Configure() {
 		token, err := randomString(96)
 		if err != nil {
 			slog.Error("Failed to generate local auth token")
-			os.Exit(1)
+			return err
 		}
 		local.AuthToken = token
-		return
 	}
 
 	// If local auth is disabled, check for in-cluster auth
@@ -61,6 +60,7 @@ func Configure() {
 		config.InClusterAuthEnabled = inClusterAuthEnabled
 		slog.Info("In-cluster auth enabled")
 	}
+	return nil
 }
 
 // RequestHandler is the main handler for the /auth endpoint; it returns a userResponse struct
