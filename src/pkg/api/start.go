@@ -280,8 +280,8 @@ func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error 
 	if err != nil {
 		log.Fatalf("Failed to load embedded certificate: %v", err)
 	}
-	//nolint:gosec,govet
 	tlsConfig := &tls.Config{
+		MinVersion:   tls.VersionTLS12,
 		Certificates: []tls.Certificate{cert},
 	}
 	server := &http.Server{
