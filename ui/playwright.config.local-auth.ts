@@ -12,7 +12,7 @@ export default defineConfig({
   testDir: 'tests',
   fullyParallel: false,
   retries: process.env.CI ? 2 : 1,
-  testMatch: /^(?!.*local-auth|.*reconnect|.*in-cluster)(.+\.)?(test|spec)\.[jt]s/,
+  testMatch: /^(?!.*in-cluster|.*reconnect)(.+\.)?(test|spec)\.[jt]s$/,
   use: {
     baseURL: `https://runtime-local.uds.dev:${port}/`,
   },

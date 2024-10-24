@@ -75,7 +75,7 @@ tasks:
         dir: ui
       - task: build:api
       - task: deploy-runtime-cluster
-      - cmd: npm run test:integration
+      - cmd: npm run test:e2e
         dir: ui
 
   - name: e2e-reconnect
