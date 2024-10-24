@@ -168,7 +168,7 @@ func TestLocalAuthRequestHandler(t *testing.T) {
 			// create cookie if specified
 			if tt.withCookie {
 				sessionID := local.GenerateSessionID(httptest.NewRecorder())
-				local.Session.Store(sessionID)
+				local.SessionID = sessionID
 				req.AddCookie(&http.Cookie{Name: "session_id", Value: sessionID})
 			}
 

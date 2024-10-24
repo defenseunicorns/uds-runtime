@@ -20,8 +20,6 @@ func TestAuthMiddleware(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	var session = local.NewBrowserSession()
-
 	tests := []struct {
 		name                 string
 		localAuthEnabled     bool
@@ -49,8 +47,7 @@ func TestAuthMiddleware(t *testing.T) {
 					Name:  "session_id",
 					Value: "valid_session",
 				})
-				session.Store("valid_session")
-				local.Session = session
+				local.SessionID = "valid_session"
 			},
 		},
 		{
@@ -64,8 +61,7 @@ func TestAuthMiddleware(t *testing.T) {
 					Name:  "session_id",
 					Value: "invalid_session",
 				})
-				session.Store("valid_session")
-				local.Session = session
+				local.SessionID = "valid_session"
 			},
 		},
 		{
