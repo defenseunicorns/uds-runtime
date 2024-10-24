@@ -9,7 +9,7 @@
   import type { UserData } from '$features/navigation/types'
   import { ChevronDown, ChevronUp, UserAvatarFilled } from 'carbon-icons-svelte'
 
-  export let userData: UserData
+  export let userData: UserData | null
 
   let dropdownContainer: HTMLElement
   let isOpen = false
@@ -49,7 +49,7 @@
     class:bg-gray-700={isOpen}
   >
     <UserAvatarFilled class="h-5 w-5 mr-2" />
-    <span>{userData.name}</span>
+    <span>{userData && userData.name}</span>
     {#if isOpen}
       <ChevronUp class="h-4 w-4 ml-2" />
     {:else}
@@ -64,8 +64,8 @@
     >
       <div class="py-1">
         <div class="px-4 py-2 text-sm text-white border-b border-gray-700">
-          <p>{userData.preferredUsername}</p>
-          <p class="text-gray-400">{userData.group}</p>
+          <p>{userData && userData.preferredUsername}</p>
+          <p class="text-gray-400">{userData && userData.group}</p>
         </div>
         <button on:click={signOut} class="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-600">
           Sign Out
