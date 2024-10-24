@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/local"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth"
 	_ "github.com/defenseunicorns/uds-runtime/src/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/rest"
@@ -906,18 +906,18 @@ func getCRD(cache *resources.Cache) func(w http.ResponseWriter, r *http.Request)
 	return rest.Bind(cache.CRDs)
 }
 
-// @Description Handle auth when running in local mode
+// @Description Performs token and session validation in local mode; returns user information in in-cluster mode
 // @Tags auth
 // @Success 200
-// @Router /api/v1/auth [head]
+// @Router /api/v1/auth [get]
 func authHandler(w http.ResponseWriter, r *http.Request) {
-	local.AuthHandler(w, r)
+	auth.RequestHandler(w, r)
 }
 
 // @Description check the health of the application
 // @Tags health
 // @Produce json
-// @Success 200 {object} map[string]interface{}
+// @Success 200
 // @Router /healthz [get]
 func healthz(w http.ResponseWriter, _ *http.Request) {
 	slog.Debug("Health check called")

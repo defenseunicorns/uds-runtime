@@ -3,9 +3,15 @@
 
 <script lang="ts">
   import { authenticated } from '$features/auth/store'
+  import { UserMenu } from '$features/navigation'
+  import type { UserData } from '$features/navigation/types'
   import { NotificationFilled } from 'carbon-icons-svelte'
 
   import { isSidebarExpanded } from '../store'
+
+  export let userData: UserData
+
+  const inClusterAuth = (userData && userData.inClusterAuth) ?? false
 
   // Don't expand sidebar if api auth is enabled and user is unauthenticated
   $: {
@@ -23,7 +29,6 @@
   >
     <div class="flex flex-wrap items-center justify-between">
       <div class="flex items-center justify-start">
-        <!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
         {#if $authenticated}
           <button
             data-testid="toggle-sidebar"
@@ -56,7 +61,7 @@
           data-dropdown-toggle="notification-dropdown"
           class="mr-1 rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:ring-4 focus:ring-gray-300 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-600"
         >
-          <NotificationFilled class="h-f6 w-6" />
+          <NotificationFilled class="h-6 w-6" />
         </button>
         <!-- Dropdown menu -->
         <div
@@ -69,6 +74,9 @@
             Notifications
           </div>
         </div>
+        {#if inClusterAuth}
+          <UserMenu {userData} />
+        {/if}
       </div>
     </div>
   </nav>

@@ -4,10 +4,11 @@
 package middleware
 
 import (
+	"log/slog"
 	"net/http"
 	"strings"
 
-	clusterAuth "github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/cluster"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/incluster"
 	localAuth "github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/local"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/config"
 )
@@ -34,13 +35,20 @@ func Auth(next http.Handler) http.Handler {
 					return
 				}
 				// session invalid
+				slog.Debug("Session invalid")
 				return
 			}
 		} else if config.InClusterAuthEnabled {
-			if valid := clusterAuth.ValidateJWT(w, r); valid {
-				next.ServeHTTP(w, r)
+			req, valid := incluster.ValidateJWT(w, r)
+			if valid {
+				next.ServeHTTP(w, req)
+				return
 			}
+			// token invalid
+			slog.Debug("Token invalid")
+			return
 		}
+		// no auth enabled
 		next.ServeHTTP(w, r)
 	})
 }

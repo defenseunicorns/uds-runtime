@@ -16,6 +16,7 @@ import (
 
 	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth/local"
 	_ "github.com/defenseunicorns/uds-runtime/src/pkg/api/docs" //nolint:staticcheck
 	udsMiddleware "github.com/defenseunicorns/uds-runtime/src/pkg/api/middleware"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/monitor"
@@ -34,7 +35,10 @@ import (
 // @schemes http https
 func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	// configure config vars for local or in-cluster auth
-	auth.Configure()
+	err := auth.Configure()
+	if err != nil {
+		return nil, false, fmt.Errorf("failed to configure auth: %w", err)
+	}
 
 	// Create a k8s session
 	k8sSession, err := session.CreateK8sSession()
@@ -57,6 +61,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Use(udsMiddleware.Auth)
 	r.Use(udsMiddleware.ConditionalCompress)
 
+	// add routes
 	r.Get("/healthz", healthz)
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
@@ -64,7 +69,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	r.Get("/cluster-check", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Head("/auth", authHandler)
+		r.Get("/auth", authHandler)
 		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)
@@ -187,7 +192,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 		host := "runtime-local.uds.dev"
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
-		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, auth.LocalAuthToken)
+		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, local.AuthToken)
 		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {
@@ -230,7 +235,7 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 	}
 
 	// Create a new file server handler
-	fs := http.FileServer(root)
+	fsHandler := http.FileServer(root)
 
 	// Serve the index.html file if the requested file doesn't exist
 	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
@@ -246,7 +251,7 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 		file.Close()
 
 		// If the file exists, serve it using the http.FileServer
-		fs.ServeHTTP(w, r)
+		fsHandler.ServeHTTP(w, r)
 	})
 
 	return nil

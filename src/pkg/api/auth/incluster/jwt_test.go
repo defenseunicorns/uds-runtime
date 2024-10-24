@@ -1,7 +1,7 @@
 // Copyright 2024 Defense Unicorns
 // SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Defense-Unicorns-Commercial
 
-package cluster
+package incluster
 
 import (
 	"net/http"
@@ -16,7 +16,9 @@ func TestValidateJWT(t *testing.T) {
 	// Helper function to create a JWT token without signing
 	createToken := func(groups []string) string {
 		claims := jwt.MapClaims{
-			"groups": groups,
+			"groups":             groups,
+			"preferred_username": "testuser",
+			"name":               "Test User",
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodNone, claims)
 		tokenString, _ := token.SignedString(jwt.UnsafeAllowNoneSignatureType)
@@ -24,19 +26,22 @@ func TestValidateJWT(t *testing.T) {
 	}
 
 	tests := []struct {
-		name           string
-		token          string
-		expectedStatus int
+		name            string
+		token           string
+		expectedStatus  int
+		expectedContext map[contextKey]string
 	}{
 		{
-			name:           "Valid token with allowed group",
-			token:          createToken([]string{"/UDS Core/Admin"}),
-			expectedStatus: http.StatusOK,
+			name:            "Valid token with allowed group",
+			token:           createToken([]string{"/UDS Core/Admin"}),
+			expectedStatus:  http.StatusOK,
+			expectedContext: map[contextKey]string{GroupKey: "/UDS Core/Admin", PreferredUserNameKey: "testuser", NameKey: "Test User"},
 		},
 		{
-			name:           "Valid token with another allowed group",
-			token:          createToken([]string{"/UDS Core/Auditor"}),
-			expectedStatus: http.StatusOK,
+			name:            "Valid token with another allowed group",
+			token:           createToken([]string{"/UDS Core/Auditor"}),
+			expectedStatus:  http.StatusOK,
+			expectedContext: map[contextKey]string{GroupKey: "/UDS Core/Auditor", PreferredUserNameKey: "testuser", NameKey: "Test User"},
 		},
 		{
 			name:           "Valid token without allowed group",
@@ -72,7 +77,12 @@ func TestValidateJWT(t *testing.T) {
 			rr := httptest.NewRecorder()
 
 			// Call the function directly
-			result := ValidateJWT(rr, req)
+			request, result := ValidateJWT(rr, req)
+			if len(tt.expectedContext) > 0 {
+				require.Equal(t, request.Context().Value(GroupKey), tt.expectedContext[GroupKey], "group and user not set together")
+				require.Equal(t, request.Context().Value(PreferredUserNameKey), tt.expectedContext[PreferredUserNameKey], "group and user not set together")
+				require.Equal(t, request.Context().Value(NameKey), tt.expectedContext[NameKey], "group and user not set together")
+			}
 
 			// Check the status code
 			require.Equal(t, tt.expectedStatus, rr.Code, "handler returned wrong status code")

@@ -16,8 +16,8 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/api/v1/auth": {
-            "head": {
-                "description": "Handle auth when running in local mode",
+            "get": {
+                "description": "Performs token and session validation in local mode; returns user information in in-cluster mode",
                 "tags": [
                     "auth"
                 ],
@@ -3068,11 +3068,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
+                        "description": "OK"
                     }
                 }
             }

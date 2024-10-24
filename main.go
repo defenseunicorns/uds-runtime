@@ -5,10 +5,10 @@ package main
 
 import (
 	"embed"
+	"log/slog"
 	"os"
 
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api"
-	"github.com/zarf-dev/zarf/src/pkg/message"
 )
 
 //go:embed ui/build/*
@@ -21,11 +21,12 @@ var localCert []byte
 var localKey []byte
 
 func main() {
-	message.SetLogLevel(message.DebugLevel)
+	slog.SetLogLoggerLevel(slog.LevelDebug)
 
+	slog.Info("Setting up API server")
 	r, inCluster, err := api.Setup(&assets)
 	if err != nil {
-		message.WarnErr(err, "failed to start the API server")
+		slog.Warn("failed to start the API server", "error", err)
 		os.Exit(1)
 	}
 

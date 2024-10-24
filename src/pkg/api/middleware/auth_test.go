@@ -20,8 +20,6 @@ func TestAuthMiddleware(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	var session = local.NewBrowserSession()
-
 	tests := []struct {
 		name                 string
 		localAuthEnabled     bool
@@ -49,8 +47,7 @@ func TestAuthMiddleware(t *testing.T) {
 					Name:  "session_id",
 					Value: "valid_session",
 				})
-				session.Store("valid_session")
-				local.Session = session
+				local.SessionID = "valid_session"
 			},
 		},
 		{
@@ -64,8 +61,7 @@ func TestAuthMiddleware(t *testing.T) {
 					Name:  "session_id",
 					Value: "invalid_session",
 				})
-				session.Store("valid_session")
-				local.Session = session
+				local.SessionID = "valid_session"
 			},
 		},
 		{
@@ -86,19 +82,13 @@ func TestAuthMiddleware(t *testing.T) {
 				// create jwt for test and set header
 				jot := jwt.New(jwt.SigningMethodNone)
 				jot.Claims = jwt.MapClaims{
-					"groups": []string{"/UDS Core/Admin"},
+					"groups":             []string{"/UDS Core/Admin"},
+					"preferred_username": "testuser",
+					"name":               "Test User",
 				}
 				token, _ := jot.SignedString(jwt.UnsafeAllowNoneSignatureType)
 				r.Header.Set("Authorization", token)
 			},
-		},
-		{
-			name:                 "swagger is behind auth",
-			localAuthEnabled:     true,
-			inClusterAuthEnabled: false,
-			path:                 "/swagger",
-			expectedStatusCode:   http.StatusUnauthorized,
-			setup:                func(r *http.Request) {},
 		},
 		{
 			name:                 "In-cluster auth - Invalid JWT",
@@ -131,6 +121,14 @@ func TestAuthMiddleware(t *testing.T) {
 			path:                 "/api/v1/workloads/pods",
 			expectedStatusCode:   http.StatusOK,
 			setup:                func(*http.Request) {},
+		},
+		{
+			name:                 "Swagger is behind auth",
+			localAuthEnabled:     true,
+			inClusterAuthEnabled: false,
+			path:                 "/swagger",
+			expectedStatusCode:   http.StatusUnauthorized,
+			setup:                func(r *http.Request) {},
 		},
 	}
 
