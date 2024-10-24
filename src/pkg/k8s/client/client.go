@@ -9,6 +9,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 	metricsv "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
@@ -17,6 +18,11 @@ type Clients struct {
 	Clientset     *kubernetes.Clientset
 	MetricsClient *metricsv.Clientset
 	Config        *rest.Config
+}
+
+type ClusterInfo struct {
+	Name     string
+	Selected bool
 }
 
 // NewClient creates new Kubernetes cluster clients
@@ -46,6 +52,41 @@ func NewClient() (*Clients, error) {
 	}, nil
 }
 
+func rawConfig() (clientcmdapi.Config, error) {
+	rules := clientcmd.NewDefaultClientConfigLoadingRules()
+	return clientcmd.NewNonInteractiveDeferredLoadingClientConfig(rules, &clientcmd.ConfigOverrides{}).RawConfig()
+}
+
+// Clusters returns a list of clusters from the kubeconfig
+func Clusters() ([]ClusterInfo, error) {
+	config, err := rawConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	var clusters = make([]ClusterInfo, 0, len(config.Contexts))
+
+	for ctxName, context := range config.Contexts {
+		clusters = append(clusters, ClusterInfo{Name: context.Cluster, Selected: ctxName == config.CurrentContext})
+	}
+
+	return clusters, nil
+}
+
+// Declare CurrentContext as a variable so it can be mocked
+var CurrentContext = func() (string, string, error) {
+	config, err := rawConfig()
+	if err != nil {
+		return "", "", err
+	}
+	contextName := config.CurrentContext
+	context := config.Contexts[contextName]
+	if context == nil {
+		return "", "", fmt.Errorf("context not found")
+	}
+	return contextName, context.Cluster, nil
+}
+
 // IsRunningInCluster checks if the application is running in cluster
 func IsRunningInCluster() (bool, error) {
 	_, err := rest.InClusterConfig()
@@ -57,20 +98,4 @@ func IsRunningInCluster() (bool, error) {
 	}
 
 	return true, nil
-}
-
-// Declare GetCurrentContext as a variable so it can be mocked
-var GetCurrentContext = func() (string, string, error) {
-	// Actual implementation of GetCurrentContext
-	rules := clientcmd.NewDefaultClientConfigLoadingRules()
-	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(rules, &clientcmd.ConfigOverrides{}).RawConfig()
-	if err != nil {
-		return "", "", err
-	}
-	contextName := config.CurrentContext
-	context := config.Contexts[contextName]
-	if context == nil {
-		return "", "", fmt.Errorf("context not found")
-	}
-	return contextName, context.Cluster, nil
 }

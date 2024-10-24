@@ -13,6 +13,7 @@ import (
 	_ "github.com/defenseunicorns/uds-runtime/src/pkg/api/docs" //nolint:staticcheck
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/resources"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/rest"
+	"github.com/defenseunicorns/uds-runtime/src/pkg/k8s/client"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/k8s/session"
 )
 
@@ -933,5 +934,52 @@ func healthz(w http.ResponseWriter, _ *http.Request) {
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		slog.Error("Failed to encode health response", "error", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
+// @Description get clusters from local kubeconfig
+// @Tags clusters
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /api/v1/clusters [get]
+func getClusters(ks *session.K8sSession) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/json; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache")
+
+		// running in cluster return []
+		if ks.InCluster {
+			data, err := json.Marshal([]interface{}{})
+			if err != nil {
+				slog.Error("Failed to marshal empty data", "error", err)
+				http.Error(w, "JSON marshalling error", http.StatusInternalServerError)
+			}
+
+			// Write the data to the response
+			if _, err := w.Write(data); err != nil {
+				http.Error(w, "Failed to write data", http.StatusInternalServerError)
+				return
+			}
+		}
+
+		contexts, err := client.Clusters()
+		if err != nil {
+			slog.Error("Failed to get contexts", "error", err)
+			http.Error(w, "Failed to get contexts", http.StatusInternalServerError)
+			return
+		}
+
+		data, err := json.Marshal(contexts)
+		if err != nil {
+			slog.Error("Failed to marshal contexts", "error", err)
+			http.Error(w, "JSON marshalling error", http.StatusInternalServerError)
+			return
+		}
+
+		// Write the data to the response
+		if _, err := w.Write(data); err != nil {
+			http.Error(w, "Failed to write data", http.StatusInternalServerError)
+			return
+		}
 	}
 }

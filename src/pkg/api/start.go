@@ -65,6 +65,7 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	r.Get("/cluster-check", checkClusterConnection(k8sSession))
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Head("/auth", authHandler)
+		r.Get("/clusters", getClusters(k8sSession))
 		r.Route("/monitor", func(r chi.Router) {
 			r.Get("/pepr/", monitor.Pepr)
 			r.Get("/pepr/{stream}", monitor.Pepr)

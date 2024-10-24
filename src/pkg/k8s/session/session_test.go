@@ -20,8 +20,8 @@ func TestHandleReconnection(t *testing.T) {
 	os.Setenv("CONNECTION_RETRY_MS", "100")
 	defer os.Unsetenv("CONNECTION_RETRY_MS")
 
-	// Mock GetCurrentContext to return the same context and cluster as the original
-	client.GetCurrentContext = func() (string, string, error) {
+	// Mock CurrentContext to return the same context and cluster as the original
+	client.CurrentContext = func() (string, string, error) {
 		return "original-context", "original-cluster", nil
 	}
 
@@ -62,8 +62,8 @@ func TestHandleReconnectionCreateClientError(t *testing.T) {
 	os.Setenv("CONNECTION_RETRY_MS", "100")
 	defer os.Unsetenv("CONNECTION_RETRY_MS")
 
-	// Mock GetCurrentContext to return the same context and cluster as the original
-	client.GetCurrentContext = func() (string, string, error) {
+	// Mock CurrentContext to return the same context and cluster as the original
+	client.CurrentContext = func() (string, string, error) {
 		return "original-context", "original-cluster", nil
 	}
 
@@ -101,8 +101,8 @@ func TestHandleReconnectionCreateCacheError(t *testing.T) {
 	os.Setenv("CONNECTION_RETRY_MS", "100")
 	defer os.Unsetenv("CONNECTION_RETRY_MS")
 
-	// Mock GetCurrentContext to return the same context and cluster as the original
-	client.GetCurrentContext = func() (string, string, error) {
+	// Mock CurrentContext to return the same context and cluster as the original
+	client.CurrentContext = func() (string, string, error) {
 		return "original-context", "original-cluster", nil
 	}
 
@@ -139,8 +139,8 @@ func TestHandleReconnectionContextChanged(t *testing.T) {
 	os.Setenv("CONNECTION_RETRY_MS", "100")
 	defer os.Unsetenv("CONNECTION_RETRY_MS")
 
-	// Mock GetCurrentContext to return a different context and cluster
-	client.GetCurrentContext = func() (string, string, error) {
+	// Mock CurrentContext to return a different context and cluster
+	client.CurrentContext = func() (string, string, error) {
 		return "new-context", "new-cluster", nil
 	}
 
