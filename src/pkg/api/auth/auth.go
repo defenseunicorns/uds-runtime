@@ -6,7 +6,6 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -74,7 +73,7 @@ func RequestHandler(w http.ResponseWriter, r *http.Request) {
 		// auth failed, response is already written
 		return
 	}
-	
+
 	if config.InClusterAuthEnabled {
 		// grab values from context set by Auth JWT middleware
 		group := r.Context().Value(incluster.GroupKey)
