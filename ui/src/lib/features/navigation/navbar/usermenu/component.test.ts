@@ -66,7 +66,7 @@ describe('UserMenu', () => {
     expect(goto).toHaveBeenCalledWith('/logout')
   })
 
-  it('keeps dropdown open when clicking inside', async () => {
+  test('keeps dropdown open when clicking inside', async () => {
     render(UserMenu, { props: { userData: mockUserData } })
 
     // Open dropdown
