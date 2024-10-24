@@ -48,6 +48,18 @@ test.describe('Navigation', async () => {
     await expect(overviewPodCount).toEqual(podCount)
   })
 
+  test('Navigate to page when click on Pod and Node Cards', async ({ page }) => {
+    const podsCard = page.getByTestId('card-container').filter({ hasText: 'Pods running in Cluster' })
+    await podsCard.click()
+    expect(await page.getByTestId('table-header').textContent()).toEqual('Pods')
+
+    await page.goto('/')
+
+    const nodesCard = page.getByTestId('card-container').filter({ hasText: 'Nodes running in Cluster' })
+    await nodesCard.click()
+    expect(await page.getByTestId('table-header').textContent()).toEqual('Nodes')
+  })
+
   test.describe('navigates to Applications', async () => {
     test('Packages page', async ({ page }) => {
       await page.getByRole('button', { name: 'Applications' }).click()
@@ -75,7 +87,7 @@ test.describe('Navigation', async () => {
   test.describe('navigates to Workloads', async () => {
     test('Pods page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
-      await page.getByRole('link', { name: 'Pods' }).click()
+      await page.getByRole('link', { name: /^Pods$/ }).click()
 
       const element = page.locator(`.emphasize:has-text("podinfo")`).first()
       await expect(element).toBeVisible()
@@ -233,7 +245,7 @@ test.describe('Navigation', async () => {
   })
 
   test('navigates to Nodes page', async ({ page }) => {
-    await page.getByRole('link', { name: 'Nodes' }).click()
+    await page.getByRole('link', { name: /^Nodes$/ }).click()
 
     await expect(page.getByTestId('control-plane, master-testid-3')).toHaveText('control-plane, master')
   })

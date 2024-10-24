@@ -16,7 +16,7 @@
 
 <Card>
   <div class="w-full">
-    <div class="w-full">
+    <div class="flex flex-col items-start">
       <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{statText}</dt>
       <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">
         {value.toString()}%
