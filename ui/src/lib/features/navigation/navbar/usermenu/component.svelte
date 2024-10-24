@@ -7,7 +7,7 @@
 
   import { goto } from '$app/navigation'
   import type { UserData } from '$features/navigation/types'
-  import { ChevronDown, ChevronUp, UserAvatarFilled } from 'carbon-icons-svelte'
+  import { ChevronDown, UserAvatarFilled } from 'carbon-icons-svelte'
 
   export let userData: UserData
 
@@ -47,11 +47,7 @@
   >
     <UserAvatarFilled class="h-5 w-5 mr-2" />
     <span>{userData.name}</span>
-    {#if isOpen}
-      <ChevronUp class="h-4 w-4 ml-2" />
-    {:else}
-      <ChevronDown class="h-4 w-4 ml-2" />
-    {/if}
+    <ChevronDown class="ml-1 expanded-only h-5 w-5 transition duration-200 {isOpen ? '-rotate-180 transform' : ''}" />
   </button>
 
   {#if isOpen}
