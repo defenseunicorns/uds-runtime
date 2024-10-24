@@ -28,7 +28,8 @@ func Auth(w http.ResponseWriter, r *http.Request) bool {
 		}
 		w.WriteHeader(http.StatusUnauthorized)
 		return false
-	} else if token != AuthToken {
+	}
+	if token != AuthToken {
 		w.WriteHeader(http.StatusUnauthorized)
 		return false
 	}
