@@ -18,17 +18,17 @@
 <Card>
   <div class="w-full">
     <div class="w-full">
-      {#if deactivated}
-        <div class="flex justify-end">
-          <InactiveBadge
-            tooltipDirection="tooltip-left"
-            tooltipText="Metrics Server is unavailable.
-            Ensure Metrics Server is running in the cluster."
-          />
-        </div>
-      {/if}
-      <div class="flex items-center">
+      <div class="flex justify-between items-center">
         <dt class="text-sm font-medium text-gray-500 dark:text-gray-500 truncate">{statText}</dt>
+        {#if deactivated}
+          <div class="flex justify-end">
+            <InactiveBadge
+              tooltipDirection="tooltip-left"
+              tooltipText="Metrics Server is unavailable.
+              Ensure Metrics Server is running in the cluster."
+            />
+          </div>
+        {/if}
       </div>
       <dd
         class="mt-1 text-3xl font-semibold"
