@@ -97,7 +97,7 @@ func RequestHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	bodyBytes, err := json.Marshal(resp)
 	if err != nil {
-		slog.Debug(fmt.Sprintf("failed to marshal response: %s", err.Error()))
+		slog.Debug("failed to marshal response", "error", err)
 		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
 		return
 	}
