@@ -8,22 +8,22 @@ runs:
   using: composite
   steps:
     - name: Install Go
-      uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+      uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
       with:
         go-version: 1.21.x
 
     - name: Setup Node.js
-      uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+      uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
       with:
         node-version: 22.9.0
 
     - name: Set up Homebrew
-      uses: Homebrew/actions/setup-homebrew@ee7a7f1327e53b078a90e8f92f78b9f91f18cc38 # master
+      uses: Homebrew/actions/setup-homebrew@d060b6d6ebec27463122d09b327f7b8a2260fb34 # master
 
     - name: Install UDS CLI
       shell: bash
       # renovate: datasource=github-tags depName=defenseunicorns/uds-cli versioning=semver
-      run: brew install defenseunicorns/tap/uds@0.17.0
+      run: brew install defenseunicorns/tap/uds@0.18.0
 
     - name: Install Swagger CLI
       shell: bash
