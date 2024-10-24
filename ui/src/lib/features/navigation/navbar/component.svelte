@@ -29,7 +29,6 @@
   >
     <div class="flex flex-wrap items-center justify-between">
       <div class="flex items-center justify-start">
-        <!-- Hide Sidebar if api auth is enabled and user is not authenticated-->
         {#if $authenticated}
           <button
             data-testid="toggle-sidebar"

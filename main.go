@@ -22,7 +22,6 @@ var localCert []byte
 var localKey []byte
 
 func main() {
-	// set log level slog
 	slog.SetLogLoggerLevel(slog.LevelDebug)
 
 	r, inCluster, err := api.Setup(&assets)

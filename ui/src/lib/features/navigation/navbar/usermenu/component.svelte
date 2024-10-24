@@ -15,7 +15,6 @@
   let isOpen = false
 
   onMount(() => {
-    // todo: test this all sorts of ways
     const handleWindowClick = (event: MouseEvent) => {
       if (dropdownContainer && !dropdownContainer.contains(event.target as Node)) {
         isOpen = false
@@ -58,12 +57,12 @@
   {#if isOpen}
     <div
       transition:fade={{ duration: 100 }}
-      class="origin-top-right absolute right-0 mt-1 w-56 rounded-md shadow-lg bg-gray-700 focus:outline-none"
+      class="origin-top-right absolute right-0 mt-1 w-56 rounded-md shadow-lg bg-gray-700 focus:outline-none ring-1 ring-black ring-opacity-5"
     >
       <div class="py-1">
-        <div class="px-4 py-2 text-sm text-white border-b border-gray-700">
+        <div class="px-4 py-2 text-sm text-white font-medium border-b border-gray-600 truncate">
           <p>{userData.preferredUsername}</p>
-          <p class="text-gray-400">{userData.group}</p>
+          <p class="text-xs text-gray-400 mt-1 truncate">{userData.group}</p>
         </div>
         <button on:click={signOut} class="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-600">
           Sign Out
