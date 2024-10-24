@@ -13,6 +13,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/defenseunicorns/pkg/exec"
 	"github.com/defenseunicorns/uds-runtime/src/pkg/api/auth"
@@ -27,6 +28,8 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"github.com/zarf-dev/zarf/src/pkg/message"
 )
+
+var inAirgap bool
 
 // @title UDS Runtime API
 // @version 0.0.0
@@ -185,10 +188,14 @@ func Setup(assets *embed.FS) (*chi.Mux, bool, error) {
 	if config.LocalAuthEnabled {
 		port := "8443"
 		host := "runtime-local.uds.dev"
+		inAirgap = isAirgapped(time.Duration(5) * time.Second)
+		if inAirgap {
+			host = "localhost"
+		}
 		colorYellow := "\033[33m"
 		colorReset := "\033[0m"
 		url := fmt.Sprintf("https://%s:%s?token=%s", host, port, auth.LocalAuthToken)
-		log.Printf("%sRuntime API connection: %s%s", colorYellow, url, colorReset)
+		log.Printf("%sConnect to UDS Runtime: %s%s", colorYellow, url, colorReset)
 		err := exec.LaunchURL(url)
 		if err != nil {
 			return nil, inCluster, fmt.Errorf("failed to launch URL: %w", err)
@@ -253,36 +260,40 @@ func fileServer(r chi.Router, root http.FileSystem) error {
 }
 
 func Serve(r *chi.Mux, localCert []byte, localKey []byte, inCluster bool) error {
-	//nolint:gosec,govet
 	if inCluster {
 		slog.Info("Starting server in in-cluster mode on 0.0.0.0:8080")
-
+		//nolint:gosec,govet
 		if err := http.ListenAndServe("0.0.0.0:8080", r); err != nil {
 			message.WarnErrf(err, "server failed to start: %s", err.Error())
 			return err
 		}
-	} else {
-		slog.Info("Starting server in local mode on 127.0.0.1:8443")
-		// create tls config from embedded cert and key
-		cert, err := tls.X509KeyPair(localCert, localKey)
-		if err != nil {
-			log.Fatalf("Failed to load embedded certificate: %v", err)
-		}
-		tlsConfig := &tls.Config{
-			Certificates: []tls.Certificate{cert},
-		}
+		return nil
+	}
+	slog.Info("Starting server in local mode on 127.0.0.1:8443")
+	if inAirgap {
+		err := serveAirgap(r)
+		return err
+	}
 
-		// Create a server with TLS config
-		server := &http.Server{
-			Addr:      "127.0.0.1:8443",
-			Handler:   r,
-			TLSConfig: tlsConfig,
-		}
+	// connected to internet, create tls config from embedded cert and key
+	cert, err := tls.X509KeyPair(localCert, localKey)
+	if err != nil {
+		log.Fatalf("Failed to load embedded certificate: %v", err)
+	}
+	tlsConfig := &tls.Config{
+		MinVersion:   tls.VersionTLS12,
+		Certificates: []tls.Certificate{cert},
+	}
+	server := &http.Server{
+		Addr:              "127.0.0.1:8443",
+		Handler:           r,
+		TLSConfig:         tlsConfig,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
 
-		if err = server.ListenAndServeTLS("", ""); err != nil {
-			message.WarnErrf(err, "server failed to start: %s", err.Error())
-			return err
-		}
+	if err = server.ListenAndServeTLS("", ""); err != nil {
+		message.WarnErrf(err, "server failed to start: %s", err.Error())
+		return err
 	}
 
 	return nil
