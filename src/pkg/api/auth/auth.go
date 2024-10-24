@@ -73,7 +73,9 @@ func RequestHandler(w http.ResponseWriter, r *http.Request) {
 	if config.LocalAuthEnabled && !local.Auth(w, r) {
 		// auth failed, response is already written
 		return
-	} else if config.InClusterAuthEnabled {
+	}
+	
+	if config.InClusterAuthEnabled {
 		// grab values from context set by Auth JWT middleware
 		group := r.Context().Value(incluster.GroupKey)
 		username := r.Context().Value(incluster.PreferredUserNameKey)
