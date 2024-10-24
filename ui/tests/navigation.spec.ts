@@ -29,6 +29,17 @@ test.describe('Navigation', async () => {
     // Check for Events Widget
     await expect(page.getByText('Event Logs')).toBeVisible()
     await expect(page.getByText('VIEW EVENTS')).toBeVisible()
+
+    // Check for no unavailable tags when metrics server is available
+    const count = await page.getByTestId('unavailable-tag').count()
+    const overviewPodCount = await page.getByTestId('resource-count-pods').textContent()
+    // indicates running in cluster e2e tests and metrics server in not available
+    if (overviewPodCount === '20') {
+      expect(count === 3).toBe(true)
+      // indicates running other e2e tests where metrics server is available
+    } else {
+      expect(count === 0).toBe(true)
+    }
   })
 
   test('Ensure Overview page and pod page show same number of pods', async ({ page }) => {
@@ -46,6 +57,18 @@ test.describe('Navigation', async () => {
     podCount = podCount!.replace(/\(|\)/g, '')
 
     await expect(overviewPodCount).toEqual(podCount)
+  })
+
+  test('Navigate to page when click on Pod and Node Cards', async ({ page }) => {
+    const podsCard = page.getByTestId('card-container').filter({ hasText: 'Pods running in Cluster' })
+    await podsCard.click()
+    expect(await page.getByTestId('table-header').textContent()).toEqual('Pods')
+
+    await page.goto('/')
+
+    const nodesCard = page.getByTestId('card-container').filter({ hasText: 'Nodes running in Cluster' })
+    await nodesCard.click()
+    expect(await page.getByTestId('table-header').textContent()).toEqual('Nodes')
   })
 
   test.describe('navigates to Applications', async () => {
@@ -75,7 +98,7 @@ test.describe('Navigation', async () => {
   test.describe('navigates to Workloads', async () => {
     test('Pods page', async ({ page }) => {
       await page.getByRole('button', { name: 'Workloads' }).click()
-      await page.getByRole('link', { name: 'Pods' }).click()
+      await page.getByRole('link', { name: /^Pods$/ }).click()
 
       const element = page.locator(`.emphasize:has-text("podinfo")`).first()
       await expect(element).toBeVisible()
@@ -233,7 +256,7 @@ test.describe('Navigation', async () => {
   })
 
   test('navigates to Nodes page', async ({ page }) => {
-    await page.getByRole('link', { name: 'Nodes' }).click()
+    await page.getByRole('link', { name: /^Nodes$/ }).click()
 
     await expect(page.getByTestId('control-plane, master-testid-3')).toHaveText('control-plane, master')
   })
