@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.8.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.7.0...v0.8.0) (2024-10-24)
+
+
+### Features
+
+* adds health check ([#465](https://github.com/defenseunicorns/uds-runtime/issues/465)) ([9e14fc2](https://github.com/defenseunicorns/uds-runtime/commit/9e14fc263ddbfd699edf8a909e588287adb96ae9))
+* **UI:** overview when metrics server missing ([#485](https://github.com/defenseunicorns/uds-runtime/issues/485)) ([73d9b56](https://github.com/defenseunicorns/uds-runtime/commit/73d9b567bd63b9cae1930b4c08f0cff434a96a07))
+* **ui:** update overview cards to navigate on click ([#488](https://github.com/defenseunicorns/uds-runtime/issues/488)) ([8978525](https://github.com/defenseunicorns/uds-runtime/commit/897852569d711d198e38e2319e9a6f453dba67b0))
+
+
+### Bug Fixes
+
+* ensure swagger is behind local auth ([#466](https://github.com/defenseunicorns/uds-runtime/issues/466)) ([a6a3958](https://github.com/defenseunicorns/uds-runtime/commit/a6a3958ab9208cc5ae16a1941a46eaca0da8bc28))
+* readme logo cutoff ([#480](https://github.com/defenseunicorns/uds-runtime/issues/480)) ([e2bbf19](https://github.com/defenseunicorns/uds-runtime/commit/e2bbf1913dac54e3e436cfd1786afb2abbe00dab))
+
+
+### Miscellaneous
+
+* add e2e in cluster testing ([#451](https://github.com/defenseunicorns/uds-runtime/issues/451)) ([267b611](https://github.com/defenseunicorns/uds-runtime/commit/267b611c2361db6100831933c7511459c8e5164f))
+* **api:** bind only to localhost interface on serve ([#474](https://github.com/defenseunicorns/uds-runtime/issues/474)) ([da577ff](https://github.com/defenseunicorns/uds-runtime/commit/da577ff7f29a2058dc129c3712c79bf03a01f913))
+* **deps:** update dependency kubernetes-fluent-client to v3.1.3 ([#463](https://github.com/defenseunicorns/uds-runtime/issues/463)) ([844e9bc](https://github.com/defenseunicorns/uds-runtime/commit/844e9bc2c5f82bdf630c5c602df25a357f555daf))
+* **deps:** update dependency kubernetes-fluent-client to v3.2.0 ([#479](https://github.com/defenseunicorns/uds-runtime/issues/479)) ([62fd169](https://github.com/defenseunicorns/uds-runtime/commit/62fd169e28ac1f7ca013ad06836b2e7dd2cf84b0))
+* **deps:** update dependency kubernetes-fluent-client to v3.2.1 ([#495](https://github.com/defenseunicorns/uds-runtime/issues/495)) ([48f7a56](https://github.com/defenseunicorns/uds-runtime/commit/48f7a5610c9a94f6117c54b70656ba5f133f4076))
+* **deps:** update kubernetes packages to v0.31.2 ([#490](https://github.com/defenseunicorns/uds-runtime/issues/490)) ([0eaf9ed](https://github.com/defenseunicorns/uds-runtime/commit/0eaf9ed99948f22f70dbe86859774049a1d3aa59))
+* **deps:** update module github.com/charmbracelet/lipgloss to v0.13.1 ([#486](https://github.com/defenseunicorns/uds-runtime/issues/486)) ([e9f2b1e](https://github.com/defenseunicorns/uds-runtime/commit/e9f2b1e31e9bbd66775ac9f7b2f6ed9f94a7ffea))
+* **deps:** update module github.com/swaggo/swag to v1.16.4 ([#472](https://github.com/defenseunicorns/uds-runtime/issues/472)) ([f1a6563](https://github.com/defenseunicorns/uds-runtime/commit/f1a65633a4867c6c0af304863721194f232b9091))
+* rename LICENSE to LICENSE.md ([#477](https://github.com/defenseunicorns/uds-runtime/issues/477)) ([b2efe51](https://github.com/defenseunicorns/uds-runtime/commit/b2efe519b9cd491a4abe83e32ada5db0ede06d63))
+* **ui:** update node and custom resource sidebar icons ([#469](https://github.com/defenseunicorns/uds-runtime/issues/469)) ([a7e9f53](https://github.com/defenseunicorns/uds-runtime/commit/a7e9f53167fcff18322c174c7531e377a43cb1ac))
+
 ## [0.7.0](https://github.com/defenseunicorns/uds-runtime/compare/v0.6.1...v0.7.0) (2024-10-17)
 
 
